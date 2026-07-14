@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Platform setup - Programs
-  description: Endpoints to handle Programs.
+  description: Endpoints to handle Programs
   version: v1.0
   contact:
     name: Pismo Support
