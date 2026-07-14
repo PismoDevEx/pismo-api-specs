@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.0.1
 info:
   title: Platform setup - Programs
-  description: Endpoints to handle Programs
+  description: Endpoints to handle Programs.
   version: v1.0
   contact:
     name: Pismo Support
@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
 tags:
   - name: Programs
     description: Create and manage programs
@@ -103,18 +103,18 @@ components:
       name: category
       in: query
       description: |
-        One or more program parameter categories. Use `,` as separator. 
-        `CREDITO` - Credit
-        `TAXA` - Tax
-        `TARIFA` -  Fee
-        `PARAMETRO` - Parameter
-        `ARQUIVOS` - Archives
-        `COBRANCA` - Collection
-        `FISCAL` - Fiscal
-        `FATURAMENTO` - Billing
-        `CARTAO` - Card
-        `FRAUDE` - Fraud
-        `TIPO DE TRANSACAO` -  Type of transaction
+        One or more program parameter categories. Use `,` as separator. <br />
+        `CREDITO` - Credit<br />
+        `TAXA` - Tax<br />
+        `TARIFA` -  Fee<br />
+        `PARAMETRO` - Parameter<br />
+        `ARQUIVOS` - Archives<br />
+        `COBRANCA` - Collection<br />
+        `FISCAL` - Fiscal<br />
+        `FATURAMENTO` - Billing<br />
+        `CARTAO` - Card<br />
+        `FRAUDE` - Fraud<br />
+        `TIPO DE TRANSACAO` -  Type of transaction<br />
       schema:
         type: string
       example: CREDITO
@@ -213,18 +213,18 @@ components:
       name: type
       in: query
       description: >
-        Program type:
-          `CREDITO` — Full balance credit accounts
-          `PRE-PAGO` — Full balance prepaid accounts
-          `DEBITO` — Full balance debit accounts
-          `MERCHANT` — Merchant accounts
-          `CREDITO ZERO-BALANCE` — Zero balance credit accounts
-          `PRE-PAGO ZERO-BALANCE` — Zero balance prepaid accounts
-          `DEBITO ZERO-BALANCE` — Zero balance debit accounts
-          `CURRENT ACCOUNTS` — Current accounts
-          `INTERNAL ACCOUNTS` — Internal accounts
-          `CORRESPONDENT ACCOUNTS` — Correspondent accounts   
-          `VOUCHER` - Prepaid voucher meal/food card
+        Program type:<br />
+          `CREDITO` — Full balance credit accounts<br />
+          `PRE-PAGO` — Full balance prepaid accounts<br />
+          `DEBITO` — Full balance debit accounts<br />
+          `MERCHANT` — Merchant accounts<br />
+          `CREDITO ZERO-BALANCE` — Zero balance credit accounts<br />
+          `PRE-PAGO ZERO-BALANCE` — Zero balance prepaid accounts<br />
+          `DEBITO ZERO-BALANCE` — Zero balance debit accounts<br />
+          `CURRENT ACCOUNTS` — Current accounts<br />
+          `INTERNAL ACCOUNTS` — Internal accounts<br />
+          `CORRESPONDENT ACCOUNTS` — Correspondent accounts<br />
+          `VOUCHER` - Prepaid voucher meal/food card<br />
 
         For more information, refer to [Program
         types](https://developers.pismo.io/pismo-docs/docs/program-types).
@@ -349,6 +349,7 @@ components:
         - PRIVATE
         - CABAL
         - GOODCARD
+        - GPN
       example: VISA
     BrandData:
       type: object
@@ -539,7 +540,6 @@ components:
     ExportFileUrl:
       type: string
       description: File URL for download export
-      nullable: true
       example: export/TN-00001/484/export.json
     ExportFinishedAt:
       type: string
@@ -1309,8 +1309,6 @@ components:
           $ref: '#/components/schemas/ProgramName'
         timezone:
           $ref: '#/components/schemas/TimeZone'
-        currency_numeric_code:
-          $ref: '#/components/schemas/CurrencyNumericCode'
         country_code:
           $ref: '#/components/schemas/CountryCode'
         due_dates:
@@ -1422,18 +1420,18 @@ components:
     ProgramType:
       type: string
       description: >
-        Program type:
-          `CREDITO` — Full balance credit accounts
-          `PRE-PAGO` — Full balance prepaid accounts
-          `DEBITO` — Full balance debit accounts
-          `MERCHANT` — Merchant accounts
-          `CREDITO ZERO-BALANCE` — Zero balance credit accounts
-          `PRE-PAGO ZERO-BALANCE` — Zero balance prepaid accounts
-          `DEBITO ZERO-BALANCE` — Zero balance debit accounts
-          `CURRENT ACCOUNTS` — Current accounts
-          `INTERNAL ACCOUNTS` — Internal accounts
-          `CORRESPONDENT ACCOUNTS` — Correspondent accounts
-          `VOUCHER` - Prepaid voucher meal/food card
+        Program type:<br />
+          `CREDITO` — Full balance credit accounts<br />
+          `PRE-PAGO` — Full balance prepaid accounts<br />
+          `DEBITO` — Full balance debit accounts<br />
+          `MERCHANT` — Merchant accounts<br />
+          `CREDITO ZERO-BALANCE` — Zero balance credit accounts<br />
+          `PRE-PAGO ZERO-BALANCE` — Zero balance prepaid accounts<br />
+          `DEBITO ZERO-BALANCE` — Zero balance debit accounts<br />
+          `CURRENT ACCOUNTS` — Current accounts<br />
+          `INTERNAL ACCOUNTS` — Internal accounts<br />
+          `CORRESPONDENT ACCOUNTS` — Correspondent accounts<br />
+          `VOUCHER` - Prepaid voucher meal/food card<br />
 
         For more information, refer to [Program
         types](https://developers.pismo.io/pismo-docs/docs/program-types)
@@ -1470,19 +1468,19 @@ components:
       type: integer
       format: int64
       description: |
-        Program type ID:  
+        Program type ID:<br />  
 
-          `1` =  `CREDITO`
-          `2` =  `PRE-PAGO`
-          `3` = `DEBITO`
-          `5` = `MERCHANT`
-          `7` = `CREDITO ZERO-BALANCE`
-          `8` = `PRE-PAGO ZERO-BALANCE`
-          `9` = `DEBITO ZERO-BALANCE`
-          `11` =` CURRENT ACCOUNTS`
-          `12` = `INTERNAL ACCOUNTS`
-          `13` = `CORRESPONDENT ACCOUNTS`
-          `15` = `VOUCHER`
+          `1` =  `CREDITO`<br />  
+          `2` =  `PRE-PAGO`<br />  
+          `3` = `DEBITO`<br />  
+          `5` = `MERCHANT`<br />  
+          `7` = `CREDITO ZERO-BALANCE`<br />  
+          `8` = `PRE-PAGO ZERO-BALANCE`<br />  
+          `9` = `DEBITO ZERO-BALANCE`<br />  
+          `11` =` CURRENT ACCOUNTS`<br />  
+          `12` = `INTERNAL ACCOUNTS`<br />  
+          `13` = `CORRESPONDENT ACCOUNTS`<br />  
+          `15` = `VOUCHER`<br />  
 
         For more information, refer to [Program types](doc:program-types).
       example: 1
