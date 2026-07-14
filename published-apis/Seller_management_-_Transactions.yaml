@@ -169,6 +169,13 @@ components:
         ISO-4217 alphabetic (3 characters) currency code
       type: string
       example: BRL
+    OptionalCurrencyCodeResponse:
+      type: string
+      nullable: true
+      description: >-
+        ISO 4217 alphanumeric currency code. `null` when no currency is
+        recorded.
+      example: BRL
     BalanceRequestGetResponse:
       type: object
       properties:
@@ -180,6 +187,8 @@ components:
           $ref: '#/components/schemas/EstimatedAvailableAmount'
         scheduled_amount:
           $ref: '#/components/schemas/ScheduledAmount'
+        currency_code:
+          $ref: '#/components/schemas/OptionalCurrencyCodeResponse'
     CurrentAvailableAmount:
       type: number
       format: float
@@ -380,10 +389,10 @@ components:
         Defines the status of the merchant transaction request.
 
 
-        - The default value is **SCHEDULED** for merchant schedulers, or
-        **WAITING_SPLIT** for marketplace schedulers.
+        - The default value is `SCHEDULED` for merchant schedulers, or
+        `WAITING_SPLIT` for marketplace schedulers.
 
-        - The **WAITING_SPLIT** status should only be used when the transaction
+        - The `WAITING_SPLIT` status should only be used when the transaction
         needs to wait for split request processing,
 
         and only if the `merchant_id` provided is the `schedule_id`.
@@ -477,6 +486,8 @@ components:
       properties:
         amount:
           $ref: '#/components/schemas/SplitRequestGetTotalGrossAmount'
+        currency_code:
+          $ref: '#/components/schemas/OptionalCurrencyCodeResponse'
         marketplace_id:
           $ref: '#/components/schemas/MarketplaceId'
         definitions:
@@ -615,13 +626,13 @@ components:
           description: Marketplace ID
     SplitRequestPostSaleDefinitionsRequest:
       type: object
-      anyOf:
-        - required:
-            - merchant_id
-            - amount
-        - required:
-            - merchant_id
-            - amount_percentage
+      description: >
+        Defines how a transaction is split for a merchant.
+
+        Exactly one allocation method, `amount` or `amount_percentage`, must be
+        provided.
+      required:
+        - merchant_id
       properties:
         merchant_id:
           $ref: '#/components/schemas/MerchantId'
@@ -630,10 +641,10 @@ components:
         amount_percentage:
           $ref: >-
             #/components/schemas/SplitRequestPostSaleDefinitionsTotalAmountPercentage
-        transaction_status:
-          $ref: '#/components/schemas/SplitMerchTransactionsStatus'
         processing_code:
           $ref: '#/components/schemas/MerchTransProcessingCode'
+        transaction_status:
+          $ref: '#/components/schemas/SplitMerchTransactionsStatus'
     SplitRequestPostSaleDefinitionsTotalAmount:
       type: number
       format: float
@@ -642,6 +653,8 @@ components:
 
         If the sum of all defined amounts is less than the authorized amount,
         the difference is applied to the first merchant in the list.
+
+        Either `amount` or `amount_percentage` is **REQUIRED**.
 
         Example:
           - Amount: 100.00
@@ -654,6 +667,8 @@ components:
       description: >
         Percentage of the gross amount of the merchant transactions. 10% is
         0.10, 100% is 1.00
+
+        Either `amount` or `amount_percentage` is **REQUIRED**.
       example: 0.25
     SplitRequestPostSaleRequest:
       type: object
@@ -673,10 +688,10 @@ components:
           type: array
           description: >
             Determines how the transaction amount is split among merchants and
-            specify the applicable taxes and discounts. `definitions` defines
+            specifies the applicable taxes and discounts. `definitions` defines
             the number of merchants involved in the transaction, amount of tax
             or discount to apply, and the percentage or amount allocated to each
-            merchant.
+            merchant. 
           items:
             $ref: '#/components/schemas/SplitRequestPostSaleDefinitionsRequest'
     SplitRequestStatus:
@@ -806,6 +821,32 @@ components:
           $ref: '#/components/schemas/MarketplaceId'
         currency_code:
           $ref: '#/components/schemas/CurrencyCodeResponse'
+        discount_amount:
+          $ref: '#/components/schemas/DiscountAmount'
+        discount_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscountDetail'
+    DiscountAmount:
+      description: Total discount amount applied to the transaction
+      type: number
+      format: float
+      example: 1.99
+    DiscountDetail:
+      description: >-
+        The `amount` represents the fee applied - that is, the amount discounted
+        before settlement.
+      type: object
+      properties:
+        name:
+          description: Discount name
+          type: string
+          example: EMISSION_FEE
+        amount:
+          description: Total discount amount
+          type: number
+          format: float
+          example: 10
   responses:
     200GetMerchantBalanceResponse:
       description: Successfully get merchant balance
@@ -905,6 +946,7 @@ components:
         current_available_amount: 233.21
         estimated_available_amount: 300
         scheduled_amount: 203.1
+        currency_code: BRL
     DefaultErrorResponse:
       summary: Bad request response
       value:
@@ -951,6 +993,7 @@ components:
       summary: Split request totals response
       value:
         amount: 100
+        currency_code: BRL
         marketplace_id: 2
         definitions:
           - merchant_id: 2
@@ -1044,6 +1087,12 @@ components:
             advancement_request_id: null
             marketplace_id: 98765
             currency_code: BRL
+            discount_amount: 40
+            discount_details:
+              - name: MDR
+                amount: 25
+              - name: TRANSACTION_FEE
+                amount: 15
   securitySchemes:
     bearerAuth:
       type: http
@@ -1232,9 +1281,9 @@ paths:
 
         This endpoint allows for the creation of merchant sale transactions with
         installment support, MDR calculations, and scheduled payment dates. The
-        default status is **SCHEDULED**. However, if the merchant is a
-        marketplace scheduler, the transaction will automatically be set to
-        **WAITING_SPLIT** status.
+        default status is `SCHEDULED`. However, if the merchant is a marketplace
+        scheduler, the transaction will automatically be set to `WAITING_SPLIT`
+        status.
 
 
         This endpoint generates a [Merchant transaction
@@ -1278,8 +1327,8 @@ paths:
 
 
         When the original transaction was split, the cancellation status is
-        automatically set to WAITING_SPLIT, otherwise it follows the default
-        status (SCHEDULED).
+        automatically set to `WAITING_SPLIT`, otherwise it follows the default
+        status (`SCHEDULED`).
 
 
         This endpoint generates a [Merchant transaction

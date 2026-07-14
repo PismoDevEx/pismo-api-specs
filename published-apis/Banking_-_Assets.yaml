@@ -1,23 +1,22 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   title: Banking - Assets
   version: 1.0.0
   description: API to handle banking assets operations and management
-  termsOfService: https://developers.pismo.io/terms/
   contact:
     name: API Support
-    email: support@pismo.com.br
-    url: https://developers.pismolabs.io/pismo-docs/docs/support
+    url: https://developers.pismo.io/support
   license:
     name: Copyright Pismo
-    url: https://developers.pismo.io/licenses/
 servers:
-  - url: https://api-sandbox.pismolabs.io/assets-accrual
+  - url: https://sandbox.pismolabs.io/assets-accrual
     description: Sandbox API server for testing
   - url: https://sandbox.pismolabs.io/assets-accrual
     description: Sandbox API for oauth2
-  - url: https://api.pismo.io/assets-accrual
+  - url: https://api.pismolabs.io/assets-accrual
     description: API server for production
+security:
+  - BearerAuth: []
 tags:
   - name: Assets
     description: Asset endpoints
@@ -43,7 +42,7 @@ components:
       schema:
         type: string
         format: date
-        example: '2023-01-10'
+      example: '2023-01-10'
     CorrelationID:
       in: header
       name: x-cid
@@ -65,7 +64,7 @@ components:
       schema:
         type: string
         format: date
-        example: '2023-01-10'
+      example: '2023-01-10'
     ExternalId:
       name: externalId
       in: query
@@ -75,17 +74,17 @@ components:
         characters.
       schema:
         type: string
-        example: '3456'
+      example: '3456'
     IssuerID:
       name: issuer_id
       in: path
       required: true
       description: >-
-        Issuer ID. For more information, see [issuer identification
+        Issuer ID. For more information, refer to [issuer identification
         number](https://www.investopedia.com/terms/i/issuer-identification-number-iin.asp)
       schema:
         type: string
-        example: '24'
+      example: '24'
     Page:
       name: page
       in: query
@@ -94,7 +93,7 @@ components:
       schema:
         type: integer
         format: int32
-        example: 1
+      example: 1
     PerPage:
       name: perPage
       in: query
@@ -103,7 +102,7 @@ components:
       schema:
         type: integer
         format: int32
-        example: 10
+      example: 10
     QuotaID:
       name: quota_id
       in: path
@@ -111,14 +110,19 @@ components:
       description: Quota ID
       schema:
         type: string
-        example: '3456'
+      example: '3456'
   schemas:
+    UnitsAvailable:
+      type: number
+      format: integer
+      description: total units available after redemption operation
+      example: 3000
     AccrualFrequency:
       type: string
       description: |
         Accrual frequency:
-        * `daily` — Accrual for assets daily.
-        * `monthly` — Accrual for assets monthly.
+        * `daily` — Accrual for assets daily
+        * `monthly` — Accrual for assets monthly
       enum:
         - daily
         - monthly
@@ -181,18 +185,12 @@ components:
           $ref: '#/components/schemas/AssetID'
         asset_type:
           $ref: '#/components/schemas/AssetType'
-        issuer_id:
-          $ref: '#/components/schemas/IssuerID'
         registration_mode:
           $ref: '#/components/schemas/RegistrationMode'
         issuing_date:
           $ref: '#/components/schemas/IssuingDate'
         maturity_date:
           $ref: '#/components/schemas/MaturityDate'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        updated_at:
-          $ref: '#/components/schemas/UpdatedAt'
         issued_units:
           $ref: '#/components/schemas/IssuedUnits'
         unit_value:
@@ -201,10 +199,16 @@ components:
           $ref: '#/components/schemas/IndexType'
         index_rate:
           $ref: '#/components/schemas/IndexRate'
-        status:
-          $ref: '#/components/schemas/Status'
         currency:
           $ref: '#/components/schemas/Currency'
+        status:
+          $ref: '#/components/schemas/Status'
+        issuer_id:
+          $ref: '#/components/schemas/IssuerID'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
         interest_rate:
           $ref: '#/components/schemas/InterestRate'
         additional_data:
@@ -236,6 +240,8 @@ components:
           $ref: '#/components/schemas/Units'
         redeemed_units:
           $ref: '#/components/schemas/RedeemedUnits'
+        units_available:
+          $ref: '#/components/schemas/UnitsAvailable'
         latest_accrual_date:
           $ref: '#/components/schemas/LatestAccrualDate'
         daily_rate:
@@ -294,6 +300,15 @@ components:
       minLength: 1
       maxLength: 128
       example: 6ea8094b-73ba-4737-93ad-370c27c54813
+    AssetMigrate:
+      type: object
+      properties:
+        asset_type:
+          $ref: '#/components/schemas/AssetType'
+        document_number:
+          $ref: '#/components/schemas/DocumentNumber'
+        deposit_number:
+          $ref: '#/components/schemas/DepositNumber'
     AssetType:
       type: string
       description: >-
@@ -351,13 +366,14 @@ components:
           $ref: '#/components/schemas/Units'
         document_number:
           $ref: '#/components/schemas/DocumentNumber'
-        deposit_number:
-          $ref: '#/components/schemas/DepositNumber'
         external_id:
           $ref: '#/components/schemas/ExternalID'
         redemption_date:
           $ref: '#/components/schemas/RedemptionDate'
+        deposit_number:
+          $ref: '#/components/schemas/DepositNumber'
       required:
+        - external_id
         - units
         - document_number
     AssetRedemptionsResponse:
@@ -428,8 +444,6 @@ components:
           $ref: '#/components/schemas/IssuingDate'
         maturity_date:
           $ref: '#/components/schemas/MaturityDate'
-        purchased_units:
-          $ref: '#/components/schemas/PurchasedUnits'
         issued_units:
           $ref: '#/components/schemas/IssuedUnits'
         unit_value:
@@ -440,8 +454,6 @@ components:
           $ref: '#/components/schemas/IndexRate'
         customer_type:
           $ref: '#/components/schemas/CustomerType'
-        customer_name:
-          $ref: '#/components/schemas/CustomerName'
         document_number:
           $ref: '#/components/schemas/DocumentNumber'
         deposit_number:
@@ -450,6 +462,10 @@ components:
           $ref: '#/components/schemas/EarlyRedemptionTerms'
         currency:
           $ref: '#/components/schemas/Currency'
+        customer_name:
+          $ref: '#/components/schemas/CustomerName'
+        purchased_units:
+          $ref: '#/components/schemas/PurchasedUnits'
         additional_data:
           $ref: '#/components/schemas/AdditionalData'
         external_id:
@@ -732,7 +748,7 @@ components:
       example: 10
     RedemptionDate:
       type: string
-      description: Redemption date, format = yyyy/mm/dd.
+      description: Redemption date, format = yyyy/mm/dd
       example: 2023/03/30
     RedemptionID:
       type: string
@@ -840,6 +856,19 @@ components:
       scheme: bearer
       bearerFormat: JWT
   responses:
+    202AssetBlockedResponse:
+      description: Accepted
+    202AssetMigrateResponse:
+      description: ACCEPTED
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              asset_id:
+                $ref: '#/components/schemas/AssetID'
+              message:
+                $ref: '#/components/schemas/Message'
     400BadRequest:
       description: Bad Request
     401Unauthorized:
@@ -848,15 +877,13 @@ components:
       description: Internal server error
     404NotFound:
       description: Not found
-security:
-  - BearerAuth: []
 paths:
   /v1/issuer/{issuer_id}/assets:
     post:
-      summary: Register asset
+      summary: Register banking asset
       description: >
-        Register an asset with the Pismo platform. An *asset* is either a
-        certificate of deposit or a bank receipt.
+        Register a banking asset with the Pismo platform. A banking asset is
+        either a certificate of deposit or a bank receipt.
 
 
         This endpoint generates an [Asset registration
@@ -894,8 +921,8 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/issuer/{issuer_id}/assets/{asset_id}:
     get:
-      summary: Get asset
-      description: Retrieves an asset by its ID.
+      summary: Get banking asset
+      description: Get banking asset using issuer and asset IDs
       tags:
         - Assets
       operationId: AssetbyId
@@ -911,9 +938,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Asset'
     patch:
-      summary: Update asset
+      summary: Update banking asset
       description: >
-        Updates an asset by its ID.
+        Update a banking asset using issuer and asset IDs
 
 
         This endpoint generates an [Asset
@@ -941,9 +968,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/AssetUpdateResponse'
     delete:
-      summary: Delete asset
+      summary: Delete banking asset
       description: >
-        Deletes an asset previously registered with the Pismo platform.
+        Delete a banking asset previously registered with the Pismo platform
 
 
         This endpoint generates an [Asset status
@@ -973,10 +1000,10 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v2/issuer/{issuer_id}/assets/{asset_id}/redemption:
     put:
-      summary: Create asset redemption
+      summary: Create banking asset redemption
       description: >
-        Creates an asset redemption. An asset redemption is the repayment of the
-        original value of the asset to the investor.
+        Create a banking asset redemption. A banking asset redemption is the
+        repayment of the original value of the asset to the investor.
 
 
         If the request succeeds, this endpoint generates an [Asset
@@ -1019,8 +1046,8 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/issuer/{issuer_id}/assets/{asset_id}/redemption:
     get:
-      summary: List asset redemptions
-      description: Retrieves asset redemptions by asset ID.
+      summary: List banking asset redemptions
+      description: List banking asset redemptions using asset and issuer IDs
       tags:
         - Assets
       operationId: AssetRedemption
@@ -1131,8 +1158,8 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/issuer/{issuer_id}/assets/{asset_id}/balance:
     get:
-      summary: Get asset balance
-      description: Retrieves an asset balance by asset ID
+      summary: Get banking asset balance
+      description: Get banking asset balance using asset ID
       tags:
         - Assets
       operationId: AssetBalance
@@ -1157,16 +1184,16 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/issuer/{issuer_id}/assets/{asset_id}/block:
     post:
-      summary: Block/unblock asset
+      summary: Block/unblock banking asset
       description: >
-        Block or unblock an asset.
+        Block or unblock a banking asset
 
 
         If the request succeeds, this endpoint generates an [Asset
         blocked](https://developers.pismo.io/events/docs/assets-asset-block-1)
-        event.
+        event;
 
-        If it fails, it generates an [Asset block
+        otherwise, generates an [Asset block
         failed](https://developers.pismo.io/events/docs/assets-asset-block-failure-1)
         event.
       tags:
@@ -1184,12 +1211,51 @@ paths:
             schema:
               $ref: '#/components/schemas/AssetBlock'
       responses:
-        '200':
-          description: OK
+        '202':
+          description: ACCEPTED
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssetRegistrationResponse'
+                $ref: '#/components/responses/202AssetBlockedResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/issuer/{issuer_id}/assets/{asset_id}/migrate:
+    post:
+      summary: Migrate banking asset
+      description: >
+        Migrate banking asset
+
+
+        If the request succeeds, this endpoint generates an <a
+        href="https://json-schemas.data.pismo.io/docs/assets/asset_block-1.html">asset_block-1</a>
+        event.
+
+        If it fails, it generates an <a
+        href="https://json-schemas.data.pismo.io/docs/assets/asset_block_failure-1.html">asset_block_failure-1</a>
+        event.
+      tags:
+        - Assets
+      operationId: postAssetBlock
+      parameters:
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/IssuerID'
+        - $ref: '#/components/parameters/AssetID'
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetMigrate'
+      responses:
+        '202':
+          $ref: '#/components/responses/202AssetMigrateResponse'
         '400':
           $ref: '#/components/responses/400BadRequest'
         '401':

@@ -33,17 +33,24 @@ paths:
     post:
       summary: Get OpenID access token
       operationId: post-passport-v1-oauth2-token
-      description: >-
-        Get an access token for OpenID authentication <br><br>NOTE&#58; Many of
-        the endpoints in the Pismo API require you to pass a JWT that you
-        generated which includes a Pismo account ID (`uid` or `account_id`) or
-        an account ID from an external system used in place of the Pismo account
-        ID (`external_account_id`). Further calls to Pismo endpoints will
-        require this token in the Authorization header. <br><br> For more
-        information, refer to [Endpoints that require an account-specific
-        token](ref:endpoints-that-require-an-account-specific-token) and
-        [Endpoints that require an external ID-specific
-        token](ref:endpoints-that-require-an-external-id-token).
+      description: >
+        Get an access token for OpenID authentication
+
+
+        A JSON Web Token (JWT) is a compact, URL-safe means of representing
+        claims to be transferred between two parties. The JWT must be signed
+        using the RS256 algorithm with your server's private key, and include
+        specific claims as outlined in [Authentication with OpenID
+        Connect](doc:authentication-with-openid).
+
+
+        **Note**: Many of the endpoints in the Pismo API require you to pass a
+        JWT that you generated which includes a Pismo account ID (`uid` or
+        `account_id`) or an account ID from an external system used in place of
+        the Pismo account ID (`external_account_id`). Further calls to Pismo
+        endpoints will require this token in the Authorization header.
+         
+         For more information about account-specific tokens, refer to [Endpoints that require an account-specific token](ref:endpoints-that-require-an-account-specific-token) and [Endpoints that require an external ID-specific token](ref:endpoints-that-require-an-external-id-token).
       tags:
         - Authentication
       requestBody:
@@ -51,15 +58,17 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - token
               properties:
                 token:
                   type: string
                   description: >-
-                    JWT signed by the client to obtain an OpenID access token
-                    from Pismo. For more information, refer to [Generating a
+                    JSON Web Token (JWT) created using the RS256 algorithm and
+                    including the required claims as outlined in [Authentication
+                    with OpenID Connect](doc:authentication-with-openid). For
+                    more information, refer to [Generating a
                     JWT](doc:authentication-with-openid#generate-your-jwt).
-              required:
-                - token
       responses:
         '201':
           description: Created
@@ -129,7 +138,6 @@ paths:
                 server_secret:
                   type: string
                   description: Server credential secret
-                  example: 3$vKc)FCCfT;b%;_kPfaeq-zDG3vA=e&
                 account_id:
                   type: number
                   description: >-
@@ -139,11 +147,6 @@ paths:
               required:
                 - server_key
                 - server_secret
-            examples:
-              Server credentials:
-                value:
-                  server_key: 5d8252ea2e6729223f30d477d79a5c3cb45f8e03
-                  account_id: 123
       responses:
         '201':
           description: Created

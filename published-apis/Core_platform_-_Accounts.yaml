@@ -336,8 +336,9 @@ components:
       in: query
       required: false
       description: >
-        If`true`, the response lists children and grandchildren account numbers
-        in the `children` array. Default is `false`.
+        If `true`, the response lists up to 3 levels of descendant account
+        numbers (children, grandchildren, and great-grandchildren) in the
+        `children` array. Default is `false`.
 
 
         Refer to the [Related accounts](doc:accounts-overview#related-accounts)
@@ -654,7 +655,7 @@ components:
       example: Account cash management
     AccountPatch:
       type: object
-      description: Object to patch an account
+      description: Object to update an account
       properties:
         custom_fields:
           $ref: '#/components/schemas/CustomFields'
@@ -892,7 +893,7 @@ components:
         - `VIRTUAL`&mdash;Always a child account. 
 
           `parent_account_id` and `external_id` are **REQUIRED** for virtual accounts. 
-          
+
           Virtual accounts can have a many to one mapping to a physical account where the balance lives at the parent account. 
 
         While a `document_number` is **REQUIRED** for a virtual account, it is
@@ -1114,7 +1115,8 @@ components:
       example: Mulholland Drive
     AddressActive:
       type: boolean
-      description: Is address active (`true`) or not (`false`). Default is `true`.
+      description: Is address active? Default is `false`.
+      default: false
       example: true
     AddressExternalID:
       type: string
@@ -1242,6 +1244,11 @@ components:
           $ref: '#/components/schemas/AddressLastUpdate'
         custom_fields:
           $ref: '#/components/schemas/CustomFields'
+        customer_ids:
+          type: array
+          description: Customer IDs linked to this address.
+          items:
+            $ref: '#/components/schemas/CustomerID'
     AddressLastUpdate:
       type: string
       format: date-time
@@ -1403,6 +1410,8 @@ components:
           $ref: '#/components/schemas/AccountType'
         division_id:
           $ref: '#/components/schemas/DivisionID'
+        centralizer:
+          $ref: '#/components/schemas/IsCentralizer'
     AvailableCreditLimit:
       type: number
       format: float
@@ -2227,7 +2236,9 @@ components:
       example: Sam Smith
     Children:
       type: array
-      description: Array of children and grandchildren account numbers
+      description: >-
+        Array of up to 3 levels of descendant account numbers (children,
+        grandchildren, and great-grandchildren)
       items:
         type: integer
         format: int64
@@ -2430,6 +2441,16 @@ components:
         - properties:
             company_constitution_date:
               $ref: '#/components/schemas/CompanyConstitutionDate2'
+            is_owner:
+              type: boolean
+              description: >-
+                Is the customer the account owner (`true`) or an additional
+                customer (`false`).
+              example: false
+            is_active:
+              type: boolean
+              description: Is the customer active (`true`) or not (`false`).
+              example: true
     CompanyResponse:
       allOf:
         - $ref: '#/components/schemas/Company'
@@ -2515,7 +2536,11 @@ components:
       example: '986'
     IsCentralizer:
       type: boolean
-      description: Is this a centralizer account? Defaults to `false`.
+      description: >-
+        Is this a centralizer account? A centralizer account, within the account
+        hierarchy, is the account responsible for invoice billing. Defaults to
+        `false`.
+      default: false
       example: false
     CurrentBalance:
       type: number
@@ -3612,6 +3637,14 @@ components:
               $ref: '#/components/schemas/BirthDate'
             document_issued_date:
               $ref: '#/components/schemas/DocumentIssuedDate'
+            is_owner:
+              type: boolean
+              description: Is customer the account owner?
+              example: false
+            is_active:
+              type: boolean
+              description: Is customer active?
+              example: true
     PersonResponse:
       allOf:
         - $ref: '#/components/schemas/Person'
@@ -3647,13 +3680,6 @@ components:
       type: string
       maxLength: 5
       example: '555'
-    PhoneCountryCode2:
-      type: integer
-      description: Phone number country code
-      minimum: 0
-      maximum: 99999
-      example: 38
-      default: 55
     PhoneDate:
       type: string
       description: Phone date creation. RFC 3339 format.
@@ -3743,7 +3769,7 @@ components:
         area_code:
           $ref: '#/components/schemas/AreaCode2'
         country_code:
-          $ref: '#/components/schemas/PhoneCountryCode2'
+          $ref: '#/components/schemas/PhoneCountryCode'
         extension:
           $ref: '#/components/schemas/PhoneExtension'
     PhoneSimpleItemResponse:
@@ -3806,7 +3832,7 @@ components:
         active:
           $ref: '#/components/schemas/PhoneActive'
         country_code:
-          $ref: '#/components/schemas/PhoneCountryCode2'
+          $ref: '#/components/schemas/PhoneCountryCode'
     PostalAddressType:
       type: integer
       format: int64
@@ -4256,17 +4282,6 @@ components:
               $ref: '#/components/schemas/CustomerIsActive'
             email:
               $ref: '#/components/schemas/IndividualsEmailAddress'
-    AccountGoliveRequest:
-      type: object
-      description: Account go-live information
-      required:
-        - account_id
-        - account_status
-      properties:
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        account_status:
-          $ref: '#/components/schemas/AccountStatusName2'
     ValidationErrorField:
       type: string
       description: Non-valid field
@@ -5686,6 +5701,15 @@ paths:
                 Account not found:
                   value:
                     message: Account not found
+                Customer not found:
+                  value:
+                    message: Customer not found.
+                Person details not found:
+                  value:
+                    message: Person details not found.
+                Company details not found:
+                  value:
+                    message: Company details not found.
         '500':
           description: Internal server error
           content:
@@ -5775,7 +5799,6 @@ paths:
         - Addresses
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
-        - $ref: '#/components/parameters/AddressActiveQuery'
       requestBody:
         description: Address entity
         required: true
@@ -5885,6 +5908,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AddressResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleError'
+              examples:
+                Invalid path parameter:
+                  value:
+                    message: Invalid request
+        '404':
+          description: Address not found or inactive for the given account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleError'
+              examples:
+                Not found:
+                  value:
+                    message: Address not found for this account
         '500':
           description: Internal server error
           content:
@@ -5892,9 +5935,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SimpleError'
               examples:
-                Internal server error:
+                Invalid path parameter:
                   value:
-                    message: Error retrieving address
+                    message: Invalid request
     patch:
       operationId: patch-accounts-v1-accounts-accountId-addresses-addressId
       summary: Update address
@@ -6054,7 +6097,7 @@ paths:
       summary: Get phone
       description: >
 
-        Pass an account ID and phone ID to get a phone number.
+        Get a phone number.
 
 
         To get a list of phone IDs, call [List
@@ -6170,6 +6213,15 @@ paths:
         This endpoint generates an [Account entity
         updated](https://developers.pismo.io/events/docs/audit-entity-change-1)
         event.
+
+
+        If the `customer.is_owner` property is set to `true`:
+          - The account owner is changed to this new customer, and all existing customers remain active in the account.
+          - This endpoint generates an [Account owner changed](https://developers.pismo.io/events/docs/account-owner-change-1) event.
+
+        If `customer.is_active = true`, and the **Maximum number of card
+        holders** program parameter is set, this customer is counted in the
+        limit of maximum number of card holders for an account.
       operationId: customerV1patch
       tags:
         - Customers
@@ -6668,6 +6720,104 @@ paths:
                   message:
                     type: string
                     example: Found an error when trying to migrate program
+  /accounts/v4/accounts/{accountId}/hierarchy/ascendants:
+    get:
+      operationId: get-accounts-v4-accounts-accountId-hierarchy-ascendants
+      summary: Get account hierarchy ascendants
+      description: >
+        Get account hierarchy information including all parent/ancestor
+        accounts.
+
+
+        This endpoint returns the account details along with an array of all
+        parent accounts in the hierarchy, with each parent containing
+        information about its level, centralizer status, and relationship to
+        other accounts in the hierarchy.
+      tags:
+        - Accounts
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountHierarchyResponse'
+              examples:
+                Account with hierarchy:
+                  value:
+                    account_id: 123
+                    name: John Doe
+                    document_number: '31457828046'
+                    customer_id: 456
+                    social_name: Johnny
+                    entity_id: 789
+                    program_id: 100
+                    status: NORMAL
+                    postal_address_id: 111
+                    creation_datetime: '2021-07-21T17:32:28Z'
+                    external_id: 8c8a4dd7-e48f-4c15-85b7-9d12f401057f
+                    account_type: PHYSICAL
+                    account_name: Main Account
+                    division_id: 222
+                    currency_numeric_code: '986'
+                    parents:
+                      - account_id: 124
+                        is_centralizer: false
+                        level: 1
+                        parent_account_id: 125
+                        currency_numeric_code: '986'
+                        program_id: 100
+                        division_id: 222
+                      - account_id: 125
+                        is_centralizer: true
+                        level: 2
+                        parent_account_id: 8675309
+                        currency_numeric_code: '986'
+                        program_id: 100
+                        division_id: 222
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              examples:
+                Invalid account ID:
+                  value:
+                    code: EACC0005
+                    message: One or more parameters with invalid format
+                    detail:
+                      parameters:
+                        - field: accountId
+                          message: Value must be a valid integer
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              examples:
+                Account not found:
+                  value:
+                    code: WACC0017
+                    message: Account not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              examples:
+                Timeout execution:
+                  value:
+                    code: EACC0000
+                    message: Timeout while executing the request
+                Generic message:
+                  value:
+                    code: EACC9999
+                    message: Something went wrong, please try again later
   /accounts/v1/account-status:
     get:
       summary: List statuses V1 (deprecated)

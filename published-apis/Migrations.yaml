@@ -202,8 +202,8 @@ components:
           type: number
           minimum: 0
           description: >-
-            Pre-arbitration amount being disputed. **Required** when
-            `pre_arb_is_partial = true`.
+            Pre-arbitration amount being disputed. **REQUIRED** when
+            `pre_arb_is_partial` = `true`.
           example: 30
     FeeModelAccountV1Request:
       title: Account fee model migration
@@ -294,68 +294,67 @@ components:
           properties:
             id:
               type: string
-              description: Unique migration ID
+              description: Migration ID
               maxLength: 255
               example: a-unique-plan-id
             version_date:
               $ref: '#/components/schemas/VersionDate'
-        number_of_cycles:
-          type: integer
-          description: Number of cycles the plan should generate charges for.
-          example: 12
-        split_transaction:
-          type: boolean
-          description: >-
-            Apply the Recurring Charge amount in a split transaction? When
-            false, split the amount into separate transactions with the full
-            `installment_amount` ("primary transaction") and the discount value
-            ("secondary transaction").
-          example: true
         description:
           type: string
-          description: >-
-            Description for the recurring charge transactions. If
-            `split_transaction` is set to `true`, this is used as the
-            description for the primary transaction. Use the placeholder
-            `{counter}` to indicate where the cycle count should be placed (for
-            example, `{counter} Annuity` generates a `2/12 Annuity` description
-            for the second of 12 installments).
+          description: >
+            Description for the recurring charge transactions. Use the
+            placeholder {counter} to indicate where the cycle count should be
+            placed. 
+
+
+            For example, `{counter} Annuity` generates `2/12 Annuity`.
           example: Additional Card Annuity {counter}
-        processing_code:
-          type: string
+        discount_percentage:
+          type: number
+          format: double
           description: >-
-            Processing code for recurring charge transactions. If
-            `split_transaction` is set to `true`, this is used as the processing
-            code for the primary transaction.
-          example: '220042'
+            Percentage value to be discounted if `first_cycles_to_discount` is
+            configured. Typically, a number from 0 to 100.
+          example: 12.5
+        first_cycles_to_discount:
+          type: integer
+          description: >-
+            Number of cycles the `discount_percentage` is applied to before
+            reverting to the full charge. This value must be less than
+            `number_of_cycles`.
+          example: 3
         installment_amount:
           type: number
+          format: double
           description: >-
             Full amount of a recurring charge installment before any discount is
             applied
           example: 500.61
-        first_cycles_to_discount:
-          type: integer
-          description: >-
-            Number of cycles the discount (defined by `discount_percentage`)
-            should be applied to before reverting to the full charge. This value
-            should be between `0` and `number_of_cycles`, if present.
-          example: 3
-        discount_percentage:
-          type: number
-          description: >-
-            Percentage value to be discounted if `first_cycles_to_discount` is
-            configured.
-          example: 12.5
         minimum_spend_to_charge:
           type: number
-          description: Minimum debit amount on statement to enable cycle charging.
+          format: double
+          description: >-
+            Minimum debit amount on statement to enable cycle charging. If not
+            configured, the charge plan does not check the debit statement
+            amount.
           example: 100
+        number_of_cycles:
+          type: integer
+          description: >-
+            Number of cycles for which the plan generates charges. Must be
+            greater than `first_cycles_to_discount`.
+          example: 12
+        processing_code:
+          type: string
+          description: >-
+            Transaction processing code. If `split_transaction` is `true`, this
+            is the processing code for the debit (primary) transaction.
+          example: '220042'
         renew_method:
           type: string
           description: >-
-            Whether to automatically renew the recurring charge plan at the end
-            of the cycle.
+            Renewal method. Options to automatically renew the recurring charge
+            plan at the end of the cycle.
           enum:
             - NO_RENEW
             - WITHOUT_DISCOUNT
@@ -364,8 +363,9 @@ components:
         secondary_description:
           type: string
           description: >-
-            Description for the secondary transaction, when `split_transaction`
-            is set to `true`.
+            Description for the credit (secondary) transaction, created when
+            `split_transaction` is set to `true`. For example, use `Annual Plan
+            Discount {counter}` to indicate cycle count placement.
           example: Annual Plan Discount
         secondary_processing_code:
           type: string
@@ -373,6 +373,18 @@ components:
             Processing code used to create the secondary transaction, when
             `split_transaction` is set to `true`.
           example: '200032'
+        split_transaction:
+          type: boolean
+          description: >
+            Split transaction for the recurring charge amount? 
+
+
+            Controls how installment amount and discounts are applied in each
+            cycle. If `false`, a single debit transaction for the net amount is
+            posted. If `true`, separate debit and credit transactions are
+            posted. These consist of the full `installment_amount` (primary
+            transaction) and the discount value (secondary transaction).
+          example: true
     PostRecurringChargeLinksV1Request:
       title: Recurring charge link migrations
       type: object
@@ -413,20 +425,40 @@ components:
       properties:
         migration_id:
           type: string
-          description: Record identifier for migration.
+          description: >-
+            Link migration ID. ID for the relationship link between account and
+            plan.
           example: a-unique-migration-id
         migration_version:
           type: string
           format: datetime
           description: >-
-            Record identifier for update data. Valid format
-            (`yyyy-MM-ddTHH:mm:ss.sssZ`).
+            Migration date for updated data. Valid format
+            (`yyyy-MM-ddTHH:mm:ssZ`).
           example: '2021-09-13T19:54:41Z'
+        description:
+          type: string
+          description: >-
+            Description of the scheduled charge that's linked to the account.
+            Use {counter} to specify where the cycle count should be placed. For
+            example, the `Annuity {counter}` generates `Annuity 2/12` for the
+            second of twelve annuities. If {counter} has not passed, it is
+            placed at the end of the description. If no description is passed,
+            the transaction type's description is used and the counter is not
+            shown.
+          maxLength: 100
+          example: Account-Specific Annuity Fee
+        post_installment_charge_on_current_cycle:
+          type: boolean
+          description: >-
+            Apply the recurring charge on the current account cycle? If `false`,
+            charges are applied in the next account cycle.
+          example: false
         recurring_charge_plan_id:
           type: integer
           description: >-
             ID of the recurring charge plan to link to the account. When this
-            field is defined, the value in `recurring_charge_plan_migration_id`
+            field is passed, the value in `recurring_charge_plan_migration_id`
             is ignored.
           example: 123321
         recurring_charge_plan_migration_id:
@@ -434,52 +466,31 @@ components:
           description: >-
             Migration ID of the recurring charge plan to link to the account, in
             cases where the plan was also migrated. Either this field or
-            `recurring_charge_plan_id` should be provided.
-          example: a-unique-plan-id
-        description:
-          type: string
-          description: >-
-            Description for the recurring charge transactions. If set, this
-            overrides the `description` defined in the recurring charge plan
-          example: Account-Specific Annuity Fee
-        post_installment_charge_on_current_cycle:
-          type: boolean
-          description: >-
-            Apply the recurring charge on the current account cycle? When false,
-            apply charge in the next account cycle.
-          example: false
-        start_installment_charge_in:
-          type: integer
-          description: >-
-            Indicates in which installment to start applying the charge. It
-            should be greater than the current account cycle, and smaller than
-            the `number_of_cycles` defined in the plan.
-          example: 6
+            `recurring_charge_plan_id` is **REQUIRED**.
+          maxLength: 255
+          example: migration-plan-id
         renew:
           type: boolean
           description: Renew link automatically after the last cycle?
           default: false
           example: true
+        start_installment_charge_in:
+          type: integer
+          description: >-
+            The installment at which charges begin. For example, if
+            `start_installment_charge_in` is `3`, the charge is applied starting
+            with cycle 3. It's not applied to cycles 1 and 2. If
+            `post_installment_charge_on_current_cycle` is `true`,
+            `start_installment_charge_in` should be `null`. If `false`, it must
+            be greater than or equal to the current cycle and less than or equal
+            to `number_of_cycles`.
+          example: 6
     AccountsV2Request:
       title: Account migrations (v2)
       required:
         - applicant
-        - migration
       type: object
       properties:
-        due_date_id:
-          type: integer
-          description: >-
-            ID of account due date. **REQUIRED** for credit accounts. Uses a
-            value returned from the [Get program due
-            dates](ref:getprogramduedates) endpoint.
-          example: 101010
-        program_id:
-          type: integer
-          description: >-
-            Account's program ID. Must be a program ID previously configured on
-            the Pismo platform.
-          example: 1234
         applicant:
           type: object
           description: >
@@ -488,12 +499,15 @@ components:
             business accounts). Pass one or the other but not both.
           required:
             - document_number
+            - migration
           properties:
             document_number:
               type: string
               description: Document number
               maxLength: 60
               example: '111111111'
+            migration:
+              $ref: '#/components/schemas/AccountsV2Migration'
             birth_date:
               type: string
               format: date
@@ -518,14 +532,191 @@ components:
               $ref: '#/components/schemas/AccountsV2Company'
             account:
               $ref: '#/components/schemas/AccountsV2Account'
-            migration:
-              $ref: '#/components/schemas/AccountsV2Migration'
-        metadata:
-          type: object
-          description: Account metadata
-          example:
-            key1: value1
-            key2: value2
+            due_date_id:
+              type: integer
+              format: int32
+              description: >-
+                Account due date ID. **REQUIRED** for credit accounts. Uses a
+                value returned from the [Get program due
+                dates](ref:getprogramduedates) endpoint.
+              example: 101010
+            metadata:
+              type: object
+              description: >
+                Account metadata
+
+
+                **Note**: This field must not be used to send Personally
+                Identifiable Information (PII), Payment Card Industry (PCI)
+                data, or any sensitive/regulated information. Metadata fields
+                are intended for operational, non-sensitive data only. For
+                sensitive data, use the specific parameters designed for that 
+                purpose. For more information, refer to [Get started with Pismo
+                APIs](ref:get-started-with-pismo-apis).
+              example:
+                key1: value1
+                key2: value2
+            program_id:
+              type: integer
+              format: int32
+              description: >-
+                Account's program ID. Must be a program ID previously configured
+                on the Pismo platform.
+              example: 1234
+            corporate_account:
+              $ref: '#/components/schemas/AccountsV2Corporate'
+    AccountsV2Corporate:
+      type: object
+      description: null
+      required:
+        - account_creation_datetime
+        - currency_code
+        - division_code
+      properties:
+        account_creation_datetime:
+          type: string
+          format: datetime
+          description: >
+            Date-time the account was created (in UTC). The date-time format
+            follows the ISO 8601 standard. Format = `yyyy-MM-ddTHH:mm:ss.sssZ`. 
+          example: 2025-02-01T22:07:58:000Z
+        currency_code:
+          type: string
+          description: >
+            Alphabetic or numeric code (ISO 4217) for the currency used by the
+            account
+          maxLength: 3
+          example: '986'
+        division_code:
+          type: string
+          description: >
+            Code used to identify your division within the organization.
+            Division code should only contain letters, numbers, and hyphens.
+          maxLength: 36
+          example: US
+        inactive_since:
+          type: string
+          format: datetime
+          description: Mandatory only if the account is in a dormant division/program
+          example: '2023-08-04T15:00:44.704Z'
+        account_status_update_date:
+          type: string
+          format: datetime
+          description: >
+            Update date of account status. Mandatory in case of status change.
+            If the `account_status_update_date` is not informed, the account
+            creation date will be returned.
+          example: '2025-06-09T13:45:01Z'
+        account_status_reason_ext_id:
+          type: string
+          description: External reason ID specifying account restrictions
+          maxLength: 120
+          example: DEBIT_ONLY
+        bank_statements:
+          type: array
+          description: null
+          items:
+            $ref: '#/components/schemas/BankStatements'
+    BankStatements:
+      type: object
+      properties:
+        available_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '50.55'
+        book_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: null
+        business_date:
+          type: date
+          format: float
+          description: >-
+            Account balance business date (YYYY-MM-DD). Date of the last balance
+            information.
+          example: '2023-06-22T00:00:00.000Z'
+        credit_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '0'
+        cycle_closing_time:
+          type: datetime
+          format: float
+          description: >-
+            Time of day the cycle closes for a division. This time follows the
+            timezone configured in division. You can find the division timezone
+            using the [Get division by
+            code](https://developers.pismo.io/pismo-docs/reference/get-division-by-code-v2)
+            endpoint.
+          example: '2025-09-10T19:59:59.999Z'
+        debit_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '0'
+        earmarked_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '0'
+        future_dated_credits_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '40'
+        future_dated_debits_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '0'
+        ledger_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '110'
+        overdraft_limit:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '40'
+        restricted funds:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+        uncleared_checks_balance:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+        uncleared_funds:
+          type: number
+          format: float
+          description: It's an option to send as "0" initially
+          maxLength: 100000000000000000
+          example: '40'
+        value_dated_balance:
+          type: number
+          format: float
+          description: >-
+            It's an option to send as "0" initially. If you are sending the
+            book_balance, send the `value_date_balance` with the same value on
+            both (21-Ago-25), for situations where historic balances are not
+            provided.
+          maxLength: 100000000000000000
+          example: '0'
     AccountsV2Personal:
       type: object
       description: >-
@@ -974,6 +1165,7 @@ components:
       required:
         - id
         - version_date
+        - status
       properties:
         id:
           type: string
@@ -1035,8 +1227,8 @@ components:
         status:
           type: string
           description: >-
-            Migration status of card. The platform does not consider embossing
-            on migrated cards since they are already issued.
+            Migration status. The platform does not consider embossing on
+            migrated cards since they are already issued.
           example: TO_MIGRATE
           enum:
             - TO_MIGRATE
@@ -1215,9 +1407,18 @@ components:
           example: 2025/12
         metadata:
           type: object
-          description: >-
+          description: >
             Metadata (free-form fields) formatted as a JSON object using any
             key-value pairs.
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key1: value1
             key2: value2
@@ -1334,9 +1535,7 @@ components:
           description: >
             Card's PIN block password with two available formats. The first
             format conforms to ISO-9564 Format 0 and must be encrypted using
-            Zone PIN Key (ZPK). The second format is a PIN offset. If you do not
-            provide a value in this field, Pismo generates a random password for
-            you.
+            Zone PIN Key (ZPK). The second format is a PIN offset.
         password_tries:
           type: string
           description: Cardholder password failure attempts, from 0 to 3.
@@ -1355,16 +1554,19 @@ components:
         pin_type:
           type: string
           description: >
-            Format used for the password. Can be either PINOFFSET_IBM3464 or
-            PINBLOCK_FORMAT0. When using PINOFFSET_IBM3464 you must use PIN
-            Verification Key (PVK) exchange. For PINBLOCK_FORMAT0 use Zone PIN
-            Key (ZPK) exchange.
-          default: PINBLOCK_FORMAT0
+            Format used for the password. Can be either `PINOFFSET_IBM3624` or
+            `PINBLOCK_FORMAT_0`. When using `PINOFFSET_IBM3624`, you must use
+            PIN Verification Key (PVK) exchange. For `PINBLOCK_FORMAT_0`, use
+            Zone PIN Key (ZPK) exchange.
+          enum:
+            - PINOFFSET_IBM3624
+            - PINBLOCK_FORMAT_0
+          default: PINBLOCK_FORMAT_0
         pin_validation_data:
           type: string
           description: >
-            **REQUIRED** if pinType = `PINOFFSET_IBM3464`. Format = "11 first
-            PAN digits + letter N".
+            **REQUIRED** if `pin_type` = `PINOFFSET_IBM3624`. Format = 11-digit
+            primary account number (PAN) + letter N.
           example: 59999900017N
         service_code:
           type: string
@@ -1423,9 +1625,18 @@ components:
           example: '2022-03-28'
         metadata:
           type: object
-          description: >-
+          description: >
             Accruals metadata (free-form fields) formatted as a JSON object
             using any key-value pairs.
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key1: value1
             key2: value2
@@ -1760,7 +1971,7 @@ components:
           example: '0100'
         network:
           type: string
-          description: Brand (such as Visa or Mastercard)
+          description: Card network used in the authorization (such as Visa or Mastercard)
           enum:
             - VISA
             - MASTERCARD
@@ -1769,18 +1980,9 @@ components:
         nsu:
           type: string
           description: >
-            Provides a DE Field 11 value that a message initiator assigns to
-            uniquely identify a transaction as NSU or STAN:
-
-            - **NSU** (Network Settlement Utility) tracks the flow of funds
-            between parties involved in a payment card transaction. Different
-            payment card networks could have their own NSU systems. For example,
-            Visa has VisaNet, Mastercard has BankNet, or the payment network
-            could have a third-party network.
-
-            - **STAN** (System Trace Audit Number) is a number (DE Field 11)
-            that the message initiator assigns to uniquely identify a
-            transaction.
+            Card network-assigned Network Settlement Utility (NSU) code for
+            approved payments. Used to track the flow of funds across payment
+            networks such as VisaNet or BankNet.
           maxLength: 6
           example: W12345
         pin_presence:
@@ -1904,17 +2106,24 @@ components:
           example: xF5E0
         metadata:
           type: object
-          description: >-
+          description: >
             Authorization metadata (key-value pairs) that accepts any values
             **except PCI data**. Maximum size is 1000 bytes.
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key1: value1
             key2: value2
         number_of_installments:
           type: integer
-          description: >-
-            Total number of installments related to the authorization that is
-            being migrated
+          description: Total number of installments in the current migration authorization
           default: 1
           example: 2
         pre_authorization:
@@ -1977,73 +2186,138 @@ components:
           properties:
             account_id:
               type: string
-              description: Record identifier for account migration
+              description: >-
+                Client-generated account ID. This value must match
+                `applicant.migration.id` from the [Migrate
+                accounts](https://developers.pismo.io/pismo-docs/reference/postaccountsv1)
+                endpoint.
               maxLength: 60
-              example: example_id_0123
+              example: 5a8ade4ee89a11eb9dd14b56d86f7a21
             id:
               type: string
               description: >
-                ID you provide for migrating on-us authorizations.
+                ID you generate for on-us authorizations
 
 
-                When you send two records with the same ID, the system only
-                creates the first record. Pismo's idempotence mechanism rejects
-                the second record **unless** the `version_date` is later than
-                the `version_date` of the first record.
+                **Note:** Using PCI or any other sensitive personal data for
+                migration ID poses serious security risks. This includes a
+                document number, PAN, or telephone number. For enhanced
+                security, use a hash for this field. (SHA-256 with salt is
+                recommended.)
               example: 5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21
             version_date:
               $ref: '#/components/schemas/VersionDate'
-            card_id:
-              type: string
-              description: >-
-                Record identifier for card migration. This is the ID for private
-                label cards.
-              example: example_id_0123
-            merchant_id:
-              type: string
-              description: Record identifier for merchant migration.
-              maxLength: 60
-              example: example_id_0123
-            original_authorization_id:
-              type: string
-              description: >-
-                Pismo migration ID assigned to a purchase. You send this ID when
-                requesting an on-us authorization for a cancellation.
-              example: example_id_0123
         authorization_code:
           type: string
           description: >-
             Alphanumeric code generated in an authorization request and assigned
             to the authorization response.
           example: R1CM3D
-        authorization_denial_code:
-          type: string
-          description: >-
-            Code for a denied authorization. **REQUIRED** if the authorization
-            is denied.
-          example: EX001
         authorization_response_code:
           type: string
           description: >
-            Authorization response code from the Pismo platform. For details,
-            refer to [Authorization validation rules for platform
-            operations](doc:authorization-validation-rules-for-platform-operations). 
-             `00`—Approved
-             `05`—Do not honor
-             `12`—Invalid transaction
-             `14`—Invalid card
-             `30`—Invalid format
-             `51`—Insufficient funds
-             `54`—Expired card
-             `55`—Invalid PIN
-             `57`—Action not permitted
-             `59`—Suspected fraud
-             `62`—Invalid account
-             `63`—Security violation
-             `75`—PIN tries exceeded
-             `92`—External system error
-             `96`—Internal system error
+            Possible platform-generated response codes returned after
+            authorization is processed.
+             `00`—Successfully authorized 
+             `01`—Account not permitted
+             `02`—Processing code not permitted
+             `03`—Authorization denied by flex controls
+             `04`—Insufficient funds
+             `05`—Authorization denied by anti-fraud system
+             `06`—Action not permitted
+             `98`—Request error
+             `99`—Internal platform error
           example: '00'
+        contract_amount:
+          type: number
+          description: Total authorized amount, including fees
+          example: 15
+        currency:
+          type: string
+          description: Requested authorization currency code (ISO 4217)
+          example: USD
+        datetime_utc:
+          format: date-time
+          type: string
+          description: Original authorization date (UTC). Format = YYYY-MM-DDThh:mm:ssZ
+          example: '2021-09-13T19:54:41Z'
+        destination_currency:
+          type: string
+          description: >-
+            Authorized transaction converted to the target currency. This is
+            either a 3-character alphabetic or numeric operation currency code
+            (ISO-4217).
+          example: BRL
+        entry_mode:
+          type: string
+          description: >
+            Method used to capture card data during the authorization process.
+            This field is **REQUIRED** for OnUs transactions. Values typically
+            include:
+
+            `01`—Chip
+
+            `02`—Magnetic stripe read
+
+            `05`—Manual entry
+          example: '01'
+        local_amount:
+          type: number
+          description: Authorization amount in local currency
+          example: 10
+        number_of_installments:
+          type: integer
+          description: Total number of installments related to the migrated authorization
+          example: 1
+        payment_datetime:
+          format: date-time
+          type: string
+          description: >-
+            Payment date and time (UTC). Determines eligibility for time-based
+            cancellations. Format = yyyy-MM-ddTHH:mm:ssZ
+          example: '2021-09-13T19:54:41Z'
+        principal_amount:
+          type: number
+          description: Total authorized amount (excluding fees)
+          example: 15
+        processing_code:
+          type: string
+          description: >
+            Pismo **processing code** (custom alphanumeric identifier that
+            defines how the platform handles a certain financial operation
+            type).
+
+
+            Processing codes are integral to the transactions flow on the Pismo
+            platform. The platform uses predefined processing codes to evaluate
+            and process operations. For more information, refer to [Processing
+            codes](doc:processing-codes-and-transaction-types).
+
+
+            **Note:** Check that your computer is already parameterized on the
+            platform before sending the authorization.
+          example: '00'
+        tracking_id:
+          type: string
+          description: >
+            ID you provide for authorizations
+
+
+            This field is **REQUIRED** to guarantee the idempotency of a
+            request. Requests that use the same `tracking_id` are considered the
+            same. If `tracking_id` is not passed, each request is treated as a
+            new one.
+
+
+            A tracking ID is also used after migration for cancellations and
+            confirmations.
+          example: example_id_0123
+        authorization_denial_code:
+          type: string
+          description: >-
+            Code for a denied authorization. This is **REQUIRED** if the
+            authorization is denied.
+          example: EX001
         authorization_status_id:
           type: integer
           format: int64
@@ -2056,40 +2330,32 @@ components:
             `6`—CANCEL AUTHORIZATION
             `7`—PRE-AUTHORIZATION
           example: 2
-        contract_amount:
-          type: number
-          description: Total authorized amount (including fees)
-          example: 15
-        currency:
+        card_id:
           type: string
-          description: Requested authorization currency code (ISO 4217)
-          example: USD
+          description: >
+            Record ID for card migration. This is the ID for private label
+            cards.
+
+
+            **Note:** Using PCI or any other sensitive personal data for
+            migration ID poses serious security risks. This includes a document
+            number, PAN, or telephone number. For enhanced security, use a hash
+            for this field (SHA-256 with salt is recommended).
+          example: example_id_0123
         custom_response_code:
           type: string
           description: >-
             Custom response code for the authorization such as `FL1` for
             referral authorization
           example: FL1
-        datetime_utc:
-          format: datetime
-          type: string
-          description: Original authorization date (UTC)
-          example: '2021-09-13T19:54:41Z'
         description:
           type: string
           description: Authorization description
           example: Payment
-        destination_currency:
+        installments_plan:
           type: string
-          description: Target currency converted for the authorized transaction (ISO 4217)
-          example: BRL
-        entry_mode:
-          type: string
-          description: >
-            POS Terminal PAN Entry Mode to indicate method to initiate a
-            transaction (DE 22 subfield 1) such as `01` manual, `05` chip, `07`
-            contactless, `10` ecommerce, or `81` ecommerce CAVV.
-          example: '01'
+          description: ID of the installment plan used to calculate this purchase
+          example: R1CM3D
         installments_details:
           type: array
           description: >-
@@ -2098,12 +2364,6 @@ components:
           items:
             type: object
             properties:
-              number:
-                type: integer
-                description: >-
-                  Installment number. Used with `number_of_installments` to
-                  identify which installment this is.
-                example: 2
               amortization_amount:
                 type: number
                 description: Amortization amount related to this installment.
@@ -2114,41 +2374,66 @@ components:
                   Amount of this installment. **Note:** Total contract purchase
                   amount is the sum total of all installment amounts.
                 example: 111
-              principal_amount:
+              number:
                 type: number
                 description: >-
-                  Total amount of the authorization after calculation, excluding
-                  any fees.
+                  Installment number. Used with `number_of_installments` to
+                  identify which installment this is.
+                example: 2
+              principal_amount:
+                type: number
+                description: Installment amount without the addition of any fees
                 example: 111
-        installments_plan:
-          type: string
-          description: ID of the installment plan used to calculate this purchase
-          example: R1CM3D
-        local_amount:
-          type: number
-          description: Authorization amount in local currency
-          example: 10
+        ledger_impact:
+          deprecated: true
+          type: array
+          description: >
+            Limits impacted by the ledger during the authorization
+
+
+            **Note:** This is a legacy field. Use the `ledger_updates` array
+            instead.
+          items:
+            type: string
+            example: AVAILABLE_INSTALLMENT_LIMIT
         marketplace_id:
           type: integer
           format: int64
           description: Marketplace ID associated with the merchant
           example: 123
+        merchant_id:
+          type: string
+          description: >-
+            Merchant ID associated with the authorization (in case it was not
+            created via migration)
+          maxLength: 60
+          example: example_id_0123
         metadata:
           type: object
-          description: Authorization metadata
+          description: >
+            Any valid JSON (free-form field) formatted as a JSON object using
+            any key-value pairs.
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key1: value1
             key2: value2
         mti:
           title: Message Type Identifier
           type: string
-          description: |
-            Authorization ISO 8583 MTI (message type indicator):
-             `0100`—Purchase
-             `0120`—Purchase advice
-             `0200`—Debit purchase
+          description: >
+            Identifies the type of authorization being migrated. Either
+            authorization, cancellation, or confirmation request.
+             `0100`—Authorization 
              `0400`—Cancellation
-             `0420`—Cancellation advice
+             `0202`—Confirmation
           example: '0100'
         network:
           type: string
@@ -2167,40 +2452,18 @@ components:
             approved.
 
 
-            NSU (Network Settlement Utility) tracks the flow of funds between
+            A NSU (Network Settlement Utility) tracks the flow of funds between
             parties involved in a payment card transaction. Different payment
             card networks could have their own NSU systems. For example, Visa
-            has VisaNet, Mastercard has BankNet, or the payment network could
-            have a third-party network.
+            has VisaNet, Mastercard has BankNet, or it could be a third-party
+            network.
           example: W123456
-        number_of_installments:
-          type: integer
-          description: Total number of installments related to the migrating authorization
-          default: 1
-          example: 10
-        payment_datetime:
-          format: date-time
+        original_authorization_id:
           type: string
-          description: Payment date (UTC)
-          example: '2021-09-13T19:54:41Z'
-        principal_amount:
-          type: number
-          description: Total authorized amount (excluding fees)
-          example: 15
-        processing_code:
-          type: string
-          description: >
-            Pismo **processing code** (custom alphanumeric identifier that
-            defines how the platform handles a certain financial operation
-            type).
-
-
-            Processing codes are integral to the transactions flow on the Pismo
-            platform. The platform uses predefined processing codes to evaluate
-            and process operations. For more information, refer to [Processing
-            codes and transaction
-            types](doc:processing-codes-and-transaction-types).
-          example: '00'
+          description: >-
+            Pass this field if the authorization is a cancellation. The value
+            must be the cancelled purchase's original migration ID.
+          example: example_id_0123
         terminal_id:
           type: string
           description: >-
@@ -2209,26 +2472,17 @@ components:
           example: '123'
         tid:
           type: string
-          description: Transaction ID. This is the external ID from the network.
+          description: Network transaction ID
           example: '123'
-        tracking_id:
-          type: string
+        update_limit:
+          type: boolean
           description: >
-            ID you provide for authorizations. If not provided, the Pismo
-            platform generates one. This field is useful for tracking and
-            searching transaction information.
+            Should the authorization affect the account's credit limit?
 
 
-            - This field is **REQUIRED** to guarantee the idempotency of a
-            request. Requests that use the same `tracking_id` are considered the
-            same. If `tracking_id` is not received, each request is treated as a
-            new one.
-
-
-            - A tracking ID also is used after migration for cancellations and
-            confirmations. Make sure to send the `tracking_id` that matches the
-            transaction you intend to reference.
-          example: example_id_0123
+            **Note:** Only set this to `true` in specific scenarios. Before you
+            enable this option, contact your Pismo representative for guidance.
+          default: false
     PostCustomersV1Request:
       title: Customer migrations
       type: object
@@ -2339,11 +2593,6 @@ components:
         - migration
         - type
       properties:
-        type:
-          type: string
-          description: >
-            Accounts go-live. For more information, refer to the [Migrations
-            overview](doc:migrations-overview#pre-go-live-and-go-live) guide.
         migration:
           type: object
           description: Applicant additional migration information
@@ -2362,21 +2611,31 @@ components:
 
                 **Important:** Calling the [Migrate accounts
                 Go-live](ref:postgolivev1) endpoint migrates every account that
-                has this phase ID. For each successfully migrated account, the
-                operation changes its status to `MIGRATED`.
+                has this phase ID.
               maxLength: 60
               example: Rollout_Jan2025
             status:
               type: string
               description: >-
-                Migration status of card. The platform does not consider
-                embossing on migrated cards since they are already issued.
-                Typically set to either `TO_MIGRATE` or `MIGRATING`.
+                Account migration status. When present, go-live only proceeds
+                for accounts with this status, so it must match the status of
+                the previous account migration. Typically set to either
+                `TO_MIGRATE` or `MIGRATING`.
               enum:
                 - TO_MIGRATE
                 - MIGRATING
-                - MIGRATED
                 - NOT_MIGRATE
+              example: TO_MIGRATE
+        type:
+          type: string
+          description: >
+            Accounts go-live domain type. For more information, refer to the
+            [Migrations
+            overview](doc:migrations-overview#pre-go-live-and-go-live) guide.
+            Note that `PCI_CARD` type is deprecated.
+          enum:
+            - ACCOUNT
+          example: ACCOUNT
     PostMerchantsV1Request:
       title: Merchant migrations
       type: object
@@ -2400,10 +2659,10 @@ components:
             id:
               type: string
               description: >-
-                Unique external ID for the merchant. To ensure idempotency, when
-                you send two merchant records with the same ID, the system
-                rejects the second record **unless** you send a `version_date`
-                that is later than the first record's `version_date`.
+                Merchant ID. To ensure idempotency, when you send two merchant
+                records with the same ID, the Pismo platform rejects the second
+                record **unless** you send a `version_date` that is later than
+                the first record's `version_date`.
               maxLength: 255
               example: 5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21
             version_date:
@@ -2570,7 +2829,17 @@ components:
               example: ACCOUNT
         metadata:
           type: object
-          description: Merchants's metadata
+          description: >
+            Merchants's metadata
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             merchant_form_on_us: false
             key2: value2
@@ -2591,30 +2860,22 @@ components:
             authorization_id:
               type: string
               description: >
-                Record identifier for the on-us authorization migration. All
-                transactions from the same contract must have the same
-                `authorization_id`. If an authorization ID does not exist when
-                you migrate a transaction record, Pismo creates one for
-                you.<br><br>
-
-                A contract comprises all transactions (or installments) in a
-                purchase. When you migrate a transaction record, make sure that
-                all transactions in a contract have the same `authorization_id`.
+                ID for OnUs authorization. This must be the same ID used in OnUs
+                authorization migration.
               example: authorization-migration-id
             id:
               type: string
-              description: >
-                ID you generate for a merchant transaction. When you send two
-                merchant records with the same ID, the system rejects the second
-                record **unless** you send a later `version_date` than the first
-                record's `version_date` to ensure idempotency.
+              description: |
+                Client-generated ID for a merchant transaction
               maxLength: 255
-              example: merchant-transaction-id
+              example: merchantid
             version_date:
               $ref: '#/components/schemas/VersionDate'
             merchant_id:
               type: string
-              description: A record identifier for the merchant.
+              description: >-
+                Client-generated ID for the merchant. This must be the same ID
+                used in merchant migration.
               example: merchant-migration-id
             original_authorization_id:
               type: string
@@ -2645,8 +2906,8 @@ components:
           type: string
           description: >
             Merchant's external terminal ID previously saved on the Pismo
-            platform (the ID used during the marchant registration/setup
-            process).
+            platform (terminal registration flow). You must pass the terminal ID
+            if the terminal has relevance for the operation.
           maxLength: 50
           example: '1234567890'
         processing_code:
@@ -2664,7 +2925,9 @@ components:
           example: '00'
         transaction_amount:
           type: number
-          description: Transaction Amount
+          description: >-
+            Transaction amount. If the transaction is an installment, this value
+            must be the installment amount.
           example: 56.78
         mdr_amount:
           type: number
@@ -2681,11 +2944,13 @@ components:
           example: 1
         number_of_installments:
           type: integer
-          description: Total number of installments
+          description: Total number of installments related to the migrated authorization
           example: 1
         event_date:
           type: string
-          description: Transaction creation date and time (UTC format)
+          description: >-
+            Transaction creation date and time (UTC format). Format =
+            YYYY-MM-DDThh:mm:ssZ.
           format: datetime
           example: '2021-09-21T12:00:00Z'
         scheduled_payment_date:
@@ -2728,7 +2993,17 @@ components:
           example: 0.25
         metadata:
           type: object
-          description: Merchant's metadata
+          description: >
+            Merchant's metadata
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             merchant_form_on_us: false
             key2: value2
@@ -2814,7 +3089,17 @@ components:
           example: false
         metadata:
           type: object
-          description: Statements metadata
+          description: >
+            Statements metadata
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key1: value1
             key2: value2
@@ -2824,8 +3109,8 @@ components:
       required:
         - migration
         - principal_amount
-        - type
         - soft_descriptor
+        - type
       properties:
         migration:
           type: object
@@ -2898,6 +3183,17 @@ components:
               enum:
                 - INSTANT_PAYMENT
               example: INSTANT_PAYMENT
+        soft_descriptor:
+          type: string
+          description: >
+            Human-readable description that identifies the transaction. For an
+            installment purchase, this usually is the **merchant name**, the
+            **city/state**, and the **installment number**. For example, the
+            value `Wellmart NYC 2/4` indicates the merchant is `Wellmart`, the
+            transaction was made in `New York City`, and it is installment `2`
+            of `4`.
+          maxLength: 25
+          example: Wellmart NYC 2/4
         type:
           type: string
           description: >
@@ -2931,16 +3227,6 @@ components:
             - INSTANT_PAYMENT
             - STORED
           example: BILLED
-        soft_descriptor:
-          type: string
-          description: >
-            Human-readable description that identifies the transaction. For an
-            installment purchase, this usually is the **merchant name**, the
-            **city/state**, and the **installment number**. For example, the
-            value `Wellmart NYC 2/4` indictes the merchant is `Wellmart`, the
-            transaction was made in `New York City`, and it is installment `2`
-            of `4`.
-          example: Wellmart NY 2/4
         authorization_type:
           type: string
           description: >
@@ -3054,7 +3340,7 @@ components:
         number_of_installments:
           type: integer
           format: int32
-          description: Number of installments
+          description: Total number of installments related to the migrated authorization
           minimum: 1
           example: 5
         is_installment:
@@ -3251,7 +3537,17 @@ components:
           example: 0
         metadata:
           type: object
-          description: Transaction metadata
+          description: >
+            Transaction metadata
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key1: value1
             key2: value2
@@ -3417,7 +3713,9 @@ components:
           properties:
             account_id:
               type: string
-              description: Account migration ID
+              description: >-
+                ID for the account. Must match the ID used for account
+                migration.
               example: account-migration-id
             id:
               type: string
@@ -3476,24 +3774,41 @@ components:
                 example: CREDIT
               balance_amount:
                 type: number
-                description: |
-                  The balance amount is defined as follows:
-                      - If the migration occurs between the due date and cycle closing date, the `balance_amount` should refer to the current balance of the last closed statement "M-1" where the open statement is "M".
-                      - If the migration occurs between the cycle closing date and due date, the `balance_amount` should refer to the current balance of the last closed statement "M-2" where the open statement is "M".
-                      - If the account only has one closed statement (one cycle), you can pass `0` for the `balance_amount`.
+                format: double
+                description: >
+                  The `balance_amount` represents the customer's position based
+                  on the most recent due statement at the time of migration. Use
+                  the rules below to determine the correct value:
+
+                  - If the account has a statement between the due date and the
+                  cycle closing date at the time of migration:
+                    Consider the open statement as M (Migration) and use the current balance of the most recent statement (M-1 statement).
+                  - If the account has a statement between the cycle closing
+                  date and the due date:
+                    Consider the open statement as M (Migration) and use the current balance of the last statement (M-2 statements).
+                  - If the account has no due statements at the time of
+                  migration (for example, an account in its first statement
+                  cycle):
+                    Set `balance_amount` to 0.
                 example: 255.96
     TokensV1Request:
       title: Token migrations
       type: object
       required:
+        - expiry_date
         - migration
+        - network
+        - status
+        - tc_date_time
+        - token
+        - token_unique_ref
+        - wallet_identifier
       properties:
-        line_number:
+        expiry_date:
           type: string
-          description: >-
-            File line number (when using batch file import migration) that
-            indicates the line number in the file of the migrating entity.
-          example: '232'
+          description: Token expiration date. Format = YYMM
+          pattern: \d{4}
+          example: '1712'
         migration:
           type: object
           description: Applicant additional migration information
@@ -3503,115 +3818,148 @@ components:
             - phase_id
             - version_date
           properties:
-            id:
-              type: string
-              description: Record identifier for migration purposes
-              minLength: 1
-              example: 5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21
             card_id:
               type: string
-              description: Record identifier for card migration
+              description: >-
+                Card ID. Matches the `migration.id` value from the [Migrate
+                cards](ref:postcardsv1) endpoint.
               minLength: 1
               example: card-migration-id
+            id:
+              type: string
+              description: Record ID for migration purposes
+              minLength: 1
+              example: 93dd64fe-6819-4820-b776-aee0aad331
             phase_id:
               type: string
               description: >
                 Migration phase ID. Account migration usually is split into
                 multiple phases, where each phase has a unique ID. When
                 assigning a phase ID, you should use a name that is meaningful.
-                For example, `Feb2025_Phase_3_of_4`.
-
-
-                **Important:** The [Go-live](ref:postgolivev1) endpoint migrates
-                every account that has this phase ID. For each successfully
-                migrated account, the operation changes its status to
-                `MIGRATED`.
               minLength: 1
               maxLength: 60
               example: Feb2025_Phase_3_of_4
             version_date:
               $ref: '#/components/schemas/VersionDate'
-        payment_application_instance_id:
+        network:
           type: string
-          description: Identifier of payment application installed on device
-          minLength: 48
-          maxLength: 48
-          example: MTUwMjIyMDEwNjAwMzA3MDUz00J1VKm8QDQ7esDjkz0dnu4i
+          description: Product code of flag tokenization
+          minLength: 1
+          maxLength: 10
+          example: MDES
+        status:
+          type: string
+          description: Token status. Card status is not considered for token migration.
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - FAILED
+            - SUSPENDED
+            - DEACTIVATED
+          example: ACTIVE
+        tc_date_time:
+          type: string
+          format: datetime
+          description: >-
+            Date-time of token confirmation message (token creation). Format =
+            `yyyy-MM-ddTHH:mm:ssZ`
+          example: '2022-01-06T18:00:00Z'
+        token:
+          type: string
+          description: >-
+            MASTERCARD/VISA token ID. Not used for online authorizations, only
+            provisioning.
+          maxLength: 255
+          example: TOKEN-00000123123123123
+        token_unique_ref:
+          type: string
+          description: Brand network token ID
+          maxLength: 255
+          example: DSAPMC0000128257301397f527cb486988267a975ec78d9m
+        wallet_identifier:
+          type: string
+          description: |
+            Digital wallet identifier from the network
+            Examples: 
+            `40010036958` -PayPal
+            `40010075338` -Visa Checkout
+            `101` -Masterpass by Mastercard
+          minLength: 1
+          maxLength: 50
+          example: '101'
         card_holder_name:
           type: string
           description: >-
-            Identifies bearer name. In the wallet, the client is allowed to
-            change the name.
+            Cardholder name. Note that the client can customize the name
+            displayed in a wallet. For sandbox testing, pass `SKIP NETWORK CALL`
+            to bypass network validation.
           example: card_holder_name-value
+        correlation_id:
+          type: string
+          description: Tokenization request ID
+          minLength: 1
+          maxLength: 52
+        device_id:
+          type: string
+          description: Device identifier
+          minLength: 1
+          maxLength: 48
+        event_date_time:
+          type: string
+          description: >-
+            Date of last token status change or creation date if no changes
+            occurred. Format:`yyyy-MM-dd-HH.mm.ss.SSSSSS`
+          format: datetime
+          example: '2022-01-06T18:00:00Z'
+        line_number:
+          type: string
+          description: >-
+            File line number (when using batch file import migration) in the
+            migrating entity file.
+          example: '232'
+        metadata:
+          type: object
+          description: >
+            JSON format (free-form field)
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
+        pan_unique_ref:
+          type: string
+          description: PAN reference code
+          minLength: 1
+          maxLength: 255
+          example: FM4MMC0000128257de72f1876cf2420595c01161f10558a1
+        payment_application_instance_id:
+          type: string
+          description: Payment application ID installed on a device. Mastercard only.
+          minLength: 48
+          maxLength: 48
+          example: MTUwMjIyMDEwNjAwMzA3MDUz00J1VKm8QDQ7esDjkz0dnu4i
         token_type:
           type: string
-          description: Identifies the token type
+          description: >-
+            MASTERCARD/VISA token type. Not used for online authorizations, only
+            provisioning.
           enum:
             - HCE
+            - QRC
+            - '1'
+            - '5'
             - MASTERCARD_CLOUD_BASED_PAYMENTS
             - CARD_ON_FILE
             - ECOMMERCE
             - SECURE_ELEMENT
+            - EMBEDDED_SECURE_ELEMENT
+            - C
+            - S
           example: ECOMMERCE
-        token:
-          type: string
-          description: Identifies card token generated by MASTERCARD/VISA
-          maxLength: 255
-          example: TOKEN-00000123123123123
-        tc_date_time:
-          type: string
-          format: datetime
-          description: Identifies date-time of token confirmation message (token creation)
-          example: '2022-01-06T18:00:00Z'
-        token_unique_ref:
-          type: string
-          description: Identifies unique token reference code (sent by flag)
-          maxLength: 255
-          example: DSAPMC0000128257301397f527cb486988267a975ec78d9m
-        pan_unique_ref:
-          type: string
-          description: Identifies unique PAN reference code (from-to by flag)
-          minLength: 1
-          maxLength: 255
-          example: FAKEPANUNIQUEREFERENCE123456789
-        expiry_date:
-          type: string
-          format: date
-          description: Identifies token expiration date
-          pattern: \d{4}
-          example: '2017-12-01'
-        status:
-          type: string
-          description: Identifies token status
-          enum:
-            - ACTIVE
-            - INACTIVE
-            - SUSPENDED
-            - DELETED
-          example: ACTIVE
-        wallet_identifier:
-          type: string
-          description: Digital wallet identifier (from-to flag requestor token)
-          minLength: 1
-          maxLength: 50
-          example: wallet_identifier-value
-        network:
-          type: string
-          description: Product code of tokenization of flag
-          minLength: 1
-          maxLength: 10
-          example: MDES
-        event_date_time:
-          type: string
-          description: Date-time of event
-          format: datetime
-          example: '2022-01-06T18:00:00Z'
-        metadata:
-          type: object
-          description: Token extra data
-          example:
-            key1: value1
-            key2: value2
     PostDelinquencyBucketV1Request:
       title: Delinquency Bucket Migration
       type: object
@@ -3659,7 +4007,17 @@ components:
           example: 60
         metadata:
           type: object
-          description: Delinquency bucket metadata
+          description: >
+            Delinquency bucket metadata
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that  purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key1: value1
             key2: value2
@@ -3824,9 +4182,8 @@ paths:
     post:
       description: >
         **Go-live** is a process that happens at the end of a migration. After
-        migrating accounts, you must call the Go-live endpoint to mark all
-        migrated accounts active. The Pismo platform responds by changing the
-        migration status of each account to `MIGRATED`.
+        migrating accounts, you must call this Go-live endpoint to mark all
+        migrated accounts active.
 
 
         This endpoint generates an [Account go-live
@@ -4030,6 +4387,10 @@ paths:
         Go-live. This allows the platform to calculate retroactive accruals even
         if you did not perform daily accruals on your legacy platform. You also
         may split balances to indicate which ones are accruable and fineable.
+        When migrating balances, all transaction types must be configured. Refer
+        to [Setting transaction types to block accrual
+        charges](https://developers.pismo.io/pismo-docs/docs/configuring-transaction-types-to-not-accrue-charges)
+        for more information.
 
 
         This endpoint generates the following events:

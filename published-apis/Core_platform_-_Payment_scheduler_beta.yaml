@@ -132,7 +132,7 @@ components:
           type: string
           description: |
             Bank slip type.
-               - `COMPENSATION_FORM`: Bank slip was processed with this method. 
+               - `COMPENSATION_FORM`: Bank slip was processed with this method.
                - `DEALERSHIP`: Entity, such as a merchant, or individual, issued this bank slip.
           enum:
             - COMPENSATION_FORM
@@ -193,20 +193,9 @@ components:
         Date of schedule creation in the UTC-0 RFC3339 format. Format:
         YYYY-MM-DDTHH:mm:ss.sssZ.
       example: '2023-01-02T07:35:05.125Z'
-    Currency:
-      type: string
-      deprecated: true
-      description: >-
-        Three-letter currency code of the operation in ISO 4217. This field is
-        deprecated and scheduled for removal. Use `currency_code` instead. The
-        `currency_code` field takes precedence when both it and `currency` are
-        passed.
-      example: BRL
     CurrencyCode:
       type: string
-      description: >-
-        Three-letter currency code of the operation in ISO 4217. This field
-        takes precedence over the `currency` field.
+      description: Three-letter currency code of the operation in ISO 4217.
       example: BRL
     DayType:
       type: string
@@ -324,7 +313,20 @@ components:
       example: 5
     Metadata:
       type: object
-      description: Any key-value object with custom information
+      description: >
+        This optional user-defined key-value object field can be used with
+        external operations to provide additional context or supplementary
+        custom information for the operation. The Pismo platform does not
+        perform any validation or processing on this field.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
       example:
         any-key: any-value
     MigrationID:
@@ -342,6 +344,7 @@ components:
         - account_id
         - processing_code
         - amount
+        - currency_code
       properties:
         migration_id:
           $ref: '#/components/schemas/MigrationID'
@@ -355,8 +358,6 @@ components:
           $ref: '#/components/schemas/AccountID'
         amount:
           $ref: '#/components/schemas/Amount'
-        currency:
-          $ref: '#/components/schemas/Currency'
         currency_code:
           $ref: '#/components/schemas/CurrencyCode'
         processing_code:
@@ -396,7 +397,7 @@ components:
       type: object
       description: >-
         Any key-value object with custom information that must be passed forward
-        in the authorization flow. Used for internal purposes only.
+        in the Pismo authorization flow. Used for internal purposes only.
       example:
         any-key: any-value
     PreScheduleDetails:
@@ -410,6 +411,254 @@ components:
       description: List of pre-schedule requests to be created
       items:
         $ref: '#/components/schemas/PreScheduleRequest'
+    BulkSingleScheduleRequest:
+      type: object
+      description: Request to create multiple single schedules in bulk
+      required:
+        - schedules
+      properties:
+        defaults:
+          $ref: '#/components/schemas/BulkSingleScheduleDefaults'
+        schedules:
+          type: array
+          description: >-
+            List of schedules to create. Each schedule can override any default
+            value.
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/BulkSingleScheduleItem'
+    BulkSingleScheduleDefaults:
+      type: object
+      description: >-
+        Default values applied to all schedules in the request. Individual
+        schedules can override these values.
+      properties:
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        description:
+          $ref: '#/components/schemas/Description'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        schedule_details:
+          $ref: '#/components/schemas/BulkSingleScheduleDetailsDefault'
+        restrictions:
+          $ref: '#/components/schemas/Restrictions'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    BulkSingleScheduleDetailsDefault:
+      type: object
+      description: Default schedule details that can be applied to all schedules
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+        interval:
+          $ref: '#/components/schemas/Interval'
+        day_type:
+          $ref: '#/components/schemas/DayType'
+        start_date:
+          $ref: '#/components/schemas/StartDateTime'
+        end_date:
+          $ref: '#/components/schemas/EndDate'
+        retries:
+          $ref: '#/components/schemas/Retries'
+        allow_execution_after_day_change:
+          $ref: '#/components/schemas/AllowExecutionAfterDayChange'
+    BulkSingleScheduleItem:
+      type: object
+      description: >-
+        Individual schedule in the bulk request. Only `schedule_id` is required;
+        other fields use defaults or override them.
+      required:
+        - schedule_id
+      properties:
+        schedule_id:
+          $ref: '#/components/schemas/ScheduleID'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        description:
+          $ref: '#/components/schemas/Description'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        schedule_details:
+          $ref: '#/components/schemas/BulkSingleScheduleDetailsOverride'
+        restrictions:
+          $ref: '#/components/schemas/Restrictions'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    BulkSingleScheduleDetailsOverride:
+      type: object
+      description: Schedule details that override the defaults for this specific schedule
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+        interval:
+          $ref: '#/components/schemas/Interval'
+        day_type:
+          $ref: '#/components/schemas/DayType'
+        start_date:
+          $ref: '#/components/schemas/StartDateTime'
+        end_date:
+          $ref: '#/components/schemas/EndDate'
+        retries:
+          $ref: '#/components/schemas/Retries'
+        allow_execution_after_day_change:
+          $ref: '#/components/schemas/AllowExecutionAfterDayChange'
+    BulkTransferScheduleRequest:
+      type: object
+      description: Request to create multiple transfer schedules in bulk
+      required:
+        - schedules
+      properties:
+        defaults:
+          $ref: '#/components/schemas/BulkTransferScheduleDefaults'
+        schedules:
+          type: array
+          description: >-
+            List of transfer schedules to create. Each schedule can override any
+            default value.
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/BulkTransferScheduleItem'
+    BulkTransferScheduleDefaults:
+      type: object
+      description: >-
+        Default values applied to all transfer schedules in the request.
+        Individual schedules can override these values.
+      properties:
+        description:
+          $ref: '#/components/schemas/Description'
+        schedule_details:
+          $ref: '#/components/schemas/BulkTransferScheduleDetailsDefault'
+        strategy:
+          $ref: '#/components/schemas/Strategy'
+        transfer_defaults:
+          $ref: '#/components/schemas/BulkTransferDefaults'
+    BulkTransferScheduleDetailsDefault:
+      type: object
+      description: Default schedule details that can be applied to all transfer schedules
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+        interval:
+          $ref: '#/components/schemas/Interval'
+        day_type:
+          $ref: '#/components/schemas/DayType'
+        start_date:
+          $ref: '#/components/schemas/StartDateTime'
+        end_date:
+          $ref: '#/components/schemas/EndDate'
+        allow_execution_after_day_change:
+          $ref: '#/components/schemas/AllowExecutionAfterDayChange'
+    BulkTransferDefaults:
+      type: object
+      description: Default values for individual transfers within schedules
+      properties:
+        amount:
+          $ref: '#/components/schemas/Amount'
+        description:
+          $ref: '#/components/schemas/Description'
+        from_processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+        to_processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    BulkTransferScheduleItem:
+      type: object
+      description: >-
+        Individual transfer schedule in the bulk request. Only `schedule_id` and
+        `transfers` are required; other fields use defaults or override them.
+      required:
+        - schedule_id
+        - transfers
+      properties:
+        schedule_id:
+          $ref: '#/components/schemas/ScheduleID'
+        description:
+          $ref: '#/components/schemas/Description'
+        schedule_details:
+          $ref: '#/components/schemas/BulkTransferScheduleDetailsOverride'
+        strategy:
+          $ref: '#/components/schemas/Strategy'
+        transfers:
+          type: array
+          description: >-
+            List of transfers for this schedule. At least one transfer is
+            required.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/BulkTransferItemRequest'
+    BulkTransferScheduleDetailsOverride:
+      type: object
+      description: >-
+        Schedule details that override the defaults for this specific transfer
+        schedule
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+        interval:
+          $ref: '#/components/schemas/Interval'
+        day_type:
+          $ref: '#/components/schemas/DayType'
+        start_date:
+          $ref: '#/components/schemas/StartDateTime'
+        end_date:
+          $ref: '#/components/schemas/EndDate'
+        allow_execution_after_day_change:
+          $ref: '#/components/schemas/AllowExecutionAfterDayChange'
+    BulkTransferItemRequest:
+      type: object
+      description: >-
+        Individual transfer within a schedule. Account IDs in the `from` and
+        `to` fields are required; other fields can use defaults.
+      required:
+        - from
+        - to
+      properties:
+        amount:
+          $ref: '#/components/schemas/Amount'
+        description:
+          $ref: '#/components/schemas/Description'
+        from:
+          $ref: '#/components/schemas/BulkTransferFrom'
+        to:
+          $ref: '#/components/schemas/BulkTransferTo'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    BulkTransferFrom:
+      type: object
+      description: >-
+        Source of a transfer. `account_id` is required; `processing_code` can
+        use the default value.
+      required:
+        - account_id
+      properties:
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+    BulkTransferTo:
+      type: object
+      description: >-
+        Destination of a transfer. `account_id` is required; `processing_code`
+        can use the default value.
+      required:
+        - account_id
+      properties:
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
     PreScheduleRequest:
       type: object
       description: Request to create a new pre-schedule
@@ -419,6 +668,7 @@ components:
         - account_id
         - processing_code
         - amount
+        - currency_code
       properties:
         schedule_id:
           $ref: '#/components/schemas/ScheduleID'
@@ -428,8 +678,6 @@ components:
           $ref: '#/components/schemas/AccountID'
         amount:
           $ref: '#/components/schemas/Amount'
-        currency:
-          $ref: '#/components/schemas/Currency'
         currency_code:
           $ref: '#/components/schemas/CurrencyCode'
         processing_code:
@@ -539,8 +787,6 @@ components:
           $ref: '#/components/schemas/ProcessingCodes'
         amount:
           $ref: '#/components/schemas/Amount'
-        currency:
-          $ref: '#/components/schemas/Currency'
         currency_code:
           $ref: '#/components/schemas/CurrencyCode'
         restrictions:
@@ -711,7 +957,7 @@ components:
       description: >
         If the `strategy` field is not specified, you must provide the `amount`
         field for each transfer in the `transfers` array. The following strategy
-        types determine the transfer amounts when a strategy is specified. 
+        types determine the transfer amounts when a strategy is specified.
 
 
         - `SWEEP`: Transfers the entire balance from the child account to the
@@ -854,8 +1100,6 @@ components:
               $ref: '#/components/schemas/ProcessingCode'
             amount:
               $ref: '#/components/schemas/Amount'
-            currency:
-              $ref: '#/components/schemas/Currency'
             currency_code:
               $ref: '#/components/schemas/CurrencyCode'
             description:
@@ -957,6 +1201,65 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalServer'
+  /v1/schedules/bulk:
+    post:
+      summary: Create bulk single schedules
+      operationId: post-v1-create-bulk-single-schedules
+      description: >
+        Create multiple single schedules in a single request. This request
+        triggers an asynchronous process to create the schedules. Once
+        processing is complete, the [Bulk single schedules
+        created](https://developers.pismo.io/events/docs/scheduler-payments-bulk-scheduled-payments-1)
+        event is sent with the result of the operation.
+
+
+        This endpoint accepts a `defaults` object that can be used to set common
+        values for all schedules in the request. Individual schedules can
+        override any default value by specifying the field in their own
+        definition.
+
+
+        In some cases, due to errors and retries, execution of the scheduled
+        transaction might occur on the following day instead of the originally
+        scheduled date. To address this, the `allow_execution_after_day_change`
+        flag in `schedule_details` enables you to pre-authorize execution of the
+        scheduled transaction on the next day. This flag must be set to `true`
+        for schedules that are set to be executed at the end of the day (after
+        11:30pm UTC). If the schedule is not executed on the expected day for
+        any reason, and this field isn't set to `true`, the schedule is not
+        executed and is marked as `EXECUTED_WITH_ERROR_NEXT_DAY_NOT_ALLOWED`.
+
+
+        This endpoint generates the [Scheduled payment created or
+        modified](https://developers.pismo.io/events/docs/scheduler-payments-scheduled-payments-1)
+        event with the `status` field set to `CREATED`.
+
+
+        Each execution of the schedule also generates the [Scheduled payment
+        executed](https://developers.pismo.io/events/docs/scheduler-payments-scheduled-payments-execution-1)
+        event.
+
+
+        Refer to the [Payment scheduler](doc:payment-scheduler) guide for more
+        information.
+      tags:
+        - Schedules
+      requestBody:
+        description: Request processing body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkSingleScheduleRequest'
+      responses:
+        '202':
+          description: Request was accepted and schedules will be processed asynchronously.
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
   /v1/transfers:
     post:
       summary: Create transfer schedule
@@ -1026,6 +1329,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferScheduleResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /v1/transfers/bulk:
+    post:
+      summary: Create bulk transfer schedules
+      operationId: post-v1-create-bulk-transfer-schedules
+      description: >
+        Create multiple transfer schedules in a single request. This request
+        triggers an asynchronous process to create the schedules. Once
+        processing is complete, the [Bulk transfer schedules
+        created](https://developers.pismo.io/events/docs/scheduler-payments-bulk-transfer-scheduled-payments-1)
+        event is sent with the result of the operation.
+
+
+        This endpoint accepts a `defaults` object that can be used to set common
+        values for all schedules in the request. Individual schedules can
+        override any default value by specifying the field in their own
+        definition.
+
+
+        Transfer amounts can be set as follows.
+
+        - If you fill out the `strategy` field, the platform uses the strategy
+        logic to determine transfer amounts.
+
+        - If you don't fill out the `strategy` field, you must specify the
+        `amount` field for each transfer in the `transfers` array, or provide a
+        default amount in `transfer_defaults`.
+
+
+        In some cases, due to errors and retries, execution of the scheduled
+        transaction might occur on the following day instead of the originally
+        scheduled date. To address this, the `allow_execution_after_day_change`
+        flag in `schedule_details` enables you to pre-authorize execution of the
+        scheduled transaction on the next day. This flag must be set to `true`
+        for schedules that are set to be executed at the end of the day (after
+        11:30pm UTC). If the schedule is not executed on the expected day for
+        any reason, and this field isn't set to `true`, the schedule is not
+        executed and is marked as `EXECUTED_WITH_ERROR_NEXT_DAY_NOT_ALLOWED`.
+
+
+        This endpoint generates the [Scheduled payment created or
+        modified](https://developers.pismo.io/events/docs/scheduler-payments-scheduled-payments-1)
+        event with the `status` field set to `CREATED`.
+
+
+        Each execution of the schedule also generates the [Scheduled payment
+        executed](https://developers.pismo.io/events/docs/scheduler-payments-scheduled-payments-execution-1)
+        event.
+
+
+        Refer to the [Payment scheduler](doc:payment-scheduler) guide for more
+        information.
+      tags:
+        - Schedules
+      requestBody:
+        description: Request processing body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkTransferScheduleRequest'
+      responses:
+        '202':
+          description: Request was accepted and schedules will be processed asynchronously.
         '400':
           $ref: '#/components/responses/400BadRequest'
         '403':

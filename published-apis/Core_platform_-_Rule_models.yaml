@@ -1,14 +1,12 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Core platform - Rule models
   description: Manage rule models
   contact:
     name: API Support
-    email: support@pismo.com.br
     url: https://developers.pismo.io/support/
   license:
     name: Copyright Pismo
-    url: https://developers.pismo.io/licenses/
   version: 1.37.0
 servers:
   - url: https://sandbox.pismolabs.io/processing-code
@@ -23,7 +21,7 @@ tags:
   - name: Model list
     description: Endpoints for model list management.
   - name: Apply
-    description: Endpoints to apply a rule model
+    description: Endpoints to apply a rule model.
 components:
   parameters:
     AccountIdPath:
@@ -91,18 +89,41 @@ components:
         operator:
           type: string
           example: eq
-          description: |
-            Rule evaluation operator and allowable data:
-            - `eq` - Equals; strings, numbers, and booleans.
-            - `neq`-  Not equals; strings, numbers, and booleans.
-            - `gt`- Greater than; numbers.
-            - `gte`- Greater than or equal; numbers.
-            - `lt`- Less than; numbers.
-            - `lte`- Less than or equal; numbers.
-            - `in`- In; use with [model list](ref:post-org-model-list-1).
-            - `contains`- Contains; model list.
-            - `starts_with`-  Starts with; model list. 
-            - `ends_with`-  Ends with; model list.  
+          description: >
+            Operator that will be used on this rule evaluation
+
+            - `eq`: Equals operator, allowed with rules that evaluate data
+            containing strings, numbers, and booleans.
+
+            - `neq`: Not equals operator, allowed with rules that evaluate data
+            containing strings, numbers, and booleans.
+
+            - `gt`: Greater than operator, allowed with rules that evaluate data
+            containing numbers.
+
+            - `gte`: Greater than or equal operator, allowed with rules that
+            evaluate data containing numbers.
+
+            - `lt`: Less than operator, allowed with rules that evaluate data
+            containing numbers.
+
+            - `lte`: Less than or equal operator, allowed with rules that
+            evaluate data containing numbers.
+
+            - `in`: In operator, allowed with rules that use model list as data.
+            Compares if the data is in the configured list.
+
+            - `contains`: Contains operator, allowed with rules that use model
+            list as data. Compares if the data is part of any string in the
+            configured list.
+
+            - `starts_with`: Starts with operator, allowed with rules that use
+            model list as data. Verifies whether any string in the list starts
+            with the data value.
+
+            - `ends_with`: Ends with operator, allowed with rules that use model
+            list as data. Verifies whether any string in the list ends with the
+            data value.
           enum:
             - eq
             - neq
@@ -127,20 +148,20 @@ components:
 
 
             **Note:** This field's value can be a model list ID returned from
-            [Create model list](ref:post-org-model-list-1). A model list
-            contains a list of values for evaluation. 
+            [Create model list](ref:post-org-model-list). A model list contains
+            a list of values for evaluation. 
     Config:
       properties:
-        modelId:
+        model_id:
           type: string
           description: Model ID configured for this organization, program, or account.
           example: b3f53d8f-6812-4869-b17a-874d78750cc6
     ConfigRequest:
       type: object
       required:
-        - modelId
+        - model_id
       properties:
-        modelId:
+        model_id:
           type: string
           description: Model ID
           example: a9995aba-c2c0-41f9-84e9-f245665e0159
@@ -186,6 +207,8 @@ components:
         - MERCHANT 2
     ModelListPayload:
       properties:
+        type:
+          $ref: '#/components/schemas/ModelListType'
         data:
           $ref: '#/components/schemas/ModelListData'
     ModelListReplaceRequest:
@@ -211,7 +234,7 @@ components:
         id:
           type: string
           example: b3f53d8f-6812-4869-b17a-874d78750cc6
-          description: Model list ID
+          description: The ID generated for the new model list.
     ModelListType:
       type: string
       example: MERCHANT_NAME_LIST
@@ -221,16 +244,16 @@ components:
             - `PROCESSING_CODE` - Alphanumeric strings
             - `ACCOUNT_TYPE` - Alphanumeric strings
             - `ORIGIN`- Alphanumeric strings
-            - `DCC`- Boolean values
-            - `DOMESTIC`- Boolean values
+            - `DCC`-  Boolean values
+            - `DOMESTIC`-  Boolean values
             - `MERCHANT_NAME_LIST` - Alphanumeric strings
             - `INSTALLMENT_PLAN` - Alphanumeric strings
             - `AMOUNT` - Numbers with or without decimal places
             - `MERCHANT_CATEGORY_CODE` - Alphanumeric strings
             - `REVERSAL_INDICATOR` - Boolean values
             - `AUTHORIZATION_FLOW` - Either `PAYMENTS` or `NETWORK`
-            - `ORIGINAL_PROCESSING_CODE` - Original processing code or persisted authorization processing code
-            - `MTI` - Message Type Indicator - a four-digit numeric field - ISO 8583 standard
+            - `ORIGINAL_PROCESSING_CODE`- Original processing code or persisted authorization processing code
+            - `MTI` - Message Type Indicator (MTI) - a four-digit numeric field - ISO 8583 standard
       enum:
         - INSTALLMENT_NUMBER
         - PROCESSING_CODE
@@ -303,9 +326,8 @@ components:
             The original processing code that started the request. The
             processing code describes the transaction on the customer account
             and the type of accounts affected. See the [Processing codes and
-            transaction
-            types](doc:processing-codes-and-transaction-types#changing-processing-codes-during-authorization-with-rule-models)
-            guide for more information.
+            transaction types](doc:processing-codes-and-transaction-types) guide
+            for more information.
         mti:
           type: string
           example: '0100'
@@ -377,6 +399,15 @@ components:
           default: false
           example: true
           description: Indicates if the transaction is a domestic one.
+        is_cashback:
+          type: boolean
+          default: false
+          example: true
+          description: Indicates if the transaction is a cashback.
+        type_of_installments:
+          type: string
+          example: '0'
+          description: Indicates the type of installments for Chile installments operations
         is_dcc:
           type: boolean
           default: false
@@ -417,9 +448,6 @@ components:
           description: >
             Processing code to use when the rule condition is met and it is a
             domestic transaction.
-
-            For more information, refer to [Processing
-            codes](doc:processing-codes-and-transaction-types).
         order:
           $ref: '#/components/schemas/RuleOrder'
         conditions:
@@ -475,40 +503,30 @@ components:
 paths:
   /v1/models:
     post:
-      summary: Create rule model
+      summary: Create org rule model
       description: >
-        Create a rule model at the organizational level for a processing code.
-        The organization ID is parsed from the access token.
-
-
-        A rule model swaps one processing code for another during authorization
-        if certain conditions are met. For example, you may want to use a custom
-        processing code if the merchant is Apple. 
+        Create a rule model at the organizational level for a processing code. A
+        rule model swaps one processing code for another if certain conditions
+        are met. For example, you may want to use a custom processing code if
+        the merchant is Apple. 
 
 
         Rule models cannot be shared between organizations.
 
 
-        Refer to [Processing
-        codes](doc:processing-codes-and-transaction-types#changing-processing-codes-during-authorization-with-rule-models)
+        Refer to [Processing codes](doc:processing-codes-and-transaction-types)
         for more information on processing codes and rule models.
 
 
-        **Notes:**
-          * A rule model is not active until it is applied. 
-          * Only one rule model can be applied to an organization, program, or account at a time.
-          * A rule model applied at a lower level overrides the rule model applied at a higher level. For example, an account rule model overrides a rule model applied to its program. 
-          * Once applied, a rule model cannot be deleted. You would have to replace it with an empty rule model.
-
-        Call the following to apply a rule model to an organization, program, or
-        account. 
+        Call the following to attach a rule model to an organization, program,
+        or account.
 
 
-        - [Apply rule model to org](ref:post-org-model-config-1)
+        - [Apply rule model to org](ref:post-org-model-config)
 
-        - [Apply rule model to program](ref:post-program-model-config-1)
+        - [Apply rule model to program](ref:post-program-model-config)
 
-        - [Apply rule model to account](ref:post-account-model-config-1)
+        - [Apply rule model to account](ref:post-account-model-config)
       operationId: post-org-rule-model
       tags:
         - Model
@@ -585,7 +603,7 @@ paths:
 
         A model list contains values to evaluate in a rule model. To use the
         list, pass its ID as a `data` field's value in a `condition` when you
-        [create a rule model](ref:post-org-rule-model-1).
+        [create a rule model](ref:post-org-rule-model).
 
 
         For example, you can create a model list to capture purchases made
@@ -593,13 +611,17 @@ paths:
         type. The list could look like this: `["APPLE", "MICROSOFT", "BEST
         BUY"]`, and be used like this:
 
-        ```json
+        <pre>
+
+        ...
           {
             "type": "MERCHANT_NAME_LIST",
             "operator": "contains",
             "data": "15bda43f-5f6d-4681-8c09-853de8b9479d"  ## Model list ID
           }
-        ```
+        ...
+
+        </pre>
       operationId: post-org-model-list
       tags:
         - Model list
@@ -707,8 +729,6 @@ paths:
       summary: Apply rule model to  org
       description: |
         Apply rule model to an organization.
-
-        The organization ID is parsed from the access token.
       operationId: post-org-model-config
       tags:
         - Apply

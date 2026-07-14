@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Card issuing - Authorization configurations
   version: 1.0.0
-  description: Endpoints to allow the management of the Authorization configurations.
+  description: Endpoints to allow the management of the authorization configurations.
   contact:
     name: API Support
     url: https://developers.pismo.io/support
@@ -35,21 +35,6 @@ components:
         should be applied. You can skip this parameter if the `programId`
         parameter is present in the query.
       example: 1237890
-    FetchConfigQuery:
-      name: fetchConfig
-      schema:
-        type: boolean
-      in: query
-      required: true
-      description: Fetches the result from the configuration (priority).
-      example: true
-    ProcessingCodePath:
-      name: processingCode
-      schema:
-        type: string
-      in: path
-      required: true
-      description: Processing code to which this configuration should be applied.
     ProgramIdPath:
       name: programId
       schema:
@@ -205,8 +190,8 @@ components:
     NetworkTransactionsConfigOptions:
       type: object
       description: >-
-        Collection of options that can be customized by Org, Program, Account,
-        and BIN.
+        Collection of options that can be customized by organization, program,
+        account, and BIN.
       properties:
         use_anti_fraud_response_code:
           $ref: '#/components/schemas/UseAntiFraudResponseCode'
@@ -303,17 +288,20 @@ components:
       bearerFormat: JWT
 security:
   - BearerAuth: []
+tags:
+  - name: Authorization configurations
+    description: Authorization configurations-related endpoints
 paths:
   /v1/config:
     post:
-      summary: Create configuration by Org
+      summary: Create authorization configuration by organization
       description: >-
         Create an authorization configuration for an authorization at the
-        organization (Org) level. This level can be used as a default
-        configuration for all programs and accounts in this Org. An Org can only
-        have one configuration. Executing this endpoint on an Org that already
+        organization (org) level. This level can be used as a default
+        configuration for all programs and accounts in this org. An org can only
+        have one configuration. Executing this endpoint on an org that already
         has a configuration defined for it generates a conflict response.
-      operationId: post-config-by-tenant
+      operationId: post-authorization-config-by-tenant
       tags:
         - Authorization configurations
       parameters:
@@ -343,9 +331,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get configuration by Org
-      description: Get the authorization configuration at the Org level.
-      operationId: get-config-by-tenant
+      summary: Get authorization configuration by organization
+      description: Get the authorization configuration at the org level.
+      operationId: get-authorization-config-by-tenant
       tags:
         - Authorization configurations
       parameters:
@@ -368,12 +356,12 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Update configuration by Org
+      summary: Update authorization configuration by organization
       description: >-
-        Update the authorization configuration at the organization (Org) level.
+        Update the authorization configuration at the organization (org) level.
         This operation updates the entire configuration. Therefore, all fields
         must be sent to avoid data loss.
-      operationId: put-config-by-tenant
+      operationId: PutAuthorizationConfigByTenant
       tags:
         - Authorization configurations
       parameters:
@@ -403,12 +391,12 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete configuration by Org
+      summary: Delete authorization configuration by organization
       description: >-
         Delete an authorization configuration for an authorization at the
-        organization (Org) level. This level can be used as a default
-        configuration for all programs and accounts in this Org.
-      operationId: delete-config-by-tenant
+        organization (org) level. This level can be used as a default
+        configuration for all programs and accounts in this org.
+      operationId: DeleteAuthorizationConfigByTenant
       tags:
         - Authorization configurations
       parameters:
@@ -428,14 +416,14 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/config/program/{programId}:
     post:
-      summary: Create configuration by program
+      summary: Create authorization configuration by program
       description: >-
         Create the authorization configuration at the program level. This level
         can be used as a default configuration for all accounts in this program
-        and at a more granular level than Org. A program can only have one
+        and at a more granular level than org. A program can only have one
         configuration. Executing this endpoint on a program that already has a
         configuration defined for it generates a conflict response.
-      operationId: post-config-by-program
+      operationId: PostAuthorizationConfigByProgram
       tags:
         - Authorization configurations
       parameters:
@@ -466,9 +454,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get configuration by program
+      summary: Get authorization configuration by program
       description: Get the authorization configuration at the program level.
-      operationId: get-config-by-program
+      operationId: GetAuthorizationConfigByProgram
       tags:
         - Authorization configurations
       parameters:
@@ -492,12 +480,12 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Update configuration by program
+      summary: Update authorization configuration by program
       description: >-
         Update the authorization configuration at the program level. This
         operation updates the entire configuration. Therefore, all fields must
         be sent to avoid data loss.
-      operationId: put-config-by-program
+      operationId: PutAuthorizationConfigByProgram
       tags:
         - Authorization configurations
       parameters:
@@ -528,12 +516,12 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete configuration by program
+      summary: Delete authorization configuration by program
       description: >-
         Delete the authorization configuration at the program level. This level
         can be used as a default configuration for all accounts in this program
-        and at a more granular level than Org.
-      operationId: delete-config-by-program
+        and at a more granular level than org.
+      operationId: DeleteAuthorizationConfigByProgram
       tags:
         - Authorization configurations
       parameters:
@@ -554,14 +542,14 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/config/account/{accountId}:
     post:
-      summary: Create configuration by account
+      summary: Create authorization configuration by account
       description: >-
         Create the authorization configuration at the account level. This is the
         most granular level allowed and can be used to customize a specific
         account. An account can only have one configuration. Executing this
         endpoint on an account that already has a configuration defined for it
         generates a conflict response.
-      operationId: post-config-by-account
+      operationId: PostAuthorizationConfigByAccount
       tags:
         - Authorization configurations
       parameters:
@@ -592,9 +580,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get configuration by account
+      summary: Get authorization configuration by account
       description: Get the authorization configuration at the account level.
-      operationId: get-config-by-account
+      operationId: GetAuthorizationConfigByAccount
       tags:
         - Authorization configurations
       parameters:
@@ -618,12 +606,12 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Update configuration by account
+      summary: Update authorization configuration by account
       description: >-
         Update the authorization configuration at the account level. This
         operation updates the entire configuration. Therefore, all fields must
         be sent to avoid data loss.
-      operationId: put-config-by-account
+      operationId: PutAuthorizationConfigByAccount
       tags:
         - Authorization configurations
       parameters:
@@ -654,12 +642,12 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete configuration by account
+      summary: Delete authorization configuration by account
       description: >-
         Delete the authorization configuration at the account level. This is the
         most granular level allowed and can be used to customize a specific
         account.
-      operationId: delete-config-by-account
+      operationId: DeleteAuthorizationConfigByAccount
       tags:
         - Authorization configurations
       parameters:
@@ -680,12 +668,12 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/config/priority-config:
     get:
-      summary: Get configuration by hierarchy
+      summary: Get authorization configuration by hierarchy
       description: >-
         Retrieve the authorization configuration based on the hierarchy: account
         -> program -> tenant, in other words from the most granular to the less
         granular one.
-      operationId: get-config-by-priority
+      operationId: GetAuthorizationConfigByPriority
       tags:
         - Authorization configurations
       parameters:

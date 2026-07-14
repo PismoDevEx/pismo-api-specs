@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   title: Banking - Overdraft
   version: 1.0.0
@@ -99,7 +99,16 @@ components:
 
             `minLength` = `0`
 
-            `maxLength` = `1024`
+            `maxLength` = `1024`<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
     CreateProductRequest:
       type: object
       properties:
@@ -213,7 +222,16 @@ components:
 
             `minLength` = `0`
 
-            `maxLength` = `1024`
+            `maxLength` = `1024`<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
           example:
             key: value
       required:
@@ -997,7 +1015,7 @@ paths:
     post:
       tags:
         - Account
-      summary: Attach product to account
+      summary: Attach overdraft product to account
       description: >
         Attach an overdraft product to a bank account.<br>
 
@@ -1031,7 +1049,7 @@ paths:
     post:
       tags:
         - Account
-      summary: Detach product from account
+      summary: Detach overdraft product from account
       description: >
         Detach an overdraft product from a bank account.<br>
 
@@ -1063,7 +1081,7 @@ paths:
     get:
       tags:
         - Account
-      summary: Get account attachment
+      summary: Get overdraft product details for an account
       description: Get the details of an overdraft product attached to an account.
       operationId: get-overdraft-account-attachment
       parameters:
@@ -1083,7 +1101,7 @@ paths:
     post:
       tags:
         - Program
-      summary: Attach product to program
+      summary: Attach overdraft product to program
       description: >
         Attach an overdraft product to a program.<br>
 

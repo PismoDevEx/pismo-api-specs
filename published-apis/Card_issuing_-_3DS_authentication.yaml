@@ -1,25 +1,23 @@
-openapi: 3.0.1
+openapi: 3.1.1
 info:
   title: Card issuing - 3DS authentication
-  description: 3DS API endpoint documentation.
+  description: 3DS API endpoint documentation
   contact:
     name: API Support
-    email: support@pismo.com.br
     url: https://developers.pismo.io/support/
   license:
     name: Copyright Pismo
-    url: https://developers.pismo.io/licenses/
   version: 1.0.0
 servers:
   - url: https://api-sandbox.pismolabs.io/3ds-acs
     description: Sandbox API server for testing
 tags:
   - name: HST
-    description: Endpoints to provide integration with HST.
+    description: Endpoints to provide integration with HST
   - name: Pre-authentication
     description: Endpoint to provide pre authentication integration
   - name: VCAS
-    description: Endpoints to provide integration with VCAS.
+    description: Endpoints to provide integration with VCAS
 components:
   parameters:
     accountIDheader:
@@ -28,6 +26,7 @@ components:
       schema:
         type: integer
       description: Account ID
+      example: 10045896
       required: true
     cardIDheader:
       in: header
@@ -35,14 +34,8 @@ components:
       schema:
         type: integer
       description: Card ID
+      example: 869572
       required: true
-    tenantIDheader:
-      name: x-tenant
-      in: header
-      schema:
-        type: string
-      required: true
-      description: Tenant/org ID
   schemas:
     Account:
       type: object
@@ -82,15 +75,6 @@ components:
       type: string
       description: End-user action RFC3339 timestamp
       example: '2022-12-21T10:08:58Z'
-    Any:
-      type: object
-      example:
-        valueA: a
-        valueB: 1
-        valueC: false
-        valueD:
-          valueD1: x
-        valueN: ...
     Authenticated:
       type: boolean
       example: false
@@ -194,7 +178,7 @@ components:
         answered_at:
           $ref: '#/components/schemas/AnsweredAt'
         metadata:
-          $ref: '#/components/schemas/Any'
+          $ref: '#/components/schemas/Metadata'
     ChallengeResultResponse:
       type: object
       properties:
@@ -341,7 +325,7 @@ components:
         product_id:
           $ref: '#/components/schemas/ProductId'
         metadata:
-          $ref: '#/components/schemas/Any'
+          $ref: '#/components/schemas/Metadata'
     VCASStepUpRequest:
       type: object
       required:
@@ -660,7 +644,17 @@ components:
           example: An error occurred while interpreting a structure
     Metadata:
       type: object
-      description: Metadata returned from client's anti-fraud validator
+      description: >
+        Metadata returned from client's anti-fraud validator
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that  purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
       example:
         valueA: a
         valueB: 1
@@ -902,17 +896,20 @@ paths:
       summary: Send pre-authentication info
       description: >
         Send pre-authentication information to the client's anti-fraud validator
-        to evaluate. Pismo calls the vaidator's webhook and gets a response
+        to evaluate. Pismo calls the validator's webhook and gets a response
         before sending a response to the caller.
 
 
         Pismo provides the encrypt/decrypt keys for the hashed PAN. Talk to your
         Pismo representative about getting these keys.
+
+
+        For information on PAN encryption, refer to the [PAN encryption for 3DS
+        authentication](doc:pan-encryption-for-3ds-authentication) guide.
       operationId: postPreAuthenticate
       tags:
         - Pre-authentication
-      parameters:
-        - $ref: '#/components/parameters/tenantIDheader'
+      parameters: []
       requestBody:
         description: Send information to evaluation
         required: true
@@ -956,7 +953,6 @@ paths:
       tags:
         - HST
       parameters:
-        - $ref: '#/components/parameters/tenantIDheader'
         - $ref: '#/components/parameters/accountIDheader'
         - $ref: '#/components/parameters/cardIDheader'
       requestBody:
@@ -1011,7 +1007,6 @@ paths:
       tags:
         - HST
       parameters:
-        - $ref: '#/components/parameters/tenantIDheader'
         - $ref: '#/components/parameters/accountIDheader'
         - $ref: '#/components/parameters/cardIDheader'
       requestBody:
@@ -1074,10 +1069,10 @@ paths:
                 $ref: '#/components/schemas/ChallengeResultResponse'
   /issuer-vcas-stepup-endpoint:
     post:
-      summary: Issuer’s endpoint to handle VCAs stepup flow.
+      summary: Issuer’s endpoint to handle VCAS stepup flow
       description: >-
-        This endpoint will be used to inform VCAS which authentication types are
-        available for a specific user.
+        Informs VCAS which authentication types are available for a specific
+        user.
       operationId: postStepUp
       tags:
         - VCAS
@@ -1097,10 +1092,8 @@ paths:
                 $ref: '#/components/schemas/VCASStepUpResponse'
   /issuer-vcas-initiateaction-endpoint:
     post:
-      summary: Issuer’s endpoint to handle VCAs initiate action flow.
-      description: >-
-        This endpoint will be used to inform the issuer about the initiate
-        action flow in the VCAS process.
+      summary: Issuer’s endpoint to handle VCAs initiate action flow
+      description: Informs the issuer about the initiate action flow in the VCAS process.
       operationId: postInitiateAction
       tags:
         - VCAS
@@ -1120,10 +1113,8 @@ paths:
                 $ref: '#/components/schemas/VCASInitiateActionResponse'
   /issuer-vcas-validate-endpoint:
     post:
-      summary: Issuer’s endpoint to handle VCAs validate flow.
-      description: >-
-        This endpoint will be used to inform the issuer about the validation
-        flow.
+      summary: Issuer’s endpoint to handle VCAs validate flow
+      description: Informs the issuer about the validation flow.
       operationId: postValidation
       tags:
         - VCAS

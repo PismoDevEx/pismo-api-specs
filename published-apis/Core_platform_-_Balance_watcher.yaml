@@ -12,14 +12,12 @@ servers:
   - url: https://sandbox.pismolabs.io/balance-watcher
     description: Sandbox API server for testing
 tags:
-  - name: Records
-    description: Endpoints to support records operations
   - name: Limit configurations
     description: Endpoints to support configuration operations
   - name: Limit acceptance configurations
     description: Endpoints to support acceptance configuration operations
-  - name: Migration
-    description: Endpoints to support migration operations
+  - name: Overlimit
+    description: Endpoints to get account information about overlimit
 components:
   parameters:
     AccountIdPathString:
@@ -168,6 +166,18 @@ components:
           $ref: '#/components/schemas/Overlimit'
         limit_refund:
           $ref: '#/components/schemas/LimitRefund'
+    ConfigExitOverlimitRequest:
+      type: object
+      description: Configuration of Exit Overlimit record request
+      properties:
+        exit_over_limit:
+          $ref: '#/components/schemas/ExitOverlimit'
+    ConfigExitOverlimitResponse:
+      type: object
+      description: Configuration Exit Overlimit record response
+      properties:
+        exit_over_limit:
+          $ref: '#/components/schemas/ExitOverlimit'
     Error:
       type: object
       properties:
@@ -289,6 +299,16 @@ components:
           type: boolean
           description: Flag to enable the limit refund feature.
           example: true
+    ExitOverlimit:
+      type: object
+      description: Configurations related to the exit_overlimit flow
+      required:
+        - enable
+      properties:
+        enable:
+          type: boolean
+          description: Flag to enable the exit_overlimit feature.
+          example: true
     RecordsList:
       description: Response body for the Balance watcher API get account records
       properties:
@@ -341,19 +361,38 @@ components:
             Attribute indicating the amount of the operation that issued this
             record creation.
           example: 200.55
-    OverlimitResponse:
-      description: Overlimit response body
+    AuthorizationData:
+      description: Authorization data.
+      type: object
       properties:
-        overlimit:
+        id:
+          type: number
+          description: Unique Pismo internal identifier of the authorization created.
+          example: 11935782
+        type:
+          type: string
+          description: Type of authorization.
+          enum:
+            - PLATFORM
+            - NETWORK
+          example: PLATFORM
+        tracking_id:
+          type: string
+          description: Unique tracking ID for this operation.
+          example: f0c6614-40eb-4fe5-80bc-87333f982cda
+    OverlimitResponse:
+      description: Overlimit response body.
+      properties:
+        enter_overlimit:
           type: object
-          description: Indicate the details about when the account enter in overlimit state
+          description: >-
+            Indicate the details about when the account enter in overlimit
+            state.
           properties:
             datetime:
               type: string
               format: date-time
-              description: >-
-                Timestamp when the account enter in overlimit state in the UTC
-                format.
+              description: Date time of record in the UTC format.
               example: '2021-06-08T10:46:54.000Z'
             account_id:
               type: number
@@ -371,16 +410,25 @@ components:
                 Attribute indicating the amount of the operation that issued
                 this record creation.
               example: 1100.12
+            available_update_datetime:
+              type: string
+              format: date-time
+              description: >-
+                Date time when the account enter in overlimit state in the UTC
+                format.
+              example: '2021-06-08T10:46:54.000000Z'
+            authorization:
+              $ref: '#/components/schemas/AuthorizationData'
         exit_overlimit:
           type: object
-          description: Indicate the details about when the account enter in overlimit state
+          description: >-
+            Indicate the details about when the account enter in overlimit
+            state.
           properties:
             datetime:
               type: string
               format: date-time
-              description: >-
-                Timestamp when the account exit in overlimit state in the UTC
-                format.
+              description: Date time of record in the UTC format.
               example: '2021-06-08T10:46:54.000Z'
             account_id:
               type: number
@@ -398,6 +446,15 @@ components:
                 Attribute indicating the amount of the operation that issued
                 this record creation.
               example: 4000.12
+            available_update_datetime:
+              type: string
+              format: date-time
+              description: >-
+                Date time when the account exit in overlimit state in the UTC
+                format.
+              example: '2021-06-08T10:46:54.000000Z'
+            authorization:
+              $ref: '#/components/schemas/AuthorizationData'
   securitySchemes:
     BearerAuth:
       type: http
@@ -1555,3 +1612,6 @@ paths:
               example:
                 code: BW0007
                 message: An unexpected error happened.
+  /v1/config/exit-overlimit/program/{programId}:
+    parameters:
+      - $ref: '#/components/parameters/ProgramIdPath'

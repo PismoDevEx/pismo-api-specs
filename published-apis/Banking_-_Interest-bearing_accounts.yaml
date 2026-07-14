@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   title: Banking - Interest-bearing accounts
   version: 1.0.0
@@ -12,20 +12,30 @@ servers:
   - url: https://sandbox.pismolabs.io/savings-products
     description: Sandbox API server for testing
 tags:
-  - name: Product
-    description: Endpoints that manage Interest-bearing accounts products
+  - name: Average balance
+    description: Endpoints that enable calculating average balances for an account
   - name: Account attachment
     description: >-
       Endpoints that manage account attachments to interest-bearing account
       products
+  - name: Deposit account lifecycle
+    description: >-
+      Endpoints that allow consolidated, point‑in‑time snapshots of a deposit
+      account lifecycle
+  - name: Maturity instruction override
+    description: Endpoints that manage maturity instruction overrides for deposit accounts
+  - name: Penalty
+    description: Endpoints that manage penalties for deposit accounts
+  - name: Product
+    description: Endpoints that manage Interest-bearing accounts products
+  - name: Deposit account open
+    description: >-
+      Endpoints that create deposit accounts and attach products in a single
+      operation
   - name: Program attachment
     description: >-
       Endpoints that manage program attachments to interest-bearing account
       products
-  - name: Average balance
-    description: Endpoints that enable calculating average balances for an account
-  - name: Maturity instruction override
-    description: Endpoints that manage maturity instruction overrides for deposit accounts
 components:
   parameters:
     authorizationTokenHeader:
@@ -49,7 +59,7 @@ components:
         quickly, which can result in a 401 Unauthorized error.
       example: 1234
     productId:
-      description: Product ID.
+      description: Product ID
       in: path
       name: productId
       required: true
@@ -57,7 +67,7 @@ components:
         type: string
       example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
     accountId:
-      description: Account ID.
+      description: Account ID
       in: path
       name: accountId
       required: true
@@ -169,14 +179,14 @@ components:
       properties:
         code:
           type: string
-          description: Error type code.
+          description: Error type code
           example: EIBACC0003
         details:
           type: string
-          description: Error details.
+          description: Error details
           example: 'error EIBACC0008: Validation error [(Field ''Order'' is invalid)]'
         message:
-          description: Error message.
+          description: Error message
           example: Bad Request
           type: string
     DepositMaturityInstructions:
@@ -225,47 +235,713 @@ components:
 
         - If the interest is `PAY` and the accrued interest is greater than
         zero, it's paid to the account's cash balance.
-    InterestPayoutAccount:
-      properties:
-        account:
-          type: string
-          description: |
-            Account identifier to which the interest is paid.
-          example: '123456'
-        interest_payout_account_type:
-          type: string
-          description: |
-            Interest payout account type, either internal or external.
-          enum:
-            - internal
-            - external
-          example: internal
+    PayoutAccount:
       type: object
+      description: >
+        The payout account defines where outbound payments are sent, and it is
+        used in two operational contexts.<br>
+
+
+        * **Capitalization flow**: When the capitalization mode is set to
+        `PAYOUT`, the capitalized interest is directed to this account. If the
+        mode is `REINVEST`, the payout account is not involved because the
+        interest is added to the principal instead.
+
+        * **Maturity instruction flow**: At maturity, this account receives
+        principal or interest whenever the maturity instructions specify `PAY`
+        for either `maturity_instructions.principal` or
+        `maturity_instructions.interest`. This flow always relies on the payout
+        account, regardless of how capitalization is configured.
+
+
+        Both flows reference the same payout account settings. Choosing
+        `REINVEST` for capitalization does not remove or disable the payout
+        account, and it remains fully available for maturity‑related payments.
+      properties:
+        label:
+          type: string
+          description: |
+            Label to identify the account
+          example: My payout account
+        type:
+          type: string
+          description: |
+            Payout account type, either `INTERNAL` or `EXTERNAL`
+          enum:
+            - INTERNAL
+            - EXTERNAL
+          example: INTERNAL
+        internal_account_id:
+          type: number
+          description: |
+            Internal account ID for the account that receives the payments.
+            Required for type `INTERNAL` and not allowed for `EXTERNAL`.
+          example: 123456
+        external_account:
+          type: object
+          description: >
+            Contains user-defined key-value pairs that identify the external
+            account receiving the payments.
+
+            Note that external account information is client-provided.
+
+
+            Required for type `EXTERNAL` and not allowed for `INTERNAL`.
+          example:
+            key: value
+    MaturityPeriod:
+      type: object
+      description: >
+        Defines when the deposit matures. There are three usage modes:
+
+
+        * **Relative period**: Sends `unit` + `value` (e.g. `MONTHS` + `6`).
+
+        * **Explicit date**: Sends `calendar_maturity_date` (e.g. `2027-06-15`).
+
+        * **Default**: Omits the field or sends `{}`. The product's configured
+        default maturity term (`PRODUCT_DEFAULT_MATURITY_DATE_DAYS`, typically
+        `10950` days ≈ 30 years) is applied.
+
+
+        **NOTE**: `calendar_maturity_date` and `unit`/`value` are mutually
+        exclusive, sending both in the same request returns a `400` validation
+        error.
+
+
+        The response returns exactly what was sent in the request:
+
+        * Send `unit` + `value` returns `unit` + `value`
+
+        * Send `calendar_maturity_date` returns `calendar_maturity_date`
+
+        * Send nothing (default fallback applied) returns `unit=DAYS` and
+        `value` equal to the product's configured
+        `PRODUCT_DEFAULT_MATURITY_DATE_DAYS`
+      properties:
+        unit:
+          $ref: '#/components/schemas/MaturityPeriodUnit'
+        value:
+          $ref: '#/components/schemas/MaturityPeriodValue'
+        calendar_maturity_date:
+          $ref: '#/components/schemas/CalendarMaturityDate'
+    MaturityPeriodUnit:
+      type: string
+      description: >
+        Time unit for the relative maturity period. It's used together with
+        `value` and cannot coincide with `calendar_maturity_date`.
+
+
+        - `DAYS`: Uses `value` directly. Example: `value=90` → 90 days.
+
+        - `WEEKS`: Multiplies `value` by 7. Example: `value=4` → 28 days.
+
+        - `MONTHS`: Calculates calendar-month with end-of-month (EOM) clamping
+        when the target day does not exist. Example: `2024-01-31` + 1 month =
+        `2024-02-29` (leap year) or `2025-02-28` (non-leap year).
+
+        - `YEARS`: Calculates calendar-year, for example: `2024-02-29` + 1 year
+        = `2025-02-28`. Note that there is no Feb 29 in 2025.
+
+
+        For `WEEKS`, `MONTHS`, and `YEARS`, the resulting calendar date is
+        converted back to a day count to validate against the product's
+        configured minimum or maximum term.
+      enum:
+        - DAYS
+        - WEEKS
+        - MONTHS
+        - YEARS
+      example: MONTHS
+    MaturityPeriodValue:
+      type: integer
+      description: >
+        Number of time units until maturity. Must be greater than `0`. Mutually
+        exclusive with `calendar_maturity_date`.
+      minimum: 1
+      example: 6
+    CalendarMaturityDate:
+      type: string
+      format: date
+      description: >
+        Maturity date. Format is `YYYY-MM-DD`. The date must be a future date.
+
+
+        This date cannot coincide with `unit`/`value`, sending both in the same
+        request returns a `400` validation error.
+      example: '2027-06-15'
     DepositConfigs:
       type: object
       properties:
-        maturity_date_days:
-          type: integer
+        maturity_period:
+          $ref: '#/components/schemas/MaturityPeriod'
+        payout_account:
+          $ref: '#/components/schemas/PayoutAccount'
+        interest_capitalization_mode:
+          type: string
+          enum:
+            - PAYOUT
+            - REINVEST
+          default: PAYOUT
           description: >
-            Specify the number of days until an asset or investment matures.<br>
+            Controls the treatment of capitalized interest.<br>
 
-            - Provide either `maturity_date_days` or a specific
-            `calendar_maturity_date`, but not both.
 
-            - If you provide the number of days, the exact maturity date is
-            calculated automatically. 
+            * `PAYOUT` is the default behavior. In this mode, the capitalized
+            amount is sent to the configured payout_account. If no payout
+            account exists, the amount stays in the base account.
 
-            - If left blank, a default number of days is used.
-          example: 365
-        calendar_maturity_date:
+            * `REINVEST` instructs the Pismo platform to add the capitalized
+            amount to the principal through the interest engine. The new
+            principal becomes the foundation for the next accrual cycle.
+
+
+            This setting affects only the capitalization process. The maturity
+            instruction flow always uses `payout_account`, regardless of the
+            value of this field. 
+
+
+            If the field is not provided, it is omitted from the attachment and
+            the Pismo platform applies `PAYOUT` at runtime.
+          example: REINVEST
+        overrides:
+          $ref: '#/components/schemas/AttachmentOverridesRequest'
+    AttachmentOverridesRequest:
+      type: object
+      description: >
+        Per-attachment overrides applied on top of the product defaults. All
+        sub-fields are optional.
+
+        This object contains the per‑attachment overrides that supplement the
+        product defaults. All sub‑fields are optional. Omitting a section causes
+        the Pismo platform to follow the normal fallback sequence, moving from
+        the account level to the program and then to the product defaults. Each
+        penalty type provides `waived` as a required field, optional
+        type‑specific fields, and an optional `valid_until` to schedule the
+        revert.
+      properties:
+        maturity_instructions:
+          $ref: '#/components/schemas/MaturityInstructionsOverrideRequest'
+        renewal_term:
+          $ref: '#/components/schemas/RenewalTermOverrideRequest'
+        penalties:
+          $ref: '#/components/schemas/PenaltiesOverrideRequest'
+    MaturityInstructionsOverrideRequest:
+      type: object
+      description: >
+        Overrides the deposit’s behavior at maturity. If a field is omitted, the
+        Pismo platform uses the value defined at the higher‑level configuration
+        that governs this deposit.
+      properties:
+        principal:
+          type: string
+          enum:
+            - ROLLOVER
+            - PAY
+          description: Specifies how the principal is handled once the deposit matures.
+          example: ROLLOVER
+        interest:
+          type: string
+          enum:
+            - ROLLOVER
+            - PAY
+          description: Specifies how the interest is handled once the deposit matures.
+          example: PAY
+        reason:
+          type: string
+          maxLength: 100
+          description: Optional audit-trail reason.
+          example: Customer preference at onboarding
+    RenewalTermOverrideRequest:
+      type: object
+      description: >
+        Specifies the recurring rollover term, not to be confused with the
+        initial `maturity_period`.
+
+
+        You must provide either `unit` with `value` or
+        `renewal_calendar_maturity_date`.
+
+
+        A `ROLLOVER` configuration in principal or interest is required.
+
+
+        When you pass `renewal_calendar_maturity_date`, the Pismo platform
+        converts the interval from today into a day count and stores it at
+        attach time in normalized form: `{unit: DAYS, value: <calculated>}`.
+      properties:
+        unit:
+          type: string
+          enum:
+            - DAYS
+            - WEEKS
+            - MONTHS
+            - YEARS
+          description: >-
+            Time unit of the renewal term. Required together with `value` when
+            calendar form is not used.
+          example: MONTHS
+        value:
+          type: integer
+          minimum: 1
+          description: >-
+            Number of units. Required together with `unit` when calendar form is
+            not used.
+          example: 6
+        renewal_calendar_maturity_date:
+          type: string
+          format: date
+          description: >-
+            Explicit calendar date (`YYYY-MM-DD`), the date must be a future
+            date, and does not coincide with `unit`+`value`.
+          example: '2027-05-22'
+    PenaltiesOverrideRequest:
+      type: object
+      description: >
+        Per-type penalty overrides. Each type independently uses three-state
+        semantics:
+
+        omit (inherit) · `{waived: true}` (exempt) · `{waived: false, <fields>}`
+        (customize).
+      properties:
+        reason:
+          type: string
+          maxLength: 100
+          description: Optional audit-trail reason for the entire penalties block.
+          example: Q4 2026 VIP retention package
+        grace_period:
+          $ref: '#/components/schemas/GracePeriodOverrideRequest'
+        early_withdrawal_after_opening:
+          $ref: '#/components/schemas/EarlyWithdrawalAfterOpeningOverrideRequest'
+        withdrawal_fee:
+          $ref: '#/components/schemas/WithdrawalFeeOverrideRequest'
+        tiered_interest_forfeiture:
+          $ref: '#/components/schemas/TieredInterestForfeitureOverrideRequest'
+        subsequent_withdrawals:
+          $ref: '#/components/schemas/SubsequentWithdrawalsOverrideRequest'
+    GracePeriodOverrideRequest:
+      type: object
+      description: >-
+        Grace period override. Type-specific fields are optional pointers, when
+        omitted, the Pismo platform follows the normal fallback sequence, moving
+        from the account level to the program and then to the product defaults.
+      required:
+        - waived
+      properties:
+        waived:
+          type: boolean
+          description: >-
+            `true` = fully exempt; `false` = penalty active (customize via the
+            fields below).
+        duration_days:
+          type: integer
+          minimum: 0
+        penalty_interest_days:
+          type: integer
+          minimum: 0
+        valid_until:
+          type: string
+          format: date-time
+          description: >-
+            Schedules the revert of this override via EventBridge. This value
+            must be a future date and follows the ISO 8601 standard.
+    EarlyWithdrawalAfterOpeningOverrideRequest:
+      type: object
+      description: Override for early withdrawal after account opening.
+      required:
+        - waived
+      properties:
+        waived:
+          type: boolean
+        applicable_within_days:
+          type: integer
+          minimum: 0
+        penalty_interest_days:
+          type: integer
+          minimum: 0
+        valid_until:
+          type: string
+          format: date-time
+    WithdrawalFeeOverrideRequest:
+      type: object
+      description: Withdrawal fee override.
+      required:
+        - waived
+      properties:
+        waived:
+          type: boolean
+        type:
+          type: string
+          enum:
+            - PERCENTAGE
+            - FIXED
+        value:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+        valid_until:
+          type: string
+          format: date-time
+    TieredInterestForfeitureOverrideRequest:
+      type: object
+      description: >-
+        Tiered interest forfeiture override. Tiers replace the product's tiers
+        when provided.
+      required:
+        - waived
+      properties:
+        waived:
+          type: boolean
+        tiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TieredInterestForfeitureTierRequest'
+        valid_until:
+          type: string
+          format: date-time
+    TieredInterestForfeitureTierRequest:
+      type: object
+      required:
+        - min_days_held
+        - forfeited_interest_days
+      properties:
+        min_days_held:
+          type: integer
+          minimum: 0
+        max_days_held:
+          type: integer
+          minimum: 0
+          description: Optional. Open-ended tier when omitted.
+        forfeited_interest_days:
+          type: integer
+          minimum: 0
+    SubsequentWithdrawalsOverrideRequest:
+      type: object
+      description: Subsequent withdrawals (Regulation D) override.
+      required:
+        - waived
+      properties:
+        waived:
+          type: boolean
+        applicable_within_days:
+          type: integer
+          minimum: 1
+        penalty_interest_days:
+          type: integer
+          minimum: 1
+        window_behavior:
+          type: string
+          enum:
+            - ROLLING
+            - FIXED
+        valid_until:
+          type: string
+          format: date-time
+    ProgramAttachmentOverridesRequest:
+      type: object
+      description: >
+        Defines the per‑attachment overrides permitted at program scope. Only
+        `renewal_term` is valid. `penalties` and `maturity_instructions` result
+        in `400` responses (`EIBACC0317` and `EIBACC0318`) and must be provided
+        at the account level.
+      properties:
+        renewal_term:
+          $ref: '#/components/schemas/RenewalTermOverrideRequest'
+    ProgramDepositConfigs:
+      type: object
+      properties:
+        maturity_period:
+          $ref: '#/components/schemas/MaturityPeriod'
+        payout_account:
+          $ref: '#/components/schemas/PayoutAccount'
+        interest_capitalization_mode:
+          type: string
+          enum:
+            - PAYOUT
+            - REINVEST
+          default: PAYOUT
+          description: >
+            Program‑level setting that defines how capitalized interest should
+            be treated.<br>
+
+
+            * `PAYOUT` is the default. In this mode, the capitalized amount is
+            sent to the configured `payout_account`.
+
+            * `REINVEST` instructs the Pismo platform to add the capitalized
+            amount to the principal through the interest engine.
+
+
+            All accounts attached to the program inherit this behavior unless an
+            account‑level configuration overrides it.
+
+
+            If the field is not provided, it is omitted from the attachment and
+            the system applies `PAYOUT` at runtime.
+          example: PAYOUT
+        overrides:
+          $ref: '#/components/schemas/ProgramAttachmentOverridesRequest'
+    AttachmentOverridesPatchRequest:
+      type: object
+      description: >
+        PATCH envelope for account‑level `deposit_configs.overrides`. Fields
+        support three‑state semantics, omission preserves the current value,
+        `null` removes the override and restores the inherited configuration,
+        and a provided value replaces it. The envelope must define at least one
+        field, an empty overrides object returns a `400` error: `EIBACC0315`.
+      properties:
+        maturity_instructions:
+          allOf:
+            - $ref: '#/components/schemas/MaturityInstructionsOverrideRequest'
+          nullable: true
+        renewal_term:
+          allOf:
+            - $ref: '#/components/schemas/RenewalTermOverrideRequest'
+          nullable: true
+        penalties:
+          $ref: '#/components/schemas/PenaltiesPatchRequest'
+    PenaltiesPatchRequest:
+      type: object
+      description: >
+        PATCH envelope for `deposit_configs.overrides.penalties`. Penalty types
+        support three‑state semantics: omit to retain the existing value, use
+        `null` to clear the override and restore the inherited configuration, or
+        provide a value object to replace it. `reason` is optional metadata.
+      properties:
+        reason:
+          type: string
+          maxLength: 100
+          example: Update — Q1 2027 VIP retention package
+        grace_period:
+          allOf:
+            - $ref: '#/components/schemas/GracePeriodOverrideRequest'
+          nullable: true
+        early_withdrawal_after_opening:
+          allOf:
+            - $ref: '#/components/schemas/EarlyWithdrawalAfterOpeningOverrideRequest'
+          nullable: true
+        withdrawal_fee:
+          allOf:
+            - $ref: '#/components/schemas/WithdrawalFeeOverrideRequest'
+          nullable: true
+        tiered_interest_forfeiture:
+          allOf:
+            - $ref: '#/components/schemas/TieredInterestForfeitureOverrideRequest'
+          nullable: true
+        subsequent_withdrawals:
+          allOf:
+            - $ref: '#/components/schemas/SubsequentWithdrawalsOverrideRequest'
+          nullable: true
+    ProgramAttachmentOverridesPatchRequest:
+      type: object
+      description: |
+        PATCH envelope for program-level `deposit_configs.overrides`.<br>
+        **NOTES**:
+          * Only `renewal_term` is valid and uses three-state semantics: omit for no change, `null` to clear the override, or supply a value to replace it
+          * `penalties` and `maturity_instructions` are not allowed and produce `400 EIBACC0317` and `EIBACC0318`
+          * An empty `overrides` object is rejected with `400 EIBACC0315`
+      properties:
+        renewal_term:
+          allOf:
+            - $ref: '#/components/schemas/RenewalTermOverrideRequest'
+          nullable: true
+    UpdateAccountAttachmentRequest:
+      type: object
+      required:
+        - deposit_configs
+      properties:
+        deposit_configs:
+          type: object
+          description: >
+            At least one of `overrides` or `interest_capitalization_mode` must
+            be provided.
+          properties:
+            interest_capitalization_mode:
+              type: string
+              enum:
+                - PAYOUT
+                - REINVEST
+              nullable: true
+              description: >
+                Defines how capitalized interest is treated.<br>
+
+
+                * `PAYOUT` (default): The capitalized amount is routed to
+                `payout_account`. If no payout account is configured, the amount
+                remains in the base account.
+
+                * `REINVEST`: the capitalized amount is added to the principal
+                through the interest engine. The updated principal becomes the
+                basis for the next accrual cycle.
+
+
+                This field applies only to the capitalization flow. The maturity
+                instruction flow always uses `payout_account` regardless of this
+                setting.<br>
+
+
+                If the field is not provided, it is absent in the attachment and
+                defaults to `PAYOUT` at runtime.
+              example: REINVEST
+            overrides:
+              $ref: '#/components/schemas/AttachmentOverridesPatchRequest'
+    UpdateProgramAttachmentRequest:
+      type: object
+      required:
+        - deposit_configs
+      properties:
+        deposit_configs:
+          type: object
+          description: >
+            At least one of `overrides` or `interest_capitalization_mode` must
+            be provided.
+          properties:
+            interest_capitalization_mode:
+              type: string
+              enum:
+                - PAYOUT
+                - REINVEST
+              nullable: true
+              description: >
+                Updates the program-level default capitalization mode. Inherited
+                by all accounts attached to this program unless overridden at
+                account level.
+
+
+                Send `null` to remove the program-level value and revert to the
+                product default.
+              example: PAYOUT
+            overrides:
+              $ref: '#/components/schemas/ProgramAttachmentOverridesPatchRequest'
+    DepositAttachAccountResponse:
+      type: object
+      description: Response body returned when attaching a deposit product to an account
+      properties:
+        account_id:
+          type: integer
+          description: Account ID
+          example: 123456
+        product_id:
+          type: string
+          description: Product ID
+          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        effective_date:
           type: string
           format: date
           description: >
-            The specific calendar date the asset or investment matures, format =
-            `YYYY-MM-DD`.<br>
-          example: '2026-10-07'
-        interest_payout_account:
-          $ref: '#/components/schemas/InterestPayoutAccount'
+            The effective value date of the attachment. Format is `YYYY-MM-DD`.
+
+            This is the date when the attachment becomes valid. Maturity is
+            calculated from this date.
+          example: '2025-12-01'
+        deposit_configs:
+          type: object
+          properties:
+            maturity_period:
+              $ref: '#/components/schemas/MaturityPeriod'
+            interest_capitalization_mode:
+              type: string
+              enum:
+                - PAYOUT
+                - REINVEST
+              description: >
+                Present only when the request included
+                `interest_capitalization_mode`. Reflects the value stored on the
+                attachment.
+              example: REINVEST
+            overrides:
+              $ref: '#/components/schemas/AttachmentOverridesSnapshot'
+    DepositAttachProgramResponse:
+      type: object
+      description: Response body returned when attaching a deposit product to a program.
+      properties:
+        program_id:
+          type: integer
+          description: Program identifier.
+          example: 123
+        product_id:
+          type: string
+          description: Product identifier.
+          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        deposit_configs:
+          type: object
+          properties:
+            maturity_period:
+              $ref: '#/components/schemas/MaturityPeriod'
+            interest_capitalization_mode:
+              type: string
+              enum:
+                - PAYOUT
+                - REINVEST
+              description: >
+                Present only when the request included
+                `interest_capitalization_mode`. Reflects the value stored on the
+                attachment.
+              example: PAYOUT
+            overrides:
+              $ref: '#/components/schemas/AttachmentOverridesSnapshot'
+    AttachmentOverridesSnapshot:
+      type: object
+      description: >
+        Representation of the persisted overrides, present only when the request
+        defined at least one override. Sub-fields are included only when set.
+        The `renewal_term` retains the structure provided by the client
+        (calendar form or `unit`+`value`), mirroring the behavior of
+        `maturity_period`.
+      properties:
+        maturity_instructions:
+          $ref: '#/components/schemas/MaturityInstructionsOverrideRequest'
+        renewal_term:
+          $ref: '#/components/schemas/RenewalTermResponse'
+        penalties:
+          $ref: '#/components/schemas/PenaltiesOverrideSnapshot'
+    RenewalTermResponse:
+      type: object
+      description: >
+        Renewal term applied on each rollover. The platform preserves the
+        client’s original format: `unit`+`value` appears when provided, and
+        `renewal_calendar_maturity_date` is returned as a string when that form
+        is used.
+      properties:
+        unit:
+          type: string
+          enum:
+            - DAYS
+            - WEEKS
+            - MONTHS
+            - YEARS
+          example: MONTHS
+        value:
+          type: integer
+          minimum: 1
+          example: 6
+        renewal_calendar_maturity_date:
+          type: string
+          format: date
+          description: >-
+            Returned only when the request uses the calendar format. Format =
+            `YYYY-MM-DD`.
+          example: '2027-05-22'
+    PenaltiesOverrideSnapshot:
+      type: object
+      description: >
+        Persisted penalty overrides for each type. Types appear only when set.
+        Each entry includes `waived`, the relevant type-specific fields, and an
+        optional `valid_until` for scheduling the revert.
+      properties:
+        reason:
+          type: string
+          example: Q4 2026 VIP retention package
+        grace_period:
+          $ref: '#/components/schemas/GracePeriodOverrideRequest'
+        early_withdrawal_after_opening:
+          $ref: '#/components/schemas/EarlyWithdrawalAfterOpeningOverrideRequest'
+        withdrawal_fee:
+          $ref: '#/components/schemas/WithdrawalFeeOverrideRequest'
+        tiered_interest_forfeiture:
+          $ref: '#/components/schemas/TieredInterestForfeitureOverrideRequest'
+        subsequent_withdrawals:
+          $ref: '#/components/schemas/SubsequentWithdrawalsOverrideRequest'
     DepositProduct:
       type: object
       properties:
@@ -338,7 +1014,7 @@ components:
           example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
         product_type:
           type: string
-          description: Product type.
+          description: Product type
           enum:
             - deposit
             - savings-account
@@ -363,8 +1039,37 @@ components:
           format: date
           description: >-
             Defines the earliest date from which the product can be attached to
-            an account or program.
+            an account or program. Date is displayed in UTC.
           example: '2025-11-01'
+        end_date:
+          type: string
+          format: date
+          description: >-
+            Defines the final date when the product can be attached to an
+            account or program, rejects any attach operations submitted after
+            that date, uses the `yyyy‑mm‑dd` format with all dates shown in
+            UTC+0 regardless of your timezone, and must be set at least one day
+            after the current date (D+1).
+          example: '2027-12-31'
+        metadata:
+          type: object
+          description: >
+            The metadata object contains user-defined key-value pairs that
+            provide additional context or custom information.<br>
+
+            Metadata content is not controlled by the Pismo platform and is
+            instead controlled by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
+          example:
+            key: value
     CreateDepositProductRequest:
       required:
         - name
@@ -408,9 +1113,10 @@ components:
           example: 12
         grace_period:
           type: integer
+          format: int32
           description: >-
-            Define the number of days during which changes can be made to the
-            product before it rolls over. If you define a grace period penalty,
+            Number of days during which changes can be made to the product
+            before it rolls over. If you define a grace period penalty,
             configure it under `penalties.grace_period`.
           example: 10
         min_amount:
@@ -444,8 +1150,37 @@ components:
           description: >-
             Define the earliest date from which the product can be attached to
             an account or program. Attach operations attempted before this date
-            are rejected.
+            are rejected. Date is displayed in UTC.
           example: '2025-11-01'
+        end_date:
+          type: string
+          format: date
+          description: >-
+            Defines the final date when the product can be attached to an
+            account or program, rejects any attach operations submitted after
+            that date, uses the `yyyy‑mm‑dd` format with all dates shown in
+            UTC+0 regardless of your timezone, and must be set at least one day
+            after the current date (D+1).
+          example: '2027-12-31'
+        metadata:
+          type: object
+          description: >
+            The metadata object contains user-defined key-value pairs that
+            provide additional context or custom information.<br>
+
+            Metadata content is not controlled by the Pismo platform and is
+            instead controlled by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
+          example:
+            key: value
     CreateSavingsAccountProductRequest:
       required:
         - interest_plan_id
@@ -477,10 +1212,29 @@ components:
           type: string
           format: date
           description: >-
-            Define the earliest date from which the product can be attached to
+            Defines the earliest date from which the product can be attached to
             an account or program. Attach operations attempted before this date
-            are rejected.
+            are rejected. Date is displayed in UTC.
           example: '2025-11-01'
+        metadata:
+          type: object
+          description: >
+            The metadata object contains user-defined key-value pairs that
+            provide additional context or custom information.<br>
+
+            The platform has no control over its content, but rather controlled
+            by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
+          example:
+            key: value
     ProductList:
       type: object
       properties:
@@ -506,6 +1260,9 @@ components:
           description: A collection of individual product objects.
     PatchProductRequest:
       type: object
+      description: >-
+        All fields are optional, but either `status` or `min_amount` must be
+        provided. When `status` is provided, `reason` is required.
       properties:
         status:
           description: Product status
@@ -516,20 +1273,20 @@ components:
             - ACTIVE
             - INACTIVE
         reason:
-          description: Status update reason
+          description: Status update reason. Required when `status` is provided.
           example: Activating product
+          maxLength: 128
           type: string
+        min_amount:
+          description: >-
+            The minimum balance required to earn yield. When provided, must be
+            greater than 0. Applied from the moment of a successful update (Not
+            retroactive. Accounts already opened are not revalidated).
+          example: 50
+          type: number
     DepositProcessingCodes:
       type: object
       properties:
-        maturity_processing_code:
-          type: string
-          description: >
-            Processing code for maturity.<br>
-
-            If not provided at the time of creation, the default value is
-            `009595`.
-          example: '009595'
         interest_processing_code:
           type: string
           description: >-
@@ -576,6 +1333,28 @@ components:
           type: string
           description: Product identifier.
           example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        effective_date:
+          type: string
+          format: date
+          description: >
+            Backdated effective date for the attachment in `YYYY-MM-DD` format.
+            This is the date starting from which the attachment is considered
+            valid.
+
+            - If omitted, it defaults to the current date
+
+            - Must be less than or equal to the current date (cannot be in the
+            future)
+
+            - Cannot be more than `ATTACHMENT_MAX_BACKDATING_DAYS` (default: 90
+            days) in the past
+
+            - Maturity date is calculated from this date, not from the date when
+            you call the API.
+
+            - No retroactive interest accrual, capitalization, or postings are
+            triggered
+          example: '2025-12-01'
         deposit_configs:
           $ref: '#/components/schemas/DepositConfigs'
         metadata:
@@ -585,7 +1364,52 @@ components:
             provide additional context or custom information.<br>
 
             The platform has no control over its content, but rather controlled
-            by the user.
+            by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
+          example:
+            key: value
+    ProgramDepositAttachRequest:
+      type: object
+      description: >
+        Request body for attaching a deposit product at the program scope. Same
+        shape as the account-level request, with the exception that
+        `deposit_configs.overrides` accepts only `renewal_term`. `penalties` and
+        `maturity_instructions` are not allowed and produce `400 EIBACC0317` and
+        `EIBACC0318`.
+      required:
+        - product_id
+      properties:
+        product_id:
+          type: string
+          description: Product identifier.
+          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        deposit_configs:
+          $ref: '#/components/schemas/ProgramDepositConfigs'
+        metadata:
+          type: object
+          description: >
+            The metadata object contains user-defined key-value pairs that
+            provide additional context or custom information.<br>
+
+            The platform has no control over its content, but rather controlled
+            by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
           example:
             key: value
     SavingsAccountAttachRequest:
@@ -595,7 +1419,7 @@ components:
       properties:
         product_id:
           type: string
-          description: Product identifier.
+          description: Product ID
           example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
         metadata:
           type: object
@@ -604,7 +1428,16 @@ components:
             additional context or custom information.<br>
 
             The platform has no control over its content, it's controlled by the
-            user.
+            user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
           example:
             key: value
     DetachRequest:
@@ -623,7 +1456,16 @@ components:
             additional context or custom information.<br>
 
             The platform has no control over its content, but rather controlled
-            by the user.
+            by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
           example:
             key: value
     SavingsAccountProduct:
@@ -682,52 +1524,40 @@ components:
           format: date
           description: >-
             Define the earliest date from which the product can be attached to
-            an account or program.
+            an account or program. Date is displayed in UTC.
           example: '2025-11-01'
+        metadata:
+          type: object
+          description: >
+            The metadata object contains user-defined key-value pairs that
+            provide additional context or custom information.<br>
+
+            Metadata content is not controlled by the Pismo platform and is
+            instead controlled by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
+          example:
+            key: value
     AccountAttachment:
       type: object
       properties:
-        attachment_date:
-          type: string
-          format: datetime
-          description: Date on which the product is attached to the account.
-          example: '2024-01-23T13:26:25.000Z'
-        interest_plan_id:
-          type: string
-          description: >-
-            Interest rate plan ID. This corresponds to the ID you created using
-            the [Create interest plan version](ref:patch-v1-interest-plan))
-            endpoint.
-          example: 263d509a-d5d0-4b3a-b909-ce1b9174beff
-        maturity_date_days:
-          type: integer
-          description: >
-            The number of days until the maturity date of the asset or
-            investment.<br>
-
-            This field represents the duration in days before the asset reaches
-            its maturity and can be cashed out.
-          example: 365
-        product_id:
-          type: string
-          description: Product identifier.
-          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
         product_type:
           type: string
           description: Product type.
           enum:
             - deposit
             - savings-account
-        interest_payout_account:
-          $ref: '#/components/schemas/InterestPayoutAccount'
-    ProgramAttachment:
-      type: object
-      properties:
-        attachment_date:
+        product_id:
           type: string
-          format: datetime
-          description: Date on which the product is attached to the program.
-          example: '2024-01-23T13:26:25.000Z'
+          description: Product identifier.
+          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
         interest_plan_id:
           type: string
           description: >-
@@ -735,36 +1565,120 @@ components:
             the [Create interest plan version](ref:patch-v1-interest-plan))
             endpoint.
           example: 263d509a-d5d0-4b3a-b909-ce1b9174beff
-        maturity_date_days:
-          type: integer
+        maturity_period:
+          $ref: '#/components/schemas/MaturityPeriod'
+        attached_at:
+          type: string
+          format: date-time
           description: >
-            The number of days until the maturity date of the asset or
-            investment.<br>
+            Timestamp that indicates when the attach API call was called.
 
-            This field represents the duration in days before the asset reaches
-            its maturity date and can be cashed out
-          example: 365
-        calendar_maturity_date:
+            The datetime format follows the ISO 8601 standard
+            `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2024-01-23T13:26:25.000Z'
+        effective_date:
           type: string
           format: date
           description: >
-            The date the asset or investment matures. The date format must be
-            `YYYY-MM-DD`. <br>
+            The effective date of the attachment in `YYYY-MM-DD` format
 
-            This value is either calculated from the provided days to maturity
-            (`maturity_date_days`) or is the same date that was entered in the
-            request.
-          example: '2026-10-07'
-        product_id:
+            This is the date when the attachment becomes valid. Maturity is
+            calculated from this date.
+
+            For attachments created in the past, the date defaults to the value
+            of `attached_at`.
+          example: '2025-12-01'
+        fee_model_id:
           type: string
-          description: Product identifier.
-          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+          description: Fee model identifier, if applicable.
+          example: fee-model-123
+        payout_account:
+          $ref: '#/components/schemas/PayoutAccount'
+        interest_capitalization_mode:
+          type: string
+          enum:
+            - PAYOUT
+            - REINVEST
+          description: >
+            Present only when this account attachment explicitly defines
+            `interest_capitalization_mode`. If the field is missing, the
+            effective value is `PAYOUT`, inherited from the program
+            configuration or, if the program does not specify it, from the
+            product’s default settings.
+          example: REINVEST
+        overrides:
+          allOf:
+            - $ref: '#/components/schemas/AttachmentOverridesSnapshot'
+          description: >-
+            Optional. Only returned when at least one override is configured for
+            the attachment.
+    ProgramAttachment:
+      type: object
+      properties:
         product_type:
           type: string
           description: Product type.
           enum:
             - deposit
             - savings-account
+        product_id:
+          type: string
+          description: Product identifier.
+          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        interest_plan_id:
+          type: string
+          description: >-
+            Interest rate plan ID. This corresponds to the ID you created using
+            the [Create interest plan version](ref:patch-v1-interest-plan))
+            endpoint.
+          example: 263d509a-d5d0-4b3a-b909-ce1b9174beff
+        maturity_period:
+          $ref: '#/components/schemas/MaturityPeriod'
+        attached_at:
+          type: string
+          format: date-time
+          description: >
+            Timestamp that indicates when the attach API call was called
+
+            The datetime format follows the ISO 8601 standard
+            `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2024-01-23T13:26:25.000Z'
+        effective_date:
+          type: string
+          format: date
+          description: >
+            The effective date of the attachment in `YYYY-MM-DD` format
+
+            This is the date when the attachment becomes valid. Maturity is
+            calculated from this date.
+
+            For attachments created in the past, the date defaults to the vaue
+            of `attached_at`.
+          example: '2025-12-01'
+        fee_model_id:
+          type: string
+          description: Fee model identifier, if applicable.
+          example: fee-model-123
+        payout_account:
+          $ref: '#/components/schemas/PayoutAccount'
+        interest_capitalization_mode:
+          type: string
+          enum:
+            - PAYOUT
+            - REINVEST
+          description: >
+            Present only when this program attachment explicitly defines
+            `interest_capitalization_mode`. If the field is missing, the Pismo
+            platform applies `PAYOUT` as the default behavior. All accounts
+            linked to the program inherit this value unless an account‑level
+            configuration provides its own setting.
+          example: PAYOUT
+        overrides:
+          allOf:
+            - $ref: '#/components/schemas/AttachmentOverridesSnapshot'
+          description: >-
+            Optional. Only returned when at least one override is configured for
+            the attachment.
     CalculateAverageBalanceRequest:
       type: object
       properties:
@@ -885,6 +1799,14 @@ components:
           example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
     DepositPenalties:
       type: object
+      description: >
+        Set of penalty configurations that can be applied to a deposit product.
+        Each penalty type corresponds to a specific fee ID and transaction flow
+        within the Pismo platform.
+
+        For details about penalty types, refer to the [Penalty
+        types](doc:penalties-for-cd-accounts#penalty-types) section of Penalties
+        for CD accounts.
       properties:
         early_withdrawal_after_opening:
           $ref: '#/components/schemas/EarlyWithdrawalAfterOpening'
@@ -991,10 +1913,10 @@ components:
         This penalty corresponds to fee ID `subsequentWithdrawalPenaltyID` and
         transaction flow `subsequentWithdrawalPenalty`.<br>
 
-        Settings for the subsequent withdrawal penalty (Regulation D). 
+        Settings for the subsequent withdrawal penalty (Regulation D).
 
         A penalty fee is applied when a customer makes a withdrawal within the
-        configured window. 
+        configured window.
 
         The window either resets with each withdrawal (ROLLING) or remains fixed
         from the first withdrawal (FIXED).
@@ -1038,6 +1960,11 @@ components:
         - principal
         - interest
         - reason
+      description: >
+        Amounts set to `ROLLOVER` are carried forward into a new deposit term.
+        If the principal is configured as `NO_ACTION`, it remains unchanged at
+        maturity. For interest configured as `PAY`, any positive accrued amount
+        is credited to the account’s cash balance.
       properties:
         principal:
           type: string
@@ -1078,15 +2005,6 @@ components:
           maxLength: 100
           description: Reason for creating the maturity instruction override
           example: Customer requested custom maturity handling
-      description: >
-        - If the principal or interest are `ROLLOVER`, the respective amounts is
-        rolled over to a new deposit term.
-
-        - When principal is `NO_ACTION`, no action is taken with the principal
-        amount at maturity.
-
-        - If the interest is `PAY` and the accrued interest is greater than
-        zero, it's paid to the account's cash balance.
     UpdateMaturityInstructionOverrideRequest:
       type: object
       properties:
@@ -1169,6 +2087,400 @@ components:
           format: date-time
           description: Timestamp that indicates when the override was last updated
           example: '2024-01-23T13:26:25.000Z'
+    CycleSnapshotResponse:
+      type: object
+      description: >
+        Provides a point in time representation of a deposit account lifecycle.
+        Includes the current state and the previous cycle’s key attributes, such
+        as product and attachment references, interest plan context, lifecycle
+        dates, and principal details. Supports audit, statement, and
+        reconciliation workflows without requiring clients to reassemble the
+        account’s history from individual events.
+      properties:
+        account_id:
+          type: integer
+          description: Deposit account ID
+          example: 1234567
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+          description: Cycle status, this can be either `ACTIVE` or `INACTIVE`
+          example: ACTIVE
+        current_product_id:
+          type: string
+          description: Product ID currently attached to the account
+          example: ze2b8k77-f6a0-4ba4-890a-0dc23f13fhg4
+        current_attachment_id:
+          type: string
+          description: Current attachment ID
+          example: 1234test
+        current_interest_plan_id:
+          type: string
+          description: Current interest plan ID
+          example: ee2b8b77-f6a0-4ba4-890a-0dc23f13fcb4
+        current_grace_period:
+          type: integer
+          description: Current grace period in days
+          example: 10
+        current_rollover_date:
+          type: string
+          format: date-time
+          description: >-
+            Current rollover date, The datetime format follows the ISO 8601
+            standard `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-02-01T00:00:00Z'
+        current_calendar_maturity_date:
+          type: string
+          format: date-time
+          description: >-
+            Current calendar maturity date. The datetime format follows the ISO
+            8601 standard `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-01-26T12:00:00Z'
+        previous_product_id:
+          type: string
+          description: Previous product ID
+          example: ae2b8k77-f6a0-4ba4-890a-0dc23f13fcb4
+        previous_attachment_id:
+          type: string
+          description: Previous attachment ID
+          example: attach685
+        previous_interest_plan_id:
+          type: string
+          description: Previous interest plan ID
+          example: ee2b8b77-f6a0-4ba4-890a-0dc23f13fcb4
+        previous_grace_period:
+          type: integer
+          description: Previous grace period in days
+          example: 5
+        previous_calendar_maturity_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: >-
+            Previous calendar maturity date. The datetime format follows the ISO
+            8601 standard `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2025-12-01T00:00:00Z'
+        cycle_start_date:
+          type: string
+          format: date-time
+          description: >-
+            Cycle start date. The datetime format follows the ISO 8601 standard
+            `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-01-26T12:00:00Z'
+        start_date:
+          type: string
+          format: date-time
+          description: >-
+            Start date of the cycle. The datetime format follows the ISO 8601
+            standard `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2024-12-01T00:00:00Z'
+    UpdatePayoutAccountRequest:
+      type: object
+      required:
+        - payout_account
+      properties:
+        payout_account:
+          $ref: '#/components/schemas/PayoutAccount'
+    UpdatePayoutAccountResponse:
+      type: object
+      properties:
+        payout_account:
+          $ref: '#/components/schemas/PayoutAccount'
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time when the payout account was updated
+          example: '2024-01-23T13:26:25.000Z'
+    PenaltySimulationRequest:
+      type: object
+      required:
+        - withdrawal_date
+      properties:
+        withdrawal_amount:
+          type: number
+          description: >
+            The amount the customer intends to withdraw. When omitted, the
+            system fetches the current book balance from Bank Statements API.
+            When provided, it must not exceed the current book balance.
+          example: 5000
+        withdrawal_date:
+          type: string
+          format: date-time
+          description: Simulated withdrawal date in ISO 8601 format.
+          example: '2026-06-15T00:00:00Z'
+    PenaltySimulationResponse:
+      type: object
+      properties:
+        withdrawal_amount:
+          type: number
+          description: >-
+            The withdrawal amount used in the simulation (equals book_balance
+            when omitted in request)
+          example: 40667.17
+        withdrawal_date:
+          type: string
+          format: date-time
+          description: The withdrawal date used in the simulation in ISO 8601 format.
+          example: '2026-12-15T00:00:00Z'
+        penalty_rule_applied:
+          type: array
+          description: >
+            List of penalty rules that applies to the withdrawal, omitted if no
+            penalties apply.
+          items:
+            $ref: '#/components/schemas/PenaltyRuleApplied'
+        penalty_amount:
+          type: number
+          description: >-
+            The total penalty amount applied to the withdrawal, combining all
+            relevant penalty rules.
+          example: 231.75
+        penalty_breakdown:
+          $ref: '#/components/schemas/PenaltyBreakdown'
+        currency:
+          type: string
+          description: >-
+            The currency in ISO 4217 alphabetic format, omitted if no penalty
+            applies.
+          example: BRL
+        gross_amount:
+          type: number
+          description: >
+            The gross amount of the deposit account, calculated as the sum of
+            the total balance without interest plus the total interest earned.
+            Always present; 0 when no total record exists.
+          example: 41329.34
+        interest_earned_amount:
+          type: number
+          description: >
+            The total interest earned (paid/capitalized) on the account. Always
+            present; 0 when no total record exists.
+          example: 667.17
+        net_amount:
+          type: number
+          description: >
+            The net amount after deducting penalties from the gross amount:
+            `gross_amount - penalty_amount`.
+          example: 41097.59
+        simulation_timestamp:
+          type: string
+          format: date-time
+          description: >-
+            The date and time of the simulation, formatted according to ISO
+            8601.
+          example: '2026-06-19T19:22:55Z'
+    PenaltyRuleApplied:
+      type: object
+      description: A single penalty rule applied during a simulated withdrawal
+      properties:
+        type:
+          type: string
+          enum:
+            - percentage
+            - fixed
+          description: >
+            The penalty calculation type.
+
+            - `percentage`: The penalty calculated as a percentage of the
+            withdrawal amount
+
+            - `fixed`: The penalty is a fixed amount
+          example: percentage
+        value:
+          type: number
+          description: >
+            The penalty value. For `percentage`, this represents the percentage
+            rate, for example, `2.5` = 2.5%. For `fixed`, this is the absolute
+            amount in the account's currency.
+          example: 2.5
+        description:
+          type: string
+          description: Describes the penalty rule that triggers the penalty
+          example: Early withdrawal after opening penalty
+    PenaltyBreakdown:
+      type: object
+      description: >-
+        Breakdown of the total penalty amount by calculation type. Omitted when
+        no penalty applies.
+      properties:
+        fixed_amount:
+          type: number
+          description: The sum of all fixed-amount penalties
+          example: 50
+        percentage_amount:
+          type: number
+          description: The sum of all percentage-based penalties
+          example: 75.5
+    UnifiedDepositOpenRequest:
+      type: object
+      required:
+        - account
+        - deposit_attachment
+      description: >
+        Creates or locates a deposit account and attaches a deposit product in a
+        single request.
+      properties:
+        account:
+          $ref: '#/components/schemas/UnifiedOpenAccount'
+        deposit_attachment:
+          $ref: '#/components/schemas/UnifiedOpenDepositAttachment'
+        account_creation:
+          $ref: '#/components/schemas/UnifiedOpenAccountCreation'
+        metadata:
+          type: object
+          description: >
+            The metadata object contains user-defined key-value pairs that
+            provide additional context or custom information.<br>
+
+            Metadata content is not controlled by the Pismo platform and is
+            instead controlled by the user.<br>
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis).
+          example:
+            key: value
+    UnifiedOpenAccount:
+      type: object
+      required:
+        - external_account_id
+      description: Identifies the account to which the deposit product is attached
+      properties:
+        external_account_id:
+          type: string
+          description: >
+            The external account ID identifies the transaction banking account.
+            The Pismo platform uses this ID to find the account via the
+            transaction banking API and attach the specified deposit product.
+          example: ext-acct-001
+        account_id:
+          type: integer
+          format: int64
+          description: >
+            Pismo account ID. When provided, the Pismo platform locates the
+            account using `external_account_id` and validates the ID.
+
+            If omitted, the Pismo platform uses `account_creation` to create a
+            new account.
+          example: 123456
+    UnifiedOpenAccountCreation:
+      type: object
+      required:
+        - program_id
+        - division_code
+        - applicant
+      description: >
+        Account creation parameters. Required when `account.account_id` is not
+        provided.
+
+        Pismo platform uses these fields to create a new transaction banking
+        account via the transaction banking API.
+      properties:
+        program_id:
+          type: integer
+          format: int64
+          description: Program ID to associate the new account with
+          example: 100
+        division_code:
+          type: string
+          description: Division code for the new account
+          example: '001'
+        applicant:
+          $ref: '#/components/schemas/UnifiedOpenApplicant'
+        currency_code:
+          type: string
+          description: >-
+            ISO 4217 currency code for the account. If omitted, the default
+            currency for the program is used.
+          example: USD
+        account_creation_datetime:
+          type: string
+          format: date-time
+          minLength: 24
+          maxLength: 24
+          description: >-
+            Account creation timestamp is passed directly to the
+            transaction‑banking API as an ISO 8601 value
+            (`yyyy‑mm‑ddThh:mm:ss.sssZ`, 24 characters). The field is optional
+            and omitted when not supplied, and all validation is handled by the
+            transaction banking API.
+          example: '2026-06-24T14:49:36.017Z'
+    UnifiedOpenApplicant:
+      type: object
+      required:
+        - document_number
+        - name
+      description: Applicant information for account creation
+      properties:
+        document_number:
+          type: string
+          description: >-
+            Applicant document number. For example, CPF or the US social
+            security number.
+          example: '12345678900'
+        name:
+          type: string
+          description: Applicant's full name
+          example: John Doe
+    UnifiedOpenDepositAttachment:
+      type: object
+      required:
+        - product_id
+      description: Deposit product attachment configuration
+      properties:
+        product_id:
+          type: string
+          description: Product ID of the deposit product to attach
+          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        deposit_configs:
+          $ref: '#/components/schemas/DepositConfigs'
+    UnifiedDepositOpenResponse:
+      type: object
+      description: >-
+        Response returned after successfully opening a deposit account and
+        attaching a product
+      properties:
+        account_id:
+          type: integer
+          format: int64
+          description: Pismo account ID (new or existing)
+          example: 123456
+        external_account_id:
+          type: string
+          description: External account ID
+          example: ext-acct-001
+        product_id:
+          type: string
+          description: Product ID of the attached deposit product
+          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        deposit_configs:
+          type: object
+          description: Deposit configuration after attachment
+          properties:
+            maturity_period:
+              $ref: '#/components/schemas/MaturityPeriod'
+            renewal_term:
+              type: object
+              description: >-
+                Renewal term configuration, present only when the override
+                includes a renewal term.
+              properties:
+                unit:
+                  $ref: '#/components/schemas/MaturityPeriodUnit'
+                value:
+                  $ref: '#/components/schemas/MaturityPeriodValue'
+                renewal_calendar_maturity_date:
+                  type: string
+                  format: date
+                  description: Explicit renewal maturity date
+                  example: '2028-06-15'
   securitySchemes:
     BearerAuth:
       type: http
@@ -1176,7 +2488,7 @@ components:
       bearerFormat: JWT
   responses:
     400BadRequest:
-      description: Bad request.
+      description: Bad request
       content:
         application/json:
           schema:
@@ -1184,15 +2496,55 @@ components:
               - $ref: '#/components/schemas/ErrorResponse'
           examples:
             invalidRequestBody:
-              summary: Bad Request.
+              summary: Bad Request
               value:
                 code: EIBACC0008
-                message: Bad Request.
-                detail: >-
+                message: Bad Request
+                details: >-
                   error EIBACC0008: Validation error [(Field 'Order' is
                   invalid)]
+            maturityPeriodMutuallyExclusive:
+              summary: >-
+                maturity_period — calendar_maturity_date and unit/value are
+                mutually exclusive
+              value:
+                code: EIBACC0307
+                message: Validation error
+                details: >-
+                  maturity_period accepts either calendar_maturity_date OR
+                  unit+value, not both. Choose one: send calendar_maturity_date
+                  for an explicit date, or unit+value for a relative period.
+            calendarMaturityDateInvalidFormat:
+              summary: >-
+                maturity_period — calendar_maturity_date is not in YYYY-MM-DD
+                format
+              value:
+                code: EIBACC0305
+                message: Validation error
+                details: calendar_maturity_date must be in YYYY-MM-DD format
+            calendarMaturityDateNotFuture:
+              summary: maturity_period — calendar_maturity_date is not a future date
+              value:
+                code: EIBACC0306
+                message: Validation error
+                details: calendar_maturity_date must be a future date (after today)
+            effectiveDateInFuture:
+              summary: effective_date cannot be in the future
+              value:
+                code: EIBACC0308
+                message: Effective date cannot be in the future
+            effectiveDateTooFarInPast:
+              summary: effective_date exceeds maximum backdating limit
+              value:
+                code: EIBACC0309
+                message: Effective date exceeds maximum backdating limit
+            effectiveDateInvalidFormat:
+              summary: effective_date is not in YYYY-MM-DD format
+              value:
+                code: EIBACC0310
+                message: Invalid effective date format. Expected YYYY-MM-DD
     404NotFound:
-      description: Bad request.
+      description: Bad request
       content:
         application/json:
           schema:
@@ -1200,12 +2552,12 @@ components:
               - $ref: '#/components/schemas/ErrorResponse'
           examples:
             invalidRequestBody:
-              summary: Bad Request.
+              summary: Bad Request
               value:
-                code: EIBACC0078
-                message: Product not found.
+                code: EIBACC0064
+                message: Product not found
     409Conflict:
-      description: Conflict.
+      description: Conflict
       content:
         application/json:
           schema:
@@ -1213,12 +2565,12 @@ components:
               - $ref: '#/components/schemas/ErrorResponse'
           examples:
             conflict:
-              summary: Conflict.
+              summary: Conflict
               value:
-                code: EIBACC0128
+                code: EIBACC0114
                 message: Product is already detached
     500InternalServer:
-      description: Internal error.
+      description: Internal error
       content:
         application/json:
           schema:
@@ -1226,7 +2578,7 @@ components:
               - $ref: '#/components/schemas/ErrorResponse'
           examples:
             internalProcessingError:
-              summary: Internal processing error.
+              summary: Internal processing error
               value:
                 code: EIBACC0007
                 message: Internal error
@@ -1236,9 +2588,9 @@ paths:
     get:
       tags:
         - Product
-      summary: List product
+      summary: List products
       description: |
-        Returns a list of an organization's savings and time-deposit accounts.
+        Return a list of an organization's savings and time-deposit accounts.
       operationId: interest-bearing-v1-list-products
       parameters:
         - $ref: '#/components/parameters/beginDateTimeQuery'
@@ -1274,8 +2626,8 @@ paths:
         created](https://developers.pismo.io/events/docs/deposit-product-creation-1)
         event.
 
-        For information about interest-bearing accounts, see [Interest-bearing
-        accounts](doc:interest-bearing-accounts).
+        For information about interest-bearing accounts, refer to
+        [Interest-bearing accounts](doc:interest-bearing-accounts).
       operationId: interest-bearing-v1-create-deposit-product
       parameters:
         - $ref: '#/components/parameters/authorizationTokenHeader'
@@ -1442,9 +2794,9 @@ paths:
     get:
       tags:
         - Account attachment
-      summary: Get account attachment
+      summary: Get account attachment [Beta]
       description: |
-        Gets an account's attached product.
+        Get an account's attached product.
       operationId: interest-bearing-v1-get-account-attachment
       parameters:
         - $ref: '#/components/parameters/accountId'
@@ -1466,7 +2818,7 @@ paths:
     post:
       tags:
         - Account attachment
-      summary: Attach deposit to account
+      summary: Attach deposit to account [Beta]
       description: >
         Attach a time deposit product to an account.
 
@@ -1483,16 +2835,90 @@ paths:
             schema:
               $ref: '#/components/schemas/DepositAttachRequest'
       responses:
-        '204':
-          description: Success - No Content
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositAttachAccountResponse'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validationError:
+                  summary: Generic validation error
+                  value:
+                    code: EIBACC0008
+                    message: Bad Request
+                overrideValidUntilPast:
+                  summary: valid_until must be a future datetime
+                  value:
+                    code: EIBACC0308
+                    message: valid_until must be a future datetime
+                renewalTermMutuallyExclusive:
+                  summary: >-
+                    renewal_term — calendar date and unit/value are mutually
+                    exclusive
+                  value:
+                    code: EIBACC0309
+                    message: Validation error
+                    details: >-
+                      renewal_term accepts either renewal_calendar_maturity_date
+                      OR unit+value, not both.
+                renewalTermRequiresRollover:
+                  summary: renewal_term requires ROLLOVER in maturity_instructions
+                  value:
+                    code: EIBACC0310
+                    message: Validation error
+                    details: >-
+                      renewal_term requires ROLLOVER configured in
+                      maturity_instructions.principal or
+                      maturity_instructions.interest (account/program override
+                      or product default).
+                renewalCalendarMaturityDateNotFuture:
+                  summary: renewal_calendar_maturity_date must be a future date
+                  value:
+                    code: EIBACC0311
+                    message: Validation error
+                    details: >-
+                      renewal_calendar_maturity_date must be a future date
+                      (after today)
+                renewalTermFieldsMissing:
+                  summary: >-
+                    renewal_term requires unit+value or
+                    renewal_calendar_maturity_date
+                  value:
+                    code: EIBACC0312
+                    message: Validation error
+                    details: >-
+                      renewal_term requires either both unit and value, or
+                      renewal_calendar_maturity_date
         '404':
           $ref: '#/components/responses/404NotFound'
         '409':
           $ref: '#/components/responses/409Conflict'
         '500':
-          $ref: '#/components/responses/500InternalServer'
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalError:
+                  summary: Internal error
+                  value:
+                    code: EIBACC0007
+                    message: Internal error
+                penaltyOverrideScheduleError:
+                  summary: Failed to schedule override expiration
+                  value:
+                    code: EIBACC0304
+                    message: Failed to schedule override expiration
   /v1/deposits/accounts/{accountId}/detach:
     post:
       tags:
@@ -1531,86 +2957,270 @@ paths:
                 invalidRequestBody:
                   summary: Bad Request.
                   value:
-                    code: EIBACC0128
+                    code: EIBACC0114
                     message: Product is already detached
         '500':
           $ref: '#/components/responses/500InternalServer'
-  /v1/deposits/{productId}/accounts/{accountId}/maturity-instructions/overrides:
+  /v1/deposits/accounts/open:
     post:
       tags:
-        - Maturity instruction override
-      summary: Create maturity instruction override
+        - Deposit account open
+      summary: Open deposit account
       description: >
-        Override the default maturity instruction for a specific account and
-        deposit product. Use this endpoint to customize how principal and
-        interest are handled when a deposit matures, which is ideal for accounts
-        that require different behavior than the standard product configuration.
-      operationId: interest-bearing-v1-create-maturity-instruction-override
+        Create or locate a transaction banking account and attach a validated
+        deposit product in a single request. On success, the endpoint generates
+        a [Deposit account opened
+        event](https://developers.pismo.io/events/docs/deposit-product-unified-deposit-open-1).
+
+
+        This endpoint supports two scenarios:
+
+
+        * **Existing account**: Provide both `account.account_id` and
+        `account.external_account_id`. The Pismo platform locates the account
+        via the transaction banking API and validates the IDs. If there is a
+        mismatch, the request fails with a `400` error.
+
+
+        * **New account**: Provide `account.external_account_id` and the
+        `account_creation` object. The Pismo platform creates a new transaction
+        banking account and attaches the deposit product. If the transaction
+        banking API returns `409` because the account already exists, the Pismo
+        platform locates the existing account and proceeds with product
+        attachment.
+
+
+        **Note**: The deposit product must exist, be of type `deposit`, and have
+        an `ACTIVE` status.
+      operationId: interest-bearing-v1-deposit-account-open
       parameters:
-        - $ref: '#/components/parameters/productId'
-        - $ref: '#/components/parameters/accountId'
         - $ref: '#/components/parameters/authorizationTokenHeader'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMaturityInstructionOverrideRequest'
+              $ref: '#/components/schemas/UnifiedDepositOpenRequest'
+            examples:
+              newAccount:
+                summary: Create new account and attach deposit
+                value:
+                  account:
+                    external_account_id: ext-acct-001
+                  account_creation:
+                    program_id: 100
+                    currency_code: USD
+                    division_code: '001'
+                    applicant:
+                      document_number: '12345678900'
+                      name: John Doe
+                  deposit_attachment:
+                    product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+                    deposit_configs:
+                      maturity_period:
+                        unit: MONTHS
+                        value: 6
+                  metadata:
+                    source: mobile-app
+              existingAccount:
+                summary: Attach deposit to existing account
+                value:
+                  account:
+                    account_id: 123456
+                    external_account_id: ext-acct-001
+                  deposit_attachment:
+                    product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+                    deposit_configs:
+                      maturity_period:
+                        calendar_maturity_date: '2027-06-15'
       responses:
         '201':
-          description: Override created successfully
+          description: Deposit account opened successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
+                $ref: '#/components/schemas/UnifiedDepositOpenResponse'
+              examples:
+                success:
+                  summary: Successful response
+                  value:
+                    account_id: 123456
+                    external_account_id: ext-acct-001
+                    product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+                    deposit_configs:
+                      maturity_period:
+                        unit: MONTHS
+                        value: 6
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validationError:
+                  summary: Request body validation error
+                  value:
+                    code: EIBACC0008
+                    message: Bad Request
+                    details: >-
+                      error EIBACC0008: Validation error [(Field
+                      'external_account_id' is required)]
+                accountCreationRequired:
+                  summary: account_creation is required when account_id is not provided
+                  value:
+                    code: EIBACC0325
+                    message: >-
+                      Field 'account_creation' is required when 'account_id' is
+                      not provided
+                accountMismatch:
+                  summary: Provided account_id does not match external_account_id
+                  value:
+                    code: EIBACC0407
+                    message: >-
+                      Provided account_id does not match the resolved
+                      external_account_id
+                productNotActive:
+                  summary: Product is not in ACTIVE status
+                  value:
+                    code: EIBACC0108
+                    message: >-
+                      Product isn't ACTIVE. Activate to proceed with the
+                      attachment
+                corporateValidationError:
+                  summary: Corporate API validation error
+                  value:
+                    code: EIBACC0321
+                    message: Corporate API validation error
         '403':
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingTenantHeader:
+                  summary: Missing tenant header
+                  value:
+                    code: EIBACC0005
+                    message: 'Missing required header: ''x-tenant'''
         '404':
-          $ref: '#/components/responses/404NotFound'
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                productNotFound:
+                  summary: Product not found
+                  value:
+                    code: EIBACC0064
+                    message: Product not found
         '409':
-          $ref: '#/components/responses/409Conflict'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-    get:
-      tags:
-        - Maturity instruction override
-      summary: Get maturity instruction override
-      description: >
-        Get the maturity instruction override configured for a specific account
-        and deposit product.
-      operationId: interest-bearing-v1-get-maturity-instruction-override
-      parameters:
-        - $ref: '#/components/parameters/productId'
-        - $ref: '#/components/parameters/accountId'
-        - $ref: '#/components/parameters/authorizationTokenHeader'
-      responses:
-        '200':
-          description: Override retrieved successfully
+          description: Conflict
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '403':
-          description: Forbidden
-        '404':
-          $ref: '#/components/responses/404NotFound'
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                accountAlreadyAttached:
+                  summary: Account already has a product attached
+                  value:
+                    code: EIBACC0106
+                    message: The product ID provided is already attached
         '500':
-          $ref: '#/components/responses/500InternalServer'
-    patch:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalError:
+                  summary: Internal processing error
+                  value:
+                    code: EIBACC0007
+                    message: Internal error
+                getProductError:
+                  summary: Failed to retrieve product
+                  value:
+                    code: EIBACC0066
+                    message: Failed on get product
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                corporateUnavailable:
+                  summary: Corporate API unavailable
+                  value:
+                    code: EIBACC0322
+                    message: Corporate API unavailable
+        '504':
+          description: Gateway Timeout
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                corporateTimeout:
+                  summary: Corporate API timeout
+                  value:
+                    code: EIBACC0318
+                    message: Corporate API timeout
+  /v1/deposits/accounts/{accountId}/penalty-simulation:
+    post:
       tags:
-        - Maturity instruction override
-      summary: Update maturity instruction override
+        - Penalty
+      summary: '[Beta] Simulate penalty'
       description: >
-        Update an existing maturity instruction override for a specific account
-        and deposit product, allowing modifications to its principal handling,
-        interest handling, and reason.
-      operationId: interest-bearing-v1-update-maturity-instruction-override
+        Simulate the penalty applied to a specified withdrawal on a given date.
+        The operation is read‑only and does not modify any data.
+
+
+        Use this endpoint to preview penalty fees before making an actual
+        withdrawal.
+
+
+        The simulation evaluates all penalty rules configured in the product,
+        including:
+
+
+        - Early withdrawal penalties
+
+
+        - Grace period penalties
+
+
+        - Tiered interest forfeiture penalties
+
+
+        - Withdrawal fees
+
+
+        - Subsequent withdrawal penalties
+
+
+        Notes:
+
+        - A withdrawal date inside the cool‑off period results in no penalties
+
+        - If `withdrawal_amount` is omitted, the Pismo platform fetches the
+        current book balance from [Get transaction banking account
+        balance](ref:get-account-balances).
+
+        - If `withdrawal_amount` is provided, the balance cannot exceed the
+        current book balance.
+      operationId: interest-bearing-v1-simulate-penalty
       parameters:
-        - $ref: '#/components/parameters/productId'
         - $ref: '#/components/parameters/accountId'
         - $ref: '#/components/parameters/authorizationTokenHeader'
       requestBody:
@@ -1618,14 +3228,156 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateMaturityInstructionOverrideRequest'
+              $ref: '#/components/schemas/PenaltySimulationRequest'
       responses:
         '200':
-          description: Override updated successfully
+          description: Simulation completed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
+                $ref: '#/components/schemas/PenaltySimulationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidAccountId:
+                  summary: Invalid account ID path parameter
+                  value:
+                    code: EIBACC0015
+                    message: Invalid accountId path param
+                invalidWithdrawalAmount:
+                  summary: Invalid withdrawal amount (zero or negative)
+                  value:
+                    code: EIBACC0008
+                    message: Validation error
+                    details: withdrawal_amount requires a positive number
+                missingWithdrawalDate:
+                  summary: Missing withdrawal date
+                  value:
+                    code: EIBACC0008
+                    message: Validation error
+                    details: withdrawal_date is required
+                invalidWithdrawalDate:
+                  summary: Invalid withdrawal date format
+                  value:
+                    code: EIBACC0008
+                    message: Validation error
+                    details: >-
+                      withdrawal_date must be a valid ISO 8601 datetime (e.g.
+                      2026-01-15T15:00:00Z)
+                withdrawalAmountExceedsBalance:
+                  summary: Withdrawal amount exceeds book balance
+                  value:
+                    code: EIBACC0338
+                    message: >-
+                      withdrawal_amount cannot be greater than the account
+                      balance
+                    details: 'available balance: 40667.17'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingTenantHeader:
+                  summary: Missing tenant header
+                  value:
+                    code: EIBACC0005
+                    message: 'Missing required header: ''x-tenant'''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                accountNotFound:
+                  summary: Account not found
+                  value:
+                    code: EIBACC0226
+                    message: Account not found
+                productNotAttached:
+                  summary: Product is not attached to account
+                  value:
+                    code: EIBACC0064
+                    message: Product not found
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                withdrawalDateInPast:
+                  summary: Withdrawal date set in the past
+                  value:
+                    code: EIBACC0294
+                    message: withdrawalDate must not be in the past
+                productNotDeposit:
+                  summary: Product is not a deposit product
+                  value:
+                    code: EIBACC0295
+                    message: Penalty simulation is only available for deposit accounts
+                noPenaltyConfigured:
+                  summary: No penalty configured for simulation
+                  value:
+                    code: EIBACC0296
+                    message: >-
+                      No penalty is configured for the product attached to this
+                      account
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalError:
+                  summary: Internal error
+                  value:
+                    code: EIBACC0007
+                    message: Internal error
+                getPenaltyError:
+                  summary: Get penalty error
+                  value:
+                    code: EIBACC0204
+                    message: Get Penalty error
+  /v1/deposits/accounts/{accountId}:
+    patch:
+      tags:
+        - Account attachment
+      summary: Update payout account for deposit account
+      description: >
+        Update the payout account configuration for an attached deposit account.
+
+        The payout account specifies where interest payments and maturity
+        proceeds are sent.
+      operationId: interest-bearing-v1-deposit-update-payout-account
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePayoutAccountRequest'
+      responses:
+        '200':
+          description: Payout account updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePayoutAccountResponse'
         '400':
           $ref: '#/components/responses/400BadRequest'
         '403':
@@ -1634,34 +3386,21 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '409':
           $ref: '#/components/responses/409Conflict'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-    delete:
-      tags:
-        - Maturity instruction override
-      summary: Delete maturity instruction override
-      description: >
-        Delete an existing maturity instruction override for a specific account
-        and deposit product, reverting the account to the default maturity
-        instructions configured in the product.
-      operationId: interest-bearing-v1-delete-maturity-instruction-override
-      parameters:
-        - $ref: '#/components/parameters/productId'
-        - $ref: '#/components/parameters/accountId'
-        - $ref: '#/components/parameters/authorizationTokenHeader'
-      responses:
-        '200':
-          description: Override deleted successfully
+        '422':
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '403':
-          description: Forbidden
-        '404':
-          $ref: '#/components/responses/404NotFound'
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidInternalAccount:
+                  summary: Internal account validation failed
+                  value:
+                    code: EIBACC0302
+                    message: >-
+                      Internal payout account validation failed. Account does
+                      not exist
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/savings-accounts/accounts/{accountId}/attach:
@@ -1733,17 +3472,67 @@ paths:
                 invalidRequestBody:
                   summary: Bad Request.
                   value:
-                    code: EIBACC0128
+                    code: EIBACC0114
                     message: Product is already detached
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /v1/savings-accounts/accounts/{accountId}:
+    patch:
+      tags:
+        - Account attachment
+      summary: Update payout account for savings account
+      description: |
+        Update the payout account configuration for an attached savings account.
+        The payout account specifies where interest payments are sent.
+      operationId: interest-bearing-v1-savings-account-update-payout-account
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePayoutAccountRequest'
+      responses:
+        '200':
+          description: Payout account updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePayoutAccountResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidInternalAccount:
+                  summary: Internal account validation failed
+                  value:
+                    code: EIBACC0302
+                    message: >-
+                      Internal payout account validation failed. Account does
+                      not exist
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/products/attachments/programs/{programId}:
     get:
       tags:
         - Program attachment
-      summary: Get program attachment
+      summary: Get program attachment [Beta]
       description: |
-        Gets a program's attached product.
+        Get a program's attached product.
       operationId: interest-bearing-v1-get-program-attachment
       parameters:
         - $ref: '#/components/parameters/programIdPath'
@@ -1765,13 +3554,22 @@ paths:
     post:
       tags:
         - Program attachment
-      summary: Attach deposit product to program
+      summary: Attach deposit product to program [Beta]
       description: >
         Attach a time deposit product to a program.
 
         This endpoint generates the [Program
         attached](https://developers.pismo.io/events/docs/deposit-product-program-attach-1)
         event.
+
+
+        At the program scope, `deposit_configs.overrides` only accepts
+        `renewal_term`.
+
+        Sending `penalties` returns `400 EIBACC0317` and sending
+        `maturity_instructions`
+
+        returns `400 EIBACC0318` — apply those per-account instead.
       operationId: interest-bearing-v1-deposit-attach-program
       parameters:
         - $ref: '#/components/parameters/programIdPath'
@@ -1780,12 +3578,84 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DepositAttachRequest'
+              $ref: '#/components/schemas/ProgramDepositAttachRequest'
       responses:
-        '204':
-          description: Success - No Content
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositAttachProgramResponse'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validationError:
+                  summary: Generic validation error
+                  value:
+                    code: EIBACC0008
+                    message: Bad Request
+                programLevelPenaltiesNotSupported:
+                  summary: penalties not supported at program-level
+                  value:
+                    code: EIBACC0317
+                    message: >-
+                      deposit_configs.overrides.penalties is not supported at
+                      program-level; apply per-account instead
+                programLevelMaturityInstructionsNotSupported:
+                  summary: maturity_instructions not supported at program-level
+                  value:
+                    code: EIBACC0318
+                    message: >-
+                      deposit_configs.overrides.maturity_instructions is not
+                      supported at program-level; apply per-account instead
+                overrideValidUntilPast:
+                  summary: valid_until must be a future datetime
+                  value:
+                    code: EIBACC0308
+                    message: valid_until must be a future datetime
+                renewalTermMutuallyExclusive:
+                  summary: >-
+                    renewal_term — calendar date and unit/value are mutually
+                    exclusive
+                  value:
+                    code: EIBACC0309
+                    message: Validation error
+                    details: >-
+                      renewal_term accepts either renewal_calendar_maturity_date
+                      OR unit+value, not both.
+                renewalTermRequiresRollover:
+                  summary: renewal_term requires ROLLOVER in maturity_instructions
+                  value:
+                    code: EIBACC0310
+                    message: Validation error
+                    details: >-
+                      renewal_term requires ROLLOVER configured in
+                      maturity_instructions.principal or
+                      maturity_instructions.interest (account/program override
+                      or product default).
+                renewalCalendarMaturityDateNotFuture:
+                  summary: renewal_calendar_maturity_date must be a future date
+                  value:
+                    code: EIBACC0311
+                    message: Validation error
+                    details: >-
+                      renewal_calendar_maturity_date must be a future date
+                      (after today)
+                renewalTermFieldsMissing:
+                  summary: >-
+                    renewal_term requires unit+value or
+                    renewal_calendar_maturity_date
+                  value:
+                    code: EIBACC0312
+                    message: Validation error
+                    details: >-
+                      renewal_term requires either both unit and value, or
+                      renewal_calendar_maturity_date
         '404':
           $ref: '#/components/responses/404NotFound'
         '409':
@@ -1799,11 +3669,294 @@ paths:
                 invalidRequestBody:
                   summary: Bad Request.
                   value:
-                    code: EIBACC0120
-                    message: The product ID provided is already attached.
+                    code: EIBACC0106
+                    message: The product ID provided is already attached
         '500':
-          $ref: '#/components/responses/500InternalServer'
-  /v1/savings-accounts/program/{programId}/attach:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalError:
+                  summary: Internal error
+                  value:
+                    code: EIBACC0007
+                    message: Internal error
+                penaltyOverrideScheduleError:
+                  summary: Failed to schedule override expiration
+                  value:
+                    code: EIBACC0304
+                    message: Failed to schedule override expiration
+  /v1/deposits/accounts/{accountId}/attachment:
+    patch:
+      tags:
+        - Account attachment
+      summary: Update deposit account attachment overrides [Beta]
+      description: >
+        Partially updates `deposit_configs.overrides` and
+        `deposit_configs.interest_capitalization_mode` on an active deposit
+        account attachment. Each field is processed using three‑state `PATCH`
+        semantics, allowing values to be added, changed, or cleared as part of
+        the update.
+          * **Omitted**: Keeps the current value
+          * `null`: Removes the override; falls back through the cascade (program → product)
+          * **Value**: Replaces the current override with the supplied value
+
+        **NOTES**:
+
+
+        * At least one of `deposit_configs.overrides` or
+        `deposit_configs.interest_capitalization_mode` must be provided.
+
+        * The `overrides` envelope, if provided, must contain at least one
+        field. Sending an empty object returns `400 EIBACC0315`.
+
+        * `renewal_term` still requires `ROLLOVER` configured in
+        `maturity_instructions` somewhere in the fallback sequence (`400
+        EIBACC0310` otherwise).
+
+
+        This endpoint generates an [Account attachment
+        updated](https://developers.pismo.io/events/docs/deposit-product-account-attachment-updated-1)
+        event.
+      operationId: interest-bearing-v1-deposit-update-account-attachment
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccountAttachmentRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAttachment'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                emptyOverridesEnvelope:
+                  summary: deposit_configs.overrides must contain at least one field
+                  value:
+                    code: EIBACC0315
+                    message: deposit_configs.overrides must contain at least one field
+                overrideValidUntilPast:
+                  summary: valid_until must be a future datetime
+                  value:
+                    code: EIBACC0308
+                    message: valid_until must be a future datetime
+                renewalTermRequiresRollover:
+                  summary: renewal_term requires ROLLOVER in maturity_instructions
+                  value:
+                    code: EIBACC0310
+                    message: Validation error
+                    details: >-
+                      renewal_term requires ROLLOVER configured in
+                      maturity_instructions.principal or
+                      maturity_instructions.interest (account/program override
+                      or product default).
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                attachmentNotFound:
+                  summary: Active deposit attachment not found for this account
+                  value:
+                    code: EIBACC0113
+                    message: Product attachment not found
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                attachmentNotActive:
+                  summary: Attachment is not active
+                  value:
+                    code: EIBACC0301
+                    message: Product attachment is not active
+                optimisticLock:
+                  summary: Product attachment was modified concurrently
+                  value:
+                    code: EIBACC0314
+                    message: >-
+                      Product attachment was modified concurrently; retry with
+                      the latest state
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalError:
+                  summary: Internal error
+                  value:
+                    code: EIBACC0007
+                    message: Internal error
+                attachmentOverridesUpdate:
+                  summary: Failed to update attachment overrides
+                  value:
+                    code: EIBACC0316
+                    message: Failed to update attachment overrides
+  /v1/deposits/programs/{programId}/attachment:
+    patch:
+      tags:
+        - Program attachment
+      summary: Update deposit program attachment overrides [Beta]
+      description: >
+        Partially updates `deposit_configs.overrides` and
+        `deposit_configs.interest_capitalization_mode` on an active deposit
+        program attachment. Each field follows three‑state `PATCH` rules,
+        allowing values to be set, changed, or cleared. At the program level,
+        the only supported override inside `overrides` is `renewal_term`.
+          * **Omitted**: Keeps the current value
+          * `null`: Removes the override; falls back through the cascade (product)
+          * **Value**: Replaces the current value
+
+        **NOTES**:
+
+        * At least one of `deposit_configs.overrides` or
+        `deposit_configs.interest_capitalization_mode` must be provided.
+
+        * Sending `penalties` inside `overrides` returns `400 EIBACC0317`
+
+        * Sending `maturity_instructions` inside `overrides` results in a `400
+        EIBACC0318` error. This field cannot be modified at the program level
+        and must be configured on each account attachment instead.
+
+        * An empty `overrides` envelope returns `400 EIBACC0315`
+
+        * `renewal_term` still requires `ROLLOVER` configured in
+        `maturity_instructions` somewhere in the fallback sequence (`400
+        EIBACC0310` otherwise)
+
+
+        This endpoint generates a [Program attachment
+        updated](https://developers.pismo.io/events/docs/deposit-product-program-attachment-updated-1)
+        event.
+      operationId: interest-bearing-v1-deposit-update-program-attachment
+      parameters:
+        - $ref: '#/components/parameters/programIdPath'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProgramAttachmentRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramAttachment'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                emptyOverridesEnvelope:
+                  summary: deposit_configs.overrides must contain at least one field
+                  value:
+                    code: EIBACC0315
+                    message: deposit_configs.overrides must contain at least one field
+                programLevelPenaltiesNotSupported:
+                  summary: penalties not supported at program-level
+                  value:
+                    code: EIBACC0317
+                    message: >-
+                      deposit_configs.overrides.penalties is not supported at
+                      program-level; apply per-account instead
+                programLevelMaturityInstructionsNotSupported:
+                  summary: maturity_instructions not supported at program-level
+                  value:
+                    code: EIBACC0318
+                    message: >-
+                      deposit_configs.overrides.maturity_instructions is not
+                      supported at program-level; apply per-account instead
+                renewalTermRequiresRollover:
+                  summary: renewal_term requires ROLLOVER in maturity_instructions
+                  value:
+                    code: EIBACC0310
+                    message: Validation error
+                    details: >-
+                      renewal_term requires ROLLOVER configured in
+                      maturity_instructions.principal or
+                      maturity_instructions.interest (account/program override
+                      or product default).
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                attachmentNotFound:
+                  summary: Active deposit attachment not found for this program
+                  value:
+                    code: EIBACC0113
+                    message: Product attachment not found
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                attachmentNotActive:
+                  summary: Attachment is not active
+                  value:
+                    code: EIBACC0301
+                    message: Product attachment is not active
+                optimisticLock:
+                  summary: Product attachment was modified concurrently
+                  value:
+                    code: EIBACC0314
+                    message: >-
+                      Product attachment was modified concurrently; retry with
+                      the latest state
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalError:
+                  summary: Internal error
+                  value:
+                    code: EIBACC0007
+                    message: Internal error
+                attachmentOverridesUpdate:
+                  summary: Failed to update attachment overrides
+                  value:
+                    code: EIBACC0316
+                    message: Failed to update attachment overrides
+  /v1/savings-accounts/programs/{programId}/attach:
     post:
       tags:
         - Program attachment
@@ -1834,13 +3987,200 @@ paths:
           $ref: '#/components/responses/409Conflict'
         '500':
           $ref: '#/components/responses/500InternalServer'
+  /v1/deposits/{productId}/accounts/{accountId}/maturity-instructions/overrides:
+    post:
+      tags:
+        - Maturity instruction override
+      summary: Create maturity instruction override (deprecated)
+      deprecated: true
+      description: >
+        Override the default maturity instruction for a specific account and
+        deposit product. Use this endpoint to customize how principal and
+        interest are handled when a deposit matures, which is ideal for accounts
+        that require different behavior than the standard product
+        configuration.<br>
+
+
+        **NOTE**: This endpoint is deprecated and replaced by [Attach deposit to
+        account](ref:interest-bearing-v1-deposit-attach-account) or [Attach
+        deposit product to
+        program](ref:interest-bearing-v1-deposit-attach-program).
+      operationId: interest-bearing-v1-create-maturity-instruction-override
+      parameters:
+        - $ref: '#/components/parameters/productId'
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMaturityInstructionOverrideRequest'
+      responses:
+        '201':
+          description: Override created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+    patch:
+      tags:
+        - Maturity instruction override
+      summary: Update maturity instruction override (deprecated)
+      deprecated: true
+      description: >
+        Update an existing maturity instruction override for a specific account
+        and deposit product, allowing modifications to its principal handling,
+        interest handling, and reason.<br>
+
+
+        **NOTE**: This endpoint is deprecated and replaced by [Update deposit
+        program attachment
+        overrides](ref:interest-bearing-v1-deposit-update-program-attachment)
+        and [Update deposit account attachment
+        overrides](ref:interest-bearing-v1-deposit-update-account-attachment).
+      operationId: interest-bearing-v1-update-maturity-instruction-override
+      parameters:
+        - $ref: '#/components/parameters/productId'
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMaturityInstructionOverrideRequest'
+      responses:
+        '200':
+          description: Override updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+    delete:
+      tags:
+        - Maturity instruction override
+      summary: Delete maturity instruction override (deprecated)
+      deprecated: true
+      description: >
+        Delete an existing maturity instruction override for a specific account
+        and deposit product, reverting the account to the default maturity
+        instructions configured in the product.<br>
+
+
+        **NOTE**: 
+          * This endpoint is deprecated and replaced by [Update deposit program attachment overrides](ref:interest-bearing-v1-deposit-update-program-attachment) and [Update deposit account attachment overrides](ref:interest-bearing-v1-deposit-update-account-attachment).
+          * Use `deposit_configs` of the two replacement endpoints to delete instruction overrides. For example, `deposit_configs.overrides.renewal_term: null`.
+      operationId: interest-bearing-v1-delete-maturity-instruction-override
+      parameters:
+        - $ref: '#/components/parameters/productId'
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      responses:
+        '200':
+          description: Override deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /v1/deposits/accounts/{accountId}/maturity-instructions/overrides:
+    get:
+      tags:
+        - Maturity instruction override
+      summary: Get maturity instruction override (deprecated)
+      deprecated: true
+      description: >
+        Get the maturity instruction override configured for a specific
+        account.<br>
+
+
+        **NOTE**: This endpoint is deprecated and replaced by [Get account
+        attachment](ref:interest-bearing-v1-get-account-attachment) or [Get
+        program attachment](ref:interest-bearing-v1-get-program-attachment).
+      operationId: interest-bearing-v1-get-maturity-instruction-override
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      responses:
+        '200':
+          description: Override retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaturityInstructionOverrideResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /v1/deposits/accounts/{accountId}/cycle-snapshot:
+    get:
+      tags:
+        - Deposit account lifecycle
+      summary: Get cycle snapshot for deposit account
+      description: >
+        Return a consolidated point‑in‑time snapshot of a deposit account
+        lifecycle, providing current and previous cycle details such as active
+        and prior product attachments, key dates (cycle start, maturity,
+        rollover), interest plan information, and principal context to support
+        audit, statement, and reconciliation use cases.
+      operationId: interest-bearing-v1-get-cycle-snapshot
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      responses:
+        '200':
+          description: Cycle snapshot returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CycleSnapshotResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
   /v1/accounts/{accountId}/average-balance:
     post:
       tags:
         - Average balance
       summary: Calculate average balance
       description: >
-        Calculates an average balance for an account.<br>
+        Calculate an average balance for an account.<br>
 
         Using this endpoint, you can specify a datetime range and calculate the
         [average
@@ -1877,7 +4217,7 @@ paths:
         - Average balance
       summary: Get average balance
       description: |
-        Retrieves an already calculated average balance for an account.
+        Get an already calculated average balance for an account.
       operationId: interest-bearing-get-average-balance
       parameters:
         - $ref: '#/components/parameters/idempotencyHeader'

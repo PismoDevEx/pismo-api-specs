@@ -681,32 +681,14 @@ components:
         type: integer
         format: int64
         example: 2
-    ProgramCalendarStrategyIdQuery:
-      name: programCalendarStrategyId
-      in: query
-      description: Program Calendar Strategy ID
-      required: false
+    ProgramIdHeader:
+      name: program-id
+      in: header
+      description: Program ID
+      required: true
+      example: '1233'
       schema:
-        type: integer
-        format: int64
-        example: 3625
-    ShowCustomCalendarsQuery:
-      name: showCustomCalendars
-      in: query
-      description: Should custom calendars be displayed?
-      required: false
-      schema:
-        type: boolean
-        example: true
-    DivisionIdQuery:
-      name: divisionId
-      in: query
-      description: Division ID
-      required: false
-      schema:
-        type: integer
-        format: int64
-        example: 5
+        type: string
     ProgramIdPath:
       name: programId
       in: path
@@ -851,15 +833,6 @@ components:
         items:
           type: integer
           format: int32
-    TransactionIdPath:
-      name: transactionId
-      in: path
-      description: Transaction ID
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: '99999999'
     TransactionIdQuery:
       name: transactionId
       in: query
@@ -1289,10 +1262,6 @@ components:
       format: float
       description: Adjusted amount for transaction for installments advanced
       example: 450
-    AdvanceAllInstallments:
-      type: boolean
-      description: Should all installments be advanced (`true`) or not (`false`)?
-      example: false
     AgreementAmount:
       type: number
       format: float
@@ -1455,32 +1424,6 @@ components:
       format: int64
       description: Calendar ID
       example: 57868
-    Calendars:
-      type: array
-      items:
-        $ref: '#/components/schemas/CalendarResponse'
-    CalendarListResponse:
-      type: object
-      properties:
-        calendars:
-          $ref: '#/components/schemas/Calendars'
-    CalendarResponse:
-      type: object
-      properties:
-        calendar_id:
-          $ref: '#/components/schemas/CalendarID'
-        cycle_closing_date:
-          $ref: '#/components/schemas/CycleClosingDate'
-        due_date:
-          $ref: '#/components/schemas/DueDate'
-        real_due_date:
-          $ref: '#/components/schemas/RealDueDate'
-        program_due_date_id:
-          $ref: '#/components/schemas/ProgramDueDateID'
-        program_calendar_strategy_id:
-          $ref: '#/components/schemas/ProgramCalendarStrategyID'
-        division_id:
-          $ref: '#/components/schemas/DivisionID'
     CalendarStatementsResponse:
       type: object
       properties:
@@ -1586,16 +1529,6 @@ components:
       type: string
       description: Cancellation date/time. Format = yyyy-mm-ddThh:mm:ss.
       example: '2021-08-20T00:00:00'
-    CancelInstallmentAdvancedV1ResponseSuccess:
-      title: CancelInstallmentAdvancedV1ResponseSuccess
-      type: object
-      properties:
-        org_id:
-          $ref: '#/components/schemas/OrgID'
-        transaction_id:
-          $ref: '#/components/schemas/TransactionID'
-        cid:
-          $ref: '#/components/schemas/CID'
     CardBlocked:
       type: boolean
       description: Is the last card issued to the cardholder blocked?
@@ -1685,11 +1618,6 @@ components:
         Is the generated agreement a compulsory agreement (`true`) or not
         (`false`)?
       example: true
-    ContractAmount:
-      type: number
-      format: float
-      description: Contract amount
-      example: 500
     CorrelationID:
       type: string
       description: Correlation ID
@@ -2219,39 +2147,6 @@ components:
           $ref: '#/components/schemas/MinPaymentValue'
         interest_rates:
           $ref: '#/components/schemas/InterestRates'
-    GetFutureStatementsInstallmentV1Response:
-      title: GetFutureStatementsInstallmentV1Response
-      type: object
-      properties:
-        contract:
-          type: object
-          description: Contract information
-          properties:
-            first_payment_date:
-              $ref: '#/components/schemas/FirstPaymentDate'
-            first_payment_amount:
-              $ref: '#/components/schemas/FirstPaymentAmount'
-            number_of_installments:
-              $ref: '#/components/schemas/NumberOfInstallments'
-            contract_amount:
-              $ref: '#/components/schemas/ContractAmount'
-            principal_amount:
-              $ref: '#/components/schemas/TotalPrincipalAmountOfInstallments'
-            installment_amount:
-              $ref: '#/components/schemas/InstallmentAmount'
-            interest_rate:
-              $ref: '#/components/schemas/InstallmentInterestRate'
-        advancement_options:
-          type: array
-          items:
-            type: object
-            properties:
-              installments_to_advance:
-                $ref: '#/components/schemas/InstallmentsToAdvance'
-              total_amount:
-                $ref: '#/components/schemas/TotalAmount'
-              in_advance:
-                $ref: '#/components/schemas/InAdvance'
     GetInstallmentsDetailsV1Response:
       type: object
       title: Get installments detail V1 response object
@@ -2744,11 +2639,6 @@ components:
         - PENDING
         - PROCESSED
       example: PENDING
-    InAdvance:
-      type: number
-      format: float
-      description: Total in advance
-      example: 500
     Installment:
       type: integer
       format: int32
@@ -2788,40 +2678,6 @@ components:
       format: int64
       description: "Installment advanced transaction ID.\t**REQUIRED**  when mode = `single`.\nThis parameter can be from any transaction related to the contract.\n"
       example: 10101
-    InstallmentAdvancedV1ResponseSuccess:
-      type: object
-      properties:
-        statement_id:
-          $ref: '#/components/schemas/StatementID'
-        cycle_closing_date:
-          $ref: '#/components/schemas/CycleClosingDate'
-        cycle_opening_date:
-          $ref: '#/components/schemas/CycleOpeningDate'
-        due_date:
-          $ref: '#/components/schemas/DueDate'
-        transactions:
-          type: array
-          description: Installments advanced transaction ID
-          items:
-            type: object
-            properties:
-              id:
-                $ref: '#/components/schemas/InstallmentsAdvancedTransactionID'
-              statement_id:
-                $ref: '#/components/schemas/StatementID'
-              amount:
-                $ref: '#/components/schemas/TransactionAmount'
-              interest_amount:
-                $ref: '#/components/schemas/InterestAmount'
-              adjusted_amount:
-                $ref: '#/components/schemas/AdjustedAmount'
-    InstallmentAdvancedV1Request:
-      type: object
-      properties:
-        installments_to_advance:
-          $ref: '#/components/schemas/InstallmentsToAdvance'
-        advance_all_installments:
-          $ref: '#/components/schemas/AdvanceAllInstallments'
     InstallmentAdvancedV2ResponseSuccess:
       title: InstallmentAdvancedV2ResponseSuccess
       type: object
@@ -3104,11 +2960,6 @@ components:
       format: int32
       description: Installments advanced transaction ID
       example: 101010
-    InstallmentsToAdvance:
-      type: integer
-      format: int32
-      description: Number of installments to advance
-      example: 12
     InstallmentsToAdvanceWhenSingleMode:
       type: integer
       format: int32
@@ -3816,10 +3667,18 @@ components:
       example: CREDIT TRANSACTION
     MetadataPaymentAgreementV4:
       type: object
-      description: >-
+      description: >
         This is a JSON object converted to a string with additional information
         relevant to the customer. No business rule validation is performed on
         it.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
       example:
         key-1: 10
         key-2: 5
@@ -3941,16 +3800,6 @@ components:
       format: int64
       description: Program due date ID
       example: 3812
-    ProgramCalendarStrategyID:
-      type: integer
-      format: int64
-      description: Program calendar strategy ID
-      example: 5689
-    DivisionID:
-      type: integer
-      format: int64
-      description: Division ID
-      example: 48
     ProgramDueDateResponse:
       type: object
       properties:
@@ -5179,7 +5028,7 @@ paths:
     get:
       tags:
         - Statement
-      summary: List statements v3
+      summary: List statements
       description: >
         List account statements. For more information about statements, refer to
         [Understanding statements](doc:understanding-statements).
@@ -5247,6 +5096,7 @@ paths:
       operationId: createTransactionCategory
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
+        - $ref: '#/components/parameters/ProgramIdHeader'
       requestBody:
         content:
           application/json:
@@ -5286,6 +5136,7 @@ paths:
       operationId: listTransactionCategoryInterest
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
+        - $ref: '#/components/parameters/ProgramIdHeader'
         - $ref: '#/components/parameters/TransactionCategoryIdQuery'
         - $ref: '#/components/parameters/TransactionCategoryDescriptionQuery'
         - $ref: '#/components/parameters/PageQuery'
@@ -5392,16 +5243,20 @@ paths:
         723 (CP REFINANCING CONTRACT)
 
 
-        <b>Note:</b> The following combination is not valid. It returns the
-        error message "A compulsory request requires the statement agreement
-        field to be set to false."
+        <b>Notes:</b>
+
+        - The installment transactions for the refinanced debt have transaction
+        type `REFINANCING AGREEMENT`.
+
+        - The following combination is not valid. It returns the error message
+        "A compulsory request requires the statement agreement field to be set
+        to false."
 
         `statement_agreement`: true 
 
         `compulsory`: true 
 
-
-        After the installments are created, the Pismo platform asynchronously
+        - After the installments are created, the Pismo platform asynchronously
         generates an [Installment payment
         processed](https://developers.pismo.io/events/docs/balance-installment-payment-processed-1)
         event. You should not try to access the new payment agreement until you
@@ -5767,21 +5622,28 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /statements/v2/accounts/{accountId}/installment-advance:
     post:
-      summary: Create installment advance without interest
+      summary: Create installment advancement (no cancellation event)
       description: >
-        Create an installment advance. An installment advance is a transfer of
-        one or more installments from future cycles to the present cycle. For
-        more information, refer to [Manage installments on the customer
+        Create an installment advancement. An installment advancement is a
+        transfer of one or more installments from future cycles to the present
+        cycle. For more information, refer to [Manage installments on the
+        customer
         statement](doc:installments-payment#manage-installments-on-the-customer-statement).
 
 
-        <b>Notes:</b>
+        This endpont generates an [Installment
+        advanced](https://developers.pismo.io/events/docs/balance-installment-advancement-1)
+        event.
 
 
-        - If you need to update the principal amount in advance, use the [Create
-        installment advancement](ref:createinstallmentadvancement) endpoint.
+        **Notes:**  
 
-
+        - Cancelling an installment advancement created with this endpoint does
+        not generate a cancellation event. Pismo recommends that you use the
+        most advanced version of the installment advancement endpoints instead:
+          <br>[Create installment advancement](ref:createinstallmentadvancementv2)
+          <br>[Get installment advancement](ref:getinstallmentadvancementv2byid)
+          <br>[Cancel installment advancement](ref:cancelinstallmentadvancev2)
         - This endpoint requires an account token - an access token encoded with
         a Pismo account ID. Tokens can expire quickly, which can result in a
         **401 Unauthorized** message.        
@@ -5826,14 +5688,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     get:
-      summary: Get simulation installment advance without interest
-      description: >
-        Get a simulation installment advance with filtering options.
-
-
-        <b>Note:</b> If you need to simulate updating the principal amount in
-        advance, use the [Simulate installment
-        advancement](ref:simulateinstallmentadvancement) endpoint.
+      summary: Get simulation installment advancement
+      description: |
+        Get a simulation installment advancement with filtering options.
       operationId: GetInstallmentAdvancedSimulationV2
       tags:
         - Advancements
@@ -5875,14 +5732,28 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /statements/v2/accounts/{accountId}/installment-advance/{id}:
     get:
-      summary: Get installments advance without interest
+      summary: Get installment advancement (no cancellation event)
       description: >
-        Get an installments advance by account ID and installments advance ID.
+        Get an installments advancement by account ID and installments
+        advancement ID.
 
 
-        **Note:** This endpoint requires an account token - an access token
-        encoded with a Pismo account ID. Tokens can expire quickly, which can
-        result in a **401 Unauthorized** message.        
+        This endpont generates an [Installment
+        advanced](https://developers.pismo.io/events/docs/balance-installment-advancement-1)
+        event.        
+
+
+        **Notes:**
+
+        - Cancelling an installment advancement created with this endpoint does
+        not generate a cancellation event. Pismo recommends that you use the
+        most advanced version of the installment advancement endpoints instead:
+          <br>[Create installment advancement](ref:createinstallmentadvancementv2)
+          <br>[Get installment advancement](ref:getinstallmentadvancementv2byid)
+          <br>[Cancel installment advancement](ref:cancelinstallmentadvancev2)      
+        - This endpoint requires an account token - an access token encoded with
+        a Pismo account ID. Tokens can expire quickly, which can result in a
+        **401 Unauthorized** message.        
       operationId: GetInstallmentsAdvanceV2
       tags:
         - Advancements
@@ -5925,9 +5796,23 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     delete:
-      summary: Cancel installments advance without interest
-      description: |
-        Cancel an installments advance by account ID and payment agreement ID.
+      summary: Cancel installments advancement (no cancellation event)
+      description: >
+        Cancel an installment advancement by account ID and advancement ID.
+
+
+        This endpont generates an [Installment
+        advanced](https://developers.pismo.io/events/docs/balance-installment-advancement-1)
+        event.        
+
+
+        <b>Notes:</b> Cancelling an installment advancement created with this
+        endpoint does not generate a cancellation event. Pismo recommends that
+        you use the most advanced version of the installment advancement
+        endpoints instead:
+          <br>[Create installment advancement](ref:createinstallmentadvancementv2)
+          <br>[Get installment advancement](ref:getinstallmentadvancementv2byid)
+          <br>[Cancel installment advancement](ref:cancelinstallmentadvancev2)
       operationId: CancelInstallmentsAdvanceV2
       tags:
         - Advancements
@@ -6033,6 +5918,7 @@ paths:
       operationId: updateTransactionCategoryInterest
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
+        - $ref: '#/components/parameters/ProgramIdHeader'
         - name: transactionCategoryId
           in: path
           description: Program transaction category ID
@@ -6205,48 +6091,6 @@ paths:
                   $ref: '#/components/examples/AccountNotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
-  /statements-v2/v1/calendars:
-    get:
-      tags:
-        - Due date
-      summary: Get program future calendars
-      description: >-
-        Get a program's future calendars. If a value for the `programDueDateId`
-        query parameter is provided, the request returns a list with only one
-        item or no items if there is no program due date with this ID.
-      operationId: getCalendarList
-      parameters:
-        - $ref: '#/components/parameters/XProgramIdHeader'
-        - $ref: '#/components/parameters/DueDayQuery'
-        - $ref: '#/components/parameters/ProgramDueDateIdQuery'
-        - $ref: '#/components/parameters/ProgramCalendarStrategyIdQuery'
-        - $ref: '#/components/parameters/ShowCustomCalendarsQuery'
-        - $ref: '#/components/parameters/DivisionIdQuery'
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CalendarListResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StandardErrorResponse'
-              examples:
-                Query Param Conflict:
-                  description: DueDay and ProgramDueDateId conflict
-                  value:
-                    code: CE0001
-                    message: >-
-                      Both query params (dueDay and programDueDateId) cannot be
-                      used at the same time
-        '500':
-          $ref: '#/components/responses/500InternalServerError'
   /statements-v2/v1/accounts/{accountId}/accounts-transactions-categories:
     post:
       tags:
@@ -6312,6 +6156,7 @@ paths:
         result in a **401 Unauthorized** message.
       operationId: getAccountsTransactionsInterest_1
       parameters:
+        - $ref: '#/components/parameters/ProgramIdHeader'
         - $ref: '#/components/parameters/AccountIdPath'
       responses:
         '200':
@@ -6663,6 +6508,7 @@ paths:
       description: List a program's transaction types with filtering options.
       operationId: getTransactionTypes_1
       parameters:
+        - $ref: '#/components/parameters/ProgramIdHeader'
         - $ref: '#/components/parameters/TransactionTypeIdArrayQuery'
         - $ref: '#/components/parameters/TransactionCategoryIdQuery'
         - $ref: '#/components/parameters/PageQuery'
@@ -7222,9 +7068,21 @@ paths:
         - Statement minimum amount due
       summary: Create or update statement minimum amount due
       description: >
-        Create statement minimum amount due for the current cycle, or update it
-        if it already exists. For more information, refer to [Minimum amount due
-        calculation](doc:minimum-amount-due-calculation).
+        Create statement minimum amount due (MAD) for the current cycle, or
+        update it if it already exists. Using this endpoint bypasses the
+        configured strategy for calculating the MAD. For more information, refer
+        to [Minimum amount due calculation](doc:minimum-amount-due-calculation).
+
+
+        **Notes:**
+
+        - Running this endpoint bypasses the configured strategy only for the
+        **current** cycle. The configured strategy, if it exists, still applies
+        to future statements.
+
+        - To use this endpoint, the **Allow overriding the minimum amount due
+        for the current statement** program parameter must be set to `true`.
+        Otherwise, the endpoint generates an error.
       operationId: createStatementAmountDue
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'

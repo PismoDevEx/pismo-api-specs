@@ -13,11 +13,11 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
-  - name: Organization
+  - name: Orgs
     description: View and manage some general origanization configurations
-  - name: Holidays (outdated)
+  - name: Holidays (deprecated)
     description: View and manage some general holidays configurations
 components:
   parameters:
@@ -32,7 +32,7 @@ components:
     HolidayYearQuery:
       name: holidayYear
       in: query
-      description: Holiday year filter. Format = yyyy
+      description: Holiday year filter
       schema:
         type: string
         example: '2024'
@@ -74,7 +74,7 @@ components:
           - holidayDate
         example: name
     OrgIdPath2:
-      description: Organization ID
+      description: Org ID
       in: path
       name: id
       required: true
@@ -158,6 +158,11 @@ components:
         number)
       maxLength: 20
       example: '08350504000143'
+    ExpirationDate:
+      type: string
+      description: |
+        Organization end date, provided for client tracking. RFC 3339 format. 
+      example: '2019-07-03T17:23:18Z'
     HolidayCalendarId:
       type: number
       description: Holiday calendar ID.
@@ -264,6 +269,10 @@ components:
           $ref: '#/components/schemas/OfficialName'
         org_name:
           $ref: '#/components/schemas/OrgName'
+        start_date:
+          $ref: '#/components/schemas/StartDate'
+        expiration_date:
+          $ref: '#/components/schemas/ExpirationDate'
         document_number:
           $ref: '#/components/schemas/DocumentNumber'
         address:
@@ -324,6 +333,10 @@ components:
           $ref: '#/components/schemas/OfficialName'
         org_name:
           $ref: '#/components/schemas/OrgName'
+        start_date:
+          $ref: '#/components/schemas/StartDate'
+        expiration_date:
+          $ref: '#/components/schemas/ExpirationDate'
         document_number:
           $ref: '#/components/schemas/DocumentNumber'
         address:
@@ -373,6 +386,11 @@ components:
       type: string
       description: Email of person at organization who can be contacted if necessary.
       maxLength: 255
+    StartDate:
+      type: string
+      description: |
+        Organization start date, provided for client tracking. RFC 3339 format. 
+      example: '2019-07-03T17:23:18Z'
     State:
       type: string
       description: State/province/region. ISO 3166-2 (2 char) format.
@@ -484,17 +502,12 @@ paths:
   /orgs-core/v1/orgs:
     patch:
       summary: Update organization
-      description: >
+      description: >-
         Performs a partial update of an organization's information. Fields not
         passed are not updated.
-
-
-        An organization is the root object on the Pismo platform, the container
-        for all programs. For more information, refer to [Core
-        objects](doc:setup-overview#organization).
       operationId: patch-v1-orgs
       tags:
-        - Organization
+        - Orgs
       parameters:
         - $ref: '#/components/parameters/TenantIdHeader'
       requestBody:
@@ -504,7 +517,7 @@ paths:
               $ref: '#/components/schemas/PatchOrgRequest'
       responses:
         '200':
-          description: Organization data
+          description: Org data
           content:
             application/json:
               schema:
@@ -539,21 +552,16 @@ paths:
   /orgs-core/v1/orgs/{id}:
     get:
       summary: Get organization
-      description: >
-        Returns information about a specific organization.
-
-
-        An organization is the root object on the Pismo platform, the container
-        for all programs. For more information, refer to [Core
-        objects](doc:setup-overview#organization).
+      description: Returns information about a specific organization.
       operationId: get-v1-org
       tags:
-        - Organization
+        - Orgs
       parameters:
         - $ref: '#/components/parameters/OrgIdPath2'
+        - $ref: '#/components/parameters/TenantIdHeader'
       responses:
         '200':
-          description: Organization data
+          description: Org data
           content:
             application/json:
               schema:
@@ -589,15 +597,18 @@ paths:
                   $ref: '#/components/examples/InternalServerErrorResponse'
   /orgs-core/v1/orgs/holidays:
     post:
-      tags:
-        - Holidays (outdated)
-      summary: Create holiday
-      description: >-
-        Create a holiday. (**Outdated:** For an updated version of this
-        endpoint, see <a
-        href="https://developers.pismo.io/pismo-docs/reference/get-v1-holidays">Holidays
-        API</a>.)
+      summary: Create holiday (deprecated)
+      description: >
+        **DEPRECATED**. Call the [Add
+        holiday](https://developers.pismo.io/pismo-docs/reference/post-add-holiday-to-calendar)
+        endpoint instead.
+
+
+        Create a holiday. 
       operationId: post-v1-orgs-holidays
+      deprecated: true
+      tags:
+        - Holidays (deprecated)
       parameters:
         - $ref: '#/components/parameters/TenantIdHeader'
       requestBody:
@@ -637,15 +648,18 @@ paths:
                 generic-internal-error:
                   $ref: '#/components/examples/InternalServerErrorResponse'
     get:
-      tags:
-        - Holidays (outdated)
-      summary: List holidays (outdated)
+      summary: List holidays (deprecated)
+      description: >
+        **DEPRECATED**. Call the new [List
+        holidays](https://developers.pismo.io/pismo-docs/reference/get-holiday-new)
+        endpoint instead.
+
+
+        Retrieve a paginated list of holidays.
+      deprecated: true
       operationId: get-v1-orgs-holidays
-      description: >-
-        Retrieve a paginated list of holidays. (**Outdated:** For an updated
-        version of this endpoint, see <a
-        href="https://developers.pismo.io/pismo-docs/reference/get-v1-holidays">Holidays
-        API</a>.)
+      tags:
+        - Holidays (deprecated)
       parameters:
         - $ref: '#/components/parameters/TenantIdHeader'
         - $ref: '#/components/parameters/PageQuery'
@@ -691,15 +705,18 @@ paths:
                   $ref: '#/components/examples/InternalServerErrorResponse'
   /orgs-core/v1/orgs/holidays/{id}:
     put:
-      tags:
-        - Holidays (outdated)
-      summary: Update holiday
-      description: >-
-        Update a holiday. (**Outdated:** For an updated version of this
-        endpoint, see <a
-        href="https://developers.pismo.io/pismo-docs/reference/get-v1-holidays">Holidays
-        API</a>.)
+      summary: Update holiday (deprecated)
+      description: >
+        **DEPRECATED**. Call the new [Uodate
+        holiday](https://developers.pismo.io/pismo-docs/reference/update-holiday)
+        endpoint instead.
+
+
+        Update a holiday. 
       operationId: put-v1-orgs-holidays
+      deprecated: true
+      tags:
+        - Holidays (deprecated)
       parameters:
         - $ref: '#/components/parameters/HolidayIdPath'
         - $ref: '#/components/parameters/TenantIdHeader'
@@ -740,18 +757,21 @@ paths:
                 generic-internal-error:
                   $ref: '#/components/examples/InternalServerErrorResponse'
     delete:
-      tags:
-        - Holidays (outdated)
-      summary: Delete holiday
-      operationId: delete-v1-orgs-holidays
-      description: >-
-        Delete a holiday. (**Outdated:** For an updated version of this
-        endpoint, see <a
-        href="https://developers.pismo.io/pismo-docs/reference/get-v1-holidays">Holidays
-        API</a>.)
+      summary: Delete holiday (deprecated)
+      description: >
+        **DEPRECATED**. Call the new [Delete
+        holiday](https://developers.pismo.io/pismo-docs/reference/delete-holiday)
+        instead.
+
+
+        Delete a holiday. 
       parameters:
         - $ref: '#/components/parameters/HolidayIdPath'
         - $ref: '#/components/parameters/TenantIdHeader'
+      operationId: delete-v1-orgs-holidays
+      deprecated: true
+      tags:
+        - Holidays (deprecated)
       responses:
         '204':
           description: Holidays response.

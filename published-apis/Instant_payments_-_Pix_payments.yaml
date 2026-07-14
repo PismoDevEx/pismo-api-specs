@@ -25,14 +25,6 @@ components:
       scheme: bearer
       bearerFormat: JWT
   parameters:
-    AccountIdHeader:
-      name: x-account
-      in: header
-      schema:
-        type: integer
-      description: Pismo account ID.
-      required: true
-      example: 5869300
     AccountIDpath:
       name: account_id
       in: path
@@ -61,37 +53,6 @@ components:
       schema:
         type: string
         example: Bearer eyJhbGci...IUzUx
-    AutomaticPixExecutionStatusQuery:
-      name: status
-      in: query
-      required: true
-      schema:
-        type: string
-        enum:
-          - CREATED
-          - EXPIRED
-          - ACCEPTED
-          - REJECTED
-          - CANCELLED
-          - RECEIVED
-      description: Execution status filter
-      example: CREATED
-    AutomaticPixExecutionStatusOptionalQuery:
-      name: status
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - CREATED
-          - EXPIRED
-          - ACCEPTED
-          - REJECTED
-          - FINISHED
-          - CANCELLED
-          - APPROVED
-      description: Execution status filter
-      example: CREATED
     BeginDateQuery:
       name: beginDate
       in: query
@@ -114,19 +75,6 @@ components:
       schema:
         type: string
       example: '2023-04-12'
-    BeginDateQueryOptional:
-      name: beginDate
-      in: query
-      description: >
-        Begin date filter. RFC 3339 filter. For example:
-        `2023-04-12T23:20:50.52Z`. 
-
-
-        Maximum days allowed between `beginDate` and `endDate` is 30.
-      required: false
-      schema:
-        type: string
-      example: '2023-04-12T23:20:50.52Z'
     CIDheader:
       name: x-cid
       description: >
@@ -158,19 +106,6 @@ components:
       schema:
         type: string
       example: '2023-04-12'
-    EndDateQueryOptional:
-      name: endDate
-      in: query
-      description: >
-        End date filter. RFC 3339 format. For example:
-        `2023-04-12T23:20:50.52Z`. 
-
-
-        Maximum days allowed between `beginDate` and `endDate` is 30.
-      required: false
-      schema:
-        type: string
-      example: '2023-04-12T23:20:50.52Z'
     EndToEndIDpath:
       name: end_to_end_id
       in: path
@@ -279,13 +214,6 @@ components:
         enum:
           - ASC
           - DESC
-    OrgIdHeader:
-      name: x-tenant
-      in: header
-      description: |
-        Organization ID
-      schema:
-        type: string
     PageQuery:
       name: page
       in: query
@@ -294,42 +222,10 @@ components:
       schema:
         type: string
       example: '1'
-    PaymentOrderStatusQuery:
-      name: status
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - PENDING
-          - WAITING_CUSTOMER
-          - REGISTERED
-          - ACTIVE
-          - CANCELLED
-          - CANCELLING
-          - EXPIRED
-          - REJECTED
-          - CONCLUDED
-      description: Payment order status filter
-      example: PENDING
     PerPageQuery:
       name: perPage
       in: query
       description: Per page amount (min=1, max=100). Default is `20`.
-      required: true
-      schema:
-        type: string
-    RecurrenceIdPath:
-      name: recurrence_id
-      in: path
-      description: BACEN (Brazil Central Bank) recurrence ID
-      required: true
-      schema:
-        type: string
-    RecurrenceIdQuery:
-      name: recurrenceId
-      in: query
-      description: BACEN (Brazil Central Bank) recurrence ID filter
       required: true
       schema:
         type: string
@@ -339,16 +235,6 @@ components:
       description: Reversal end-to-end ID filter.
       schema:
         type: string
-    RoleTypeQuery:
-      name: roleType
-      in: query
-      required: true
-      schema:
-        type: string
-        enum:
-          - PAYEE
-          - PAYER
-      description: Role type filter.
     ScheduleBeginDatetimeQuery:
       name: scheduleBeginDatetime
       in: query
@@ -435,6 +321,16 @@ components:
           - RECURRING
       description: Scheduler type filter
       example: ONCE
+    ShowPreviewQuery:
+      name: showPreview
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: >-
+        Should a preview of upcoming executions be presented? Default is `false`
+        (no execution previews returned).
+      example: true
     TransactionTypePath:
       name: type
       in: path
@@ -484,11 +380,11 @@ components:
         - TRAN
       maxLength: 4
       description: |
-        Account type:  
-          `CACC` - Checking/current account.  Known as "conta corrente" in Portuguese, this is a bank account type designed for everyday financial transactions and is the most common type individuals and businesses use for day-to-day banking.
-          `SVGS` - Savings account
-          `TRAN` - Payment account. Payment institutions offer payment accounts to move funds and make payments, while banks offer checking accounts that include full financial services such as credit and investments.
-          `SLRY` - Salary account. Employer deposits a fixed amount every month.
+        Account type:  <br />
+          `CACC` - Checking/current account.  Known as "conta corrente" in Portuguese, this is a bank account type designed for everyday financial transactions and is the most common type individuals and businesses use for day-to-day banking.<br />
+          `SVGS` - Savings account<br />
+          `TRAN` - Payment account. Payment institutions offer payment accounts to move funds and make payments, while banks offer checking accounts that include full financial services such as credit and investments.<br />
+          `SLRY` - Salary account. Employer deposits a fixed amount every month.<br />
       example: TRAN
     AdditionalInformation:
       type: string
@@ -498,18 +394,15 @@ components:
       type: string
       description: >
         Withdrawal service agent. **REQUIRED** for `CHANGE` and `WITHDRAWAL`
-        transactions.  
-          * `AGTEC` - Agente estabelecimento comercial. For commercial establishment.
-          * `AGFSS` - Agente Facilitador de Serviço de Saque. For cash machine.
-          * `AGTOT` - Agente Outra Espécie de Pessoa Jurídicas ou correspondente no País. Withdrawal service facilitator.
+        transactions.<br />
+          * `AGTEC` - Agente estabelecimento comercial. For commercial establishment.<br />
+          * `AGFSS` - Agente Facilitador de Serviço de Saque. For cash machine.<br />
+          * `AGTOT` - Agente Outra Espécie de Pessoa Jurídicas ou correspondente no País. Withdrawal service facilitator.<br />
       enum:
         - AGTEC
         - AGTOT
         - AGPSS
       example: AGTEC
-    AllowAttemptsAfterExpiration:
-      type: boolean
-      description: Will charge continue after due date?
     AllowsValueChange:
       type: boolean
       description: Can the payer change the final amount?
@@ -518,241 +411,6 @@ components:
       type: number
       description: Amount to be transferred.
       example: 1050.44
-    ApproveAuthorizationStatus:
-      type: string
-      description: "\nAuthorization status: \n\n  * `CREATED`\t  - Receiver created authorization.\n  * `RECEIVED`  - Payer's PSP received authorization.\n  * `ACCEPTED`  - Payer accepted authorization.\n  * `REJECTED`  - Payer rejected authorization.\n  * `EXPIRED`   - Payer's PSP did not accept authorization before expiration date.\n  * `CANCELLED` - Receiver cancelled authorization.\n"
-      enum:
-        - CREATED
-        - RECEIVED
-        - ACCEPTED
-        - REJECTED
-        - EXPIRED
-        - CANCELLED
-      example: REJECTED
-    Authorization:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/AuthorizationID'
-        role_type:
-          $ref: '#/components/schemas/RoleType'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        updated_at:
-          $ref: '#/components/schemas/UpdatedAt'
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        recurrence_id:
-          $ref: '#/components/schemas/RecurrenceID'
-        expiration_date:
-          $ref: '#/components/schemas/ExpirationDate'
-        provider_created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        provider_updated_at:
-          $ref: '#/components/schemas/UpdatedAt'
-        maximum_debit_allowed:
-          oneOf:
-            - $ref: '#/components/schemas/MaximumDebitAllowed'
-            - $ref: '#/components/schemas/NullType'
-        reason_code:
-          $ref: '#/components/schemas/AuthorizationReasonCode'
-        payer:
-          oneOf:
-            - $ref: '#/components/schemas/Payer'
-            - $ref: '#/components/schemas/NullType'
-        rec_payload:
-          oneOf:
-            - $ref: '#/components/schemas/RecurrenceDetails'
-            - $ref: '#/components/schemas/NullType'
-    AuthorizationID:
-      type: string
-      description: >-
-        Authorization ID the same as BACEN (Brazil Central Bank) IdSoliReq
-        (request identification code)
-      example: IS0435879820240605bcdb1fhn43a
-    AuthorizationReasonCode:
-      type: string
-      description: >
-        Authorization reason code. 
-
-
-        **Note:** "pain.009" is a message sent to the payer when the payee
-        starts a #1 journey (`AUT1`) Automatic Pix recurrence
-
-
-        * `AC01` - Account not found or not belonging to the paying user
-
-        * `AC04` - Paying user's transactional account is closed
-
-        * `AC06` - Paying user's transactional account is blocked
-
-        * `AP01` - Discrepancy in the field for updating periodic payments
-        recurrence data and the periodic payments recurrence status - lack of
-        synchronization
-
-        * `AP02` - Paying user's CPF/CNPJ  not found or different from the one
-        in the original pain.009. Or, in the case of cancellation, the paying
-        user's CPF/CNPJ does not match the one contained in the perioduc
-        payments recurrence data.
-
-        * `AP03` - Paying user's branch not found
-
-        * `AP04` - Invalid recurrence ID or does not match the original
-
-        * `AP05` - Inconsistent recurrence status for periodic payments
-
-        * `AP06` - Receiving user's CPF/CNPJ is different from the one in the
-        pain.009 or the payload. Or, in the case of cancellation, the receiving
-        user's CPF/CNPJ does not match the one contained in the periodic
-        payments recurrence data.
-
-        * `AP07` - Paying user's recurrence confirmation performed after the
-        confirmation request's expiration or cancellation (pain.009)
-
-        * `AP08` - First immediate payment associated with the recurrence was
-        not identified. (Valid only for Authorization Journey 3 (`AUT3`))
-
-        * `AP09` - Recurrence confirmation request for periodic payments was not
-        identified to enable its cancellation
-
-        * `AP10` - Cancellation requestor's CPF/CNPJ does not match the the
-        paying/receiving user's or the paying/receiving PSP's identification
-        contained in the periodic payments recurrence data.
-
-        * `AP11` - Paying PSP's ISPB diverges from the information contained in
-        the recurrence for periodic payments
-
-        * `AP12` - Receiving PSP's ISPB diverges from the information contained
-        in the recurrence for periodic payments
-
-        * `AP13` = Paying user rejects periodic payments recurrence confirmation
-        request due to receiving user non-recognition
-
-        * `AP14` - Paying user rejects periodic payments recurrence confirmation
-        request due to receiving user's lack of interest in using Pix Automatic
-
-        * `AP15` - Paying user's participant rejects recurrence confirmation
-        request for periodic payments as they chose not to offer Pix Automatic
-        usage for corporate clients
-
-        * `CH16` - Incorrect or incompatible message content with business rules
-
-        * `MD01` - Cancellation request's recurrence object does not exist.
-        Should not be used for cancellation requests of pain.009 with status =
-        `PDNG`. That is, a recurrence with status = `PDNG` should be considered
-        as an existing recurrence.
-
-        * `MD20` - Cancellation request's recurrence object has already expired.
-      enum:
-        - AC01
-        - AC04
-        - AC06
-        - AP01
-        - AP02
-        - AP03
-        - AP04
-        - AP05
-        - AP06
-        - AP07
-        - AP08
-        - AP09
-        - AP10
-        - AP11
-        - AP12
-        - AP13
-        - AP14
-        - AP15
-        - CH16
-        - MD01
-        - MD20
-      example: AC01
-    AuthorizationRejectedReasonCodeRequest:
-      type: string
-      description: >
-        Rejected authorizations reason code 
-
-        * `AP13` - Paying user rejects recurrence confirmation for periodic
-        payments due to receiving user not recognized
-
-        * `AP14` - Paying user rejects recurrence confirmation for periodic
-        payments due to receiving user not interested in using Automatic Pix
-      enum:
-        - AP13
-        - AP14
-      example: AP14
-    AuthorizationRequest:
-      type: object
-      description: Authorization request
-      required:
-        - id
-        - status
-      properties:
-        recurrence_id:
-          $ref: '#/components/schemas/RecurrenceID'
-        status:
-          $ref: '#/components/schemas/ApproveAuthorizationStatus'
-        reason_code:
-          $ref: '#/components/schemas/AuthorizationRejectedReasonCodeRequest'
-        max_payment_amount:
-          $ref: '#/components/schemas/MaxPaymentAmount'
-        journey_type:
-          $ref: '#/components/schemas/JourneyType'
-        payment_date_time:
-          $ref: '#/components/schemas/PaymentDateTime'
-        transaction_identification:
-          $ref: '#/components/schemas/TransactionIdentification'
-    AuthorizationResponse:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/AuthorizationID'
-        recurrence_id:
-          $ref: '#/components/schemas/RecurrenceID'
-        cid:
-          $ref: '#/components/schemas/Cid'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        journey_type:
-          $ref: '#/components/schemas/JourneyType'
-        status:
-          $ref: '#/components/schemas/ApproveAuthorizationStatus'
-    BacenReasonCode:
-      type: string
-      description: >
-        Cancellation reason code:   
-
-
-        * `ACCL` - Paying receiving user's account cancelled
-
-        * `CPCL` - Receiving company closure
-
-        * `DCSD` - Paying user death 
-
-        * `ERSL` - Receiving user, or their participant, request cancelled due
-        to confirmation request error
-
-        * `FRUD` - Fraud
-
-        * `PCFD` - Receiving user participant request because the same
-        recurrence was confirmed another way, for example, via QR Code
-
-        * `SLCR` - Receiving user request
-
-        * `SLDB` - Paying user request
-
-        * `NRES` - Receiving PSP request due to lack of response to pain.009
-        within the regulatory period
-      enum:
-        - ACCL
-        - CPCL
-        - DCSD
-        - ERSL
-        - FRUD
-        - PCFD
-        - SLCR
-        - SLDB
-        - NRES
-      example: ACCL
     Bank:
       type: string
       description: >-
@@ -776,17 +434,6 @@ components:
       description: This could be a bank-assigned branch ID or the branch's ISPB number.
       maxLength: 4
       example: '011'
-    CancelRecurrenceRequest:
-      type: object
-      description: Cancel recurrence request
-      required:
-        - recurrence_id
-        - reason_code
-      properties:
-        recurrence_id:
-          $ref: '#/components/schemas/RecurrenceID'
-        reason_code:
-          $ref: '#/components/schemas/BacenReasonCode'
     CityCode:
       type: string
       description: >-
@@ -794,47 +441,6 @@ components:
         target="_blank">IBGE</a> (Instituto Brasileiro de Geografia e
         Estatística) city code.
       example: '3550308'
-    CancellatedAt:
-      type: string
-      description: 'Cancellation date time, RFC 3339 format: YYYY-MM-DDThh:mm:ssZ.'
-      example: '2024-11-14T17:54:40Z'
-    CalendarDueDate:
-      type: string
-      description: Calendar due date
-      example: '2030-10-10'
-    CalendarWorkingDay:
-      type: boolean
-      description: Calendar working day?
-      example: false
-    CancelPaymentOrderRequest:
-      type: object
-      description: Cancel payment order request
-      required:
-        - end_to_end_id
-        - reason
-      properties:
-        end_to_end_id:
-          $ref: '#/components/schemas/EndToEndID'
-        reason:
-          $ref: '#/components/schemas/PaymentOrderReason'
-    CancelPaymentOrderResponse:
-      type: object
-      description: Cancel payment order request
-      required:
-        - end_to_end_id
-        - reason
-        - cancelled_at
-      properties:
-        end_to_end_id:
-          $ref: '#/components/schemas/EndToEndID'
-        reason:
-          $ref: '#/components/schemas/PaymentOrderReason'
-        cancelled_at:
-          $ref: '#/components/schemas/CancellatedAt'
-    Cid:
-      type: string
-      description: Correlation ID
-      example: 4888-urjju-48474i9-uuke
     commons.AdditionalInfo:
       type: object
       properties:
@@ -1034,16 +640,6 @@ components:
       minLength: 1
       maxLength: 14
       example: '123412341234'
-    DynamicAmount:
-      type: boolean
-      description: |
-        Does recurrence have a dynamic amount? 
-
-        If `true`, `min_payment_amount` is **REQUIRED**. 
-
-        If `false`, `amount` is **REQUIRED**. Default is `false`.
-      default: false
-      example: false
     EndToEndID:
       type: string
       description: >
@@ -1071,28 +667,6 @@ components:
         - PROCESSING
         - DELIVERED
       example: PENDING
-    ExpirationDate:
-      type: string
-      format: datetime
-      description: >-
-        Authorization expiration date. RFC 3339 value. Format =
-        YYYY-MM-DDThh:mm:ss.SSSZ
-      example: '2020-08-13T13:49:03.000Z'
-    ExpirationDateCreateRecRequest:
-      type: string
-      format: datetime
-      description: >
-        Authorization expiration date, must be at least 2 days before the
-        `first_payment_date`. 
-
-
-        RFC 3339 value. Format = YYYY-MM-DDThh:mm:ss.SSSZ
-
-
-        If not passed,  the `expiration_date` is automatically generated, up to
-        2 days before the `first_payment_date`, or a maximum of 30 days from the
-        current date, whichever is due first
-      example: '2020-08-13T13:49:03.000Z'
     FineValue:
       type: number
       description: Fine value.
@@ -1101,13 +675,6 @@ components:
       type: string
       format: datetime
       description: First charge/payment date. Format = yyyy-mm-dd
-      example: '2025-04-25'
-    FirstPaymentDateCreateRecRequest:
-      type: string
-      format: datetime
-      description: >-
-        First charge/payment date, must be more than 2 days ahead the recurrence
-        creation date. Format = yyyy-mm-dd
       example: '2025-04-25'
     FlexControls:
       type: object
@@ -1243,10 +810,6 @@ components:
         the Brazilian Payment System ID, an 8-digit value.
       maxLength: 8
       example: '60701190'
-    IsWorkingDays:
-      type: boolean
-      description: If the recurrence will only execute on working days
-      example: false
     JourneyType:
       type: string
       description: |
@@ -1280,14 +843,20 @@ components:
       format: datetime
       description: Last charge/payment date. Format = yyyy-mm-dd
       example: '2026-06-10'
-    MaximumDebitAllowed:
-      type: number
-      description: Maximum debit allowed in recurrence authorization.
-      example: 86753.09
-    MaxPaymentAmount:
-      type: number
-      description: Maximum payment amount for dynamic amount recurrences, defined by payer.
-      example: 86753.09
+    Metadata:
+      type: object
+      description: >
+        Key-value fields for adding custom information to request. Total maximum
+        object size = 3000 bytes.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
     MinPaymentAmount:
       type: number
       description: Minimum payment amount for dynamic amount recurrences, defined by payee.
@@ -1301,23 +870,12 @@ components:
       type: boolean
       description: Are tbere more results?
       example: false
-    NullType:
-      title: Null type reference
-      description: Used to add nullability to a ref
-      enum:
-        - null
     NumberElements:
       type: number
       description: Total items returned in query
     PageSize:
       type: number
       description: Maximum elements returned per query.
-    PatchRecurrenceRequest:
-      type: object
-      description: Payload with available fields to update a recurrence.
-      properties:
-        max_payment_amount:
-          $ref: '#/components/schemas/MaxPaymentAmount'
     Payee:
       type: object
       required:
@@ -1369,169 +927,6 @@ components:
           $ref: '#/components/schemas/AccountType'
         city_code:
           $ref: '#/components/schemas/CityCode'
-    PaymentDateTime:
-      type: string
-      format: datetime
-      description: >
-        Date time from a successful payment. Mandatory for the `AUT3` journey.
-        RFC 3339 value. Format: YYYY-MM-DDThh:mm:ss.SSSZ.
-      example: '2020-08-13T13:49:03.000Z'
-    PaymentOrderReason:
-      description: >
-        Payment order cancellation reason: 
-
-
-        * `ACCT` - Paying or receiving user's transactional account closed
-
-        * `BLCK` - Paying or receiving user's transactional account blocked
-
-        * `CCLD` - Recurring payments authorization cancelled
-
-        * `FAIL` - Settlement process failure or error
-
-        * `OTHR` - Paying or receiving user requested cancellation for other
-        reasons
-
-        * `SLBD` - Paying user request
-
-        * `SLCR` - Receiving user request
-      type: string
-      enum:
-        - ACCT
-        - BLCK
-        - CCLD
-        - FAIL
-        - OTHR
-        - SLBD
-        - SLCR
-      example: ACCT
-    PaymentOrderReasonDescription:
-      description: |
-        Payment order cancellation reason desciption
-      type: string
-      example: Paying user's account has been closed.
-    PaymentOrderResponse:
-      type: object
-      properties:
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        recurrence_id:
-          $ref: '#/components/schemas/RecurrenceID'
-        end_to_end_id:
-          $ref: '#/components/schemas/EndToEndID'
-        type:
-          $ref: '#/components/schemas/PaymentOrderType'
-        status:
-          $ref: '#/components/schemas/PaymentOrderStatus'
-        transaction_identification:
-          $ref: '#/components/schemas/TransactionIdentification'
-        calendar:
-          type: object
-          properties:
-            due_date:
-              $ref: '#/components/schemas/CalendarDueDate'
-            working_day:
-              $ref: '#/components/schemas/CalendarWorkingDay'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        dynamic_amount:
-          $ref: '#/components/schemas/DynamicAmount'
-        additional_information:
-          $ref: '#/components/schemas/AdditionalInformation'
-        max_payment_amount:
-          $ref: '#/components/schemas/MaxPaymentAmount'
-        min_amount_allowed:
-          $ref: '#/components/schemas/MinPaymentAmount'
-        reason:
-          type: object
-          properties:
-            code:
-              $ref: '#/components/schemas/PaymentOrderReason'
-            description:
-              $ref: '#/components/schemas/PaymentOrderReasonDescription'
-        payer:
-          oneOf:
-            - $ref: '#/components/schemas/Payer'
-            - $ref: '#/components/schemas/NullType'
-        payee:
-          $ref: '#/components/schemas/Payee'
-        debtor:
-          $ref: '#/components/schemas/Debtor'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        updated_at:
-          $ref: '#/components/schemas/UpdatedAt'
-    PaymentOrderStatus:
-      description: >
-        Payment order status: 
-
-
-        * `PENDING` - Payment order exists in the database.
-
-        * `WAITING_CUSTOMER`- Waiting on the payee to update the payment order
-        amount. Refer to the [Update order](ref:update-order-automatic-pix)
-        endpoint.
-
-        * `REGISTERED` - Payment order was registered to SPI instant payment
-        system. 
-
-        * `ACTIVE` - Payer PSP accepted payment order.
-
-        * `REJECTED` - Payer PSP rejected payment order. Check `reason.code` and
-        `reason.description`.
-
-        * `CANCELLING` - Payment order was previously accepted, cancel process
-        has begun. and it's waiting on counterparty acknowledgement.
-
-        * `CANCELLED` - Payment order was previously accepted and then
-        cancelled. Check `reason.code` and `reason.description`.
-
-        * `EXPIRED` - Pix transaction was not found by the due date. Will
-        trigger retry if applicable to the recurrence.
-
-        * `CONCLUDED` - Pix transaction was found and payment order is
-        concluded.
-      type: string
-      enum:
-        - PENDING
-        - WAITING_CUSTOMER
-        - REGISTERED
-        - ACTIVE
-        - CANCELLED
-        - CANCELLING
-        - EXPIRED
-        - REJECTED
-        - CONCLUDED
-      example: PENDING
-    PaymentOrderType:
-      type: string
-      description: >
-        Payment order type:
-
-        * `SCHEDULE` - Default type for recurring payments within the regular
-        term.
-
-        * `RETRY_OVERDUE` - Attempted collection after original due date when
-        payment has not been made.
-
-        * `RETRY_ERROR` - Intraday reprocessing due to technical or operational
-        failures in payment processing.
-
-
-        **Pismo code** | **SPI code**
-
-        ----------    | ----------- 
-
-        `SCHEDULE`      | `AGNT` 
-
-        `RETRY_OVERDUE` | `RFIL`
-
-        `RETRY_ERROR`   | `NTAG` 
-      enum:
-        - SCHEDULE
-        - RETRY_OVERDUE
-        - RETRY_ERROR
-      example: SCHEDULE
     PaymentType:
       type: string
       description: |
@@ -1587,21 +982,21 @@ components:
           type: string
           description: >
             This field is a Brazil Central Bank (BCB) requirement to track all
-            steps of Pix transactions. 
+            steps of Pix transactions. <br />
 
-            Basically, there are two steps to a Pix transaction:
+            Basically, there are two steps to a Pix transaction:<br />
 
-            1. Initialize a transaction 
+            1. Initialize a transaction <br />
 
-            2. Confirm a transaction
+            2. Confirm a transaction<br />
 
 
             The `end_to_end_id` is sent to the BCB in both steps in order to
-            identify all transaction information.
+            identify all transaction information.<br />
 
 
             On reversal flow, the `end_to_end_id` is the original transaction
-            `end_to_end_id`.
+            `end_to_end_id`.<br />
           example: E3030629420200808195101608910248
         reason:
           $ref: '#/components/schemas/ReversalReason'
@@ -1841,10 +1236,7 @@ components:
             **REQUIRED** to pass it. 
           example: 1a84daf6-a61b-4aba-919a-a9943db7102e
         metadata:
-          type: object
-          description: >-
-            Key-value fields for adding custom information to request. Total
-            maximum object size = 3000 bytes.
+          $ref: '#/components/schemas/Metadata'
         qr_code_additional_information:
           $ref: '#/components/schemas/QRcodeAddInfo'
         remittance_information:
@@ -1890,6 +1282,21 @@ components:
           $ref: '#/components/schemas/PSPtransactionCreatedAt'
         signature_info:
           $ref: '#/components/schemas/pix.SignatureInfo'
+        processing_code:
+          type: string
+          description: >
+            A 6-digit code that identifies the financial processing category for
+            the transaction, used for accounting and routing purposes.
+
+
+            This field is optional. When not provided, Pismo automatically
+            assigns a value managed internally. If you provide a custom value,
+            you take full responsibility for its correctness — an invalid or
+            mismatched code may cause processing or reconciliation failures.
+          maxLength: 6
+          example: '123456'
+        taxes:
+          $ref: '#/components/schemas/Taxes'
     pix.OutTransferPSPaccount:
       type: object
       description: >-
@@ -1915,6 +1322,8 @@ components:
           $ref: '#/components/schemas/DocumentNumber'
         name:
           $ref: '#/components/schemas/Name'
+        taxes:
+          $ref: '#/components/schemas/Taxes'
     pix.OutTransferResponse:
       type: object
       required:
@@ -2305,6 +1714,8 @@ components:
             Tax ID generated in the static QR Code, intended for the final
             user's financial reconciliation.
           example: d4c38871c8354f0fbe91b3c9c7d5b929
+        taxes:
+          $ref: '#/components/schemas/Taxes'
     pix.ReceiptPayee:
       type: object
       properties:
@@ -2500,7 +1911,7 @@ components:
             The certificate thumbprint calculated using a <a
             href="https://en.wikipedia.org/wiki/SHA-2" target="_blank">SHA-256
             algorithm</a> and encoded in hexadecimal.
-          maxLength: 128
+          maxLength: 512
           example: 3a2b4c1b...
         signature:
           type: string
@@ -2508,7 +1919,7 @@ components:
             The digital signature calculated over the payload (see the input
             buffer data and provider-defined format) according to the DSA
             standard and Base64 encoded.
-          maxLength: 500
+          maxLength: 1024
           example: MIIb2132b==
     pix.SimpleScheduledTransfer:
       required:
@@ -2698,6 +2109,8 @@ components:
           $ref: '#/components/schemas/pix.TransactionCharge'
         dates:
           $ref: '#/components/schemas/pix.TransactionDates'
+        taxes:
+          $ref: '#/components/schemas/Taxes'
     pix.ValidateTransmitterWithdrawalResponse:
       type: object
       properties:
@@ -2759,10 +2172,6 @@ components:
       type: number
       description: Purchase price before charges, withdrawal changes, or other changes.
       example: 1050.44
-    PismoRecurrenceID:
-      type: string
-      description: Pismo recurrence ID.
-      example: 49940-9995-u88
     QRcodeAddInfo:
       type: array
       description: Additional QR Code information.
@@ -2809,165 +2218,21 @@ components:
         - REMOVIDA_PELO_USUARIO_RECEBEDOR
         - REMOVIDA_PELO_PSP
       example: ATIVA
-    QueryFilters:
-      type: object
-      properties:
-        label:
-          type: string
-          description: Filter label
-        value:
-          type: string
-          description: Filter value
-        operator:
-          type: string
-          description: Filter operator
-      description: Filters used in  query
-      example:
-        label: status
-        value: CREATED
     ReadAt:
       type: string
       description: Datetime QR Code was read, RFC 3339 format
       example: '2024-11-14T17:54:40Z'
-    Recurrence:
+    Records:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/PismoRecurrenceID'
-        role_type:
-          $ref: '#/components/schemas/RoleType'
-        details:
-          $ref: '#/components/schemas/RecurrenceDetails'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        updated_at:
-          $ref: '#/components/schemas/UpdatedAt'
-        status:
-          $ref: '#/components/schemas/RecurrenceStatus'
-    RecurrenceDescription:
-      type: string
-      description: Recurrence payment description
-      maxLength: 35
-      example: Gym membership
-    RecurrenceDetails:
-      type: object
-      properties:
-        recurrence_id:
-          $ref: '#/components/schemas/RecurrenceID'
-        journey_type:
-          $ref: '#/components/schemas/JourneyType'
-        contract_id:
-          $ref: '#/components/schemas/ContractID'
-        description:
-          $ref: '#/components/schemas/RecurrenceDescription'
+        tax_type:
+          $ref: '#/components/schemas/TaxType'
         amount:
-          $ref: '#/components/schemas/Amount'
-        maximum_debit_allowed:
-          $ref: '#/components/schemas/MaxPaymentAmount'
-        minimum_debit_allowed:
-          $ref: '#/components/schemas/MinPaymentAmount'
-        frequency_type:
-          $ref: '#/components/schemas/FrequencyType'
-        allow_attempts_after_expiration:
-          $ref: '#/components/schemas/AllowAttemptsAfterExpiration'
-        first_payment_date:
-          $ref: '#/components/schemas/FirstPaymentDate'
-        payee:
-          $ref: '#/components/schemas/Payee'
-        payer:
-          $ref: '#/components/schemas/Payer'
-        debtor:
-          $ref: '#/components/schemas/Debtor'
+          $ref: '#/components/schemas/TaxAmount'
     RecurrenceID:
       type: string
       description: BACEN recurrence ID
       example: RN000000012025050500012345678
-    RecurrenceRequest:
-      type: object
-      description: Recurrence request
-      required:
-        - contract_id
-        - description
-        - frequency_type
-        - allow_attempts_after_expiration
-        - first_payment_date
-        - debtor
-        - payer
-      properties:
-        contract_id:
-          $ref: '#/components/schemas/ContractID'
-        description:
-          $ref: '#/components/schemas/RecurrenceDescription'
-        frequency_type:
-          $ref: '#/components/schemas/FrequencyType'
-        allow_attempts_after_expiration:
-          $ref: '#/components/schemas/AllowAttemptsAfterExpiration'
-        first_payment_date:
-          $ref: '#/components/schemas/FirstPaymentDateCreateRecRequest'
-        debtor:
-          $ref: '#/components/schemas/Debtor'
-        payer:
-          $ref: '#/components/schemas/Payer'
-        dynamic_amount:
-          $ref: '#/components/schemas/DynamicAmount'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        min_payment_amount:
-          $ref: '#/components/schemas/MinPaymentAmount'
-        last_payment_date:
-          $ref: '#/components/schemas/LastPaymentDate'
-        expiration_date:
-          $ref: '#/components/schemas/ExpirationDateCreateRecRequest'
-    RecurrenceResponse:
-      type: object
-      description: Recurrence response
-      properties:
-        recurrence_id:
-          $ref: '#/components/schemas/RecurrenceID'
-        journey_type:
-          $ref: '#/components/schemas/JourneyType'
-        contract_id:
-          $ref: '#/components/schemas/ContractID'
-        description:
-          $ref: '#/components/schemas/RecurrenceDescription'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        min_payment_amount:
-          $ref: '#/components/schemas/MinPaymentAmount'
-        max_payment_amount:
-          $ref: '#/components/schemas/MaxPaymentAmount'
-        dynamic_amount:
-          $ref: '#/components/schemas/DynamicAmount'
-        frequency_type:
-          $ref: '#/components/schemas/FrequencyType'
-        allow_attempts_after_expiration:
-          $ref: '#/components/schemas/AllowAttemptsAfterExpiration'
-        is_working_days:
-          $ref: '#/components/schemas/IsWorkingDays'
-        expiration_date:
-          $ref: '#/components/schemas/ExpirationDate'
-        first_payment_date:
-          $ref: '#/components/schemas/FirstPaymentDate'
-        last_payment_date:
-          $ref: '#/components/schemas/LastPaymentDate'
-        payee:
-          $ref: '#/components/schemas/Payee'
-        payer:
-          $ref: '#/components/schemas/Payer'
-        debtor:
-          $ref: '#/components/schemas/Debtor'
-        status:
-          $ref: '#/components/schemas/RecurrenceStatus'
-        reason_code:
-          $ref: '#/components/schemas/BacenReasonCode'
-        transaction_identification:
-          $ref: '#/components/schemas/RecurrencTransactionIdentification'
-        authorizations:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorizationResponse'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
     RecurrenceStatus:
       type: string
       description: "\nRecurrence status\n\n  * `CREATED`\t  - Recurrence created, waiting on journey acceptance.\n  * `ACCEPTED`  - Payer accepted recurrence, awaiting confirmation from receiver's PSP.\n  * `APPROVED`  - Payer accepted recurrence and receiver's PSP confirmed. \n  * `REJECTED`  - Payer or receiver's PSP rejected recurrence during `ACCEPTED` validation. For example: receiver's account is inactive.\n  * `EXPIRED`   - Recurrence expired after last scheduled payment date.\n  * `CANCELLED` - Payer or reciever cancelled recurrence.\n  * `FINISHED`  - Deprecated\n"
@@ -2980,11 +2245,6 @@ components:
         - CANCELLED
         - FINISHED
       example: REJECTED
-    RecurrencTransactionIdentification:
-      type: string
-      description: |
-        Recurrence transaction ID. 
-      example: 1a84daf6-a61b-4aba-919a-a9943db7102e
     RemittanceInformation:
       type: string
       description: >
@@ -3003,12 +2263,6 @@ components:
         - FRAUD
         - BANK_ERROR
       example: USER_REQUESTED
-    RoleType:
-      type: string
-      description: Role type
-      enum:
-        - PAYEE
-        - PAYER
     ScheduleCreationDatetime:
       type: string
       description: >-
@@ -3184,40 +2438,6 @@ components:
           $ref: '#/components/schemas/scheduler.CreatedAt'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
-    scheduler.ItemPixOutResponse:
-      type: object
-      properties:
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        amount:
-          $ref: '#/components/schemas/Amount'
-        bank_account:
-          $ref: '#/components/schemas/scheduler.BankAccount'
-        initiation_type:
-          $ref: '#/components/schemas/InitiationType'
-        ispb:
-          $ref: '#/components/schemas/ISPB'
-        payee:
-          $ref: '#/components/schemas/scheduler.Payee'
-        payment_type:
-          $ref: '#/components/schemas/PaymentType'
-        scheduler_end_to_end_id:
-          $ref: '#/components/schemas/EndToEndID'
-        transaction_type:
-          $ref: '#/components/schemas/TransactionType'
-        urgency:
-          $ref: '#/components/schemas/Urgency'
-    scheduler.ItemStatusHistoryResponse:
-      type: object
-      properties:
-        created_at:
-          $ref: '#/components/schemas/scheduler.CreatedAt'
-        cid:
-          type: string
-          description: Correlation ID - request tracking ID
-          example: 616eb5aa-c75c-4137-81c8-03a10700ec76
-        status:
-          $ref: '#/components/schemas/SchedulerStatus2'
     scheduler.Payee:
       type: object
       required:
@@ -3333,6 +2553,8 @@ components:
           example: 1a84daf6-a61b-4aba-919a-a9943db7102e
         flex_controls:
           $ref: '#/components/schemas/FlexControls'
+        taxes:
+          $ref: '#/components/schemas/Taxes'
     scheduler.SchedulerRegisterResponse:
       type: object
       properties:
@@ -3419,6 +2641,34 @@ components:
           $ref: '#/components/schemas/scheduler.PayerResponse'
         next_execution:
           $ref: '#/components/schemas/scheduler.Execution'
+        executions_preview:
+          $ref: '#/components/schemas/scheduler.ExecutionsPreview'
+    scheduler.ExecutionsPreview:
+      type: object
+      description: >-
+        Preview of upcoming executions that will be created in the future.
+        Present only when `showPreview=true`.
+      properties:
+        has_more:
+          type: boolean
+          description: Are there more than 50 upcoming executions?
+          example: false
+        items:
+          type: array
+          maxItems: 50
+          description: List of upcoming executions preview, limited to 50 items.
+          items:
+            $ref: '#/components/schemas/scheduler.PreviewExecution'
+    scheduler.PreviewExecution:
+      type: object
+      description: A single upcoming execution in the preview.
+      properties:
+        execution_id:
+          $ref: '#/components/schemas/ExecutionID'
+        date:
+          type: string
+          description: Scheduled date for the upcoming execution. RFC 3339 format.
+          example: '2025-01-15T00:00:00.000Z'
     SchedulerCycle:
       type: object
       description: >
@@ -3468,17 +2718,62 @@ components:
         Settlement value. Amount to transfer after all charges have been
         applied.
       example: 10.15
+    TaxAmount:
+      type: number
+      description: Tax amount. Must be greater than zero.
+      example: 1050.44
+    Taxes:
+      type: object
+      description: >
+        Only available in the EXT environment for direct participants. Tax
+        information related to the transaction.
+      properties:
+        tax_identifier:
+          $ref: '#/components/schemas/TaxIdentifier'
+        records:
+          type: array
+          description: >
+            Tax record types information. You must pass, at a minimum, 2 objects
+            - at least one with `CBS` tax type and at least one with `IBS` tax
+            type.
+          items:
+            $ref: '#/components/schemas/Records'
+    TaxIdentifier:
+      type: string
+      description: >
+        Tax identifier, referring to the NFe, NFSe or aggregating tax document. 
+
+
+        In Brazil, NF-e and NFS-e are the two primary types of mandatory
+        electronic invoices (Notas Fiscais) used for tax compliance.
+
+         * NF-e (Nota Fiscal Eletrônica): Used for the sale and movement of physical goods or products. It is regulated at the state level by SEFAZ (SEFAZ (Secretaria da Fazenda) is the State Department of Finance in Brazil.) and travels with the goods.
+
+         * NFS-e (Nota Fiscal de Serviços Eletrônica): Used for the provision of services (e.g., consulting, repairs, digital subscriptions). It is regulated by individual city governments.
+
+
+        The value entered must correspond to the tax document used for
+        calculating the IBS and CBS taxes associated with the transaction.
+      example: IS0435879820240605bcdb1fhn43a
+      maxLength: 50
+    TaxType:
+      type: string
+      description: >
+        Tax type:
+
+         `IBS` = Goods and services tax. A state and municipal tax that unifies and replaces the main subnational consumption taxes (state ICMS and municipal ISS).
+
+        `CBS` = Contribution on goods and services. A federal tax that
+        consolidates and replaces previous federal social contributions and
+        taxes (PIS, Cofins, and IPI).
+      example: IBS
+      enum:
+        - CBS
+        - IBS
     TotalItems:
       type: integer
       description: Total number of items
       example: 1000
-    TransactionIdentification:
-      type: string
-      description: >-
-        Transaction ID from a successful payment. Mandatory for the `AUT3`
-        journey.
-      maxLength: 35
-      example: ttx2020010300000000000000000000001
     TransactionStatus:
       type: string
       description: |
@@ -3542,16 +2837,6 @@ components:
       type: string
       description: Scheduled item last updated time, RFC 3339 format
       example: '2024-11-14T17:54:40Z'
-    UpdatePaymentOrderRequest:
-      type: object
-      description: Update payment order
-      properties:
-        amount:
-          description: >-
-            New amount value. Can be passed when recurrence has a dynamic
-            amount. Payee-defined.
-          example: 101.11
-          type: number
     Urgency:
       type: string
       description: ' **REQUIRED** when `initiation_type` = `PAYMENT_INITIATOR`. Must be `NORMAL` in this case. Default is `HIGH`.'
@@ -3573,12 +2858,6 @@ components:
             $ref: '#/components/schemas/customer.Error'
     400BadRequest2:
       description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/customer.Error'
-    401Unauthorized:
-      description: Unauthorized. Missing or invalid authentication token.
       content:
         application/json:
           schema:
@@ -5441,9 +4720,14 @@ paths:
     get:
       tags:
         - Pix
-      summary: Get transaction
-      description: |
-        Retrieve transaction information given an `end-to-end` value in the path
+      summary: Get Pix transaction
+      description: >
+        Retrieve transaction information given an `end-to-end` value in the
+        path.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo accound ID.
       operationId: get-transaction-e2e
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
@@ -5695,6 +4979,10 @@ paths:
 
         For more information, refer to the [Pix instant
         payments](doc:pix-instant-payments) guide.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo accound ID.
       operationId: post-schedule-pix-payment
       tags:
         - Scheduled transfers V2
@@ -5811,7 +5099,12 @@ paths:
   /pix/v2/pix/out/scheduler/{scheduler_id}:
     get:
       summary: Get scheduled transfer
-      description: Get a scheduled Pix payment.
+      description: >
+        Get a scheduled Pix payment.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo accound ID.
       operationId: get-scheduled-pix-payment
       tags:
         - Scheduled transfers V2
@@ -5819,6 +5112,7 @@ paths:
         - $ref: '#/components/parameters/AuthHeader'
         - $ref: '#/components/parameters/ScheduleIdPath'
         - $ref: '#/components/parameters/CIDheader'
+        - $ref: '#/components/parameters/ShowPreviewQuery'
       responses:
         '200':
           description: Response Body
@@ -5918,6 +5212,10 @@ paths:
         This endpoint generates a <a
         href="https://developers.pismo.io/events/docs/instantpay-scheduler-execution-status-change-1">Instant
         pay execution status changed</a> event.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo accound ID.
       operationId: cancel-pix-out-execution
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
@@ -5950,6 +5248,10 @@ paths:
         Get Pix transaction from the provider given its type and end-to-end-ID
         in the path. Can be used to verify that both provider and Pismo have the
         same information. 
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo accound ID.
       operationId: get-pix-transaction
       tags:
         - Pix

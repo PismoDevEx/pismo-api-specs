@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   title: Banking - Integrated payments
   version: '1.0'
@@ -47,13 +47,13 @@ components:
       in: header
       description: >
         Account token. Getting an account token requires you call the [Server
-        login 
+        login
 
         endpoint](ref:post-passport-v2-s2s-access-token) with an account ID.
-        Tokens can expire 
+        Tokens can expire
 
         quickly, which can result in an <b>Unauthorized</b> message. Enter this
-        field under 
+        field under
 
         `AUTHENTICATION`.
       required: true
@@ -770,7 +770,7 @@ components:
           example: Long description.
         digitable_line:
           description: >
-            Digitable line.<br> 
+            Digitable line.<br>
 
             For example on a Brazilian bank slip, the digitable line contains
             numerical payment information encoding details like the payment
@@ -1255,6 +1255,11 @@ paths:
                   value:
                     code: EIP0012
                     message: Account not found
+                EIP0013:
+                  summary: Accounts - API returned 4xx error
+                  value:
+                    code: EIP0013
+                    message: Accounts - API returned 4xx error
                 EIP0016:
                   summary: IntlBankAccounts - API Account not found
                   value:
@@ -1270,6 +1275,11 @@ paths:
                   value:
                     code: EIP0023
                     message: BankingGatewayAPI - API returned 4xx error
+                EIP0077:
+                  summary: Address not found for this Account
+                  value:
+                    code: EIP0077
+                    message: Address not found for this Account
         '403':
           description: Forbidden
           headers:
@@ -1286,22 +1296,22 @@ paths:
                   summary: Missing required header x-tenant
                   value:
                     code: EIP0005
-                    message: Missing required header {x-tenant}
+                    message: 'Missing required header: ''x-tenant'''
                 EIP0006:
                   summary: Invalid account ID header x-account-id
                   value:
                     code: EIP0006
-                    message: Invalid account ID header {x-account-id}
+                    message: 'Invalid account id header: ''x-account-id'''
                 EIP0009:
                   summary: Missing required header x-idempotency-key
                   value:
-                    code: EIP0005
-                    message: Missing required header {x-idempotency-key}
+                    code: EIP0009
+                    message: 'Missing required header: ''x-idempotency-key'''
                 EIP0029:
                   summary: Account blocked or canceled
                   value:
                     code: EIP0029
-                    message: Account blocked or canceled
+                    message: Account blocked or cancelled
         '409':
           description: Conflict
           headers:
@@ -1314,11 +1324,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
+                EIP0042:
+                  summary: Client request ID already exists
+                  value:
+                    code: EIP0042
+                    message: client request id already exists
                 EIP0065:
                   summary: BankingGatewayAPI returned 409 provider error
                   value:
-                    code: EIP0029
-                    message: BankingGatewayAPI returned 409 provider error
+                    code: EIP0065
+                    message: BankingGatewayAPI - API returned 409 provider error
         '500':
           description: Internal Server Error
           headers:
@@ -1366,6 +1381,18 @@ paths:
                   value:
                     code: EIP0022
                     message: BankingGatewayAPI - API timeout error
+                EIP0070:
+                  summary: BankingGateway API - Failed to unmarshal error response
+                  value:
+                    code: EIP0070
+                    message: >-
+                      BankingGateway API - Failed to unmarshal error response
+                      body
+                EIP0074:
+                  summary: Bankslip issue database error
+                  value:
+                    code: EIP0074
+                    message: Bankslip issue database error
         '502':
           description: Bad Gateway
           headers:
@@ -1429,6 +1456,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0045:
+                  summary: Invalid per_page query param
+                  value:
+                    code: EIP0045
+                    message: Invalid value for query param 'per_page'
+                EIP0046:
+                  summary: Invalid datetime query param
+                  value:
+                    code: EIP0046
+                    message: >-
+                      Invalid value for datetime query parameter. RFC3339 format
+                      must be used
+                EIP0066:
+                  summary: Invalid status query param
+                  value:
+                    code: EIP0066
+                    message: Invalid query param status
+                EIP0012:
+                  summary: Account not found
+                  value:
+                    code: EIP0012
+                    message: Account not found
+                EIP0013:
+                  summary: Accounts - API returned 4xx error
+                  value:
+                    code: EIP0013
+                    message: Accounts - API returned 4xx error
+                EIP0067:
+                  summary: Invalid page query param
+                  value:
+                    code: EIP0067
+                    message: Invalid query param page
+        '403':
+          description: Forbidden
+          headers:
+            x-cid:
+              description: Request tracking identifier.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0005:
+                  summary: Missing required header x-tenant
+                  value:
+                    code: EIP0005
+                    message: 'Missing required header: ''x-tenant'''
+                EIP0006:
+                  summary: Invalid account ID header x-account-id
+                  value:
+                    code: EIP0006
+                    message: 'Invalid account id header: ''x-account-id'''
+                EIP0029:
+                  summary: Account blocked or cancelled
+                  value:
+                    code: EIP0029
+                    message: Account blocked or cancelled
         '500':
           description: Internal Server Error
           headers:
@@ -1440,6 +1527,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0007:
+                  summary: Internal error
+                  value:
+                    code: EIP0007
+                    message: Internal error
+                EIP0011:
+                  summary: Accounts API timeout error
+                  value:
+                    code: EIP0011
+                    message: Accounts API timeout error
+                EIP0014:
+                  summary: Accounts - API returned 5xx error
+                  value:
+                    code: EIP0014
+                    message: Accounts - API returned 5xx error
+                EIP0074:
+                  summary: Bankslip issue database error
+                  value:
+                    code: EIP0074
+                    message: Bankslip issue database error
   /v1/bankslips-issue/client-requests/{clientRequestId}:
     get:
       tags:
@@ -1550,7 +1658,7 @@ paths:
                 EIP0065:
                   summary: BankingGatewayAPI - API returned 409 provider error
                   value:
-                    code: EIP0029
+                    code: EIP0065
                     message: BankingGatewayAPI - API returned 409 provider error
         '500':
           description: Internal Server Error
@@ -1707,12 +1815,12 @@ paths:
                   summary: Bank slip not found
                   value:
                     code: EIP0043
-                    message: Bank slip not found
+                    message: Bankslips not found
                 EIP0062:
                   summary: BankingGatewayAPI - Register not found in provider
                   value:
                     code: EIP0062
-                    message: BankingGatewayAPI - Register not found in provider
+                    message: BankingGatewayAPI - Register data not found in provider
         '409':
           description: Conflict
           headers:
@@ -1730,6 +1838,23 @@ paths:
                   value:
                     code: EIP0065
                     message: BankingGatewayAPI - API returned 409 provider error
+        '422':
+          description: Unprocessable Entity
+          headers:
+            x-cid:
+              description: Request tracking identifier.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0076:
+                  summary: Bankslip issue ExternalID invalid
+                  value:
+                    code: EIP0076
+                    message: Bankslips issue ExternalID invalid
         '500':
           description: Internal Server Error
           headers:
@@ -1751,7 +1876,7 @@ paths:
                   summary: Bank slip database error
                   value:
                     code: EIP0041
-                    message: Bank slip database error
+                    message: Bankslips database error
                 EIP0004:
                   summary: HTTP request error
                   value:
@@ -1774,6 +1899,11 @@ paths:
                   value:
                     code: EIP0053
                     message: Send integrity message error
+                EIP0074:
+                  summary: Bankslip issue database error
+                  value:
+                    code: EIP0074
+                    message: Bankslip issue database error
         '502':
           description: Bad Gateway
           headers:
@@ -1826,7 +1956,7 @@ paths:
         to implement Boleto payments. In the future, Pismo may work with
         additional financial companies.
 
-        This endpoint generates the following events: 
+        This endpoint generates the following events:
 
         * [Authorization
         created](https://developers.pismo.io/events/docs/authorization-authorization-event-1)
@@ -1850,7 +1980,7 @@ paths:
         **Important**: You need to call [Validate bank
         slip](ref:post-integrated-payments-api-v1-bankslips-validate) before
         calling this endpoint and pass the `external_authorization` field value
-        if it is returned from that call here. 
+        if it is returned from that call here.
       operationId: post-integrated-payments-api-v1-bankslips-pay
       parameters:
         - $ref: '#/components/parameters/authorizationHeader'
@@ -1924,8 +2054,18 @@ paths:
                 EIP0023:
                   summary: Banking gateway API error
                   value:
-                    code: EPI0023
-                    message: Banking gateway API error - API returned 4xx error
+                    code: EIP0023
+                    message: BankingGatewayAPI - API returned 4xx error
+                EIP0020:
+                  summary: P2P API returned 4xx error
+                  value:
+                    code: EIP0020
+                    message: P2p - API returned 4xx error
+                EIP0061:
+                  summary: Invalid bill for payment
+                  value:
+                    code: EIP0061
+                    message: BankingGatewayAPI - Invalid bill for payment
         '403':
           description: Forbidden
           headers:
@@ -1942,22 +2082,39 @@ paths:
                   summary: Missing header
                   value:
                     code: EIP0005
-                    message: Missing required header {x-tenant}
+                    message: 'Missing required header: ''x-tenant'''
                 EIP0006:
-                  summary: Missing header
+                  summary: Invalid account ID header
                   value:
                     code: EIP0006
-                    message: Missing account-id header {x-account-id}
+                    message: 'Invalid account id header: ''x-account-id'''
                 EIP0009:
-                  summary: Missing header
+                  summary: Missing idempotency key header
                   value:
                     code: EIP0009
-                    message: Missing account-id header {x-idempotency-key}
+                    message: 'Missing required header: ''x-idempotency-key'''
                 EIP0030:
-                  summary: Account ID not found
+                  summary: Account ID mismatch
                   value:
                     code: EIP0030
-                    message: Entity's account ID does not match {x-account-id} header
+                    message: Entity's account id does not match x-account-id header
+        '404':
+          description: Not Found
+          headers:
+            x-cid:
+              description: Request tracking identifier.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0049:
+                  summary: Convert barcode to digitable line failure
+                  value:
+                    code: EIP0049
+                    message: Convert barcode to digitable line failed
         '409':
           description: Conflict
           headers:
@@ -1970,11 +2127,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
-                EIP0065:
-                  summary: Conflict
+                EIP0063:
+                  summary: Bankslip already processing or paid
                   value:
-                    code: EIP0029
-                    message: BankingGatewayAPI returned 409 provider error
+                    code: EIP0063
+                    message: Bankslips is already in processing or paid
+                EIP0065:
+                  summary: Provider conflict error
+                  value:
+                    code: EIP0065
+                    message: BankingGatewayAPI - API returned 409 provider error
         '500':
           description: Internal Server Error
           headers:
@@ -2006,31 +2168,31 @@ paths:
                   summary: IntlBankAccounts API timeout error
                   value:
                     code: EIP0015
-                    message: IntlBankAccounts API timeout error
+                    message: IntlBankAccounts - API timeout error
                 EIP0019:
                   summary: P2P API timeout error
                   value:
-                    code: EIP0015
+                    code: EIP0019
                     message: P2p - API timeout error
                 EIP0022:
                   summary: BankingGatewayAPI API timeout error
                   value:
                     code: EIP0022
-                    message: BankingGatewayAPI API timeout error
+                    message: BankingGatewayAPI - API timeout error
                 EIP0028:
                   summary: Transaction database error
                   value:
                     code: EIP0028
-                    message: Transacation database error
+                    message: Transaction database error
                 EIP0041:
                   summary: Bank slip database error
                   value:
                     code: EIP0041
-                    message: Bank slip database error
+                    message: Bankslips database error
                 EIP0051:
                   summary: Schedule conciliation error
                   value:
-                    code: EIP0053
+                    code: EIP0051
                     message: Schedule conciliation error
                 EIP0053:
                   summary: Send integrity message error
@@ -2042,6 +2204,13 @@ paths:
                   value:
                     code: EIP0069
                     message: P2P API - Failed to unmarshal error response body
+                EIP0070:
+                  summary: BankingGateway API - Failed to unmarshal error response
+                  value:
+                    code: EIP0070
+                    message: >-
+                      BankingGateway API - Failed to unmarshal error response
+                      body
         '502':
           description: Bad Gateway
           headers:
@@ -2054,6 +2223,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
+                EIP0018:
+                  summary: IntlBankAccounts - API returned 5xx error
+                  value:
+                    code: EIP0018
+                    message: IntlBankAccounts - API returned 5xx error
+                EIP0021:
+                  summary: P2P API returned 5xx error
+                  value:
+                    code: EIP0021
+                    message: P2p - API returned 5xx error
                 EIP0024:
                   summary: Bad Gateway
                   value:
@@ -2138,10 +2317,10 @@ paths:
                 EIP0023:
                   summary: Banking gateway API error
                   value:
-                    code: EPI0023
-                    message: Banking gateway API error - API returned 4xx error
+                    code: EIP0023
+                    message: BankingGatewayAPI - API returned 4xx error
         '403':
-          description: Bad Request
+          description: Forbidden
           headers:
             x-cid:
               description: Request tracking identifier.
@@ -2156,14 +2335,14 @@ paths:
                   summary: Missing header
                   value:
                     code: EIP0005
-                    message: Missing required header {x-tenant}
+                    message: 'Missing required header: ''x-tenant'''
                 EIP0006:
-                  summary: Missing header
+                  summary: Invalid account ID header
                   value:
                     code: EIP0006
-                    message: Missing account-id header {x-account-id}
-        '409':
-          description: Conversion failure
+                    message: 'Invalid account id header: ''x-account-id'''
+        '404':
+          description: Not Found
           headers:
             x-cid:
               description: Request tracking identifier.
@@ -2177,8 +2356,25 @@ paths:
                 EIP0049:
                   summary: Convert barcode to digitable line failure
                   value:
-                    code: EIP0029
+                    code: EIP0049
                     message: Convert barcode to digitable line failed
+        '409':
+          description: Conflict
+          headers:
+            x-cid:
+              description: Request tracking identifier.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0065:
+                  summary: BankingGatewayAPI - Provider error
+                  value:
+                    code: EIP0065
+                    message: BankingGatewayAPI - API returned 409 provider error
         '500':
           description: Internal Server Error
           headers:
@@ -2205,12 +2401,31 @@ paths:
                   summary: BankingGatewayAPI API timeout error
                   value:
                     code: EIP0022
-                    message: BankingGatewayAPI API timeout error
+                    message: BankingGatewayAPI - API timeout error
+                EIP0070:
+                  summary: BankingGateway API - Failed to unmarshal error response
+                  value:
+                    code: EIP0070
+                    message: >-
+                      BankingGateway API - Failed to unmarshal error response
+                      body
+        '502':
+          description: Bad Gateway
+          headers:
+            x-cid:
+              description: Request tracking identifier.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
                 EIP0024:
-                  summary: BankingGatewayAPI - API returned error 5xx error
+                  summary: BankingGatewayAPI - API returned 5xx error
                   value:
                     code: EIP0024
-                    message: BankingGatewayAPI - API returned error 5xx error
+                    message: BankingGatewayAPI - API returned 5xx error
   /v1/bankslips/receipts:
     get:
       tags:
@@ -2303,6 +2518,11 @@ paths:
                   value:
                     code: EIP0006
                     message: Missing account-id header {x-account-id}
+                EIP0029:
+                  summary: Account blocked or cancelled
+                  value:
+                    code: EIP0029
+                    message: Account blocked or cancelled
         '500':
           description: Internal Server Error
           headers:
@@ -2325,6 +2545,11 @@ paths:
                   value:
                     code: EIP0011
                     message: Accounts API timeout error
+                EIP0014:
+                  summary: Accounts - API returned 5xx error
+                  value:
+                    code: EIP0014
+                    message: Accounts - API returned 5xx error
                 EIP0041:
                   summary: Bank slip database error
                   value:
@@ -2458,6 +2683,11 @@ paths:
                   value:
                     code: EIP0009
                     message: Missing required header {x-idempotency-key}
+                EIP0029:
+                  summary: Account blocked or cancelled
+                  value:
+                    code: EIP0029
+                    message: Account blocked or cancelled
                 EIP0030:
                   summary: Entity's account id does not match x-account-id header
                   value:
@@ -2475,11 +2705,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
-                EIP0029:
-                  summary: Account blocked or cancelled
-                  value:
-                    code: EIP0029
-                    message: Account blocked or cancelled
                 EIP0031:
                   summary: Idempotency header already exists
                   value:
@@ -2522,11 +2747,82 @@ paths:
                   value:
                     code: EIP0015
                     message: IntlBankAccounts API timeout error
+                EIP0019:
+                  summary: P2P API timeout error
+                  value:
+                    code: EIP0019
+                    message: P2p - API timeout error
                 EIP0022:
                   summary: BankingGatewayAPI API timeout error
                   value:
                     code: EIP0022
-                    message: BankingGatewayAPI API timeout error
+                    message: BankingGatewayAPI - API timeout error
+                EIP0028:
+                  summary: Transaction database error
+                  value:
+                    code: EIP0028
+                    message: Transaction database error
+                EIP0053:
+                  summary: Send integrity message error
+                  value:
+                    code: EIP0053
+                    message: Send integrity message error
+                EIP0069:
+                  summary: P2P API - Failure to unmarshal error
+                  value:
+                    code: EIP0069
+                    message: P2P API - Failed to unmarshal error response body
+                EIP0070:
+                  summary: BankingGateway API - Failed to unmarshal error response
+                  value:
+                    code: EIP0070
+                    message: >-
+                      BankingGateway API - Failed to unmarshal error response
+                      body
+        '502':
+          description: Bad Gateway
+          headers:
+            x-cid:
+              description: Request tracking identifier.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0018:
+                  summary: IntlBankAccounts - API returned 5xx error
+                  value:
+                    code: EIP0018
+                    message: IntlBankAccounts - API returned 5xx error
+                EIP0021:
+                  summary: P2P - API returned 5xx error
+                  value:
+                    code: EIP0021
+                    message: P2p - API returned 5xx error
+                EIP0024:
+                  summary: BankingGatewayAPI - API returned 5xx error
+                  value:
+                    code: EIP0024
+                    message: BankingGatewayAPI - API returned 5xx error
+        '504':
+          description: Gateway Timeout
+          headers:
+            x-cid:
+              description: Request tracking identifier.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0002:
+                  summary: Gateway Timeout
+                  value:
+                    code: EIP0002
+                    message: API request timeout
   /v1/transfers:
     get:
       tags:
@@ -2564,6 +2860,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0010:
+                  summary: Unmarshal error
+                  value:
+                    code: EIP0010
+                    message: Unmarshal error
+                EIP0045:
+                  summary: Invalid per_page query param
+                  value:
+                    code: EIP0045
+                    message: Invalid value for query param 'per_page'
+                EIP0046:
+                  summary: Invalid datetime query param
+                  value:
+                    code: EIP0046
+                    message: >-
+                      Invalid value for datetime query parameter. RFC3339 format
+                      must be used
+                EIP0012:
+                  summary: Account not found
+                  value:
+                    code: EIP0012
+                    message: Account not found
+                EIP0013:
+                  summary: Accounts - API returned 4xx error
+                  value:
+                    code: EIP0013
+                    message: Accounts - API returned 4xx error
+                EIP0047:
+                  summary: Invalid authorization_id query param
+                  value:
+                    code: EIP0047
+                    message: Invalid value for query param 'authorization_id'
         '403':
           description: Forbidden
           headers:
@@ -2575,17 +2904,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/domain.Error'
-        '409':
-          description: Conflict
-          headers:
-            x-cid:
-              description: Request tracking identifier.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0005:
+                  summary: Missing required header x-tenant
+                  value:
+                    code: EIP0005
+                    message: 'Missing required header: ''x-tenant'''
+                EIP0006:
+                  summary: Invalid account ID header x-account-id
+                  value:
+                    code: EIP0006
+                    message: 'Invalid account id header: ''x-account-id'''
+                EIP0029:
+                  summary: Account blocked or cancelled
+                  value:
+                    code: EIP0029
+                    message: Account blocked or cancelled
         '500':
           description: Internal Server Error
           headers:
@@ -2597,6 +2931,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIP0004:
+                  summary: HTTP request error
+                  value:
+                    code: EIP0004
+                    message: HTTP request error
+                EIP0007:
+                  summary: Internal error
+                  value:
+                    code: EIP0007
+                    message: Internal error
+                EIP0011:
+                  summary: Accounts API timeout error
+                  value:
+                    code: EIP0011
+                    message: Accounts API timeout error
+                EIP0014:
+                  summary: Accounts - API returned 5xx error
+                  value:
+                    code: EIP0014
+                    message: Accounts - API returned 5xx error
+                EIP0028:
+                  summary: Transaction database error
+                  value:
+                    code: EIP0028
+                    message: Transaction database error
   /v1/ebill-registration/accounts/{accountId}:
     post:
       tags:
@@ -2658,6 +3018,21 @@ paths:
                   value:
                     code: EIP0008
                     message: Validation error
+                EIP0012:
+                  summary: Account not found
+                  value:
+                    code: EIP0012
+                    message: Account not found
+                EIP0013:
+                  summary: Accounts - API returned 4xx error
+                  value:
+                    code: EIP0013
+                    message: Accounts - API returned 4xx error
+                EIP0023:
+                  summary: BankingGatewayAPI - API returned 4xx error
+                  value:
+                    code: EIP0023
+                    message: BankingGatewayAPI - API returned 4xx error
         '403':
           description: Forbidden
           headers:
@@ -2679,7 +3054,7 @@ paths:
                   summary: Invalid account id header {x-account-id}
                   value:
                     code: EIP0006
-                    message: Invalid account id header {x-account-id}
+                    message: 'Invalid account id header: ''x-account-id'''
         '409':
           description: Conflict
           headers:
@@ -2695,8 +3070,13 @@ paths:
                 EIP0065:
                   summary: BankingGatewayAPI - API returned 409 provider error
                   value:
-                    code: EIP0029
+                    code: EIP0065
                     message: BankingGatewayAPI - API returned 409 provider error
+                EIP0090:
+                  summary: eBill registration already processing
+                  value:
+                    code: EIP0090
+                    message: Ebill registration is already being processed
         '500':
           description: Internal Server Error
           headers:
@@ -2719,11 +3099,33 @@ paths:
                   value:
                     code: EIP0007
                     message: Internal error
+                EIP0011:
+                  summary: Accounts API timeout error
+                  value:
+                    code: EIP0011
+                    message: Accounts API timeout error
+                EIP0014:
+                  summary: Accounts - API returned 5xx error
+                  value:
+                    code: EIP0014
+                    message: Accounts - API returned 5xx error
                 EIP0022:
                   summary: BankingGatewayAPI - API timeout error
                   value:
                     code: EIP0022
                     message: BankingGatewayAPI - API timeout error
+                EIP0089:
+                  summary: eBill database error
+                  value:
+                    code: EIP0089
+                    message: Ebill database error
+                EIP0070:
+                  summary: BankingGateway API - Failed to unmarshal error response
+                  value:
+                    code: EIP0070
+                    message: >-
+                      BankingGateway API - Failed to unmarshal error response
+                      body
         '502':
           description: Bad Gateway
           headers:
@@ -2762,33 +3164,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ebill.GetEbillResponse'
-        '400':
-          description: Bad Request
-          headers:
-            x-cid:
-              description: Request tracking ID.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/domain.Error'
-              examples:
-                EIP0072:
-                  summary: Missing required path parameter {client_request_id}
-                  value:
-                    code: EIP0072
-                    message: Missing required path parameter {client_request_id}
-                EIP0010:
-                  summary: Unmarshal error
-                  value:
-                    code: EIP0010
-                    message: Unmarshal error
-                EIP0023:
-                  summary: BankingGatewayAPI - API returned 4xx error
-                  value:
-                    code: EIP0023
-                    message: BankingGatewayAPI - API returned 4xx error
         '403':
           description: Forbidden
           headers:
@@ -2805,12 +3180,12 @@ paths:
                   summary: Missing required header {x-tenant}
                   value:
                     code: EIP0005
-                    message: Missing required header {x-tenant}
+                    message: 'Missing required header: ''x-tenant'''
                 EIP0006:
                   summary: Invalid account id header {x-account-id}
                   value:
                     code: EIP0006
-                    message: Invalid account id header {x-account-id}
+                    message: 'Invalid account id header: ''x-account-id'''
         '404':
           description: Not Found
           headers:
@@ -2823,33 +3198,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
-                EIP0073:
+                EIP0088:
                   summary: eBill registration not found
                   value:
-                    code: EIP0073
-                    message: eBill registration not found
-                EIP0062:
-                  summary: BankingGatewayAPI - Register not found in provider
-                  value:
-                    code: EIP0062
-                    message: BankingGatewayAPI - Register not found in provider
-        '409':
-          description: Conflict
-          headers:
-            x-cid:
-              description: Request tracking ID.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/domain.Error'
-              examples:
-                EIP0065:
-                  summary: BankingGatewayAPI - API returned 409 provider error
-                  value:
-                    code: EIP0029
-                    message: BankingGatewayAPI - API returned 409 provider error
+                    code: EIP0088
+                    message: Ebill registration not found
         '500':
           description: Internal Server Error
           headers:
@@ -2862,50 +3215,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
-                EIP0004:
-                  summary: HTTP request error
-                  value:
-                    code: EIP0004
-                    message: HTTP request error
                 EIP0007:
                   summary: Internal error
                   value:
                     code: EIP0007
                     message: Internal error
-                EIP0022:
-                  summary: BankingGatewayAPI - API timeout error
+                EIP0089:
+                  summary: eBill database error
                   value:
-                    code: EIP0022
-                    message: BankingGatewayAPI - API timeout error
-                EIP0074:
-                  summary: eBill registration database error
-                  value:
-                    code: EIP0074
-                    message: eBill registration database error
-                EIP0070:
-                  summary: BankingGateway API - Failed to unmarshal error response body
-                  value:
-                    code: EIP0070
-                    message: >-
-                      BankingGateway API - Failed to unmarshal error response
-                      body
-        '502':
-          description: Bad Gateway
-          headers:
-            x-cid:
-              description: Request tracking ID.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/domain.Error'
-              examples:
-                EIP0024:
-                  summary: BankingGatewayAPI - API returned 5xx error
-                  value:
-                    code: EIP0024
-                    message: BankingGatewayAPI - API returned 5xx error
+                    code: EIP0089
+                    message: Ebill database error
     delete:
       tags:
         - eBill registration
@@ -2940,21 +3259,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
-                EIP0072:
-                  summary: Missing required path parameter {client_request_id}
+                EIP0012:
+                  summary: Account not found
                   value:
-                    code: EIP0072
-                    message: Missing required path parameter {client_request_id}
-                EIP0010:
-                  summary: Unmarshal error
+                    code: EIP0012
+                    message: Account not found
+                EIP0013:
+                  summary: Accounts - API returned 4xx error
                   value:
-                    code: EIP0010
-                    message: Unmarshal error
+                    code: EIP0013
+                    message: Accounts - API returned 4xx error
                 EIP0023:
                   summary: BankingGatewayAPI - API returned 4xx error
                   value:
                     code: EIP0023
                     message: BankingGatewayAPI - API returned 4xx error
+                EIP0091:
+                  summary: eBill registration is not deletable
+                  value:
+                    code: EIP0091
+                    message: Ebill registration is not deletable
         '403':
           description: Forbidden
           headers:
@@ -2971,12 +3295,12 @@ paths:
                   summary: Missing required header {x-tenant}
                   value:
                     code: EIP0005
-                    message: Missing required header {x-tenant}
+                    message: 'Missing required header: ''x-tenant'''
                 EIP0006:
                   summary: Invalid account id header {x-account-id}
                   value:
                     code: EIP0006
-                    message: Invalid account id header {x-account-id}
+                    message: 'Invalid account id header: ''x-account-id'''
         '404':
           description: Not Found
           headers:
@@ -2989,16 +3313,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
-                EIP0073:
+                EIP0088:
                   summary: eBill registration not found
                   value:
-                    code: EIP0073
-                    message: eBill registration not found
+                    code: EIP0088
+                    message: Ebill registration not found
                 EIP0062:
                   summary: BankingGatewayAPI - Register not found in provider
                   value:
                     code: EIP0062
-                    message: BankingGatewayAPI - Register not found in provider
+                    message: BankingGatewayAPI - Register data not found in provider
         '409':
           description: Conflict
           headers:
@@ -3014,7 +3338,7 @@ paths:
                 EIP0065:
                   summary: BankingGatewayAPI - API returned 409 provider error
                   value:
-                    code: EIP0029
+                    code: EIP0065
                     message: BankingGatewayAPI - API returned 409 provider error
         '500':
           description: Internal Server Error
@@ -3038,16 +3362,26 @@ paths:
                   value:
                     code: EIP0007
                     message: Internal error
+                EIP0011:
+                  summary: Accounts API timeout error
+                  value:
+                    code: EIP0011
+                    message: Accounts API timeout error
+                EIP0014:
+                  summary: Accounts - API returned 5xx error
+                  value:
+                    code: EIP0014
+                    message: Accounts - API returned 5xx error
                 EIP0022:
                   summary: BankingGatewayAPI - API timeout error
                   value:
                     code: EIP0022
                     message: BankingGatewayAPI - API timeout error
-                EIP0074:
-                  summary: eBill registration database error
+                EIP0089:
+                  summary: eBill database error
                   value:
-                    code: EIP0074
-                    message: eBill registration database error
+                    code: EIP0089
+                    message: Ebill database error
                 EIP0070:
                   summary: BankingGateway API - Failed to unmarshal error response body
                   value:

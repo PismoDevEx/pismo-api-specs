@@ -79,15 +79,6 @@ components:
         response header from an API endpoint call. If this field isn't passed,
         one is automatically generated.
       example: 5bb05174-4e80-11ea-b77f-2e728ce88125
-    InstallmentAdvanceIdPath:
-      name: installmentAdvanceId
-      in: path
-      description: Installment Advance ID
-      required: true
-      schema:
-        type: integer
-        format: int64
-        example: 12345
     NumberOfInstallmentsToAdvance:
       name: numberOfInstallmentsToAdvance
       in: query
@@ -849,7 +840,7 @@ paths:
           $ref: '#/components/responses/409Conflict'
         '500':
           $ref: '#/components/responses/500InternalServerError'
-  /v2/accounts/{accountId}/installment-advance/{installmentAdvanceId}:
+  /v2/accounts/{accountId}/installment-advance/{advancementId}:
     get:
       tags:
         - Installment advancements
@@ -887,7 +878,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
         - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/InstallmentAdvanceIdPath'
+        - $ref: '#/components/parameters/AdvancementIdPath'
       responses:
         '200':
           description: OK
@@ -986,7 +977,7 @@ paths:
         - Installment advancements
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
-        - $ref: '#/components/parameters/InstallmentAdvanceIdPath'
+        - $ref: '#/components/parameters/AdvancementIdPath'
       responses:
         '200':
           description: Installment advance canceled successfully

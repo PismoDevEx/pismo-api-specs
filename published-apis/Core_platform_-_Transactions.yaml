@@ -298,7 +298,21 @@ components:
           properties:
             metadata:
               type: object
-              description: User-defined information
+              description: >
+                This optional user-defined key-value object field can be used
+                with external operations to provide additional context or
+                supplementary custom information for the operation. The Pismo
+                platform does not perform any validation or processing on this
+                field.
+
+
+                **Note**: This field must not be used to send Personally
+                Identifiable Information (PII), Payment Card Industry (PCI)
+                data, or any sensitive/regulated information. Metadata fields
+                are intended for operational, non-sensitive data only. For
+                sensitive data, use the specific parameters designed for that
+                purpose. For more information, refer to [Get started with Pismo
+                APIs](ref:get-started-with-pismo-apis#metadata).
     TransactionsCount:
       type: object
       properties:
