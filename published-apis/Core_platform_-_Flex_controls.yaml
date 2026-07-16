@@ -136,9 +136,11 @@ components:
           * `merchant_id`: Unique ID assigned to a merchant by the payment processor.
     AttributeGroupValues:
       type: array
-      description: >-
-        Attribute group values. - Each value must be unique within the array -
-        Maximum of 20,000 items - Each item must not exceed 15 characters
+      description: |
+        Attribute group values
+        - Each value must be unique within the array
+        - Maximum of 20,000 items
+        - Each item must not exceed 15 characters
       maxLength: 25000
       minLength: 1
       items:
@@ -167,7 +169,7 @@ components:
         current_spend_limit. The `current_spend_limit`, an internal field, is
         the total amount of all approved transactions in the `limit_duration`
         period. It is reset by the evaluation flow when a new transaction is
-        evaluated in the new period according to the `reset_datetime`. 
+        evaluated in the new period according to the `reset_datetime`.
 
 
         When `available_limit` is set in a PATCH request, it resets
@@ -235,9 +237,6 @@ components:
             * `country_code`: Three-letter country code (ISO 3166-1) indicating
             the location where the transaction is initiated or processed.
 
-            * `currency_code`: Three-letter currency code (ISO-4217) for the
-            flex control condition
-
             * `entry_mode`: A code used to establish the mode of purchase. Valid
             only for card network operations. For a control to be valid, it must
             be a code defined by the entire Field 22 (Visa) or DE 22
@@ -250,6 +249,10 @@ components:
 
             * `is_password_present`: Boolean that indicates whether the password
             is present in the evaluation request.
+
+            * `is_pin_validated_offline`: Boolean that indicates whether the pin
+            was validated offline in the evaluation request. This is commonly
+            used for offline PIN verification scenarios.
 
             * `is_physical_card_present`: Boolean that indicates whether a
             physical card is present in the evaluation request.
@@ -286,28 +289,34 @@ components:
             * `authentication_method`:  Enable authorization rules aligned with
             PSD2 principles. Determine whether restrictions should be applied
             for specific authentication methods. Valid values are "password",
-            "email", and "sms". 
+            "email", and "sms".
 
             * `is_token_present`: Boolean that indicates whether a token card is
             present in the evaluation request.
 
             * `initiation_mode`: Payment initiation mode.
-               - `moto`: Payments made through mail order or telephone. 
+               - `moto`: Payments made through mail order or telephone.
                - `mit`: Merchant-initiated transactions.
-            * acquirer_country_code: Three-letter country code (ISO 3166-1)
+            * `acquirer_country_code`: Three-letter country code (ISO 3166-1)
             representing the location of the acquiring bank or financial
             institution.
 
-            * is_cavv_present: Boolean indicating that the CAVV field is
+            * `is_cavv_present`: Boolean indicating that the CAVV field is
             present. CAVV stands for cardholder authentication verification
             value.
 
-            * avr: String indicating that the transaction is a card network
+            * `avr`: String indicating that the transaction is a card network
             Account Verification Request (AVR) transaction. AVR transactions
             differ from standard authorizations in that they are typically
             zero-value and are used for card network verification flows.
             Currently, the only supported value for this attribute is `mtt`,
             which is the Mobility & Transport Transaction (MTT) type.
+
+            * `operation_type`: Type of operation being performed. Allowed
+            values are:
+              - `debit` - debit transaction
+              - `credit` - credit transaction
+              - `none` -  transaction that doesn't have a financial impact on the account balance, even though an authorization event occurs. These transactions still exist in the authorization flow, but they don't generate balance movement. AVR (Account Verification Request) is one example of this type of transaction with a zero‑amount authorization.
           enum:
             - balance
             - amount
@@ -317,18 +326,19 @@ components:
             - time_now
             - entry_mode
             - merchant_id
-            - currency_code
             - country_code
             - number_of_installments
             - is_physical_card_present
             - is_device_registered
             - is_tra_exemption_requested
+            - is_pin_validated_offline
             - authentication_method
             - is_token_present
             - initiation_mode
             - acquirer_country_code
             - is_cavv_present
             - avr
+            - operation_type
         operator:
           type: string
           enum:
@@ -344,7 +354,7 @@ components:
             - in_group
             - not_in_group
           description: |
-            Condition type evaluation.
+            Condition type evaluation
             * eq - equal to value
             * neq - not equal to value
             * lt - lower than value
@@ -733,7 +743,7 @@ components:
         Maximum accumulated amount allowed. Once met or exceeded, subsequent
         transactions are declined by the evaluation control flow.
 
-        Note that the value must be calculated as follows. 
+        Note that the value must be calculated as follows.
 
 
         value = floatNumber × 10^X, where X is the number of digits after the
@@ -799,7 +809,7 @@ components:
         - spending-limit-id-1
         - spending-limit-id-2
       description: >
-        List of existing flex control IDs to override. 
+        List of existing flex control IDs to override.
 
         The platform ignores these controls and only evaluates the new flex
         control.
@@ -987,6 +997,11 @@ components:
             is_password_present:
               type: boolean
               description: Indicates whether the client entered a password
+            is_pin_validated_offline:
+              type: boolean
+              description: >-
+                Indicates whether the pin was validated offline, triggering a
+                reset of the accumulator when true
             authentication_method:
               type: array
               description: >-
@@ -1012,7 +1027,7 @@ components:
     TimeZone:
       type: string
       description: >
-        IANA Time Zone database, such as "America/New_York". 
+        IANA Time Zone database, such as "America/New_York".
 
         This attribute is used to evaluate the flex control using the desired
         time zone for condition attributes such as `week_day`, `month_day`,
@@ -1031,9 +1046,162 @@ components:
       description: |
         Flex control scope
           * `usage_limit`: Accumulator flex control that increases by one until `max_limit`
-          * `spending_limit`: Accumulator flex control that increases by the current transaction’s `amount` until `max_limit`
+          * `spending_limit`: Accumulator flex control that increases by the current transaction's `amount` until `max_limit`
           * `restriction`: Restriction flex control that only validates specified conditions
           * `cumulative_limit`: Accumulator flex control that increases by one until a condition is met, applies only to flex controls with associated `card_ids`, and requires a `reset_strategy`
+    ProgramFlexControlsResponse:
+      type: object
+      description: Paginated response containing flex controls grouped by program
+      properties:
+        pages:
+          type: integer
+          description: Total number of pages
+          example: 5
+        current_page:
+          type: integer
+          description: Current page number
+          example: 1
+        per_page:
+          type: integer
+          description: Number of programs per page
+          example: 10
+        total_items:
+          type: integer
+          description: Total number of programs
+          example: 45
+        programs:
+          type: array
+          description: List of programs with their flex controls
+          items:
+            $ref: '#/components/schemas/ProgramControlsItem'
+      required:
+        - pages
+        - current_page
+        - per_page
+        - total_items
+        - programs
+    ProgramControlsItem:
+      type: object
+      description: Flex controls for a single program
+      properties:
+        program_id:
+          type: integer
+          format: int64
+          description: Program ID
+          example: 1234
+        controls:
+          $ref: '#/components/schemas/ProgramControls'
+      required:
+        - program_id
+        - controls
+    ProgramControls:
+      type: object
+      description: Collection of restriction and accumulator controls
+      properties:
+        restriction_controls:
+          type: array
+          description: List of restriction controls
+          items:
+            $ref: '#/components/schemas/FlexControlRestrictionControl'
+        accumulator_controls:
+          type: array
+          description: List of accumulator controls
+          items:
+            $ref: '#/components/schemas/FlexControlAccumulatorControl'
+      required:
+        - restriction_controls
+        - accumulator_controls
+    FlexControlRestrictionControl:
+      type: object
+      description: Simplified restriction control for program flex controls
+      properties:
+        name:
+          type: string
+          description: Control name
+          example: Single POS value card level limit
+        type:
+          type: string
+          description: Control type
+          example: restriction
+        level:
+          type: string
+          description: Control level (account or card)
+          enum:
+            - account
+            - card
+          example: card
+        processing_codes:
+          $ref: '#/components/schemas/ProcessingCodes'
+        conditions:
+          type: array
+          description: List of conditions
+          items:
+            $ref: '#/components/schemas/Condition'
+        deny_code:
+          type: string
+          description: Deny code when control fails
+          example: Single_POS_Value
+        active:
+          type: boolean
+          description: Is the control active?
+          default: true
+          example: true
+      required:
+        - name
+        - type
+        - level
+        - deny_code
+        - active
+    FlexControlAccumulatorControl:
+      type: object
+      description: Simplified accumulator control for program flex controls
+      properties:
+        name:
+          type: string
+          description: Control name
+          example: Cumulative POS value card level limit
+        type:
+          type: string
+          description: Control type
+          example: spending_limit
+        level:
+          type: string
+          description: Control level (account or card)
+          enum:
+            - account
+            - card
+          example: account
+        processing_codes:
+          $ref: '#/components/schemas/ProcessingCodes'
+        max_limit:
+          $ref: '#/components/schemas/MaxLimit'
+        max_amount:
+          $ref: '#/components/schemas/MaxAmount'
+        max_transactions:
+          $ref: '#/components/schemas/MaxTransactions'
+        limit_duration:
+          $ref: '#/components/schemas/LimitDuration'
+        conditions:
+          type: array
+          description: List of conditions
+          items:
+            $ref: '#/components/schemas/Condition'
+        deny_code:
+          type: string
+          description: Deny code when control fails
+          example: CUM_POS_Value
+        active:
+          type: boolean
+          description: Is the control active?
+          default: true
+          example: true
+      required:
+        - name
+        - type
+        - level
+        - deny_code
+        - affect_target_account
+        - active
   examples:
     accountFlexControlCreationConditionsResponse:
       description: Flex Control of type 'usage_limit' creation response
@@ -1157,21 +1325,6 @@ components:
         limit_duration: P1M
         deny_code: MAX_VALUE_P1M
         active: true
-    flexControlByCurrencyCode:
-      description: Create flex control for specific currency.
-      value:
-        type: spending_limit
-        name: Limit purchase USD
-        processing_codes:
-          - '007000'
-        conditions:
-          - attribute: currency_code
-            operator: eq
-            value: USD
-        max_limit: 50000
-        limit_duration: P1M
-        deny_code: MAX_LIMIT_USD_P1M
-        active: true
     flexControlWithDailyResetPeriod:
       description: Create flex control with daily reset.
       value:
@@ -1271,6 +1424,21 @@ components:
         limit_duration: P1M
         deny_code: MAX_VALUE_P1M_1060_CONTACT
         active: true
+    flexControlByOperationType:
+      description: Create flex control with operation_type condition.
+      value:
+        type: spending_limit
+        name: Debit transaction limit
+        processing_codes:
+          - '007000'
+        conditions:
+          - attribute: operation_type
+            operator: eq
+            value: debit
+        max_limit: 100000
+        limit_duration: P1M
+        deny_code: MAX_DEBIT_P1M
+        active: true
     patchAccountFlexControlRequest:
       description: Update flex control example
       value:
@@ -1339,6 +1507,39 @@ components:
         message: Error getting info from Account
         error_code: RULREP0500
         code: ERUL0005
+    ERUL0101:
+      description: Error validating request header example
+      value:
+        message: error validating request header
+        error_code: RULVAL0400
+        details:
+          - location: header.x-tenant
+            message: missing x-tenant
+        code: ERUL0101
+    ERUL0102:
+      description: Error validating programId example
+      value:
+        message: error validating request parameter
+        error_code: RULVAL0400
+        details:
+          - location: query.programId
+            message: programId must be a positive integer
+        code: ERUL0102
+    ERUL0204:
+      description: Flex Controls not found for the specified program
+      value:
+        message: Flex Controls not found for the specified program
+        error_code: RULREP0404
+        code: ERUL0204
+    ERUL1501:
+      description: Invalid pagination params example
+      value:
+        message: error validating request parameters
+        error_code: RULVAL0400
+        details:
+          - location: query.page
+            message: page must be greater than or equal to 1
+        code: ERUL1501
     ERUL0701:
       description: Error parsing payload example.
       value:
@@ -1523,8 +1724,8 @@ components:
           - location: payload.restriction_rules[].conditions[].attribute
             message: >-
               attribute should be one of (balance, amount,
-              merchant_category_code, week_day, month_day, interval_time,
-              entry_mode, currency_code, merchant_id)
+              merchant_category_code, week_day, month_day, entry_mode,
+              merchant_id)
         code: ERUL1102
     ERUL1105:
       description: Error on repository example
@@ -1629,8 +1830,8 @@ components:
           - location: payload.restriction_rules[].conditions[].attribute
             message: >-
               attribute should be one of (balance, amount,
-              merchant_category_code, week_day, month_day, interval_time,
-              entry_mode, currency_code, merchant_id)
+              merchant_category_code, week_day, month_day, entry_mode,
+              merchant_id)
         code: ERUL1406
     WRUL1207:
       description: Maximum number of customer flex controls.
@@ -1649,6 +1850,8 @@ tags:
     description: API endpoints for managing account flex controls.
   - name: Customer flex controls
     description: API endpoints for managing customer flex controls.
+  - name: Program flex controls
+    description: API endpoints for retrieving flex controls grouped by program.
   - name: Attribute groups
     description: API endpoints for managing attribute groups used in flex controls.
 paths:
@@ -2079,8 +2282,6 @@ paths:
                 $ref: '#/components/examples/flexControlTypeSpendingLimit'
               With Beneficiary:
                 $ref: '#/components/examples/flexControlForBeneficiary'
-              With Currency Code:
-                $ref: '#/components/examples/flexControlByCurrencyCode'
               With Daily reset period:
                 $ref: '#/components/examples/flexControlWithDailyResetPeriod'
               With Weekly reset period:
@@ -2217,7 +2418,7 @@ paths:
       operationId: get-v1-accounts-customers-flex-controls
       summary: Get account customers' flex controls
       description: |
-        Get flex controls for all customers related to an account. 
+        Get flex controls for all customers related to an account.
 
         NOTE: This endpoint requires an account-specific access token.
       tags:
@@ -2418,6 +2619,114 @@ paths:
               examples:
                 spending limit not found:
                   $ref: '#/components/examples/ERUL0003'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internal server error:
+                  $ref: '#/components/examples/ERUL0001'
+  /v1/flex-controls:
+    get:
+      operationId: get-v1-flex-controls
+      summary: List program flex controls
+      description: >
+        List all flex controls grouped by program, with pagination support.
+
+        Results are ordered by program ID in ascending order.
+
+
+        Use the optional `programId` query parameter to filter results to a
+        single program.
+
+        If `programId` is provided and no templates are found for that program,
+        a `404` is returned.
+
+
+        If no `programId` is specified and no templates exist at all, an empty
+        paginated response is returned with status `200`.
+      tags:
+        - Program flex controls
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: x-tenant
+          in: header
+          required: true
+          description: Organization ID / tenant identifier.
+          schema:
+            type: string
+            example: org-12345
+        - name: programId
+          in: query
+          required: false
+          description: >-
+            Filter flex controls by a specific program ID. Must be a positive
+            integer greater than 0.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+            example: 123
+        - name: page
+          in: query
+          required: false
+          description: >-
+            Page number for pagination. Must be greater than or equal to 1.
+            Defaults to 1 when omitted.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+        - name: perPage
+          in: query
+          required: false
+          description: >-
+            Number of programs to return per page. Must be greater than or equal
+            to 1. Defaults to 10 when omitted.
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+            example: 10
+      responses:
+        '200':
+          description: OK. Returns paginated flex controls grouped by program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramFlexControlsResponse'
+        '400':
+          description: |
+            Bad request. Returned in the following cases:
+            - The `x-tenant` header is missing.
+            - The `programId` query parameter is not a positive integer.
+            - Pagination parameters are zero or cannot be parsed as integers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing x-tenant header:
+                  $ref: '#/components/examples/ERUL0101'
+                invalid programId:
+                  $ref: '#/components/examples/ERUL0102'
+                invalid pagination params:
+                  $ref: '#/components/examples/ERUL1501'
+        '404':
+          description: >-
+            Not found. Returned when `programId` is specified but no flex
+            controls are found for that program.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                template not found by programId:
+                  $ref: '#/components/examples/ERUL0204'
         '500':
           description: Internal server error.
           content:

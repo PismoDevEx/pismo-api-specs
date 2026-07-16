@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.1
 info:
   title: Instant payments - Faster payments
   description: Faster Payments (FPS) real-time payments system API
@@ -13,6 +13,7 @@ servers:
     description: Sandbox API server for testing
 tags:
   - name: Faster payments
+    description: Faster Payment Service (FPS) endpoints
 components:
   parameters:
     authHeader:
@@ -21,8 +22,8 @@ components:
       schema:
         type: string
       description: >
-        Account token - token encoded with a Pismo account ID. Tokens can expire
-        quickly, which can result in a <b>401 Unauthorized</b> message
+        Account token—token encoded with a Pismo account ID. Tokens can expire
+        quickly, which can result in a <b>401 Unauthorized</b> message.
       required: true
     endToEndIDPath:
       name: endToEndId
@@ -49,8 +50,7 @@ components:
       in: header
       schema:
         type: string
-      description: |
-        Organization identifier.
+      description: Organization ID
       required: true
     reqTrackingIdHeader:
       name: x-cid
@@ -64,7 +64,7 @@ components:
   schemas:
     Amount:
       type: number
-      description: Transaction amount.
+      description: Transaction amount
       example: 853.09
     customer.DetailMessage:
       type: object
@@ -239,11 +239,174 @@ components:
         - StandingOrder
         - ForwardDatedPayment
       description: |
-        Payment scheme to be used.
-        * `ImmediatePayment` - Single Immediate Payment (SIP)
-        * `StandingOrder` - Standing Order Payment (SOP)
-        * `ForwardDatedPayment` - Forward Dated Payment (FDP)
+        Payment scheme to be used.<br>
+        * `ImmediatePayment` — Single Immediate Payment (SIP)<br>
+        * `StandingOrder` — Standing Order Payment (SOP)<br>
+        * `ForwardDatedPayment`— Forward Dated Payment (FDP)<br>
       example: ImmediatePayment
+    cop.AccountClassification:
+      type: string
+      description: Account classification type
+      enum:
+        - personal
+        - business
+      example: personal
+    cop.AccountNumber:
+      type: string
+      description: BBAN account number (exactly 8 numeric characters)
+      minLength: 8
+      maxLength: 8
+      pattern: ^[0-9]{8}$
+      example: '12345678'
+    cop.AccountNumberCode:
+      type: string
+      description: >
+        Account number format code.
+
+        * `BBAN` - Basic Bank Account Number. Currently the only supported
+        format.
+      enum:
+        - BBAN
+      example: BBAN
+    cop.ActualName:
+      type: string
+      description: >-
+        Actual name on the account. Returned for `close_match` or `no_match`
+        results.
+      example: Mabel Syrup
+    cop.Answer:
+      type: string
+      enum:
+        - match
+        - close_match
+        - no_match
+        - rejected
+      description: |
+        Verification result:
+        * `match`—Name matches the account holder.
+        * `close_match`—Close match
+        * `no_match`—Does not match
+        * `rejected`—Verification was rejected.
+      example: match
+    cop.BankID:
+      type: string
+      description: Bank identifier - sort code (exactly 6 numeric characters).
+      minLength: 6
+      maxLength: 6
+      pattern: ^[0-9]{6}$
+      example: '123456'
+    cop.BankIdCode:
+      type: string
+      description: >
+        Bank identifier code type
+
+        * `GBDSC`—Great Britain Domestic Sort Code. Currently the only supported
+        format.
+      enum:
+        - GBDSC
+      example: GBDSC
+    cop.COPVerificationRequest:
+      type: object
+      required:
+        - id
+        - account_classification
+        - account_number
+        - account_number_code
+        - bank_id
+        - bank_id_code
+        - name
+      properties:
+        id:
+          $ref: '#/components/schemas/cop.ID'
+        account_classification:
+          $ref: '#/components/schemas/cop.AccountClassification'
+        account_number:
+          $ref: '#/components/schemas/cop.AccountNumber'
+        account_number_code:
+          $ref: '#/components/schemas/cop.AccountNumberCode'
+        bank_id:
+          $ref: '#/components/schemas/cop.BankID'
+        bank_id_code:
+          $ref: '#/components/schemas/cop.BankIdCode'
+        name:
+          $ref: '#/components/schemas/cop.Name'
+        secondary_identification:
+          $ref: '#/components/schemas/cop.SecondaryID'
+    cop.COPVerificationResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/cop.Status'
+        answer:
+          $ref: '#/components/schemas/cop.Answer'
+        actual_name:
+          $ref: '#/components/schemas/cop.ActualName'
+        name_in_request:
+          $ref: '#/components/schemas/cop.NameInResponse'
+        reason_code:
+          $ref: '#/components/schemas/cop.ReasonCode'
+        reason:
+          $ref: '#/components/schemas/cop.Reason'
+    cop.ID:
+      type: string
+      description: UUID identifier for this COP verification request.
+      format: uuid
+      maxLength: 36
+      example: 4942f12c-5430-4d1b-8b56-c7f1c8a9118d
+    cop.Name:
+      type: string
+      maxLength: 135
+      description: |
+        Account name to verify
+      example: Doe Reetos
+    cop.NameInResponse:
+      type: array
+      items:
+        type: string
+        description: Name(s) passed in the verification request
+      example:
+        - Tam Arind
+    cop.Reason:
+      type: string
+      description: Human-readable reason description
+      example: String is a close match to the account
+    cop.ReasonCode:
+      type: string
+      description: >
+        Reason code for the verification result. Known values include
+        (non-exhaustive):<br>
+            * `AC01` - No account with the given account number<br>
+            * `ACNS` - Account does not support Confirmation of Payee<br>
+            * `ANNM` - String does not match the account name<br>
+            * `BAMM` - Close match to the account name. Account type is Business when Personal was indicated<br>
+            * `BANM` - Match to the account name, but account type is Business when Personal was indicated<br>
+            * `CASS` - Account has been switched to a different organisation<br>
+            * `IVCR` - Invalid secondary customer reference data<br>
+            * `MBAM` - Close match to the account name<br>
+            * `OPTO` - Account opted out of Confirmation of Payee<br>
+            * `PAMM` - Close match to the account name. Account type is Personal when Business was indicated<br>
+            * `PANM` - Match to the account name, but account type is Personal when Business was indicated<br>
+            * `SCNS` - Organisation doesn't own the passed sort code<br>
+        example: "MBAM"
+    cop.SecondaryID:
+      type: string
+      description: >
+        Secondary reference to identify the account, such as a roll number for
+        building society accounts. A building society roll number is a unique
+        alphanumeric identifier—often 10-12 digits or a mix of letters and
+        numbers—used to identify specific savings or mortgage accounts.
+      maxLength: 35
+      example: A1B2C3D
+    cop.Status:
+      type: string
+      description: |
+        COP request status
+          * `confirmed`—Verification request was delivered and a response received.
+          * `delivery_failed`—Verification request could not be delivered.
+      enum:
+        - confirmed
+        - delivery_failed
+      example: confirmed
     fps_release.FpsReleaseResponse:
       type: object
       properties:
@@ -260,19 +423,89 @@ components:
       description: |
         - `SETTLED` - Transaction was completed processed and settled
       example: SETTLED
+    fps_return.FpsReturnRequest:
+      type: object
+      required:
+        - return_reason
+        - amount
+      properties:
+        return_reason:
+          $ref: '#/components/schemas/fps_return.ReturnReason'
+        amount:
+          type: string
+          maxLength: 20
+          description: >-
+            Amount to return. Must match the original transaction amount, since
+            the Pismo platform does not support partial returns.
+          example: '10.50'
+    fps_return.FpsReturnResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Return request status
+          example: ACCEPTED
+        return_transaction_id:
+          type: string
+          description: Return transaction ID
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        original_transaction_id:
+          type: string
+          description: ID of the original inbound transaction being returned
+          example: f1e2d3c4-b5a6-7890-abcd-ef1234567890
+        return_origin:
+          type: string
+          description: |
+            Origin of the return request.
+              * `CLIENT`—Return was manually triggered by the client via this endpoint.
+          example: CLIENT
+    fps_return.ReturnReason:
+      type: string
+      description: |
+        Form3 return reason code. Must be one of the following 14 codes:
+          * `00000001`—Beneficiary sort code/account number unknown
+          * `00000002`—Beneficiary account closed
+          * `00000003`—Beneficiary account stopped
+          * `00000004`—Beneficiary deceased
+          * `00000005`—Account cannot be identified without data in reference field
+          * `00000006`—Beneficiary account name does not match beneficiary account number
+          * `00000007`—Return requested by sender of original payment
+          * `00000008`—Account is not in currency quoted
+          * `00000009`—Beneficiary not expecting funds/instructed return
+          * `00000010`—Terms and conditions of account do not permit crediting of these funds
+          * `00000011`—Sending institution action required
+          * `00000012`—Account transferred
+          * `00000013`—Payment cannot be applied because of beneficiary sensitivities
+          * `00000014`—Reason not given
+      enum:
+        - '00000001'
+        - '00000002'
+        - '00000003'
+        - '00000004'
+        - '00000005'
+        - '00000006'
+        - '00000007'
+        - '00000008'
+        - '00000009'
+        - '00000010'
+        - '00000011'
+        - '00000012'
+        - '00000013'
+        - '00000014'
+      example: '00000001'
     schemeID:
       maxLength: 22
       type: string
       description: >
         Creditor's scheme value. A scheme identifies an account - UK-SCAN, IBAN,
         or BBAN. Refer to `schemeName` for details.
-          * `uk-scan` - Sort code and account number (SCAN) scheme. Format: `sortcode + accountnumber`
-          * `bban` - Basic Bank Account Number scheme. Format: `bankidentifier + branchidentifier + accountnumber`
-          * `iban` - International Bank Account Number scheme. Format: `country code + check digits + bban`
-            
+          * `uk-scan`—Sort code and account number (SCAN) scheme. Format: `sortcode + accountnumber`
+          * `bban`—Basic Bank Account Number scheme. Format: `bankidentifier + branchidentifier + accountnumber`
+          * `iban`—International Bank Account Number scheme. Format: `country code + check digits + bban`
+
         For example, for an IBAN account `GB93UBKL12345612345678`, the
-        identification would be: 
-            
+        identification would be:
+
           `iban`: `GB93UBKL12345612345678`
           `bban`: `UBKL12345612345678`
           `uk-scan`: `12345612345678`
@@ -284,10 +517,10 @@ components:
         - bban
         - iban
       description: |
-        Bank scheme that identifies the account.
-          * `uk-scan` - Sort code and account number (SCAN) scheme
-          * `bban` - Basic Bank Account Number scheme
-          * `iban` - International Bank Account Number scheme
+        Bank scheme that identifies the account
+          * `uk-scan`—Sort code and account number (SCAN) scheme
+          * `bban`—Basic Bank Account Number scheme
+          * `iban`—International Bank Account Number scheme
       example: iban
     status:
       type: string
@@ -322,16 +555,14 @@ paths:
         near-instant electronic money transfers between banks.
 
 
-        This endpoint generates a [FPS out payment
-        transaction](https://developers.pismo.io/events/docs/fps-fps-out-status-change-1)
-        event. 
+        **Notes:**
+          * Before calling this endpoint, you **must** call [Confirmation of Payee](ref:post-cop-verification) to verify the payee.
 
+          * In case of failure, the transaction is updated with `status` = `CANCELLED`, and the `status_reason` field explains why.
 
-        In case of failure, the transaction is updated with `status` =
-        `CANCELLED` and the `status_reason` field will detail why.
+          * If the counterparty bank rejects the transaction, the transaction is still considered `SETTLED` and, when the provider webhook return is processed, a new [FPS out return](https://developers.pismo.io/events/docs/fps-fps-out-return-status-change-1)  event is generated and the amount is credited back to the debtor's account.
 
-         If the counterparty bank rejects the transaction, the transaction is still considered `SETTLED` and, when the provider webhook return is processed, a new [FPS out return](https://developers.pismo.io/events/docs/fps-fps-out-return-status-change-1)  event is generated and the amount is credited back to the debtor's account.
-         
+          * This endpoint generates a [FPS out payment transaction](https://developers.pismo.io/events/docs/fps-fps-out-status-change-1) event.
       operationId: post-create-fps
       tags:
         - Faster payments
@@ -597,6 +828,180 @@ paths:
                   value:
                     code: EFPS0014
                     message: PSPGateway API Bad Gateway
+  /v1/payments/fps/cop:
+    post:
+      summary: Confirmation of payee [beta]
+      description: >
+        Verify a beneficiary's account name before making an FPS payment using
+        the [Confirmation of Payee
+        (CoP)](https://www.wearepay.uk/what-we-do/overlay-services/confirmation-of-payee/)
+        service.
+
+
+        CoP allows payers to check that the name they have for the intended
+        recipient matches the actual name on the recipient's account, reducing
+        the risk of fraud and misdirected payments.
+
+
+        This verification does not create an FPS payment transaction. The
+        request is forwarded to the payment provider for real-time name
+        verification.
+
+
+        This endpoint generates a [CoP name verification
+        requested](https://developers.pismo.io/events/docs/fps-cop-name-verification-submissions-1)
+        event. The result is received in a [CoP name verification result
+        received](https://developers.pismo.io/events/docs/fps-cop-name-verification-admissions-1)
+        event.
+      operationId: post-cop-verification
+      tags:
+        - Faster payments
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/tenantHeader'
+        - $ref: '#/components/parameters/idempotencyKeyHeader'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
+      requestBody:
+        description: COP verification request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cop.COPVerificationRequest'
+        required: true
+      responses:
+        '200':
+          description: COP verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cop.COPVerificationResponse'
+              examples:
+                match:
+                  summary: Name matches the account holder
+                  value:
+                    status: confirmed
+                    answer: match
+                    name_in_request:
+                      - Penny Loafer
+                close_match:
+                  summary: Name is a close match
+                  value:
+                    status: confirmed
+                    answer: close_match
+                    actual_name: Al Mond
+                    name_in_request:
+                      - Al Mnd
+                    reason_code: MBAM
+                    reason: String is a close match to the account
+                no_match:
+                  summary: Name does not match
+                  value:
+                    status: confirmed
+                    answer: no_match
+                    actual_name: Mac Adamia
+                    name_in_request:
+                      - Al Mond
+                    reason_code: ANNM
+                    reason: Account name does not match
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0004:
+                  summary: Validation Error
+                  value:
+                    code: EFPS0004
+                    message: Validation error
+                EFPS0016:
+                  summary: Unmarshal Error
+                  value:
+                    code: EFPS0016
+                    message: Unmarshal error
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EFPS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EFPS0086:
+                  summary: Missing Idempotency Key
+                  value:
+                    code: EFPS0086
+                    message: 'Missing required header: ''Idempotency-Key'''
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0058:
+                  summary: Record Already Exists
+                  value:
+                    code: EFPS0058
+                    message: Record already exists
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0015:
+                  summary: PSP Gateway API Rate Limit
+                  value:
+                    code: EFPS0015
+                    message: PSPGateway API Rate Limit exceeded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0006:
+                  summary: HTTP Error
+                  value:
+                    code: EFPS0006
+                    message: HTTP request error
+                EFPS0023:
+                  summary: Database Error
+                  value:
+                    code: EFPS0023
+                    message: Transaction database error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0014:
+                  summary: PSP Gateway API Bad Gateway
+                  value:
+                    code: EFPS0014
+                    message: PSPGateway API Bad Gateway
+        '504':
+          description: Gateway Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0012:
+                  summary: PSP Gateway API Timeout
+                  value:
+                    code: EFPS0012
+                    message: PSPGateway API timeout error
   /v1/payments/fps/{endToEndId}:
     get:
       summary: Get FPS transaction [beta]
@@ -866,9 +1271,8 @@ paths:
       summary: Cancel FPS inbound transaction [beta]
       description: >
         Call this endpoint to cancel the suspended transaction which was kept on
-        hold based on client's anti-fraud provider analysis. If the transaction
-        is confirmed as fraudulent, a return is initiated and funds are moved
-        from additional funds and returned via ledger adjustment. 
+        hold based on client's antifraud provider analysis and  return the
+        transaction.
 
 
         This endpoint generates a [FPS inbound payment
@@ -880,8 +1284,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/tenantHeader'
-        - $ref: '#/components/parameters/reqTrackingIdHeader'
         - $ref: '#/components/parameters/endToEndIDPath'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
       responses:
         '200':
           description: Response Body
@@ -1038,6 +1442,11 @@ paths:
                     message: >-
                       The provided currency does not match with the account's
                       configured currency
+                EFPS0095:
+                  summary: Transaction Not on Hold for Cancel
+                  value:
+                    code: EFPS0095
+                    message: Transaction status is not HOLD, cancel is not allowed
         '429':
           description: Too Many Requests
           content:
@@ -1134,8 +1543,7 @@ paths:
       summary: Release FPS inbound transaction [beta]
       description: >
         This endpoint moves the suspended transaction amount from additional
-        funds to available balance and marks the transaction as settled. Once
-        settled, the beneficiary can use the funds immediately.
+        funds to available balance and marks the transaction as settled.
 
 
         This endpoint generates a [FPS inbound payment
@@ -1147,8 +1555,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/tenantHeader'
-        - $ref: '#/components/parameters/reqTrackingIdHeader'
         - $ref: '#/components/parameters/endToEndIDPath'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
       responses:
         '200':
           description: Response Body
@@ -1305,6 +1713,11 @@ paths:
                     message: >-
                       The provided currency does not match with the account's
                       configured currency
+                EFPS0094:
+                  summary: Transaction Not on Hold for Release
+                  value:
+                    code: EFPS0094
+                    message: Transaction status is not HOLD, release is not allowed
         '429':
           description: Too Many Requests
           content:
@@ -1384,6 +1797,182 @@ paths:
                   value:
                     code: EFPS0032
                     message: IntlBankAccounts - API returned 5xx error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0014:
+                  summary: PSP Gateway API Bad Gateway
+                  value:
+                    code: EFPS0014
+                    message: PSPGateway API Bad Gateway
+  /v1/payments/fps/return/{endToEndId}:
+    post:
+      summary: Return FPS payment [beta]
+      description: >
+        Manually trigger a return for a previously credited FPS inbound
+        transaction.
+
+
+        This endpoint allows clients to initiate a return of funds for an
+        inbound FPS payment that has already been credited to the beneficiary's
+        account. The return is submitted to the payment provider (Form3) for
+        processing.
+
+
+        Returns initiated through this endpoint are marked with `return_origin`
+        = `CLIENT` to distinguish them from provider-initiated returns.
+
+
+        The `return_reason` must be one of the 14 standardized Form3 reason
+        codes (`00000001` through `00000014`).
+
+
+        This endpoint generates an [FPS inbound payment return
+        processed](https://developers.pismo.io/events/docs/fps-fps-in-return-status-change-1)
+        event with `return_origin` = `CLIENT`.
+      operationId: post-return-fps
+      tags:
+        - Faster payments
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/tenantHeader'
+        - $ref: '#/components/parameters/idempotencyKeyHeader'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
+        - $ref: '#/components/parameters/endToEndIDPath'
+      requestBody:
+        description: Return payment request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/fps_return.FpsReturnRequest'
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fps_return.FpsReturnResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0004:
+                  summary: Validation Error
+                  value:
+                    code: EFPS0004
+                    message: Validation error
+                EFPS0016:
+                  summary: Unmarshal Error
+                  value:
+                    code: EFPS0016
+                    message: Unmarshal error
+                EFPS0096:
+                  summary: Partial Return Not Allowed
+                  value:
+                    code: EFPS0096
+                    message: >-
+                      Partial returns are not allowed. Return amount must match
+                      the original transaction amount
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EFPS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EFPS0085:
+                  summary: Missing Account ID Header
+                  value:
+                    code: EFPS0085
+                    message: Missing required account-id
+                EFPS0086:
+                  summary: Missing Idempotency Key
+                  value:
+                    code: EFPS0086
+                    message: 'Missing required header: ''Idempotency-Key'''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0067:
+                  summary: Transaction Not Found
+                  value:
+                    code: EFPS0067
+                    message: Transaction API not found error
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0058:
+                  summary: Record Already Exists
+                  value:
+                    code: EFPS0058
+                    message: Record already exists
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0093:
+                  summary: Payment Not Eligible For Return
+                  value:
+                    code: EFPS0093
+                    message: Payment is not eligible for return
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0015:
+                  summary: PSP Gateway API Rate Limit
+                  value:
+                    code: EFPS0015
+                    message: PSPGateway API Rate Limit exceeded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EFPS0006:
+                  summary: HTTP Error
+                  value:
+                    code: EFPS0006
+                    message: HTTP request error
+                EFPS0012:
+                  summary: PSP Gateway API Timeout
+                  value:
+                    code: EFPS0012
+                    message: PSPGateway API timeout error
+                EFPS0023:
+                  summary: Transaction Database Error
+                  value:
+                    code: EFPS0023
+                    message: Transaction database error
         '502':
           description: Bad Gateway
           content:

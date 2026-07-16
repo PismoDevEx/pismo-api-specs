@@ -1,24 +1,22 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Instant payments - RuPay on UPI
   description: >-
     United Payments Interface (UPI) API integrating providers with the Pismo
     platform
-  termsOfService: http://swagger.io/terms/
   contact:
     name: Pismo
-    url: https://pismo.io/en/contact
   license:
     name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/upi-gateway
+    description: Sandbox API server for testing
 security:
   - BearerAuth: []
 tags:
   - name: UPI
-    description: Endpoints to manage UPI operations.
+    description: Endpoints to manage UPI operations
 components:
   parameters:
     AccountRefNumberPath:
@@ -31,11 +29,11 @@ components:
 
         This number combines 10 BIN digits and the credit account number. If BIN
         is 6 digits, the remaining 4 digits  are set to zero (`0`). If BIN is 8
-        digits, then the remaining 2 digits are set to zero. This is a <a
-        href="https://www.npci.org.in/what-we-do/rupay/product-overview"
-        target="_blank">NPCI</a> standard. For example, if the account reference
-        number = `1234560000987654321`, the first six digits are the BIN,
-        appended with 4 zeros and then the credit account number (`987654321`).
+        digits, then the remaining 2 digits are set to zero. This is a
+        [NPCI](https://www.npci.org.in/what-we-do/rupay/product-overview)
+        standard. For example, if the account reference number =
+        `1234560000987654321`, the first six digits are the BIN, appended with 4
+        zeros and then the credit account number (`987654321``).
 
 
         You can call [List cards](ref:post-list-cards) to get a card's account
@@ -78,39 +76,30 @@ components:
 
         This number combines 10 BIN digits and the credit account number. If BIN
         is 6 digits, the remaining 4 digits  are set to zero (`0`). If BIN is 8
-        digits, then the remaining 2 digits are set to zero. This is a <a
-        href="https://www.npci.org.in/what-we-do/rupay/product-overview"
-        target="_blank">NPCI</a> standard. For example, if the account reference
-        number = `1234560000987654321`, the first six digits are the BIN,
-        appended with 4 zeros and then the credit account number (`987654321`).
+        digits, then the remaining 2 digits are set to zero. This is a
+        [NPCI](https://www.npci.org.in/what-we-do/rupay/product-overview)
+        standard. For example, if the account reference number =
+        `1234560000987654321`, the first six digits are the BIN, appended with 4
+        zeros and then the credit account number (`987654321``).
 
 
         You can call [List cards](ref:post-list-cards) to get a card's account
         reference number.
       example: '12345600000000001140340134'
-    accountReferenceNumber2:
-      type: string
-      description: >
-
-        Account reference number. Pismo creates this automatically when creating
-        a card linked to RuPay on UPI.
-
-
-        This number combines 10 BIN digits and the credit account number. If BIN
-        is 6 digits, the remaining 4 digits  are set to zero (`0`). If BIN is 8
-        digits, then the remaining 2 digits are set to zero. This is a <a
-        href="https://www.npci.org.in/what-we-do/rupay/product-overview"
-        target="_blank">NPCI</a> standard. For example, if the account reference
-        number = `1234560000987654321`, the first six digits are the BIN,
-        appended with 4 zeros and then the credit account number (`987654321`).
-
-
-        You can call [List cards](ref:post-list-cards) to get a card's account
-        reference number.
-
-
-        Either this or `last_4_digit` is **REQUIRED**.
-      example: '12345600000000001140340134'
+    amountAndRateEntity:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Entity type
+        amount:
+          type: number
+          description: Entity applied amount
+          example: 20.98
+        rate:
+          type: number
+          description: Percentage rate used for calculating
+          example: 5.9
     authorizationDatetime:
       type: string
       format: datetime
@@ -124,7 +113,11 @@ components:
       description: Card information
       properties:
         account_reference_number:
-          $ref: '#/components/schemas/accountReferenceNumber2'
+          type: string
+          description: >-
+            Card account reference number. Either this field or `last_4_digits`
+            is **REQUIRED**.
+          example: '789012000087442038'
         last_4_digit:
           type: string
           description: >-
@@ -152,13 +145,13 @@ components:
       required:
         - card
       properties:
-        account_reference_number:
-          $ref: '#/components/schemas/accountReferenceNumber'
         card:
           type: object
           description: Card balance
           allOf:
             - $ref: '#/components/schemas/cards.CardBalance'
+        account_reference_number:
+          $ref: '#/components/schemas/accountReferenceNumber'
         external_transaction_datetime:
           $ref: '#/components/schemas/externalTransactionDatetime'
         external_transaction_id:
@@ -177,6 +170,45 @@ components:
           type: number
           description: Ledger balance
           example: 1000
+    cards.CardBillRequest:
+      type: object
+      required:
+        - card_info
+        - phone
+      properties:
+        card_info:
+          $ref: '#/components/schemas/card_info'
+        phone:
+          $ref: '#/components/schemas/phone'
+    cards.CardBillResponse:
+      type: object
+      required:
+        - total_due_amount
+        - minimum_due_amount
+        - due_date
+        - card_masked_number
+        - account_reference_number
+      properties:
+        total_due_amount:
+          type: number
+          description: Total due amount
+          example: 500
+        minimum_due_amount:
+          type: number
+          description: Minimum due amount
+          example: 500
+        due_date:
+          type: string
+          description: Bill due date
+          example: '23012025'
+        card_masked_number:
+          type: string
+          description: Card masked number
+          example: 123456XXXXXXXX78
+        account_reference_number:
+          type: string
+          description: Card account reference number
+          example: '789012000087442038'
     cards.CardData:
       type: object
       required:
@@ -185,26 +217,14 @@ components:
       properties:
         card_expiration:
           type: string
-          description: Card expiration date, format = mmyy.
+          description: >-
+            Card expiration, format = MMYY. **REQUIRED** if `last_six_digits` is
+            passed.
           example: '0529'
         last_six_digits:
           type: string
-          description: Card's last six PAN digits.
+          description: Card's last six digits. **REQUIRED** if `card_expiration` is passed
           example: '657114'
-    cards.PinData:
-      type: object
-      required:
-        - key_id
-        - pin_block
-      properties:
-        pin_block:
-          type: string
-          description: Pin block
-          example: 3FE661D50EF1F6F1
-        key_id:
-          type: string
-          description: Key encryption ID
-          example: 7d14ca2e-1057-11ee-8cee-060f666de710
     cards.CardsData:
       type: object
       required:
@@ -237,6 +257,135 @@ components:
           example: ACTIVE
         type:
           $ref: '#/components/schemas/cardType'
+    cards.EmiRequest:
+      type: object
+      required:
+        - amount
+        - currency
+        - account_reference_number
+        - external_transaction_datetime
+        - external_transaction_id
+        - original_external_transaction_id
+        - mcc
+        - merchant_name
+        - phone
+        - transaction_type
+        - upi_reference_number
+        - emi_status
+      properties:
+        amount:
+          type: number
+          description: Transaction amount
+          example: 500
+        currency:
+          type: string
+          description: >-
+            Transaction currency. ISO 4217 3-digit currency code. For example -
+            `INR` (Indian rupee)
+          example: INR
+        account_reference_number:
+          $ref: '#/components/schemas/accountReferenceNumber'
+        external_transaction_datetime:
+          $ref: '#/components/schemas/externalTransactionDatetime'
+        external_transaction_id:
+          $ref: '#/components/schemas/externalTransactionID'
+        original_external_transaction_id:
+          $ref: '#/components/schemas/originalExternalTransactionId'
+        emi_status:
+          type: string
+          description: EMI status
+          enum:
+            - PRE
+            - POST
+            - DURING
+            - FORECLOSE
+          example: DURING
+        mcc:
+          type: string
+          description: Transaction Merchant Category Code (MCC)
+          example: '6012'
+        merchant_name:
+          type: string
+          description: Merchant name
+          example: Cafe Coffee Day
+        phone:
+          $ref: '#/components/schemas/phone'
+        transaction_type:
+          $ref: '#/components/schemas/transactionType'
+        upi_reference_number:
+          $ref: '#/components/schemas/upiReferenceNumber'
+        transaction_reference:
+          type: string
+          description: Transaction reference
+          example: Lunch
+        credit_account_number:
+          type: string
+          description: Payee account number if available
+          example: '98765004371'
+        foreclose_data:
+          $ref: '#/components/schemas/forecloseData'
+        emi_data:
+          $ref: '#/components/schemas/emiData'
+    cards.EmiResponse:
+      type: object
+      required:
+        - external_transaction_id
+        - status
+        - upi_reference_number
+      properties:
+        external_transaction_id:
+          $ref: '#/components/schemas/externalTransactionID'
+        status:
+          $ref: '#/components/schemas/transactionStatus'
+        upi_reference_number:
+          $ref: '#/components/schemas/upiReferenceNumber'
+        authorization_id:
+          $ref: '#/components/schemas/authorizationID'
+        authorization_datetime:
+          $ref: '#/components/schemas/authorizationDatetime'
+        foreclose_data:
+          $ref: '#/components/schemas/forecloseData'
+        emi_data:
+          $ref: '#/components/schemas/emiData'
+    cards.Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code
+          example: EUPI0001
+        message:
+          type: string
+          description: Error message
+          example: An unexpected error happened
+    cards.InquiryResponse:
+      type: object
+      required:
+        - external_transaction_datetime
+        - external_transaction_id
+        - status
+        - transaction_type
+        - upi_reference_number
+      properties:
+        external_transaction_datetime:
+          $ref: '#/components/schemas/externalTransactionDatetime'
+        external_transaction_id:
+          $ref: '#/components/schemas/externalTransactionID'
+        status:
+          $ref: '#/components/schemas/transactionStatus'
+        transaction_type:
+          $ref: '#/components/schemas/transactionType'
+        upi_reference_number:
+          $ref: '#/components/schemas/upiReferenceNumber'
+        reason:
+          $ref: '#/components/schemas/reason'
+        authorization_id:
+          $ref: '#/components/schemas/authorizationID'
+        authorization_datetime:
+          $ref: '#/components/schemas/authorizationDatetime'
     cards.ListCardsRequest:
       type: object
       required:
@@ -252,43 +401,6 @@ components:
           $ref: '#/components/schemas/phone'
         type:
           $ref: '#/components/schemas/cardType'
-    cards.CardBillRequest:
-      type: object
-      required:
-        - card_info
-        - phone
-      properties:
-        card_info:
-          $ref: '#/components/schemas/card_info'
-        phone:
-          $ref: '#/components/schemas/phone'
-    cards.CardBillResponse:
-      type: object
-      required:
-        - total_due_amount
-        - minimum_due_amount
-        - due_date
-        - card_masked_number
-        - account_reference_number
-      properties:
-        total_due_amount:
-          type: number
-          description: Total amount due
-          example: 500
-        minimum_due_amount:
-          type: number
-          description: Minimum due amount
-          example: 500
-        due_date:
-          type: string
-          description: Bill due date. Format = ddmmyyyy.
-          example: '23012025'
-        card_masked_number:
-          type: string
-          description: Card masked number
-          example: 123456XXXXXXXX78
-        account_reference_number:
-          $ref: '#/components/schemas/accountReferenceNumber'
     cards.ListCardsResponse:
       type: object
       required:
@@ -322,7 +434,20 @@ components:
         name:
           type: string
           description: Owner name
-          example: Luce Lipz
+    cards.PinData:
+      type: object
+      required:
+        - key_id
+        - pin_block
+      properties:
+        pin_block:
+          type: string
+          description: Pin block
+          example: 3FE661D50EF1F6F1
+        key_id:
+          type: string
+          description: Key encryption ID
+          example: 7d14ca2e-1057-11ee-8cee-060f666de710
     cards.TransferRequest:
       type: object
       required:
@@ -344,7 +469,7 @@ components:
         currency:
           type: string
           description: >-
-            Transaction currency. ISO 4217 3-digit currency code. For example:
+            Transaction currency. ISO 4217 3-digit currency code. For example -
             `INR` (Indian rupee)
           example: INR
         account_reference_number:
@@ -361,6 +486,8 @@ components:
           type: string
           description: Merchant name
           example: Cafe Coffee Day
+        merchant:
+          $ref: '#/components/schemas/merchant'
         phone:
           $ref: '#/components/schemas/phone'
         transaction_type:
@@ -388,31 +515,6 @@ components:
           $ref: '#/components/schemas/transactionStatus'
         upi_reference_number:
           $ref: '#/components/schemas/upiReferenceNumber'
-        authorization_id:
-          $ref: '#/components/schemas/authorizationID'
-        authorization_datetime:
-          $ref: '#/components/schemas/authorizationDatetime'
-    cards.InquiryResponse:
-      type: object
-      required:
-        - external_transaction_datetime
-        - external_transaction_id
-        - status
-        - transaction_type
-        - upi_reference_number
-      properties:
-        external_transaction_datetime:
-          $ref: '#/components/schemas/externalTransactionDatetime'
-        external_transaction_id:
-          $ref: '#/components/schemas/externalTransactionID'
-        status:
-          $ref: '#/components/schemas/transactionStatus'
-        transaction_type:
-          $ref: '#/components/schemas/transactionType'
-        upi_reference_number:
-          $ref: '#/components/schemas/upiReferenceNumber'
-        reason:
-          $ref: '#/components/schemas/reason'
         authorization_id:
           $ref: '#/components/schemas/authorizationID'
         authorization_datetime:
@@ -459,20 +561,6 @@ components:
           type: string
           description: Validation result. If not valid, an error message is returned.
           example: VALIDATED
-    cards.Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: string
-          description: Error code
-          example: EUPI0001
-        message:
-          type: string
-          description: Error message
-          example: An unexpected error happened
     cardType:
       type: string
       description: >-
@@ -558,22 +646,127 @@ components:
           type: string
           description: Error message
           example: Generic error
+    emiData:
+      type: object
+      required:
+        - contract_amount
+        - principal_amount
+        - number_of_installments
+        - installments
+      properties:
+        contract_amount:
+          type: number
+          description: >-
+            Total installment amount calculation and addition of any necessary
+            fees
+          example: 122.98
+        principal_amount:
+          type: number
+          description: >-
+            Total installment amount after calculation without the addition of
+            any fees
+          example: 100.98
+        number_of_installments:
+          type: number
+          description: Number of installments in this calculation
+          example: 3
+        fees:
+          type: array
+          description: All applied fees on this calculation
+          items:
+            $ref: '#/components/schemas/amountAndRateEntity'
+        taxes:
+          type: array
+          description: All applied taxes on this calculation
+          items:
+            $ref: '#/components/schemas/amountAndRateEntity'
+        interests:
+          type: array
+          description: All applied taxes on this calculation
+          items:
+            $ref: '#/components/schemas/amountAndRateEntity'
+        installments:
+          type: array
+          description: Installments applied
+          items:
+            $ref: '#/components/schemas/installment'
     externalTransactionDatetime:
       type: string
       description: Request datetime. ISO 8601 format.
       example: '2020-09-15T19:39:54.013Z'
     externalTransactionID:
       type: string
-      description: >
-        Request transaction ID.  
-
-
-        Must be unique as regards to `transaction_type` and
-        `account_reference_number`. 
-
-
-        This field guarantees the operation is **idempotent**, meaning, it can
-        be applied multiple times, yet the outcome remains the same.
+      description: Request ID code
+      example: MGS584A1244F6BC4D50A3FABE6D93DF913C
+    forecloseData:
+      type: object
+      required:
+        - contract_amount
+      properties:
+        contract_amount:
+          type: number
+          description: >-
+            Total installment amount after calculation and addition of any
+            necessary fees
+          example: 122.98
+    installment:
+      type: object
+      required:
+        - contract_amount
+        - principal_amount
+        - number_of_installments
+      properties:
+        contract_amount:
+          type: number
+          description: >-
+            Total installment amount after calculation and addition of any
+            necessary fees
+          example: 122.98
+        principal_amount:
+          type: number
+          description: >-
+            Total installment amount after calculation without the addition of
+            any fees
+          example: 100.98
+        number_of_installments:
+          type: number
+          description: Number of installments in this calculation
+          example: 3
+        fees:
+          type: array
+          description: Applied fees in this calculation
+          items:
+            $ref: '#/components/schemas/amountAndRateEntity'
+        taxes:
+          type: array
+          description: Applied taxes in this calculation
+          items:
+            $ref: '#/components/schemas/amountAndRateEntity'
+        interests:
+          type: array
+          description: Applied interests in this calculation
+          items:
+            $ref: '#/components/schemas/amountAndRateEntity'
+    merchant:
+      type: object
+      properties:
+        mid:
+          type: string
+          description: Merchant ID number
+          example: HDFC000018966129
+        tid:
+          type: string
+          description: Terminal ID
+          example: '42284754'
+        sid:
+          type: string
+          description: >-
+            Service ID - payment network (like NPCI) assigned unique code to a
+            merchant or service provider.
+          example: '18994373'
+    originalExternalTransactionId:
+      type: string
+      description: Request identification code
       example: MGS584A1244F6BC4D50A3FABE6D93DF913C
     phone:
       type: object
@@ -588,7 +781,7 @@ components:
         phone:
           type: string
           description: Phone number
-          example: '8675309'
+          example: '999167803'
         area_code:
           type: string
           description: Phone number area code
@@ -617,10 +810,14 @@ components:
          * `C` - Credit
          * `D` - Debit
          * `R` - Reversal
+         * `E` - Equated monthly installments (EMI)
+         * `F` - Foreclose
       enum:
         - C
         - D
         - R
+        - E
+        - F
       example: C
     upiReferenceNumber:
       type: string
@@ -930,7 +1127,7 @@ paths:
                     message: An unexpected error happened
   /v1/cards/transfer:
     post:
-      summary: Transfer funds
+      summary: Transfer UPI funds
       description: >
         United Payments Interface (UPI) funds transfer for RuPay, an Indian card
         network.
@@ -947,6 +1144,12 @@ paths:
         event and a [Platform authorization
         created](https://developers.pismo.io/events/docs/platform-authorization-platform-authorization-1)
         event.
+
+
+        This operation is **idempotent**, meaning, it can be applied multiple
+        times, yet the outcome remains the same. To guarantee this, the request
+        has an `external_transaction_id` field, which must be unique by
+        transaction type in the context of the same account reference number. 
       operationId: post-funds-transfer
       tags:
         - UPI
@@ -985,6 +1188,338 @@ paths:
                 upi_reference_number: '165238546812'
                 external_transaction_id: MGS584A1244F6BC4D50A3FABE6D93DF913C
                 status: PROCESSING
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0002:
+                  summary: Validation error
+                  value:
+                    code: EUPI0002
+                    message: Validation error
+                    details:
+                      payload:
+                        - field: external_transaction_id
+                          message: Field 'external_transaction_id' is required
+                EUPI0003:
+                  summary: Bad request
+                  value:
+                    code: EUPI0003
+                    message: Bad request
+                EUPI0104:
+                  summary: Invalid transaction type
+                  value:
+                    code: EUPI0104
+                    message: Invalid transaction type
+                EUPI0101:
+                  summary: >-
+                    The transaction was cancelled due authorization request
+                    validation error
+                  value:
+                    code: EUPI0101
+                    message: >-
+                      The transaction was cancelled due authorization request
+                      validation error
+                EUPI0108:
+                  summary: The transaction was cancelled due to authorization error
+                  value:
+                    code: EUPI0108
+                    message: >-
+                      The transaction was cancelled due to an authorization
+                      error
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0120:
+                  summary: Transfer amount is greater than the account available limits
+                  value:
+                    code: EUPI0120
+                    message: >-
+                      Transfer amount is greater than the account available
+                      limits
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0004:
+                  summary: Missing required header 'x-tenant'
+                  value:
+                    code: EUPI0004
+                    message: Missing required header 'x-tenant'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0110:
+                  summary: Original transaction not found on reversal operation
+                  value:
+                    code: EUPI0110
+                    message: Original transaction not found on reversal operation
+        '408':
+          description: Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0020:
+                  summary: Upi - API returned a timeout error
+                  value:
+                    code: EUPI0020
+                    message: Upi - API returned a timeout error
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0100:
+                  summary: Transaction already exists with the external_transaction_id
+                  value:
+                    code: EUPI0100
+                    message: >-
+                      Transaction already exists with the
+                      external_transaction_id
+                EUPI0112:
+                  summary: Original transaction is still being processed
+                  value:
+                    code: EUPI0112
+                    message: Original transaction is still being processed
+                EUPI0113:
+                  summary: >-
+                    Original transaction is not accepted, then it can't be
+                    reverted
+                  value:
+                    code: EUPI0113
+                    message: >-
+                      Original transaction is not accepted, then it can't be
+                      reverted
+                EUPI0114:
+                  summary: >-
+                    Reversal transaction amount must be equals to the original
+                    transaction
+                  value:
+                    code: EUPI0114
+                    message: >-
+                      Reversal transaction amount must be equals to the original
+                      transaction
+                EUPI0121:
+                  summary: Invalid card status
+                  value:
+                    code: EUPI0121
+                    message: Invalid card status
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0001:
+                  summary: An unexpected error happened
+                  value:
+                    code: EUPI0001
+                    message: An unexpected error happened
+                EUPI0105:
+                  summary: The transaction will be cancelled due to internal error
+                  value:
+                    code: EUPI0105
+                    message: The transaction will be cancelled due to internal error
+                EUPI0106:
+                  summary: >-
+                    The transaction was authorized but will be canceled due to
+                    internal error
+                  value:
+                    code: EUPI0106
+                    message: >-
+                      The transaction was authorized but will be canceled due to
+                      internal error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EUPI0109:
+                  summary: The transaction will be cancelled due to authorization error
+                  value:
+                    code: EUPI0109
+                    message: >-
+                      The transaction will be cancelled due to authorization
+                      error
+  /v1/cards/emi-select:
+    post:
+      summary: EMI select
+      description: >
+        United Payments Interface (UPI) funds Equated Monthly Installments (EMI)
+        for RuPay, an Indian card network.
+
+
+        Before calling this endpoint, you can call [List
+        cards](ref:post-list-cards) to get the `account_reference_number`. You
+        should also call [Validate card](ref:post-validate-card-data) to make
+        sure the card data for the transfer request is genuine.
+
+
+        This endpoint generates a [Payment methods authorization
+        created](https://developers.pismo.io/events/docs/payment-methods-authorization-1)
+        event and a [Platform authorization
+        created](https://developers.pismo.io/events/docs/platform-authorization-platform-authorization-1)
+        event.
+
+
+        This operation is **idempotent**, meaning, it can be applied multiple
+        times, yet the outcome remains the same. To guarantee this, the request
+        has an `external_transaction_id` field, which must be unique by
+        transaction type in the context of the same account reference number. 
+      operationId: emi-select
+      tags:
+        - UPI
+      parameters:
+        - $ref: '#/components/parameters/AuthHeader'
+        - $ref: '#/components/parameters/UserAgentHeader'
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cards.EmiRequest'
+        required: true
+      responses:
+        '201':
+          description: Emi created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cards.EmiResponse'
+              example:
+                upi_reference_number: E0ADFEC95DCA
+                external_transaction_id: MGSA5888297390E471980C85F56615A87FB
+                authorization_id: 2270052278
+                status: ACCEPTED
+                emi_data:
+                  contract_amount: 10143.64
+                  principal_amount: 10000
+                  number_of_installments: 3
+                  fees:
+                    - type: FIXED
+                      amount: 10
+                  interests:
+                    - type: monthly
+                      amount: 44.54
+                      rate: 8
+                    - type: monthly
+                      amount: 44.54
+                      rate: 8
+                    - type: monthly
+                      amount: 44.54
+                      rate: 8
+                  taxes: null
+                  installments:
+                    - number: 1
+                      contract_amount: 3387.88
+                      principal_amount: 3333.33
+                      fees:
+                        - type: FIXED
+                          amount: 10
+                      interests:
+                        - type: monthly
+                          amount: 44.54
+                          rate: 8
+                      taxes: null
+                    - number: 2
+                      contract_amount: 3377.88
+                      principal_amount: 3333.33
+                      fees: null
+                      interests:
+                        - type: monthly
+                          amount: 44.54
+                          rate: 8
+                      taxes: null
+                    - number: 3
+                      contract_amount: 3377.88
+                      principal_amount: 3333.33
+                      fees: null
+                      interests:
+                        - type: monthly
+                          amount: 44.54
+                          rate: 8
+                      taxes: null
+        '202':
+          description: >-
+            It is returned for duplicated requests, when the transfer is still
+            being processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cards.EmiResponse'
+              example:
+                upi_reference_number: E0ADFEC95DCA
+                external_transaction_id: MGSA5888297390E471980C85F56615A87FB
+                status: PROCESSING
+                emi_data:
+                  contract_amount: 10143.64
+                  principal_amount: 10000
+                  number_of_installments: 3
+                  fees:
+                    - type: FIXED
+                      amount: 10
+                  interests:
+                    - type: monthly
+                      amount: 44.54
+                      rate: 8
+                    - type: monthly
+                      amount: 44.54
+                      rate: 8
+                    - type: monthly
+                      amount: 44.54
+                      rate: 8
+                  taxes: null
+                  installments:
+                    - number: 1
+                      contract_amount: 3387.88
+                      principal_amount: 3333.33
+                      fees:
+                        - type: FIXED
+                          amount: 10
+                      interests:
+                        - type: monthly
+                          amount: 44.54
+                          rate: 8
+                      taxes: null
+                    - number: 2
+                      contract_amount: 3377.88
+                      principal_amount: 3333.33
+                      fees: null
+                      interests:
+                        - type: monthly
+                          amount: 44.54
+                          rate: 8
+                      taxes: null
+                    - number: 3
+                      contract_amount: 3377.88
+                      principal_amount: 3333.33
+                      fees: null
+                      interests:
+                        - type: monthly
+                          amount: 44.54
+                          rate: 8
+                      taxes: null
         '400':
           description: Bad Request
           content:
@@ -1243,7 +1778,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/cards/balance:
     post:
-      summary: Get account balance
+      summary: Get balance for account
       description: Balance inquiry
       operationId: post-balance-enquiry
       tags:

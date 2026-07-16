@@ -42,7 +42,7 @@ components:
       style: simple
       schema:
         type: integer
-        example: 6912345
+      example: 6912345
   schemas:
     AccountStatus:
       type: string
@@ -310,7 +310,7 @@ paths:
         **NOTE:** This endpoint requires an account token — an access token
         encoded with an account ID. Tokens can expire quickly, which can result
         in a **401 Unauthorized** message.
-      operationId: delinquent-ccount-closure-post
+      operationId: delinquent-account-closure-post
       parameters:
         - $ref: '#/components/parameters/CorrelationIDheader'
         - $ref: '#/components/parameters/AccountIDpath'

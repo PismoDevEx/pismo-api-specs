@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io/protection-bulletin
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 security:
   - BearerAuth: []
 tags:
@@ -132,17 +132,6 @@ components:
           - SUCCESS
           - FAILED
         example: PENDING
-    XCidHeader:
-      name: x-cid
-      in: header
-      description: >
-        The Correlation IDentifier UUID field links related API requests and
-        events. The x-cid can help the Pismo engineering team track everything
-        related to a call. If not passed, this field is automatically generated.
-      required: false
-      schema:
-        type: string
-        maxLength: 36
     XCustomerIdHeader:
       name: x-customer-id
       in: header
@@ -152,14 +141,6 @@ components:
       required: true
       schema:
         type: number
-    XTenantHeader:
-      name: x-tenant
-      in: header
-      description: Pismo organization/tenant ID.
-      required: true
-      schema:
-        type: string
-      example: TN-123XXX-XXXXXX-XXXXXXX
   schemas:
     AllowedStatusEloModel:
       type: array
@@ -1541,11 +1522,13 @@ paths:
 
 
         The Protection Bulletin is used before a transaction takes place in
-        cases where the issuer is temporarily offline and unable to provide an
-        authorization. In a process known as *stand-in*, the card network
-        authorizes the transaction to avoid creating problems for the cardholder
-        and merchant. Once the issuer is back online, the card network lets them
-        know what was authorized while they were down.
+        cases where the issuer is temporarily offline and unable to authorize or
+        decline a transaction. In a process known as *stand-in*, the card
+        network authorizes or declines the transaction to avoid creating
+        problems for the cardholder and merchant, based on how the card was
+        added to the Protection Bulletin. Once the issuer is back online, the
+        card network lets them know what was authorized or declined while they
+        were down.
 
 
         You can add a card to the Protection Bulletin with this endpoint or
@@ -1676,7 +1659,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
         - $ref: '#/components/parameters/CardIdPath'
-        - $ref: '#/components/parameters/XCustomerIdHeader'
       responses:
         '201':
           $ref: '#/components/responses/201DeleteBulletin'
@@ -1707,7 +1689,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
         - $ref: '#/components/parameters/CardIdPath'
-        - $ref: '#/components/parameters/XCustomerIdHeader'
       responses:
         '200':
           $ref: '#/components/responses/200GetBulletin'

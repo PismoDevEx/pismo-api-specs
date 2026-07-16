@@ -40,9 +40,27 @@ components:
   schemas:
     ValidationRules:
       type: object
-      description: Validation rules performed in the flow.
+      description: >-
+        Validation rules performed in the flow. Each key is a rule name (such as
+        `ACCOUNT_STATUS` or `LEDGER`) and the value is its configuration.
       additionalProperties:
         $ref: '#/components/schemas/RuleConfig'
+      example:
+        ACCOUNT_STATUS:
+          disable: false
+          force: false
+          denial_reasons:
+            ACCOUNT_STATUS_NOT_PERMITTED:
+              response_code: '57'
+              denial_code: DAL
+        LEDGER:
+          denial_reasons:
+            LEDGER_INSUFFICIENT_FUNDS:
+              response_code: '51'
+              denial_code: DAL
+            LEDGER_NOT_ALLOWED_OPERATION:
+              response_code: '57'
+              denial_code: DAL
     RuleConfig:
       type: object
       description: Configuration related to a rule.
@@ -697,11 +715,7 @@ components:
                 **REQUIRED** if the `merchant` object is filled in.
               example: mk123456
         metadata:
-          type: object
-          description: >-
-            Any valid json containing useful information for the flow. This
-            information is used by the authorization platform. It is only be
-            replicated to the events issued during the flow.
+          $ref: '#/components/schemas/Metadata'
         nsu:
           type: string
           description: Sequential unique number that identifies this authorization.
@@ -812,6 +826,8 @@ components:
             handled as a new request. Different requests using the same tracking
             ID are considered to be the same request and return the same result.
           example: ab879e9e-433b-499f-a77b-4e90ab509afd
+        validation_rules:
+          $ref: '#/components/schemas/ValidationRules'
         authorization_validations:
           $ref: '#/components/schemas/AuthorizationValidations'
     PaymentMethodsAuthorizationResponse:
@@ -1514,19 +1530,7 @@ components:
         acquirer:
           $ref: '#/components/schemas/AcquirerCredential'
         metadata:
-          type: object
-          description: >
-            This optional key-value object field can be used with external
-            operations to add supplementary custom information for the
-            operation. 
-
-
-            The Pismo platform does not perform any validation or processing on
-            this field but passes this object to the acquirer in transactions
-            involving calls to the acquirer and sends it in the events related
-            to the stream of data produced at the end of the request.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
         descriptor:
           type: string
           example: eShop purchase cancellation
@@ -1559,12 +1563,7 @@ components:
         authorization_ids:
           $ref: '#/components/schemas/AuthorizationIDs'
         metadata:
-          type: object
-          description: >-
-            Any key-value object. For an external operation, this field contains
-            the acquirer response.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
       required:
         - tracking_id
         - authorization_ids
@@ -1643,12 +1642,7 @@ components:
             special characters or emojis.
           example: Single credit adjustment
         metadata:
-          type: object
-          description: >-
-            Any valid JSON key-value object that allows you to add complementary
-            custom information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
         original_authorization:
           type: object
           description: >
@@ -1763,10 +1757,7 @@ components:
             special characters or emojis.
           example: Single credit adjustment
         metadata:
-          type: object
-          description: Any key-value object for adding complementary custom information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
     ForceCancelResponse:
       title: ForceCancelResponse
       description: >-
@@ -2093,10 +2084,7 @@ components:
           description: Payment request creation date in UTC-0 (RFC3339) format.
           example: '2020-06-11T10:39:00.000Z'
         metadata:
-          type: object
-          description: Any key-value object to add complementary custom information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
     PaymentRequestModel:
       title: PaymentRequestModel
       type: object
@@ -2128,10 +2116,7 @@ components:
             credit and debit authorizations.
           example: 1ff51e99-3a05-448a-bc19-7b5c05274174
         metadata:
-          type: object
-          description: Any key-value object for adding complementary custom information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
         location:
           $ref: '#/components/schemas/Location'
       required:
@@ -2204,10 +2189,7 @@ components:
         location:
           $ref: '#/components/schemas/Location'
         metadata:
-          type: object
-          description: Any key-value object to add custom information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
         token:
           type: string
           description: Validation token used for payment-requests transfers.
@@ -2364,12 +2346,7 @@ components:
               description: Amount of the financed charge type to send to accounting.
               example: 12.13
         metadata:
-          type: object
-          description: >-
-            Optional valid key-value object to add complementary custom
-            information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
         first_installment_date:
           description: >-
             Date that the first installment should be posted on the invoice.
@@ -2460,12 +2437,7 @@ components:
           format: float
           example: 12.13
         metadata:
-          type: object
-          description: >-
-            Optional valid key-value object to add complementary custom
-            information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
     InstallmentsPaymentResponse:
       title: InstallmentsPaymentResponse
       properties:
@@ -2602,12 +2574,7 @@ components:
             characters or emojis.
           example: Blocked value
         metadata:
-          type: object
-          description: >-
-            Optional valid key-value object to add complementary custom
-            information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
       required:
         - original_tracking_id
         - tracking_id
@@ -2669,12 +2636,7 @@ components:
             platform performs account status validation.
           example: true
         metadata:
-          type: object
-          description: >-
-            Optional valid key-value object to add complementary custom
-            information.
-          example:
-            my-custom-key: my-custom-value
+          $ref: '#/components/schemas/Metadata'
       required:
         - tracking_id
         - account_id
@@ -2736,7 +2698,25 @@ components:
       example: BRL
     Metadata:
       type: object
-      description: Any key-value object with custom information.
+      description: >
+        This optional user-defined key-value object field can be used with
+        external operations to provide additional context or supplementary
+        custom information for the operation. 
+
+
+        The Pismo platform does not perform any validation or processing on this
+        field but passes this object to the acquirer in transactions involving
+        calls to the acquirer and sends it in the events related to the stream
+        of data produced at the end of the request.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
       example:
         any-key: any-value
     OriginalTrackingID:
@@ -3045,6 +3025,12 @@ components:
                 Object that contains authorization information provided at time
                 of signing. Used in the `transaction_signing` authentication
                 method.
+    BeneficiaryID:
+      type: string
+      description: UUID for the beneficiary related to the account.
+      minLength: 36
+      maxLength: 50
+      example: 2c298321-bc21-4039-9c45-780cc6d4ec46
     From:
       type: object
       required:
@@ -3069,6 +3055,8 @@ components:
       properties:
         account_id:
           $ref: '#/components/schemas/AccountID'
+        beneficiary_id:
+          $ref: '#/components/schemas/BeneficiaryID'
         currency:
           $ref: '#/components/schemas/CurrencyPismoHierarchy'
         processing_code:
@@ -3271,6 +3259,8 @@ components:
       properties:
         account_id:
           $ref: '#/components/schemas/AccountID'
+        beneficiary_id:
+          $ref: '#/components/schemas/BeneficiaryID'
         amount:
           $ref: '#/components/schemas/Amount'
         currency_code:
@@ -3872,6 +3862,11 @@ paths:
       description: >
         Use this endpoint to request a new authorization, cancel an existing
         authorization, or confirm an existing authorization.
+
+
+        With this endpoint, you can set `validation_rules` to control the rules
+        in this flow, such as disabling a rule, changing the response code and
+        denial code, and forcing a rule.
 
 
         Refer to the [Payment methods](doc:payment-methods) guide for additional
@@ -5581,7 +5576,7 @@ paths:
 
         **Note:** This endpoint requires an account-specific access token.
         Getting an account token requires you to call the [Get OpenID access
-        token](ref:post-passport-v1-oauth2-token-1) endpoint with an account ID.
+        token](ref:post-passport-v1-oauth2-token) endpoint with an account ID.
         Tokens can expire quickly, which can result in an <b>Unauthorized</b>
         message.
       tags:

@@ -186,7 +186,7 @@ components:
           $ref: '#/components/schemas/AccountId'
         config_id:
           $ref: '#/components/schemas/ConfigId'
-        global_config:
+        global_configs:
           $ref: '#/components/schemas/GlobalConfig'
         configs:
           type: array
@@ -194,12 +194,10 @@ components:
           items:
             allOf:
               - $ref: '#/components/schemas/Config'
-        global_configs:
-          $ref: '#/components/schemas/GlobalConfig'
     PUTBalancesConfigRequest:
       type: object
       properties:
-        global_config:
+        global_configs:
           $ref: '#/components/schemas/GlobalConfig'
         configs:
           type: array
@@ -234,17 +232,27 @@ components:
           $ref: '#/components/schemas/MainOppositeImpact'
     Config:
       type: object
-      description: Balance configuration
+      description: >
+        Balance configuration. A balance configuration determines how
+        authorizations on the Pismo platform impact account balances and limits.
       properties:
         name:
           $ref: '#/components/schemas/Name'
         is_active:
           $ref: '#/components/schemas/IsActive'
+        filter_template_id:
+          type: string
+          description: >
+            Reference to a filter template ID. Use this to apply a predefined
+            filter template instead of defining filters inline.
+
+            **Cannot be used together with `filters`.**
+          example: test-1
         filters:
           type: object
-          description: Determine the criteria for a scenario.
-          required:
-            - processing_codes
+          description: |
+            Inline filter criteria for the configuration. 
+            **Cannot be used together with `filter_template_id`.**
           properties:
             processing_codes:
               $ref: '#/components/schemas/ProcessingCodes'
@@ -381,6 +389,8 @@ components:
           $ref: '#/components/schemas/ProgramId'
         account_id:
           $ref: '#/components/schemas/AccountId'
+        global_configs:
+          $ref: '#/components/schemas/GlobalConfig'
         configs:
           type: array
           description: Array of balance configurations
@@ -701,6 +711,152 @@ components:
         - default
         - custom
       example: custom
+    CreateFilterTemplate:
+      type: object
+      description: Filter template creation request
+      required:
+        - id
+        - filters
+      properties:
+        id:
+          type: string
+          description: >-
+            Optional custom ID for the filter template. If not provided, an ID
+            will be auto-generated.
+          maxLength: 36
+          example: filter-template-123
+        description:
+          type: string
+          description: Filter template description
+          maxLength: 50
+          example: Standard retail transactions filter
+        filters:
+          $ref: '#/components/schemas/FilterTemplateFilters'
+    UpdateFilterTemplate:
+      type: object
+      description: Filter template update request
+      required:
+        - filters
+      properties:
+        description:
+          type: string
+          description: Filter template description
+          maxLength: 50
+          example: Updated retail transactions filter
+        filters:
+          $ref: '#/components/schemas/FilterTemplateFilters'
+    FilterTemplate:
+      type: object
+      description: Filter template response
+      properties:
+        id:
+          type: string
+          description: Filter template ID
+          maxLength: 36
+          example: filter-template-123
+        org_id:
+          type: string
+          description: Organization ID
+          example: 20167751b-efd4-494c-9e4f-4b939560ff05
+        description:
+          type: string
+          description: Filter template description
+          maxLength: 50
+          example: Standard retail transactions filter
+        filters:
+          $ref: '#/components/schemas/FilterTemplateFilters'
+    FilterTemplateFilters:
+      type: object
+      description: Filter criteria for the template
+      required:
+        - processing_codes
+      properties:
+        processing_codes:
+          type: array
+          description: Array of processing codes
+          minItems: 1
+          items:
+            type: string
+          example:
+            - '0000'
+            - '0001'
+            - '0100'
+        min_installments:
+          type: integer
+          description: Minimum number of installments
+          minimum: 0
+          example: 1
+        max_installments:
+          type: integer
+          description: Maximum number of installments
+          minimum: 0
+          maximum: 99
+          example: 12
+        mcc:
+          type: array
+          description: Merchant Category Codes
+          items:
+            type: string
+          example:
+            - '5411'
+            - '5912'
+        account_type:
+          $ref: '#/components/schemas/AccountType'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+    FilterTemplateConfig:
+      type: object
+      description: Filter template configuration
+      properties:
+        filter_template_id:
+          type: string
+          description: Reference to another filter template
+          example: filter-template-456
+        scenarios:
+          type: array
+          description: Balance configuration scenarios
+          items:
+            type: object
+            properties:
+              condition:
+                type: object
+                required:
+                  - order
+                  - type
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+                  type:
+                    $ref: '#/components/schemas/Type'
+                  amount_to_check_balance:
+                    $ref: '#/components/schemas/AmountToCheckBalance'
+              result:
+                $ref: '#/components/schemas/ConditionResult'
+    FilterTemplateListResponse:
+      type: object
+      description: Paginated list of filter templates
+      properties:
+        total_items:
+          type: integer
+          description: Total number of filter templates
+          example: 100
+        pages:
+          type: integer
+          description: Total number of pages
+          example: 10
+        current_page:
+          type: integer
+          description: Current page number
+          example: 1
+        per_page:
+          type: integer
+          description: Number of items per page
+          example: 10
+        items:
+          type: array
+          description: Array of filter templates
+          items:
+            $ref: '#/components/schemas/FilterTemplate'
   examples:
     scenarioEmpty:
       description: Empty result example.
@@ -752,11 +908,64 @@ paths:
         - BearerAuth: []
       requestBody:
         required: true
-        description: Body description to create a balance configuration.
+        description: >
+          Balance configuration creation request.
+
+          **Important:** Each config must have either `filters` (inline) OR
+          `filter_template_id` (reference), but not both.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateBalancesConfig'
+            examples:
+              withInlineFilters:
+                summary: Configuration with inline filters
+                description: Example using inline filters directly in the config
+                value:
+                  level: program
+                  program_id: 123456
+                  configs:
+                    - name: Retail transactions
+                      is_active: true
+                      filters:
+                        processing_codes:
+                          - '555'
+                        mcc:
+                          - ABC01
+                      scenarios:
+                        - condition:
+                            order: 1
+                            type: default
+                          result:
+                            impact:
+                              - AvailableCreditLimit
+                            consider:
+                              - AvailableCreditLimit
+                            amount: contract_amount
+                            amount_consider: principal_amount
+                            reset_limit: never
+              withFilterTemplate:
+                summary: Configuration with filter template reference
+                description: Example using a filter template ID reference
+                value:
+                  level: program
+                  program_id: 123456
+                  configs:
+                    - name: Standard retail
+                      is_active: true
+                      filter_template_id: test-1
+                      scenarios:
+                        - condition:
+                            order: 1
+                            type: default
+                          result:
+                            impact:
+                              - AvailableCreditLimit
+                            consider:
+                              - AvailableCreditLimit
+                            amount: contract_amount
+                            amount_consider: principal_amount
+                            reset_limit: never
       parameters:
         - $ref: '#/components/parameters/OrgIdHeader'
         - $ref: '#/components/parameters/XCidHeader'
@@ -776,6 +985,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorWithDetails'
+              examples:
+                conflictFiltersAndTemplate:
+                  summary: Both filters and filter_template_id provided
+                  value:
+                    code: EBCF0321
+                    message: >-
+                      Cannot provide both filters and filter_template_id in the
+                      same configuration
+                missingFilters:
+                  summary: Missing both filters and filter_template_id
+                  value:
+                    code: EBCF0320
+                    message: >-
+                      Configuration at index 0 must have either
+                      filter_template_id or filters.processing_codes
+        '404':
+          description: Filter template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                filterTemplateNotFound:
+                  summary: Referenced filter template does not exist
+                  value:
+                    code: EBCF0317
+                    message: Filter template with ID test-1 not found
         '500':
           description: Internal server error
           content:
@@ -951,3 +1187,191 @@ paths:
                   value:
                     code: EBLC9999
                     message: Internal server error
+  /v1/balances-configs/filter-templates:
+    post:
+      operationId: post-v1-filter-templates
+      summary: Create filter template
+      description: >
+        Create a reusable filter template that can be referenced in balance
+        configurations. 
+
+        Filter templates allow you to define common filter criteria once and
+        reuse them across multiple configurations.
+      tags:
+        - Balance configurations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        description: Filter template creation request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFilterTemplate'
+      parameters:
+        - $ref: '#/components/parameters/OrgIdHeader'
+        - $ref: '#/components/parameters/XCidHeader'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filter_template_id:
+                    type: string
+                    description: Filter template ID
+                    example: filter-template-123
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorWithDetails'
+        '409':
+          description: Conflict - Filter template ID already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      operationId: get-v1-filter-templates
+      summary: List filter templates
+      description: >
+        List all filter templates available for the organization with pagination
+        support.
+      tags:
+        - Balance configurations
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrgIdHeader'
+        - $ref: '#/components/parameters/XCidHeader'
+        - in: query
+          name: perPage
+          description: Maximum number of items to return (1-200)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 10
+        - in: query
+          name: page
+          description: Page number (starting from 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterTemplateListResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorWithDetails'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/balances-configs/filter-templates/{id}:
+    get:
+      operationId: get-v1-filter-template-by-id
+      summary: Get filter template
+      description: |
+        Get a specific filter template by its ID.
+      tags:
+        - Balance configurations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Filter template ID
+          schema:
+            type: string
+            example: filter-template-123
+        - $ref: '#/components/parameters/OrgIdHeader'
+        - $ref: '#/components/parameters/XCidHeader'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterTemplate'
+        '404':
+          description: Filter template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: put-v1-filter-template
+      summary: Update filter template
+      description: >
+        Update filter template. Each update will version the filter template,
+        allowing you to track changes over time.
+      tags:
+        - Balance configurations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Filter template ID
+          schema:
+            type: string
+            example: filter-template-123
+        - $ref: '#/components/parameters/OrgIdHeader'
+        - $ref: '#/components/parameters/XCidHeader'
+      requestBody:
+        required: true
+        description: Filter template update request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFilterTemplate'
+      responses:
+        '204':
+          description: No Content - Successfully updated
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorWithDetails'
+        '404':
+          description: Filter template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

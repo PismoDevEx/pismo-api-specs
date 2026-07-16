@@ -969,6 +969,8 @@ components:
           $ref: '#/components/schemas/recurrenceDescription'
         allow_attempts_after_expiration:
           $ref: '#/components/schemas/retry'
+        taxes:
+          $ref: '#/components/schemas/taxes'
     qrcode.RecurrenceQrcodePayeeRequest:
       type: object
       description: Recurence QR Code payee request
@@ -1001,6 +1003,14 @@ components:
           $ref: '#/components/schemas/amount'
         allows_value_change:
           $ref: '#/components/schemas/allowsValueChange'
+    Records:
+      type: object
+      description: Tax record object
+      properties:
+        tax_type:
+          $ref: '#/components/schemas/taxType'
+        amount:
+          $ref: '#/components/schemas/taxAmount'
     recurrenceDescription:
       type: string
       description: Recurrence payment description
@@ -1050,6 +1060,67 @@ components:
         - REMOVED_BY_PAYEE
         - REMOVED_BY_PSP
       example: ACTIVE
+    taxes:
+      type: object
+      description: >-
+        Only available in EXT environment for direct parciapants. Tax
+        information related to the transaction.
+      properties:
+        tax_identifier:
+          $ref: '#/components/schemas/taxIdentifier'
+        records:
+          type: array
+          description: >-
+            Tax record types information. You must pass, at a minimum, 2 objects
+            - at least one with `CBS tax type and at least one with `IBS` tax
+            type.
+          items:
+            $ref: '#/components/schemas/Records'
+    taxAmount:
+      type: number
+      minimum: 0
+      description: Tax amount. Must be greater than zero.
+      example: 1050.44
+    taxIdentifier:
+      type: string
+      description: >
+        Tax identifier, referring to the NF-e, NFS-e or aggregating tax
+        document. 
+
+
+        In Brazil, NF-e and NFS-e are the two primary types of mandatory
+        electronic invoices (Notas Fiscais) used for tax compliance.
+
+        * NF-e (Nota Fiscal Eletrônica): Used for the sale and movement of
+        physical goods or products. It is regulated at the state level by SEFAZ
+        (SEFAZ (Secretaria da Fazenda) is the State Department of Finance in
+        Brazil.) and travels with the goods.
+
+        * NFS-e (Nota Fiscal de Serviços Eletrônica): Used for the provision of
+        services (e.g., consulting, repairs, digital subscriptions). It is
+        regulated by individual city governments.
+
+
+        The value entered must correspond to the tax document used for
+        calculating the IBS and CBS taxes associated with the transaction.
+      example: IS0435879820240605bcdb1fhn43a
+      maxLength: 50
+    taxType:
+      type: string
+      description: >
+        Tax type:
+
+        * `IBS` = Goods and services tax. A state and municipal tax that unifies
+        and replaces the main subnational consumption taxes (state ICMS and
+        municipal ISS).
+
+        * `CBS` = Contribution on goods and services. A federal tax that
+        consolidates and replaces previous federal social contributions and
+        taxes (PIS, Cofins, and IPI)
+      enum:
+        - CBS
+        - IBS
+      example: IBS
     tradeName:
       type: string
       description: Company name
@@ -1252,6 +1323,10 @@ paths:
 
         Typically, this endpoint is used to generate a dynamic QR Code for the
         [Pix instant payments](doc:pix-instant-payments) system.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       operationId: post-create-cob
       tags:
         - QR Code
@@ -1362,6 +1437,10 @@ paths:
 
         Typically, this endpoint is used to generate a dynamic QR Code for the
         [Pix instant payments](doc:pix-instant-payments) system.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       operationId: post-qrcode-cobv
       tags:
         - QR Code
@@ -1529,6 +1608,10 @@ paths:
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       operationId: post-create-recurrence-cob
       tags:
         - Recurring payment
@@ -1580,6 +1663,10 @@ paths:
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       operationId: post-create-recurrence-cobv
       tags:
         - Recurring payment
@@ -1630,6 +1717,10 @@ paths:
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       operationId: post-create-static
       tags:
         - Recurring payment
@@ -1682,6 +1773,10 @@ paths:
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       operationId: post-create-recurrence
       tags:
         - Recurring payment

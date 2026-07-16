@@ -961,10 +961,12 @@ paths:
         this additional configuration is enabled, then, for each transaction,
         the accrual is calculated only once on the transaction due date.
 
+
         **Note:** Unlike other rates that you define using transaction
         categories or accrual type rates, when you enable the
         `ONCE_AFTER_TRANSACTION_DUE_DATE` configuration on an accrual type, the
-        rate you define for that type is not divided by 30 before it's applied.
+        rate you define for that type is <i>not</i> divided by the interest rate
+        period before it's applied.
       operationId: postAccrualTypesConfigurations
       tags:
         - Additional accrual type configurations

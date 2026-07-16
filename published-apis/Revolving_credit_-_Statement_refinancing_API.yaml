@@ -174,7 +174,8 @@ components:
       format: double
       description: >-
         Overridden amount due. If provided, it overrides the total amount due
-        for the account in the payment agreement simulation.
+        for the account in the payment agreement simulation. Must be greater
+        than zero and less than or equal to the current amount due.
       example: 2000
     PaymentAgreementSimulationCorrelationID:
       type: string
@@ -215,6 +216,8 @@ components:
           $ref: '#/components/schemas/SimulationPlanIDs'
         down_payment:
           $ref: '#/components/schemas/DownPayment'
+        overridden_amount_due:
+          $ref: '#/components/schemas/OverriddenAmountDue'
         payment_date:
           $ref: '#/components/schemas/SimulationPaymentDate'
         type:
@@ -351,6 +354,22 @@ components:
               value:
                 code: EX0002
                 message: Missing request header for method parameter of type String
+    423Locked:
+      description: Locked
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Account Locked:
+              description: >-
+                The operation could not be completed because another process is
+                manipulating the account. Try again in a moment.
+              value:
+                message: >-
+                  The operation could not be completed because another process
+                  is manipulating the account (the account lock could not be
+                  obtained). Try again in a moment.
     500InternalServerError:
       description: Internal Server Error
       content:
@@ -406,6 +425,8 @@ paths:
                 $ref: '#/components/schemas/PaymentAgreementSimulationResponse'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '423':
+          $ref: '#/components/responses/423Locked'
         '500':
           $ref: '#/components/responses/500InternalServerError'
   /v1/accounts/{accountId}/payment-agreement-simulations/{paymentAgreementSimulationId}:

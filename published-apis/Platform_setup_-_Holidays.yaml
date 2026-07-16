@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.1
 info:
   title: Platform setup - Holidays
   description: Manage business and non-business days by organization
@@ -9,14 +9,16 @@ info:
   license:
     name: Copyright Pismo
 servers:
-  - url: https://sandbox.pismolabs.io
-    description: API sandbox server f
+  - url: https://sandbox.pismolabs.io/holidays-core
+    description: API sandbox server for testing
 security:
   - S2SAuthentication: []
 tags:
-  - name: Holidays
+  - name: Holiday calendar
+  - name: Holiday calendar data
+  - name: Holidays (deprecated)
     description: View and manage business and non-business days configurations.
-  - name: Holidays v2 - Transaction banking
+  - name: Holidays v2 - Transaction banking (deprecated)
     description: >-
       View and manage business and non-business days configurations (for
       Transaction banking only)
@@ -76,7 +78,7 @@ components:
       description: >
         Get holidays on or before this date. 
 
-            
+
         This field indicates what part of the year to end searching for
         holidays, not when the holiday was created at Pismo.
 
@@ -85,14 +87,35 @@ components:
       schema:
         type: string
         example: '2025-11-02'
-    FilterByNameQuery:
+    ExternalIdQuery:
+      name: external_id
+      in: query
+      description: Client-created calendar holiday ID
+      schema:
+        type: string
+        maxLength: 36
+    ExternalIdPath:
+      name: external_id
+      in: path
+      description: Client-created calendar holiday ID
+      required: true
+      schema:
+        type: string
+        maxLength: 36
+    HolidayCalendarNameQuery:
       name: name
       in: query
-      description: Holiday name filter
+      description: Holiday calendar name filter
       schema:
         type: string
         maxLength: 80
         example: Independance Day
+    HolidayCalendarTypeQuery:
+      name: type
+      in: query
+      description: Holiday calendar type filter
+      schema:
+        type: string
     HolidayDateQuery:
       name: holidayDate
       in: query
@@ -116,6 +139,43 @@ components:
       schema:
         type: string
         example: '8675309'
+    HolidayCalendarIdQuery:
+      name: holiday_calendar_id
+      in: query
+      description: Holiday calendar ID filter
+      required: false
+      schema:
+        type: integer
+    HolidayCalendarParentIdQuery:
+      name: parent_id
+      in: query
+      description: Holiday calendar parent ID filter
+      schema:
+        type: integer
+        minimum: 1
+        format: int32
+        example: 5
+    HolidayCalendarSortByQuery:
+      name: sort_by
+      in: query
+      description: Sort field - `name` or `type`. Default is `name`.
+      schema:
+        type: string
+        enum:
+          - name
+          - type
+        example: name
+        default: name
+    HolidayCalendarSortOrderQuery:
+      name: sort_order
+      in: query
+      description: Sort order - `asc` or `desc`. Default is `asc`
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
     HolidayIdPath:
       name: holiday_id
       in: path
@@ -157,6 +217,7 @@ components:
       name: x-tenant
       in: header
       description: Organization/tenant ID
+      required: true
       schema:
         type: string
     PageNumberQuery:
@@ -178,6 +239,18 @@ components:
         minimum: 1
         maximum: 100
         example: 30
+    relationQuery:
+      name: relation
+      in: query
+      description: >-
+        Calendar relationship type. Default is all Organization calendars.
+        Either `external_id` or `holiday_calendar_id` is **REQUIRED** if this
+        field is passed.
+      schema:
+        type: string
+        enum:
+          - parents
+          - children
   schemas:
     AdminDivIdV1Only:
       type: integer
@@ -232,6 +305,17 @@ components:
       maxLength: 36
       minLength: 1
       example: f89urqljnahosluiefku
+    ExternalId2:
+      type: string
+      description: >
+        Client-created external ID. 
+
+
+        Either this field or `holiday_calendar_id` is **REQUIRED**. Pass one or
+        the other but not both.
+      maxLength: 36
+      minLength: 1
+      example: f89urqljnahosluiefku
     ExternalIdParent:
       type: string
       description: |
@@ -270,9 +354,18 @@ components:
       type: integer
       description: Holiday calendar ID
       example: 8675309
+    HolidayCalendarID2:
+      type: integer
+      description: >
+        Holiday calendar ID. 
+
+
+        Either this field or `external_id` is **REQUIRED**. Pass one or the
+        other but not both.
+      example: 8675309
     HolidayCalendarName:
       type: string
-      description: Holiday calendar name
+      description: Holiday calendar name. Must be unique per organization.
       maxLength: 80
       minLength: 1
       example: Brazil holiday calendar
@@ -297,7 +390,7 @@ components:
       minLength: 1
     HolidayType:
       type: string
-      description: Type
+      description: Type, free-form field. For example, `Country` or `Region`.
       maxLength: 15
       minLength: 1
       example: Country
@@ -337,6 +430,15 @@ components:
         A valid JSON schema as specified in
         https://json-schema.org/specification.html. Used to register rules used
         to authorize the transaction.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
     MetadataV2:
       type: object
       description: >
@@ -350,6 +452,15 @@ components:
         to specify holiday business rules. For details, refer to <a
         href="https://developers.pismo.io/pismo-docs/docs/posting-transactions-on-holidays">Posting
         Transactions on Holidays</a>.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
     NextBusinessDate:
       type: string
       format: date
@@ -447,13 +558,11 @@ components:
         description:
           $ref: '#/components/schemas/HolidayDescription'
         external_id:
-          $ref: '#/components/schemas/ExternalId'
+          $ref: '#/components/schemas/ExternalId2'
         holiday_calendar_id:
-          $ref: '#/components/schemas/HolidayCalendarID'
+          $ref: '#/components/schemas/HolidayCalendarID2'
         metadata:
           $ref: '#/components/schemas/Metadata'
-        working_date:
-          $ref: '#/components/schemas/WorkingDate'
     presenter.AddHolidayToCalendarResponse:
       type: object
       properties:
@@ -502,7 +611,7 @@ components:
           type: array
           description: Holidays array
           items:
-            $ref: '#/components/schemas/presenter.CreateNewHolidayRequest'
+            $ref: '#/components/schemas/presenter.CreateNewHolidayRequest2'
         metadata:
           $ref: '#/components/schemas/Metadata'
         parent_external_id:
@@ -565,6 +674,20 @@ components:
           $ref: '#/components/schemas/Metadata'
         working_date:
           $ref: '#/components/schemas/WorkingDate'
+    presenter.CreateNewHolidayRequest2:
+      type: object
+      required:
+        - name
+        - holiday_date
+      properties:
+        name:
+          $ref: '#/components/schemas/HolidayName'
+        holiday_date:
+          $ref: '#/components/schemas/HolidayDate'
+        description:
+          $ref: '#/components/schemas/HolidayDescription'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
     presenter.CreateHolidayRequest:
       description: Data to create a holiday.
       type: object
@@ -649,6 +772,13 @@ components:
           $ref: '#/components/schemas/HolidayType'
         working_days:
           $ref: '#/components/schemas/HolidayWorkingDays'
+    presenter.ListHolidayCalendarsResponse:
+      type: object
+      properties:
+        holiday_calendars:
+          type: array
+          items:
+            $ref: '#/components/schemas/presenter.GetHolidayCalendarResponse'
     presenter.GetHolidayResponse:
       type: object
       properties:
@@ -670,8 +800,6 @@ components:
           $ref: '#/components/schemas/HolidayName'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
-        working_date:
-          $ref: '#/components/schemas/WorkingDate'
     presenter.HolidayCalendarSearchBusinessDayRequest:
       type: object
       required:
@@ -824,6 +952,15 @@ components:
             A valid JSON schema as specified in
             https://json-schema.org/specification.html. Used to register rules
             used for transaction authorization.
+
+
+            **Note**: This field must not be used to send Personally
+            Identifiable Information (PII), Payment Card Industry (PCI) data, or
+            any sensitive/regulated information. Metadata fields are intended
+            for operational, non-sensitive data only. For sensitive data, use
+            the specific parameters designed for that purpose. For more
+            information, refer to [Get started with Pismo
+            APIs](ref:get-started-with-pismo-apis#metadata).
     presenter.NonBusinessDaysResponse:
       type: object
       properties:
@@ -868,13 +1005,24 @@ components:
           $ref: '#/components/schemas/Metadata'
         division_metadata:
           $ref: '#/components/schemas/Metadata'
+    presenter.UpdateHolidayCalendarRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+        parent_id:
+          $ref: '#/components/schemas/ParentId'
+        external_id:
+          $ref: '#/components/schemas/ExternalId'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        name:
+          $ref: '#/components/schemas/HolidayName'
+        working_days:
+          $ref: '#/components/schemas/HolidayWorkingDays'
     presenter.UpdateHolidayInGroupRequest:
       type: object
       properties:
-        description:
-          $ref: '#/components/schemas/HolidayDescription'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
         name:
           $ref: '#/components/schemas/HolidayName'
     presenter.UpdateHolidayRequest:
@@ -936,6 +1084,10 @@ components:
       type: integer
       description: Total number of result items
       example: 11
+    Type:
+      type: string
+      description: Holiday calendar type
+      example: Country
     UpdatedAt:
       type: string
       format: datetime
@@ -1115,7 +1267,7 @@ components:
             holiday-exists-in-group:
               $ref: '#/components/examples/BadRequestResponseAlreadyExists'
     409ConflicCreateHolidayCalendar:
-      description: Not found
+      description: Conflict
       content:
         application/json:
           schema:
@@ -1296,19 +1448,28 @@ components:
 paths:
   /holidays-core/v1/holiday:
     post:
-      summary: Create holiday
+      summary: Create holiday (deprecated)
       description: >
-        Create a holiday—a day on which your company's offices are closed for
-        normal business activity though online financial transactions and other
-        business activity could still be occurring.
+        **DEPRECATED**. Call the [Add holiday](ref:post-add-holiday-to-calendar)
+        endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
+        Create a holiday&mdash;a day on which your company's offices are closed
+        for normal business activity though online financial transactions and
+        other business activity could still be occurring.
 
 
         For more information, refer to <a
         href="https://developers.pismo.io/pismo-docs/docs/platform-setup-holidays">Platform
         setup - Holidays and administrative divisions</a>.
       tags:
-        - Holidays
+        - Holidays (deprecated)
       operationId: post-holiday
+      deprecated: true
       requestBody:
         content:
           application/json:
@@ -1330,19 +1491,28 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     get:
-      summary: List holidays
-      description: |
+      summary: List holidays (deprecated)
+      description: >
+        **DEPRECATED**. Call the Call the [List holiday
+        calendars](ref:list-holiday-calendars) endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Return a paginated list of holidays registered for an organization.
       operationId: get-v1-holidays
+      deprecated: true
       tags:
-        - Holidays
+        - Holidays (deprecated)
       parameters:
         - $ref: '#/components/parameters/PageNumberQuery'
         - $ref: '#/components/parameters/PerPageQuery'
         - $ref: '#/components/parameters/OrderQuery'
         - $ref: '#/components/parameters/OrderByQuery'
         - $ref: '#/components/parameters/AdminDivisionIDQuery'
-        - $ref: '#/components/parameters/FilterByNameQuery'
+        - $ref: '#/components/parameters/HolidayCalendarNameQuery'
         - $ref: '#/components/parameters/HolidayDateQuery'
         - $ref: '#/components/parameters/BeginDateQuery'
         - $ref: '#/components/parameters/EndDateQuery'
@@ -1363,14 +1533,23 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /holidays-core/v1/holiday/validate:
     post:
-      summary: Get holiday
-      description: |
+      summary: Get holiday (deprecated)
+      description: >
+        **DEPRECATED**. Call the [Get business
+        day](ref:post-search-business-day) endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Get information for an administrative division's holiday.
 
          **Note:** The response could contain outdated information until at least one minute after an update is made to an administrative division.
       operationId: validate-v1-holiday
+      deprecated: true
       tags:
-        - Holidays
+        - Holidays (deprecated)
       requestBody:
         content:
           application/json:
@@ -1393,12 +1572,21 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /holidays-core/v1/holiday/{holiday_id}:
     put:
-      summary: Update holiday name
-      description: |
+      summary: Update holiday name (deprecated)
+      description: >
+        **DEPRECATED**. Call the [Update holiday](ref:update-holiday) endpoint
+        instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Update a holiday's name.
       operationId: put-v1-holiday
+      deprecated: true
       tags:
-        - Holidays
+        - Holidays (deprecated)
       parameters:
         - $ref: '#/components/parameters/HolidayIdPath'
       requestBody:
@@ -1422,12 +1610,21 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     delete:
-      summary: Delete holiday
-      description: |
+      summary: Delete holiday (deprecated)
+      description: >
+        **DEPRECATED**. Call the new [Delete holiday](ref:delete-holiday)
+        endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Delete a holiday.
       tags:
-        - Holidays
+        - Holidays (deprecated)
       operationId: delete-v1-holiday
+      deprecated: true
       parameters:
         - $ref: '#/components/parameters/HolidayIdPath'
       responses:
@@ -1443,8 +1640,16 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /holidays-core/v1/search-business-day:
     post:
-      summary: Check if business day
+      summary: Check if business day (deprecated)
       description: >
+        **DEPRECATED**. Call the [Get business
+        day](ref:post-search-business-day) endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Check if a specific date is a business day for an administrative
         division.
 
@@ -1452,8 +1657,9 @@ paths:
         **Note:** The response could contain outdated information until at least
         one minute after an administrative division update.
       operationId: v1-search-business-day
+      deprecated: true
       tags:
-        - Holidays
+        - Holidays (deprecated)
       requestBody:
         content:
           application/json:
@@ -1479,12 +1685,21 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /holidays-core/v1/non-business-days:
     get:
-      summary: List non-business days
-      description: |
+      summary: List non-business days (deprecated)
+      description: >
+        **DEPRECATED**. Call the [Get non-business
+        days](ref:get-non-business-days) endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Return a list of non-business days.
       operationId: v1-get-non-business-days
+      deprecated: true
       tags:
-        - Holidays
+        - Holidays (deprecated)
       parameters:
         - $ref: '#/components/parameters/OrgHeader'
         - $ref: '#/components/parameters/CIDheader'
@@ -1511,13 +1726,22 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /holidays-core/v1/holiday/administrative-division/{administrative_division_id}/ancestors:
     get:
-      summary: List holidays with administrative division ancestors
+      summary: List holidays with administrative division ancestors (deprecated)
       description: >
+        **DEPRECATED**. Call the [List holiday
+        calendars](ref:list-holiday-calendars) endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Return a paginated list of holidays registered for an administrative
         division, including those inherited from a parent division.
       operationId: get-v1-holidays-with-administrative-divisions-ancestors
+      deprecated: true
       tags:
-        - Holidays
+        - Holidays (deprecated)
       parameters:
         - $ref: '#/components/parameters/AdminDivisionIdPath'
         - $ref: '#/components/parameters/PageNumberQuery'
@@ -1543,8 +1767,16 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /holidays-core/v2/holiday:
     post:
-      summary: Create holiday
+      summary: Create holiday (deprecated)
       description: >
+        **DEPRECATED**. Call the [Add holiday](ref:post-add-holiday-to-calendar)
+        endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Create a holiday&mdash;a day on which your company's offices are closed
         for normal business activity though online financial transactions and
         other business activity could still be occurring. 
@@ -1554,8 +1786,9 @@ paths:
         information, refer to [Calendars and holidays in transaction
         banking](doc:calendars-and-holidays-in-transaction-banking).
       operationId: post-v2-holiday
+      deprecated: true
       tags:
-        - Holidays v2 - Transaction banking
+        - Holidays v2 - Transaction banking (deprecated)
       requestBody:
         content:
           application/json:
@@ -1580,8 +1813,16 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     get:
-      summary: List holidays
+      summary: List holidays (deprecated)
       description: >
+        **DEPRECATED**. Call the new [List holidays](ref:get-holiday-new)
+        endpoint instead.
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Return a paginated list of holidays registered for an organization. 
 
 
@@ -1589,8 +1830,9 @@ paths:
         information, refer to [Calendars and holidays in transaction
         banking](doc:calendars-and-holidays-in-transaction-banking).
       operationId: get-v2-holidays
+      deprecated: true
       tags:
-        - Holidays v2 - Transaction banking
+        - Holidays v2 - Transaction banking (deprecated)
       parameters:
         - $ref: '#/components/parameters/PageNumberQuery'
         - $ref: '#/components/parameters/PerPageQuery'
@@ -1619,8 +1861,16 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /holidays-core/v2/holiday/{holiday_id}:
     put:
-      summary: Update holiday
+      summary: Update holiday (deprecated)
       description: >
+        **DEPRECATED**. Call the new [Update holiday](ref:update-holiday)
+        endpoint instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Update some holiday information. Only parameters that are passed are
         updated.
 
@@ -1629,8 +1879,9 @@ paths:
         information, refer to [Calendars and holidays in transaction
         banking](doc:calendars-and-holidays-in-transaction-banking).
       operationId: put-v2-holiday
+      deprecated: true
       tags:
-        - Holidays v2 - Transaction banking
+        - Holidays v2 - Transaction banking (deprecated)
       parameters:
         - $ref: '#/components/parameters/HolidayIdPath'
       requestBody:
@@ -1651,5 +1902,295 @@ paths:
           $ref: '#/components/responses/401UnauthorizedError'
         '404':
           $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar:
+    post:
+      summary: Create holiday calendar
+      description: |
+        Creates a new holiday calendar with associated holidays. 
+
+        This endpoint does not generate an event.
+      operationId: post-create-holiday-calendar
+      tags:
+        - Holiday calendar
+      requestBody:
+        description: Create holiday calendar request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/presenter.CreateHolidayCalendarRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/presenter.CreateHolidayCalendarResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequestCreateHolidayCalendar'
+        '404':
+          $ref: '#/components/responses/404NotFoundCreateHolidayCalendar'
+        '409':
+          $ref: '#/components/responses/409ConflicCreateHolidayCalendar'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    get:
+      summary: List holiday calendars
+      description: List holiday calendars for an Organization.
+      operationId: list-holiday-calendars
+      tags:
+        - Holiday calendar data
+      parameters:
+        - $ref: '#/components/parameters/OrgHeader'
+        - $ref: '#/components/parameters/CIDheader'
+        - $ref: '#/components/parameters/HolidayCalendarIdQuery'
+        - $ref: '#/components/parameters/HolidayCalendarNameQuery'
+        - $ref: '#/components/parameters/HolidayCalendarTypeQuery'
+        - $ref: '#/components/parameters/ExternalIdQuery'
+        - $ref: '#/components/parameters/HolidayCalendarParentIdQuery'
+        - $ref: '#/components/parameters/HolidayCalendarSortByQuery'
+        - $ref: '#/components/parameters/HolidayCalendarSortOrderQuery'
+        - $ref: '#/components/parameters/relationQuery'
+        - $ref: '#/components/parameters/PageNumberQuery'
+        - $ref: '#/components/parameters/PerPageQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/presenter.ListHolidayCalendarResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar/{holiday_calendar_id}:
+    get:
+      summary: Get holiday calendar
+      description: Get a holiday calendar
+      operationId: get-holiday-calendar
+      tags:
+        - Holiday calendar data
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/presenter.GetHolidayCalendarResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    patch:
+      summary: Update holiday calendar
+      description: Update a holiday calendar. Fields not passed are not updated.
+      tags:
+        - Holiday calendar
+      operationId: update-holiday-calendar
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+      requestBody:
+        description: Business day search request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/presenter.UpdateHolidayCalendarRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    delete:
+      summary: Delete holiday calendar
+      description: Delete a holiday calendar
+      operationId: delete-holiday-calendar
+      tags:
+        - Holiday calendar
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar/{holiday_calendar_id}/holiday:
+    get:
+      summary: List holidays
+      description: List calendar holidays
+      operationId: get-holiday-new
+      tags:
+        - Holiday calendar data
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/presenter.ListHolidayResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar/{holiday_calendar_id}/business-day:
+    post:
+      summary: Get business day
+      description: >
+        Searches for business day information for a specific date within a
+        holiday calendar.
+      operationId: post-search-business-day
+      tags:
+        - Holiday calendar data
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+      requestBody:
+        description: Business day search request body
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/presenter.HolidayCalendarSearchBusinessDayRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/presenter.HolidayCalendarSearchBusinessDayResponse
+        '400':
+          $ref: '#/components/responses/400BadRequestGetBusinessDay'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar/{holiday_calendar_id}/non-business-days:
+    get:
+      summary: Get non-business days
+      description: >
+        Get non-business days (weekends and holidays) for a specific holiday
+        calendar within a date range. Non-business days include weekends based
+        on the holiday calendar's working days configuration and holidays
+        associated with the group.
+      operationId: get-non-business-days
+      tags:
+        - Holiday calendar data
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+        - $ref: '#/components/parameters/BeginDateQuery'
+        - $ref: '#/components/parameters/EndDateQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/presenter.HolidayCalendarNonBusinessDaysResponse
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar/external-id/{external_id}:
+    get:
+      summary: Get calendar by external ID
+      description: Get a holiday calendar given its external ID in path.
+      operationId: get-holiday-calendar-by-external-id
+      tags:
+        - Holiday calendar data
+      parameters:
+        - $ref: '#/components/parameters/ExternalIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/presenter.GetHolidayCalendarResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar/holiday:
+    post:
+      summary: Add holiday
+      description: |
+        Add a new holiday to an existing holiday calendar. 
+      operationId: post-add-holiday-to-calendar
+      tags:
+        - Holiday calendar
+      requestBody:
+        description: Holiday creation request data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/presenter.AddHolidayToCalendarRequest'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/presenter.AddHolidayToCalendarResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequestAddHoliday'
+        '404':
+          $ref: '#/components/responses/404NotFoundAddHoliday'
+        '409':
+          $ref: '#/components/responses/409ConflictAddHoliday'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/holiday-calendar/{holiday_calendar_id}/holiday/{holiday_id}:
+    patch:
+      summary: Update holiday
+      description: Update a holiday in a holiday calendar.
+      operationId: update-holiday
+      tags:
+        - Holiday calendar
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+        - $ref: '#/components/parameters/HolidayIdPath'
+      requestBody:
+        description: Holiday update data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/presenter.UpdateHolidayInGroupRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    delete:
+      summary: Delete holiday
+      description: Delete a calendar holiday
+      operationId: delete-holiday
+      tags:
+        - Holiday calendar
+      parameters:
+        - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+        - $ref: '#/components/parameters/HolidayIdPath'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/400BadRequest'
         '500':
           $ref: '#/components/responses/500InternalServerError'

@@ -9,8 +9,6 @@ info:
   license:
     name: Copyright Pismo
 servers:
-  - url: https://sandbox.pismolabs.io
-    description: Sandbox API server for testing
   - url: https://sandbox.pismolabs.io/network-transactions-backoffice-api
     description: Sandbox API server for testing for transactions backoffice
 components:
@@ -22,21 +20,7 @@ components:
         Account access token. Tokens can expire quickly, which can result in an
         "Unauthorized" error.
       bearerFormat: JWT
-  parameters:
-    XTenantHeader:
-      in: header
-      name: x-tenant
-      description: Organization ID
-      schema:
-        type: string
-        example: TN-b77ecb37-d149-4674-a499-af0d11e404864
-    XCidHeader:
-      in: header
-      name: x-cid
-      description: CorrelationId present on clearing message
-      schema:
-        type: string
-        example: 7e5213b7-e0a3-46f4-bb6a-2c4f38e413fb
+  parameters: {}
   schemas:
     ReconciliationRequest:
       type: object
@@ -70,10 +54,9 @@ components:
                   - field
                   - new_value
       required:
-        - card_network
         - card_hash
+        - card_network
         - reconciliation_reason
-        - adjustments
     ReconciliationResponse:
       type: object
       properties:
@@ -83,6 +66,92 @@ components:
           example: The message has been received and is being processed.
       required:
         - message
+    DLQTransactionsResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DLQTransaction'
+    DLQTransaction:
+      type: object
+      properties:
+        card_network:
+          type: string
+        card_hash:
+          type: string
+        reconciliation_reason:
+          type: string
+        authorization_code:
+          type: string
+        correlation_id:
+          type: string
+        created_at:
+          type: string
+        action:
+          type: string
+        count_retries:
+          type: integer
+        authorization_status:
+          type: string
+    TransactionDetailsResponse:
+      type: object
+      properties:
+        card_network:
+          type: string
+          example: VISA
+        card_hash:
+          type: string
+          example: abc123hash
+        reconciliation_reason:
+          type: string
+          example: PENDING
+        cid:
+          type: string
+          description: Correlation ID
+          example: 7e5213b7-e0a3-46f4-bb6a-2c4f38e413fb
+        caller:
+          type: string
+          example: Visa
+        org_id:
+          type: string
+          example: TN-b77ecb37-d149-4674-a499-af0d11e404864
+        authorization_transaction_amount:
+          type: string
+          example: '100.00'
+        authorization_code:
+          type: string
+          example: '123456'
+        authorization_cid:
+          type: string
+          example: auth-cid-123
+        authorization_status:
+          type: string
+          example: APPROVED
+        authorization_processing_code:
+          type: string
+          example: '000000'
+        clearing_authorization_code:
+          type: string
+          example: '654321'
+        clearing_processing_code:
+          type: string
+          example: '000000'
+        clearing_transaction_amount:
+          type: string
+          example: '100.00'
+        message:
+          type: object
+          nullable: true
+          description: Raw clearing message from ClearingTransactions table
     ErrorResponse:
       type: object
       properties:
@@ -135,6 +204,8 @@ security:
 tags:
   - name: Network transactions backoffice
     description: Network transactions backoffice related endpoints
+  - name: health
+    description: Health check endpoints
 paths:
   /v1/clearing-reconciliation:
     post:
@@ -147,9 +218,7 @@ paths:
         - Network transactions backoffice
       security:
         - BearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/XTenantHeader'
-        - $ref: '#/components/parameters/XCidHeader'
+      parameters: []
       requestBody:
         description: Clearing reconciliation request
         required: true

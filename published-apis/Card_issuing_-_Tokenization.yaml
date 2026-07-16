@@ -12,7 +12,7 @@ servers:
   - url: https://gw-pci.pismolabs.io/cards-tokenization
     description: PCI API server for testing
   - url: https://pci.pismolabs.io/cards-tokenization
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: Network card profile
     description: Network card profile endpoints
@@ -22,7 +22,7 @@ tags:
     description: Token lifecycle endpoints
   - name: Card lifecycle
     description: Card lifecycle endpoints
-  - name: Visa Click to Pay [Beta]
+  - name: Visa Click to Pay
     description: Visa Click to Pay service endpoints
   - name: MDES Token Connect [Beta]
     description: Mastercard's Token Connect service endpoints
@@ -82,17 +82,15 @@ components:
       schema:
         type: integer
       description: Customer ID
-    OwnerBidHeader:
-      name: x-owner-bid
-      in: header
+    DeviceIDpath:
+      name: deviceId
+      description: Device ID (wallet device ID)
+      in: path
+      required: true
       schema:
         type: string
-      description: >
-        Owner business ID. Identifies the issuing entity creating or managing
-        enrollment in Click to Pay.
-      required: true
-    OwnerBidHeader2:
-      name: x-bid
+    OwnerBidHeader:
+      name: x-owner-bid
       in: header
       schema:
         type: string
@@ -136,6 +134,12 @@ components:
         are known only to the issuer/caller.
       maxLength: 8
       example: '94'
+    ActivationCode2:
+      type: string
+      description: >-
+        Activation code **REQUIRED** when `operation_type` =
+        `TOKEN_DEVICE_BINDING_APPROVE_CALL_CENTER`.
+      maxLength: 8
     AdditionalInfo:
       type: object
       properties:
@@ -297,6 +301,13 @@ components:
             From Apple SDK. Nonce = "number used once", a one-time-use random
             generated value.
           example: '48585930'
+        product_type:
+          type: string
+          description: >-
+            From Apple SDK. Product type identifier. if a specific identifier
+            needs to be passed, it **must** be entered in this field. if not
+            passed, Pismo uses default values from the networks.
+          example: 016:XX:A000000001010111101
         Nonce_signature:
           type: string
           description: From Apple SDK
@@ -319,6 +330,24 @@ components:
       type: number
       description: Card ID
       example: 6743052
+    ClickToPayEnrollBatchData:
+      type: object
+      properties:
+        account_id:
+          type: number
+          description: Pismo account ID
+          example: 100023
+        customer_id:
+          type: number
+          description: Pismo customer ID
+        owner_bid:
+          type: string
+          description: Visa's owner bid
+          example: '1000052'
+        card_id:
+          type: string
+          description: Pismo card ID
+          example: '123456789'
     ClickToPayAddress:
       type: object
       properties:
@@ -550,9 +579,12 @@ components:
               card_id:
                 $ref: '#/components/schemas/CardID'
               status:
-                type: boolean
-                description: Is the card active?
-                example: true
+                type: string
+                description: Manage Consumer Status
+                example: ACTIVE
+                enum:
+                  - ACTIVE
+                  - DISABLED
     ClickToPayInternalServerError:
       type: object
       description: Click to Pay internal server error
@@ -619,6 +651,15 @@ components:
       type: number
       description: Customer ID
       example: 6743052
+    DeviceID:
+      type: string
+      description: Device identifier.
+      example: 835y73450234q5yowksf
+    DeviceIndex:
+      type: integer
+      description: Visa index number for device ID.
+      maxLength: 2
+      example: 99
     DigitalizationDeviceID:
       type: number
       description: Digitalization device ID
@@ -841,6 +882,18 @@ components:
         "Suspended due to lost device."
       example: Suspended due to lost device
       maxLength: 254
+    OperationReason2:
+      type: string
+      description: Visa lifecycle operation reason.
+      enum:
+        - FRAUD
+        - LOST_CARD
+        - STOLEN_CARD
+        - LOST_DEVICE
+        - STOLEN_DEVICE
+        - CUSTOMER_REQUEST
+        - CLOSED
+        - FOUND_DEVICE
     OperationType:
       type: string
       description: >
@@ -862,13 +915,23 @@ components:
         * `CARDHOLDER_STEPUP_APP_TO_APP` - App2App verification
 
 
-        * `TOKEN_DEVICE_BIDING_APPROVE` - Device verification
+        * `TOKEN_DEVICE_BIDING_APPROVE` - Device verification, approve and
+        activate the most recently inactive device (only Visa)
+
+
+        * `TOKEN_DEVICE_BINDING_APPROVE_CALL_CENTER` - Device verification with
+        call center activation, approve and activate the most recently inactive
+        device (only Visa)
+
+
+        * `TOKEN_DEVICE_BINDING_APPROVE_BANK_APP` - Device verification with
+        bank app approval, approve and activate the most recently inactive
+        device (only Visa)
 
 
         **Note**: For App2App token activation, set this field to
         `CARDHOLDER_STEPUP_APP_TO_APP` (Mastercard) and `CALL_CENTER_ACTIVATION`
         (Visa).
-      example: DELETE
       enum:
         - DELETE
         - SUSPEND
@@ -876,6 +939,16 @@ components:
         - CALL_CENTER_ACTIVATION
         - CARDHOLDER_STEPUP_APP_TO_APP
         - TOKEN_DEVICE_BIDING_APPROVE
+        - TOKEN_DEVICE_BINDING_APPROVE_BANK_APP
+      example: DELETE
+    OperationType2:
+      type: string
+      description: Visa device binding lifecycle operation type.
+      enum:
+        - TOKEN_DEVICE_BINDING_REMOVE
+        - TOKEN_DEVICE_BINDING_APPROVE
+        - TOKEN_DEVICE_BINDING_APPROVE_BANK_APP
+        - TOKEN_DEVICE_BINDING_APPROVE_CALL_CENTER
     OrgID:
       type: string
       description: Pismo organiztion/tenant ID
@@ -989,7 +1062,7 @@ components:
 
 
             Default is `15`. **Must** be greater or equal to `5` and less than
-            or equal to `15`. 
+            or equal to `15`.
           enum:
             - 5
             - 6
@@ -1305,7 +1378,7 @@ components:
           description: >
             Web-to-web or app-to-web push methods token requestor supports. Not
             returned if the token requestor does not participate in the MDES
-            Token Connect program. 
+            Token Connect program.
           items:
             type: string
             enum:
@@ -1317,7 +1390,7 @@ components:
           description: >
             Does token requestor support up to 5 push account receipts in a
             single request?  Present if the token requestor participates in MDES
-            Token Connect program. 
+            Token Connect program.
         supported_account_holder_data:
           type: array
           description: >
@@ -1382,7 +1455,7 @@ components:
 
         Card networks use TRIDs to enforce usage boundaries at the network
         level, know who is reponsible if fraud occurs, and to prevent tokens
-        from being used elsewhere. 
+        from being used elsewhere.
       maxLength: 11
       example: '01234567890'
     TokenRequestorRequest:
@@ -1459,6 +1532,24 @@ components:
           format: date-time
           maxLength: 29
           example: '2025-12-31T23:59:59Z'
+    VisaDeviceBindingRequest:
+      type: object
+      required:
+        - operator_id
+        - operation_type
+        - operation_reason
+        - device_index
+      properties:
+        operator_id:
+          $ref: '#/components/schemas/OperatorID'
+        operation_type:
+          $ref: '#/components/schemas/OperationType2'
+        operation_reason:
+          $ref: '#/components/schemas/OperationReason2'
+        activation_code:
+          $ref: '#/components/schemas/ActivationCode2'
+        device_index:
+          $ref: '#/components/schemas/DeviceIndex'
     WalletID:
       type: string
       description: >-
@@ -1469,7 +1560,7 @@ components:
       type: string
       description: >
         Wallet provider ID. Returned if token requestor is a wallet like Google
-        Pay or Samsung Pay. 
+        Pay or Samsung Pay.
       maxLength: 3
       example: '123'
   securitySchemes:
@@ -2156,6 +2247,9 @@ paths:
                     tracking_id: D0000203850882
                     status: ACTIVE
                     updated_at: '2024-05-10T16:40:20-03:00'
+                    devices:
+                      - device_id: '12345'
+                        device_index: 1
                     network_data:
                       AccountPanSequenceNumber: '000'
                       CorrelationId: D0000203851234
@@ -2289,7 +2383,7 @@ paths:
       - $ref: '#/components/parameters/CidHeader'
   /v1/clicktopay/visa/enroll/customer:
     post:
-      summary: Enroll customer and card in Visa CTP [Beta]
+      summary: Enroll customer and card in Visa CTP
       description: >
         Enroll a customer and card in <a
         href="https://usa.visa.com/products/click-to-pay/consumers.html"
@@ -2321,7 +2415,7 @@ paths:
         environment.
       operationId: post-v1-clicktopay-enroll_customer
       tags:
-        - Visa Click to Pay [Beta]
+        - Visa Click to Pay
       parameters:
         - $ref: '#/components/parameters/TenantHeader'
         - $ref: '#/components/parameters/CustomerIDheader'
@@ -2376,7 +2470,7 @@ paths:
                     message: internal server error
   /v1/clicktopay/visa/enroll/card:
     post:
-      summary: Enroll card in Visa CTP [Beta]
+      summary: Enroll card in Visa CTP
       description: >
         Enroll a customer card in Visa Click to Pay.
 
@@ -2403,7 +2497,7 @@ paths:
         environment.
       operationId: post-v1-clicktopay-enroll_card
       tags:
-        - Visa Click to Pay [Beta]
+        - Visa Click to Pay
       parameters:
         - $ref: '#/components/parameters/TenantHeader'
         - $ref: '#/components/parameters/CustomerIDheader'
@@ -2461,7 +2555,7 @@ paths:
                     message: internal server error
   /v1/clicktopay/visa/data:
     get:
-      summary: Get Visa CTP customer cards status [Beta]
+      summary: Get Visa CTP customer cards status
       description: >
         Returns customer's cards statuses (active or inactive) in the Visa Click
         to Pay service.
@@ -2478,11 +2572,11 @@ paths:
         environment.
       operationId: post-v1-clicktopay-get_data
       tags:
-        - Visa Click to Pay [Beta]
+        - Visa Click to Pay
       parameters:
         - $ref: '#/components/parameters/TenantHeader'
         - $ref: '#/components/parameters/CustomerIDheader'
-        - $ref: '#/components/parameters/OwnerBidHeader2'
+        - $ref: '#/components/parameters/OwnerBidHeader'
         - $ref: '#/components/parameters/CidHeader'
       responses:
         '200':
@@ -2542,7 +2636,7 @@ paths:
                     message: internal server error
   /v1/clicktopay/visa/manage/customer:
     put:
-      summary: Update Visa CTP customer [Beta]
+      summary: Update Visa CTP customer
       description: >
         Update customer data in the Visa Click to Pay service.
 
@@ -2570,7 +2664,7 @@ paths:
         environment.
       operationId: post-v1-clicktopay-manage_customer
       tags:
-        - Visa Click to Pay [Beta]
+        - Visa Click to Pay
       parameters:
         - $ref: '#/components/parameters/TenantHeader'
         - $ref: '#/components/parameters/CustomerIDheader'
@@ -2627,7 +2721,7 @@ paths:
                     message: internal server error
   /v1/clicktopay/visa/manage/card:
     put:
-      summary: Update Visa CTP customer billing address [Beta]
+      summary: Update Visa CTP customer billing address
       description: >
         Update the billing address for customer cards in Visa Click to Pay.
 
@@ -2654,7 +2748,7 @@ paths:
         environment.
       operationId: put-v1-clicktopay-manage_card
       tags:
-        - Visa Click to Pay [Beta]
+        - Visa Click to Pay
       parameters:
         - $ref: '#/components/parameters/TenantHeader'
         - $ref: '#/components/parameters/CustomerIDheader'
@@ -2717,7 +2811,7 @@ paths:
                     message: internal server error
   /v1/clicktopay/visa/delete/customer:
     post:
-      summary: Delete Visa CTP customer [Beta]
+      summary: Delete Visa CTP customer
       description: >
         Delete the customer and all their cards from the Visa Click to Pay
         service,
@@ -2743,7 +2837,7 @@ paths:
         environment.
       operationId: post-v1-clicktopay-delete_customer
       tags:
-        - Visa Click to Pay [Beta]
+        - Visa Click to Pay
       parameters:
         - $ref: '#/components/parameters/TenantHeader'
         - $ref: '#/components/parameters/CustomerIDheader'
@@ -2801,7 +2895,7 @@ paths:
                     message: internal server error
   /v1/clicktopay/visa/delete/card:
     post:
-      summary: Delete Visa CTP card [Beta]
+      summary: Delete Visa CTP card
       description: >
         Remove a customer's card from Visa Click to Pay service.
 
@@ -2824,7 +2918,7 @@ paths:
         environment.
       operationId: post-v1-clicktopay-delete_card
       tags:
-        - Visa Click to Pay [Beta]
+        - Visa Click to Pay
       parameters:
         - $ref: '#/components/parameters/TenantHeader'
         - $ref: '#/components/parameters/CustomerIDheader'
@@ -2969,7 +3063,7 @@ paths:
           description: Internal server error
   /v1/token-connect/assets/{assetId}:
     get:
-      summary: Get asset
+      summary: Get token requestor logo
       description: >
         Returns a token requestor's logo, in `PNG` and `SVG` format.
 
@@ -3002,3 +3096,63 @@ paths:
           description: Bad request
         '500':
           description: Internal server error
+  /v1/cards/{cardId}/network-tokens/{tokenId}/devices/{deviceId}/binding:
+    post:
+      summary: Bind Visa device and token
+      description: >
+        Executes Visa device binding for a given token and device. Device
+        binding establishes that a specific device belongs to a specific
+        cardholder. Once bound, the device can be trusted more in future
+        transactions. 
+
+
+        An issuer can use this endpoint to update the status of a specific
+        device linked to a token.
+
+
+        **Notes**:
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
+         * This endpoint takes an account token - an access token encoded with a Pismo account ID
+      operationId: post-run-visa-device-lifecycle
+      tags:
+        - Token lifecycle
+      parameters:
+        - $ref: '#/components/parameters/CardIDpath'
+        - $ref: '#/components/parameters/TokenIDpath'
+        - $ref: '#/components/parameters/DeviceIDpath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisaDeviceBindingRequest'
+            examples:
+              approve:
+                value:
+                  operator_id: '123'
+                  operation_type: TOKEN_DEVICE_BINDING_APPROVE
+                  operation_reason: FOUND_DEVICE
+                  activation_code: '1'
+                  device_id: '1'
+                  device_index: 0
+      responses:
+        '200':
+          description: Operation successfully executed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  network_ack:
+                    type: boolean
+                    description: Was the network operation acknowledged?
+              examples:
+                ok:
+                  value:
+                    network_ack: true
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'

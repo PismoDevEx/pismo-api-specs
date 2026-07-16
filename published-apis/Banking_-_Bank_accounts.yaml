@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Banking - Bank accounts
   version: 1.0.0
@@ -36,8 +36,8 @@ components:
       schema:
         type: string
       example: '78123456'
-    auth:
-      name: AuthorizationHeader
+    authHeader:
+      name: Authorization
       in: header
       description: >
         Account token - Token encoded with a Pismo account ID. Tokens can expire
@@ -58,7 +58,7 @@ components:
         type: string
       example: 3456
     schemeNamePath:
-      name: schemeNamePath
+      name: schemeName
       in: path
       description: |
         Bank account's scheme (account type): 
@@ -85,7 +85,7 @@ components:
       in: path
       name: sortCode
       description: >-
-        Sort code - used to identify a UK bank-branch. The UK brank branch sort
+        Sort code. Used to identify a UK bank-branch. The UK bank branch sort
         code is a six-digit code that is split into pairs with dashes in
         between.
       required: true
@@ -135,13 +135,14 @@ components:
         <a
         href="https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/"
         target="_blank">ISPB (Identificador do Sistema de Pagamento Brazil)</a>
-        - the Brazilian payment system bank ID, the value is eight digits long.
-      example: '76523428'
+        - the Brazilian payment system bank ID, the value is eight alphanumeric
+        characters.
+      example: 76523A28
     brazilBranch:
       type: string
       description: >-
-        Branch code, a 4-digit value. Values under four digits are left-padded
-        with zeroes.
+        Branch code, a four-digit value. Values under four digits are
+        left-padded with zeroes.
       minLength: 1
       maxLength: 4
       example: '0186'
@@ -398,7 +399,7 @@ components:
       properties:
         clabe:
           type: string
-          length: 18
+          minLength: 18
           description: >
             The Clave Bancaria Estandarizada (CLABE) is an 18-digit standardized
             bank code used for identifying bank accounts in Mexico.
@@ -606,9 +607,17 @@ components:
     metadata:
       additionalProperties: true
       type: object
-      description: >-
+      description: >
         A set of key-value pairs used to store custom data or additional
-        information.
+        information.<br>
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
     regionCode:
       type: string
       description: ISO-3166 two letter country code. For example, BR=Brazil.
@@ -747,7 +756,7 @@ paths:
         account registered</a> event.
       operationId: post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-iban
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
       requestBody:
         description: Register IBAN request Body
@@ -908,7 +917,7 @@ paths:
         event.
       operationId: post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-ach
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
       requestBody:
         description: Register ACH request Body
@@ -1068,7 +1077,7 @@ paths:
         event.
       operationId: post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-fedwire
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
       requestBody:
         description: Register FedWire request Body
@@ -1234,7 +1243,7 @@ paths:
         account registered</a> event.
       operationId: post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-clabe
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
       requestBody:
         description: Register CLABE request Body
@@ -1400,7 +1409,7 @@ paths:
         account registered</a> event.
       operationId: post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-uk-scan
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
       requestBody:
         description: Register UK bank account request body
@@ -1558,7 +1567,7 @@ paths:
         account registered</a> event.
       operationId: post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-brazil
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
       requestBody:
         description: Register Brazilian bank account request body
@@ -1721,7 +1730,7 @@ paths:
         account registered</a> event.
       operationId: post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-bban
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
       requestBody:
         description: Request Body
@@ -1859,7 +1868,7 @@ paths:
                     code: EIBA0015
                     message: Database internal error
       x-codegen-request-body-name: RequestBody
-  /v2/accounts/{accountId}/bank-accounts/{schemeNamePath}:
+  /v2/accounts/{accountId}/bank-accounts/{schemeName}:
     get:
       tags:
         - Bank accounts
@@ -1874,7 +1883,7 @@ paths:
       operationId: >-
         get-intl-bank-accounts-v2-bank-accounts-account-id-bank-accounts-scheme-name
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
         - $ref: '#/components/parameters/schemeNamePath'
       responses:
@@ -2018,7 +2027,7 @@ paths:
       operationId: >-
         delete-intl-bank-accounts-v2-accounts-account-id-bank-accounts-scheme-name
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
         - $ref: '#/components/parameters/schemeNamePath'
       responses:
@@ -2144,7 +2153,7 @@ paths:
       operationId: >-
         update-intl-bank-accounts-v2-accounts-account-id-bank-accounts-scheme-name
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/accountIDpath'
         - $ref: '#/components/parameters/schemeNamePath'
       requestBody:
@@ -2281,7 +2290,7 @@ paths:
       tags:
         - Bank accounts
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/sortCodePath'
       responses:
         '200':
@@ -2381,7 +2390,7 @@ paths:
         before use in transactions.
       operationId: post-intl-bank-accounts-v1-bank-accounts-beneficiaries
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
       requestBody:
         description: Register beneficiary request body
         content:
@@ -2531,7 +2540,7 @@ paths:
         List registered beneficiaries with query filtering options.
       operationId: get-intl-bank-accounts-v1-bank-accounts-beneficiaries
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - name: lastEvaluatedCreationDatetime
           in: query
           description: >
@@ -2713,7 +2722,7 @@ paths:
       operationId: >-
         post-intl-bank-accounts-v1-bank-accounts-beneficiaries-beneficiary-id-activate
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/beneficiaryIDpath'
       responses:
         '200':
@@ -2845,7 +2854,7 @@ paths:
       description: Get a beneficiary's information given its ID in the path.
       operationId: get-intl-bank-accounts-v1-bank-accounts-beneficiaries-beneficiary-id
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/beneficiaryIDpath'
       responses:
         '200':
@@ -2976,7 +2985,7 @@ paths:
       description: Update a beneficiary given its ID in the path.
       operationId: patch-intl-bank-accounts-v1-beneficiaries-beneficiary-id
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/beneficiaryIDpath'
       requestBody:
         description: Request Body
@@ -3124,7 +3133,7 @@ paths:
       description: Delete a beneficiary given its ID in the path.
       operationId: delete-intl-bank-accounts-v1-beneficiaries-beneficiary-id
       parameters:
-        - $ref: '#/components/parameters/auth'
+        - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/beneficiaryIDpath'
       responses:
         '204':
@@ -3240,7 +3249,7 @@ paths:
                     code: EIBA0015
                     message: Database internal error
       x-codegen-request-body-name: RequestBody
-  /v3/bank-accounts/{schemeNamePath}/search:
+  /v3/bank-accounts/{schemeName}/search:
     post:
       tags:
         - Bank accounts

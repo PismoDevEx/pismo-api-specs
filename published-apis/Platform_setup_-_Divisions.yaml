@@ -8,20 +8,17 @@ info:
   contact:
     name: Pismo Support
     url: https://developers.pismo.io/support/
-    email: support@pismo.com.br
-  termsOfService: https://developers.pismo.io/terms/
   license:
-    name: Copyright © 2023 Pismo
-    url: https://developers.pismo.io/licenses/
+    name: Copyright Pismo
 servers:
-  - url: https://api-sandbox.pismolabs.io
-    description: Sandbox
+  - url: https://sandbox.pismolabs.io
+    description: Sandbox API server for testing
 security:
   - S2SAuthentication: []
 tags:
-  - name: Administrative divisions
+  - name: Administrative divisions (deprecated)
     description: View and manage administrative divisions.
-  - name: Administrative divisions V2
+  - name: Administrative divisions V2 (deprecated)
     description: View and manage admin divisions for transaction banking
 components:
   parameters:
@@ -189,7 +186,7 @@ components:
       format: date-time
       description: Division last update timestamp.
       example: '2025-06-01T10:15:00.000000Z'
-    EndOfDay:
+    CycleClosing:
       type: string
       pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$
       description: End of day time in HH:MM:SS format.
@@ -208,7 +205,7 @@ components:
       type: boolean
       description: Is there a next page?
       example: true
-    HolidayGroupID:
+    HolidayCalendarID:
       type: integer
       format: int64
       description: Holiday group identifier.
@@ -229,6 +226,15 @@ components:
         [parameters](doc:posting-transactions-on-holidays#parameters) to specify
         business rules for holidays. For details, see [Posting Transactions on
         Holidays](doc:posting-transactions-on-holidays).
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
     NextCursor:
       type: string
       description: Cursor for the next page, if available
@@ -280,12 +286,12 @@ components:
           $ref: '#/components/schemas/ProgramTypeString'
         description:
           $ref: '#/components/schemas/DivisionDescription'
-        end_of_day:
-          $ref: '#/components/schemas/EndOfDay'
+        cycle_closing:
+          $ref: '#/components/schemas/CycleClosing'
         language:
           $ref: '#/components/schemas/DivisionLanguage'
-        holiday_group_id:
-          $ref: '#/components/schemas/HolidayGroupID'
+        holiday_calendar_id:
+          $ref: '#/components/schemas/HolidayCalendarID'
     presenter.DivisionDetails:
       type: object
       properties:
@@ -305,12 +311,12 @@ components:
           $ref: '#/components/schemas/CountryCode'
         currency_numeric_code:
           $ref: '#/components/schemas/CurrencyCode'
-        end_of_day:
-          $ref: '#/components/schemas/EndOfDay'
+        cycle_closing:
+          $ref: '#/components/schemas/CycleClosing'
         program_type:
           $ref: '#/components/schemas/ProgramTypeObject'
-        holiday_group_id:
-          $ref: '#/components/schemas/HolidayGroupID'
+        holiday_calendar_id:
+          $ref: '#/components/schemas/HolidayCalendarID'
         created_at:
           $ref: '#/components/schemas/DivisionCreatedAt'
         updated_at:
@@ -346,10 +352,10 @@ components:
           $ref: '#/components/schemas/CountryCode'
         currency_numeric_code:
           $ref: '#/components/schemas/CurrencyCode'
-        end_of_day:
-          $ref: '#/components/schemas/EndOfDay'
-        holiday_group_id:
-          $ref: '#/components/schemas/HolidayGroupID'
+        cycle_closing:
+          $ref: '#/components/schemas/CycleClosing'
+        holiday_calendar_id:
+          $ref: '#/components/schemas/HolidayCalendarID'
     presenter.v1AdministrativeDivisionResponse:
       type: object
       description: Administrative division data.
@@ -478,7 +484,34 @@ components:
           example: Full balance credit progra,m
     ProgramTypeString:
       type: string
-      description: Program type.
+      description: >
+        Program type:
+          `CREDITO` — Full balance credit accounts<br>
+          `PRE-PAGO` — Full balance prepaid accounts<br>
+          `DEBITO` — Full balance debit accounts<br>
+          `MERCHANT` — Merchant accounts<br>
+          `CREDITO ZERO-BALANCE` — Zero balance credit accounts<br>
+          `PRE-PAGO ZERO-BALANCE` — Zero balance prepaid accounts<br>
+          `DEBITO ZERO-BALANCE` — Zero balance debit accounts<br>
+          `CURRENT ACCOUNTS` — Current accounts<br>
+          `INTERNAL ACCOUNTS` — Internal accounts<br>
+          `CORRESPONDENT ACCOUNTS` — Correspondent accounts<br>
+          `VOUCHER` - Prepaid voucher meal/food card<br>
+
+        For more information, refer to [Program
+        types](https://developers.pismo.io/pismo-docs/docs/program-types)
+      enum:
+        - CREDITO
+        - PRE-PAGO
+        - DEBITO
+        - MERCHANT
+        - CREDITO ZERO-BALANCE
+        - PRE-PAGO ZERO-BALANCE
+        - DEBITO ZERO-BALANCE
+        - CURRENT ACCOUNTS
+        - INTERNAL ACCOUNTS
+        - CORRESPONDENT ACCOUNTS
+        - VOUCHER
       example: CREDITO
     WorkingDays:
       type: array
@@ -796,11 +829,11 @@ components:
         language: pt-BR
         country_code: BRA
         currency_numeric_code: '986'
-        end_of_day: '18:00:00'
+        cycle_closing: '18:00:00'
         program_type:
           id: 1
           description: CREDITO
-        holiday_group_id: 1
+        holiday_calendar_id: 1
         created_at: '2025-05-22T17:45:13.717773Z'
     DivisionDetailsPage:
       value:
@@ -818,11 +851,11 @@ components:
             language: pt-BR
             country_code: BRA
             currency_numeric_code: '986'
-            end_of_day: '18:00:00'
+            cycle_closing: '18:00:00'
             program_type:
               id: 1
               description: CREDITO
-            holiday_group_id: 1
+            holiday_calendar_id: 1
             created_at: '2025-05-22T17:45:13.717773Z'
             updated_at: '2025-06-01T10:15:00.000000Z'
           - id: c1b2cc7e-2052-402f-bf81-bbe3964f9f3f
@@ -835,17 +868,25 @@ components:
             language: en-US
             country_code: BRA
             currency_numeric_code: '986'
-            end_of_day: '19:00:00'
+            cycle_closing: '19:00:00'
             program_type:
               id: 1
               description: CREDITO
-            holiday_group_id: 2
+            holiday_calendar_id: 2
             created_at: '2025-05-23T10:00:00.000000Z'
 paths:
   /divisions-core/v1/administrative-division:
     post:
-      summary: Create administrative division
+      summary: Create administrative division (deprecated)
       description: >
+        **DEPRECATED**. Call [Create holiday
+        calendar](ref:post-create-holiday-calendar) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Create an administrative division. 
 
 
@@ -857,12 +898,14 @@ paths:
 
 
         There is a [Create administrative division](ref:post-v2-admin-division)
-        V2 endpoint designed for transaction banking. For details about the
-        differences, refer to [Platform setup - Holidays and administrative
+        V2 endpoint designed for greater flexibility in defining non-business
+        days to accommodate specific business requirements. For details about
+        the differences, refer to [Platform setup - Holidays and administrative
         divisions](doc:platform-setup-holidays#endpoints-for-transaction-banking).
       operationId: post-v1-admin-division
+      deprecated: true
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       requestBody:
         content:
           application/json:
@@ -903,11 +946,21 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v1/administrative-division/external-id/{id}:
     get:
-      summary: Get admin division info by external ID
-      description: Get detailed administrative division information.
+      summary: Get admin division info by external ID (deprecated)
+      description: >
+        **DEPRECATED**. Call [Get calendar by external
+        ID](ref:get-holiday-calendar-by-external-id) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
+        Get detailed administrative division information.
       operationId: get-v1-admin-division-external-id
+      deprecated: true
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       parameters:
         - description: Administrative division external ID
           in: path
@@ -952,11 +1005,19 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v1/administrative-division/{id}:
     get:
-      summary: Get admin division info
-      description: Get detailed administrative division information.
+      summary: Get admin division info (deprecated)
+      description: >
+
+        **DEPRECATED**. Call [Get holiday calendar](ref:get-holiday-calendar)
+        instead. 
+
+         This endpoint is deprecated starting April 30, 2026, and final removal from both test (EXT) and production environments on October 30, 2026.
+
+         Get detailed administrative division information.
       operationId: get-v1-admin-division
+      deprecated: true
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       parameters:
         - $ref: '#/components/parameters/AdminDivisionIdPath'
       responses:
@@ -995,11 +1056,21 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     put:
-      summary: Update administrative division
-      description: Update administrative division.
+      summary: Update administrative division (deprecated)
+      description: >
+        **DEPRECATED**. Call [Update holiday
+        calendar](ref:update-holiday-calendar) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
+        Update administrative division.
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       operationId: put-v1-admin-division
+      deprecated: true
       requestBody:
         content:
           application/json:
@@ -1045,10 +1116,20 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
     delete:
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       operationId: delete-v1-admin-division
-      summary: Delete administrative division
-      description: Delete an administrative division.
+      deprecated: true
+      summary: Delete administrative division (deprecated)
+      description: >
+        **DEPRECATED**. Call [Delete holiday
+        calendar](ref:delete-holiday-calendar) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
+        Delete an administrative division.
       parameters:
         - $ref: '#/components/parameters/AdminDivisionIdPath'
       responses:
@@ -1087,13 +1168,22 @@ paths:
                   $ref: '#/components/examples/InternalServerErrorResponse'
   /divisions-core/v1/administrative-division/{id}/tree:
     get:
-      summary: Get admin division tree by admin division ID
+      summary: Get admin division tree by admin division ID (deprecated)
       description: >
+        **DEPRECATED**. Call [List holiday
+        calendars](ref:list-holiday-calendars) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Get the complete tree of child administrative divisions using the
         parent's administrative division ID.
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       operationId: get-v1-admin-division-tree-parent-id
+      deprecated: true
       parameters:
         - $ref: '#/components/parameters/AdminDivisionExternalIdPath'
         - $ref: '#/components/parameters/PageQuery'
@@ -1129,12 +1219,21 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v1/administrative-division/external-id/{id}/tree:
     get:
-      summary: Get admin division tree by external ID
-      description: |
+      summary: Get admin division tree by external ID (deprecated)
+      description: >
+        **DEPRECATED**. Call [List holiday
+        calendars](ref:list-holiday-calendars) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Get the full tree of administrative divisions using an external ID
       operationId: get-v1-admin-division-tree-external-id
+      deprecated: true
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       parameters:
         - $ref: '#/components/parameters/AdminDivisionExternalIdPath'
         - $ref: '#/components/parameters/PageQuery'
@@ -1170,13 +1269,22 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v1/administrative-division/{id}/ancestors:
     get:
-      summary: Get admin division ancestors by admin division ID
+      summary: Get admin division ancestors by admin division ID (deprecated)
       description: >
+        **DEPRECATED**. Call [List holiday
+        calendars](ref:list-holiday-calendars) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         List ancestors for an administrative division using administrative
         division ID.
       operationId: get-v1-admin-division-ancestors-administrative-division-id
+      deprecated: true
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       parameters:
         - $ref: '#/components/parameters/AdminDivisionIdPath'
         - $ref: '#/components/parameters/PageQuery'
@@ -1212,12 +1320,21 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v1/administrative-division/external-id/{id}/ancestors:
     get:
-      summary: Get admin division ancestors by external ID
-      description: |
+      summary: Get admin division ancestors by external ID (deprecated)
+      description: >
+        **DEPRECATED**. Call [List holiday
+        calendars](ref:list-holiday-calendars) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         List ancestors for an administrative division using an external ID.
       operationId: get-v1-admin-division-ancestors-external-id
+      deprecated: true
       tags:
-        - Administrative divisions
+        - Administrative divisions (deprecated)
       parameters:
         - $ref: '#/components/parameters/AdminDivisionExternalIdPath'
         - $ref: '#/components/parameters/PageQuery'
@@ -1253,18 +1370,28 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v2/administrative-division:
     post:
-      summary: Create administrative division
+      summary: Create administrative division (deprecated)
       description: >
+        **DEPRECATED**. Call [Create holiday
+        calendar](ref:post-create-holiday-calendar) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
         Create an administrative division. 
 
 
-        This is a v2 endpoint designed for transaction banking. To understand
-        the differences between v1 and v2 endpoints, refer to [Platform setup -
-        Holidays and administrative
+        This is a v2 endpoint that offers more granular control over financial
+        activities on non-business days. To understand the differences between
+        v1 and v2 endpoints, refer to [Platform setup - Holidays and
+        administrative
         divisions](doc:platform-setup-holidays#endpoints-for-transaction-banking).
       operationId: post-v2-admin-division
+      deprecated: true
       tags:
-        - Administrative divisions V2
+        - Administrative divisions V2 (deprecated)
       requestBody:
         content:
           application/json:
@@ -1309,11 +1436,21 @@ paths:
                 $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v2/administrative-division/{id}:
     get:
-      summary: Get administrative division info
-      description: Get administrative division detailed information.
+      summary: Get administrative division info (deprecated)
+      description: >
+        **DEPRECATED**. Call [Get holiday calendar](ref:get-holiday-calendar)
+        instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
+        Get administrative division detailed information.
       operationId: get-v2-admin-division
+      deprecated: true
       tags:
-        - Administrative divisions V2
+        - Administrative divisions V2 (deprecated)
       parameters:
         - $ref: '#/components/parameters/AdminDivisionIdPath'
       responses:
@@ -1352,11 +1489,21 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     put:
-      summary: Update administrative division
-      description: Update an administrative division.
+      summary: Update administrative division (deprecated)
+      description: >
+        **DEPRECATED**. Call [Update holiday
+        calendar](ref:update-holiday-calendar) instead. 
+
+
+        This endpoint is deprecated starting April 30, 2026, and final removal
+        from both test (EXT) and production environments on October 30, 2026.
+
+
+        Update an administrative division.
       operationId: put-v2-admin-division
+      deprecated: true
       tags:
-        - Administrative divisions V2
+        - Administrative divisions V2 (deprecated)
       requestBody:
         content:
           application/json:

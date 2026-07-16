@@ -131,6 +131,14 @@ components:
         ISO-4217 alphabetic (3 characters) currency code.
       type: string
       example: BRL
+    OptionalCurrencyCode:
+      anyOf:
+        - type: string
+        - type: 'null'
+      description: >-
+        ISO 4217 alphanumeric currency code. When you do not want to record a
+        transaction's currency code, use `null`.
+      example: BRL
     DefaultErrorResponse:
       type: object
       properties:
@@ -159,6 +167,8 @@ components:
     MerchantTransactionsResponse:
       type: object
       properties:
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCodeResponse'
         items:
           type: array
           items:
@@ -168,15 +178,22 @@ components:
                 type: string
                 format: date
                 description: Scheduling date for the next payment
+                example: '2023-10-29'
               gross_value:
-                type: string
+                type: number
+                format: float
                 description: Merchant consolidated gross amount
+                example: 250
               discount:
-                type: string
+                type: number
+                format: float
                 description: Merchant consolidated discount amount
+                example: 8.25
               net_value:
-                type: string
+                type: number
+                format: float
                 description: Merchant consolidated net value
+                example: 241.75
               details:
                 type: array
                 items:
@@ -185,47 +202,67 @@ components:
                     merchant_id:
                       type: integer
                       description: ID of the merchant who owns the transaction
+                      example: 40305
                     merchant_name:
                       type: string
                       description: Name of the merchant who owns the transaction
+                      example: Merchant Name
                     gross_value:
-                      type: string
+                      type: number
+                      format: float
                       description: Total transaction gross amount
+                      example: 250
                     discount:
-                      type: string
+                      type: number
+                      format: float
                       description: Total transaction discount amount
+                      example: 8.25
                     net_value:
-                      type: string
+                      type: number
+                      format: float
                       description: Total transaction net amount
+                      example: 241.75
                     tax:
                       type: object
                       description: Taxes charged to the merchant
                       properties:
                         advancement_fee:
-                          type: string
+                          type: number
+                          format: float
                           description: Fixed fee to be applied to the advancement request
+                          example: 0
                         discount_rate:
-                          type: string
+                          type: number
+                          format: float
                           description: >-
                             Discount rate used to calculate the discount over
                             merchant advancements
+                          example: 0.05
                         maximum_advancement_percentage:
-                          type: string
+                          type: number
+                          format: float
                           description: >-
                             Maximum allowable percentage of the net amount for
                             the advancement
+                          example: 1
         totals:
           type: object
           properties:
             gross_value:
-              type: string
+              type: number
+              format: float
               description: Total consolidated gross amount
+              example: 650
             discount:
-              type: string
+              type: number
+              format: float
               description: Total consolidated discount amount
+              example: 8.25
             net_value:
-              type: string
+              type: number
+              format: float
               description: Total consolidated net value
+              example: 641.75
     MerchantsAdvancementsRequest:
       type: object
       required:
@@ -245,7 +282,11 @@ components:
         request_date:
           type: string
           format: date
-          description: Date for payment of the advancement
+          description: >-
+            Date for payment of the advancement (YYYY-MM-DD). Must be greater
+            than or equal to today, where "today" is evaluated in the merchant
+            program's resolved timezone. The organization's timezone is used as
+            fallback.
           minLength: 10
           maxLength: 10
         amount:
@@ -316,7 +357,10 @@ components:
         request_date:
           type: string
           format: date
-          description: Advancement payment date
+          description: >-
+            Advancement payment date (YYYY-MM-DD). Must be greater than or equal
+            to today, where "today" is evaluated in the merchant program's
+            resolved timezone (org timezone is used as fallback).
           minLength: 10
           maxLength: 10
         real_time_settlement:
@@ -435,35 +479,66 @@ components:
           type: string
           format: date
           description: Start date used to search merchant transactions
+          example: '2023-08-01'
         end_date:
-          type: string
-          format: date
-          description: End date used to search merchant transactions
+          anyOf:
+            - type: string
+              format: date
+            - type: 'null'
+          description: >-
+            End date used to search merchant transactions; `null` when not
+            provided
+          example: '2023-08-31'
         request_date:
           type: string
           format: date
           description: Advancement request date
-        advanced_gross_amount:
-          type: string
+          example: '2023-08-10'
+        advancement_gross_amount:
+          anyOf:
+            - type: number
+              format: float
+            - type: 'null'
           description: >-
             Gross amount of the merchant advancement, including all applicable
-            rates
-        advanced_net_amount:
-          type: string
-          description: Advancement net amount
-        advanced_discount_amount:
-          type: string
-          description: Total amount of advancement discount
+            rates; `null` when the advancement is not yet processed
+          example: 355
+        advancement_net_amount:
+          anyOf:
+            - type: number
+              format: float
+            - type: 'null'
+          description: >-
+            Advancement net amount; `null` when the advancement is not yet
+            processed
+          example: 300
+        advancement_discount_amount:
+          anyOf:
+            - type: number
+              format: float
+            - type: 'null'
+          description: >-
+            Total amount of advancement discount; `null` when the advancement is
+            not yet processed
+          example: 50
         advancement_fee:
-          type: string
+          anyOf:
+            - type: number
+              format: float
+            - type: 'null'
           description: >-
-            Fixed advancement rate, this field is omitted when you provide a
-            value for `campaign_advancement_fee` in the request
+            Fixed advancement rate; `null` when a value is provided for
+            `campaign_advancement_fee` instead
+          example: 5
         campaign_advancement_fee:
-          type: string
+          anyOf:
+            - type: number
+              format: float
+            - type: 'null'
           description: >-
-            Fixed rate for requesting an advancement, this field is omitted when
-            the it is not provided in the request
+            Fixed rate for requesting an advancement; `null` when the
+            advancement uses the standard `advancement_fee`
+          example: null
         interest_method:
           type: string
           enum:
@@ -471,6 +546,7 @@ components:
             - COMPOUND
             - SIMPLIFIED
           description: Type of interest. For example, compound or simple
+          example: SIMPLIFIED
         status:
           type: string
           enum:
@@ -478,49 +554,86 @@ components:
             - PROCESSED
             - ERROR
           description: Advancement status
+          example: PROCESSED
         error_message:
-          type: string
+          anyOf:
+            - type: string
+            - type: 'null'
           description: >-
-            Error message. It's omitted if the status is either `PROCESSED` or
+            Error message; `null` when the status is either `PROCESSED` or
             `PENDING`
+          example: null
+        metadata:
+          anyOf:
+            - type: object
+              additionalProperties: true
+            - type: 'null'
+          description: >-
+            Free-form metadata attached to the advancement; `null` when not
+            provided
+          example: null
+        currency_code:
+          $ref: '#/components/schemas/OptionalCurrencyCode'
         details:
           type: array
           description: >-
-            Details are not sent when the request is either not processed or
-            returns an error
+            Per-merchant breakdown; empty array when the request is not
+            processed or returns an error
           items:
             type: object
             properties:
               merchant_id:
                 type: integer
                 description: Merchant ID used in the advancement request
+                example: 2
               merchant_name:
                 type: string
                 description: Merchant name
-              advanced_gross_amount:
-                type: string
+                example: Merchant Pismo 1
+              advancement_gross_amount:
+                type: number
+                format: float
                 description: Total amount of advancement
-              advanced_net_amount:
-                type: string
+                example: 355
+              advancement_net_amount:
+                type: number
+                format: float
                 description: Net amount of advancement
-              advanced_discount_amount:
-                type: string
+                example: 300
+              advancement_discount_amount:
+                type: number
+                format: float
                 description: Total discount amount
+                example: 50
               discount_rate:
-                type: string
+                anyOf:
+                  - type: number
+                    format: float
+                  - type: 'null'
                 description: >-
-                  Merchant discount rate, this field is omitted if the discount
-                  rate is a campaign rate
+                  Merchant discount rate; `null` when the discount rate is a
+                  campaign rate (in which case `campaign_discount_rate` is
+                  populated)
+                example: 0.025
               campaign_discount_rate:
-                type: string
+                anyOf:
+                  - type: number
+                    format: float
+                  - type: 'null'
                 description: >-
-                  Campaign discount rate, this is omitted when the discount rate
-                  is for the merchant
+                  Campaign discount rate; `null` when the discount rate is the
+                  standard merchant rate (in which case `discount_rate` is
+                  populated)
+                example: null
               maximum_advancement_percentage:
-                type: string
+                anyOf:
+                  - type: number
+                    format: float
+                  - type: 'null'
                 description: >-
                   Maximum allowable percentage of the net amount for the
-                  advancement
+                  advancement; `null` when not configured
+                example: 0.8
               transaction_ids:
                 type: array
                 description: >-
@@ -544,25 +657,26 @@ components:
     MerchantTransactionsResponseSuccess:
       summary: Registration Response Success Example
       value:
+        currency_code: BRL
         items:
           - scheduled_payment_date: '2023-10-29'
-            gross_value: '250'
-            discount: '8.25'
-            net_value: '241.75'
+            gross_value: 250
+            discount: 8.25
+            net_value: 241.75
             details:
               - merchant_id: 40305
                 merchant_name: Merchant Name
-                gross_value: '250'
-                discount: '8.25'
-                net_value: '241.75'
+                gross_value: 250
+                discount: 8.25
+                net_value: 241.75
                 tax:
-                  advancement_fee: '0'
-                  discount_rate: '0.05'
-                  maximum_advancement_percentage: '1'
+                  advancement_fee: 0
+                  discount_rate: 0.05
+                  maximum_advancement_percentage: 1
         totals:
-          gross_value: '650'
-          discount: '8.25'
-          net_value: '641.75'
+          gross_value: 650
+          discount: 8.25
+          net_value: 641.75
     MerchantsAdvancementsRequest:
       summary: Registration Response Success Example
       value:
@@ -618,23 +732,26 @@ components:
         begin_date: '2023-08-01'
         end_date: '2023-08-31'
         request_date: '2023-08-10'
-        advanced_gross_amount: '355'
-        advanced_net_amount: '300'
-        advanced_discount_amount: '50'
-        advancement_fee: '5'
-        campaign_advancement_fee: '10'
+        real_time_settlement: false
+        advancement_gross_amount: 355
+        advancement_net_amount: 300
+        advancement_discount_amount: 50
+        advancement_fee: 5
+        campaign_advancement_fee: null
         interest_method: SIMPLIFIED
         status: PROCESSED
-        error_message: Creditor not found for merchant 2
+        error_message: null
+        metadata: null
+        currency_code: BRL
         details:
           - merchant_id: 2
             merchant_name: Merchant Pismo 1
-            advanced_gross_amount: '355'
-            advanced_net_amount: '300'
-            advanced_discount_amount: '50'
-            discount_rate: '0.025'
-            campaign_discount_rate: '0.025'
-            maximum_advancement_percentage: '0.8'
+            advancement_gross_amount: 355
+            advancement_net_amount: 300
+            advancement_discount_amount: 50
+            discount_rate: 0.025
+            campaign_discount_rate: null
+            maximum_advancement_percentage: 0.8
             transaction_ids:
               - 12312323
               - 12312312312
@@ -720,6 +837,15 @@ paths:
               examples:
                 merchant-transactions-response-success:
                   $ref: '#/components/examples/DefaultErrorResponse'
+        '404':
+          description: Marketplace or merchant does not belong to the tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+              examples:
+                marketplace-not-found:
+                  $ref: '#/components/examples/DefaultErrorResponse'
   /v1/marketplaces/{marketplaceId}/merchants/{merchantId}/advancements/transactions:
     post:
       summary: Simulate transaction advancement
@@ -776,6 +902,15 @@ paths:
               examples:
                 transactions-advancement-response-success:
                   $ref: '#/components/examples/DefaultErrorResponse'
+        '404':
+          description: Marketplace or merchant does not belong to the tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+              examples:
+                marketplace-not-found:
+                  $ref: '#/components/examples/DefaultErrorResponse'
   /v1/marketplaces/{marketplaceId}/merchants/{merchantId}/advancements/{advancementId}:
     get:
       summary: Get advancement
@@ -809,6 +944,17 @@ paths:
                 $ref: '#/components/schemas/DefaultErrorResponse'
               examples:
                 merchant-transactions-response-success:
+                  $ref: '#/components/examples/DefaultErrorResponse'
+        '404':
+          description: >-
+            Marketplace or merchant does not belong to the tenant, or the
+            advancement was not found for the given identifiers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+              examples:
+                marketplace-not-found:
                   $ref: '#/components/examples/DefaultErrorResponse'
   /v1/marketplaces/{marketplaceId}/merchants/{merchantId}/transactions:
     get:
@@ -844,4 +990,13 @@ paths:
                 $ref: '#/components/schemas/DefaultErrorResponse'
               examples:
                 merchant-transactions-response-success:
+                  $ref: '#/components/examples/DefaultErrorResponse'
+        '404':
+          description: Marketplace or merchant does not belong to the tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+              examples:
+                marketplace-not-found:
                   $ref: '#/components/examples/DefaultErrorResponse'

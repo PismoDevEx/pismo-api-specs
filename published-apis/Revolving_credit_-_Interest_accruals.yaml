@@ -138,6 +138,24 @@ components:
           `FINANCIAL_TAX`
       maxLength: 20
       example: REFINANCING
+    AccrualType2:
+      type: string
+      description: >
+        Accrual type enables selective posting, instead of posting all types at
+        once. If not passed, the original behavior is preserved (posts all
+        accrual types).
+
+
+        The following are some of the possible values. (This is not an
+        exhaustive list.)
+          `REFINANCING`
+          `OVERDUE`
+          `WITHDRAWAL_INTEREST`
+          `BILLPAYMENT_INTEREST`
+          `OVERDRAFT_INTEREST`
+          `FINANCIAL_TAX`
+      maxLength: 20
+      example: REFINANCING
     AccrualTypeMinimumValueRequest:
       type: object
       properties:
@@ -238,6 +256,11 @@ components:
       type: string
       description: Date deleted. Format = YYYY-MM-DDThh:mm:ss.sssz.
       example: '2023-10-10T10:50:18.212Z'
+    EndDate:
+      type: string
+      format: date
+      description: End date. Format = YYYY-MM-DD.
+      example: '2025-06-22'
     HierarchyName:
       type: string
       enum:
@@ -265,15 +288,15 @@ components:
           items:
             $ref: '#/components/schemas/AccrualStatusesForPost'
         start_date:
-          type: string
-          format: date
-          description: Start date. Format = YYYY-MM-DD.
-          example: '2024-01-01'
+          $ref: '#/components/schemas/StartDate'
         end_date:
-          type: string
-          format: date
-          description: End date. Format = YYYY-MM-DD.
-          example: '2025-06-22'
+          $ref: '#/components/schemas/EndDate'
+        accrual_type:
+          $ref: '#/components/schemas/AccrualType2'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode2'
+        processing_code_fine:
+          $ref: '#/components/schemas/ProcessingCodeFine'
     InterestAccrualResponse:
       type: object
       properties:
@@ -318,6 +341,48 @@ components:
       type: string
       description: Processing code
       example: PROC123
+    ProcessingCode2:
+      type: string
+      description: >
+        Processing code. Allows overriding the processing code used for posting
+        the transaction, instead of using the one configured in
+        `accrual-type-post-config`.
+
+
+        **Notes:**
+
+        - If you pass `processing_code`, you must also pass the `accrual_type`
+        field.
+
+        - The provided processing code must exist in the transaction-flow
+        service (validated via HTTP call).
+
+        - If not passed, the processing code from the existing configuration
+        (created using the [Create accrual type post configuration
+        endpoint](ref:createaccrualtypepostconfig)) or from the default mapping
+        is used.
+      example: PROC123
+    ProcessingCodeFine:
+      type: string
+      description: >
+        Processing code for fine. Allows overriding the processing code used
+        specifically for posting FINE (penalty) when `accrual_type` is
+        `OVERDUE`.
+
+
+        **Notes:**
+
+        - Only allowed when `accrual_type` = `OVERDUE` and `processing_code` is
+        passed.
+
+        - If you pass `processing_code_fine`, you must also pass
+        `processing_code`.
+
+
+        **Special case:** if `accrual_type` = `OVERDUE` and `processing_code` is
+        passed, but `processing_code_fine` is **not**, and there are `FINE`
+        accruals for the account, the endpoint returns a 409 Conflict error.
+      example: FINE123
     ProgramId:
       type: integer
       format: int64
@@ -339,6 +404,11 @@ components:
         message:
           type: string
           example: Error message
+    StartDate:
+      type: string
+      format: date
+      description: Start date. Format = YYYY-MM-DD.
+      example: '2024-01-01'
     TotalItems:
       description: Total number of items
       type: integer
@@ -447,6 +517,31 @@ paths:
                       The header {HeaderName} is required | The property
                       {PropertyName} is required. | Can't find [BalanceAccount]
                       with params: [AccountID: XXX, OrgID: XXX].
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                processing_code_fine without processing_code:
+                  description: >-
+                    processing_code_fine provided without processing_code for
+                    OVERDUE accrual type
+                  value:
+                    code: WIAC0005
+                    message: >-
+                      The use of processing_code_fine is not allowed without
+                      processing_code
+                processing_code_fine with non-OVERDUE accrual type:
+                  description: >-
+                    processing_code_fine provided with a non-OVERDUE accrual
+                    type
+                  value:
+                    code: WIAC0005
+                    message: >-
+                      The use of processing_code_fine is only allowed for
+                      accrual_type OVERDUE
         '404':
           description: Not found
           content:
@@ -606,7 +701,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/programs/{programId}/accrual-type-post-config:
     post:
-      summary: Create an accrual type post configuration
+      summary: Create accrual type post configuration
       description: >
         Creates a new accrual type post configuration for the specified program.
         This configuration is used in posting transactions for accruals to

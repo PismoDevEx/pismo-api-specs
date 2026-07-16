@@ -24,28 +24,7 @@ tags:
       links between recurring charge plans and account events.
 components:
   parameters:
-    ActiveQuery:
-      name: active
-      in: query
-      description: Return only active plans?
-      required: false
-      style: form
-      schema:
-        default: false
-        type: boolean
-        example: true
-    AuthorizationIdQuery:
-      name: authorizationId
-      in: query
-      description: >-
-        Authorization ID. Only scheduled charges with this authorization ID are
-        returned.
-      required: false
-      style: form
-      schema:
-        type: integer
-        example: 300123
-    CorrelationIdHeader:
+    CorrelationID:
       in: header
       name: x-cid
       schema:
@@ -59,7 +38,7 @@ components:
 
         If this field isn't passed, one is automatically generated.
       example: 5bb05174-4e80-11ea-b77f-2e728ce88125
-    PageQuery:
+    Page:
       name: page
       in: query
       description: Page number
@@ -69,7 +48,7 @@ components:
         default: 1
         type: integer
         example: 3
-    AccountIdPath:
+    PathAccountID:
       name: account_id
       in: path
       description: Account ID
@@ -78,7 +57,7 @@ components:
       schema:
         type: integer
         example: 6912345
-    PerPageQuery:
+    PerPage:
       name: perPage
       in: query
       description: Maximum number of items per page
@@ -88,7 +67,7 @@ components:
         default: 100
         type: integer
         example: 10
-    RecurringChargePlanIdPath:
+    RecurringChargePlanID:
       name: recurring_charge_plan_id
       in: path
       description: ID of the recurring charge plan
@@ -97,7 +76,7 @@ components:
       schema:
         type: integer
         example: 98660282
-    RecurringChargeLinkIdPath:
+    RecurringChargeLinkID:
       name: recurring_charge_link_id
       in: path
       description: ID of the link between a plan and an account
@@ -106,18 +85,7 @@ components:
       schema:
         type: integer
         example: 98660282
-    RecurringChargeLinkIDQuery:
-      name: recurringChargeLinkId
-      in: query
-      description: >-
-        Link ID. If provided, the request only returns link-generated scheduled
-        charges.
-      required: false
-      style: form
-      schema:
-        type: integer
-        example: 100123
-    RecurringScheduledChargeIdPath:
+    RecurringScheduledChargeID:
       name: recurring_scheduled_charge_id
       in: path
       description: ID of the recurring scheduled charge
@@ -126,32 +94,6 @@ components:
       schema:
         type: integer
         example: 100123
-    StatementIdQuery:
-      name: statementId
-      in: query
-      description: >-
-        Statement ID. Only scheduled charges that appear on the given statement
-        are returned.
-      required: false
-      style: form
-      schema:
-        type: integer
-        example: 200123
-    StatusQuery:
-      name: status
-      in: query
-      description: Charge status
-      required: false
-      style: form
-      schema:
-        type: string
-        example: PROCESSED
-        enum:
-          - PENDING
-          - PROCESSING
-          - PROCESSED
-          - SETTLED
-          - CANCELLED
   schemas:
     AccountID:
       type: integer
@@ -467,6 +409,17 @@ components:
 
         If no description is configured, the description of the transaction type
         is used, and the counter is not shown.
+    SecondaryLinkDescription:
+      type: string
+      example: Link between an account and a recurring charge plan
+      minLength: 1
+      maxLength: 100
+      description: >
+        Optional secondary description of the scheduled charge. Use `counter` to
+        specify where the cycle count should be placed.
+
+        Example: "Annuity {counter}" generates "Annuity 2/12" for the second of
+        twelve annutities.
     LinkCreationResponseDto:
       description: Represents the link between a plan and an account.
       type: object
@@ -494,34 +447,6 @@ components:
         renew:
           $ref: '#/components/schemas/Renew'
     PagedRecurringChargeLink:
-      allOf:
-        - $ref: '#/components/schemas/PaginationInfo'
-        - type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/RecurringChargeLink'
-    PagedRecurringChargePlan:
-      description: Response to a request to get a recurring charge plan.
-      allOf:
-        - $ref: '#/components/schemas/PaginationInfo'
-        - type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/RecurringChargePlan'
-    PagedScheduledCharge:
-      allOf:
-        - $ref: '#/components/schemas/PaginationInfo'
-        - type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/ScheduledCharge'
-    PaginationInfo:
       type: object
       properties:
         current_page:
@@ -534,15 +459,45 @@ components:
           $ref: '#/components/schemas/TotalItems'
         is_last_page:
           $ref: '#/components/schemas/IsLastPage'
-    PlanDescription:
-      type: string
-      description: >
-        Used if the recurring charge link description is not provided. Use
-        "{counter}" to indicate where the cycle count should be placed. Example:
-        "{counter} Annuity" generates "2/12 Annuity" for the second of twelve
-        installments. If "{counter}" is not present, the counter is placed at
-        the end of the description. If no description is provided, the
-        transaction type's description is used and the counter is not shown.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurringChargeLink'
+    PagedRecurringChargePlan:
+      description: Response to a request to get a recurring charge plan.
+      type: object
+      properties:
+        current_page:
+          $ref: '#/components/schemas/CurrentPage'
+        per_page:
+          $ref: '#/components/schemas/PerPage'
+        pages:
+          $ref: '#/components/schemas/Pages'
+        total_items:
+          $ref: '#/components/schemas/TotalItems'
+        is_last_page:
+          $ref: '#/components/schemas/IsLastPage'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurringChargePlan'
+    PagedScheduledCharge:
+      type: object
+      properties:
+        current_page:
+          $ref: '#/components/schemas/CurrentPage'
+        per_page:
+          $ref: '#/components/schemas/PerPage'
+        pages:
+          $ref: '#/components/schemas/Pages'
+        total_items:
+          $ref: '#/components/schemas/TotalItems'
+        is_last_page:
+          $ref: '#/components/schemas/IsLastPage'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduledCharge'
     RecurringChargeLink:
       description: Link between a plan and an account
       type: object
@@ -584,13 +539,29 @@ components:
         installment_amount:
           $ref: '#/components/schemas/InstallmentAmount'
         description:
-          $ref: '#/components/schemas/PlanDescription'
+          type: string
+          description: >
+            Used if the recurring charge link description is not provided. Use
+            "{counter}" to indicate where the cycle count should be placed.
+            Example: "{counter} Annuity" generates "2/12 Annuity" for the second
+            of twelve installments. If "{counter}" is not present, the counter
+            is placed at the end of the description. If no description is
+            provided, the transaction type's description is used and the counter
+            is not shown.
         split_transaction:
           $ref: '#/components/schemas/SplitTransaction'
         secondary_processing_code:
           $ref: '#/components/schemas/SecondaryProcessingCode'
         secondary_description:
-          $ref: '#/components/schemas/SecondaryPlanDescription'
+          type: string
+          description: >
+            Used to create a description for the secondary transaction. Use
+            "{counter}" to indicate where the cycle count should be placed.
+            Example: "{counter} Annuity" generates "2/12 Annuity" for the second
+            of twelve installments. If "{counter}" is not present, the counter
+            is placed at the end of the description. If no description is
+            provided, the transaction type's description is used and the counter
+            is not shown.
         number_of_cycles:
           $ref: '#/components/schemas/NumberOfCycles'
         first_cycles_to_discount:
@@ -621,13 +592,32 @@ components:
         installment_amount:
           $ref: '#/components/schemas/InstallmentAmount'
         description:
-          $ref: '#/components/schemas/PlanDescription'
+          type: string
+          description: >
+            Used if the recurring charge link description is not provided. Use
+            "{counter}" to indicate where the cycle count should be placed.
+
+            Example: "{counter} Annuity" generates "2/12 Annuity" for the second
+            of twelve installments.
+
+            If "{counter}" is not present, the counter is placed at the end of
+            the description. If no description is provided, the transaction
+            type's description is used and the counter is not shown.
         split_transaction:
           $ref: '#/components/schemas/SplitTransaction'
         secondary_processing_code:
           $ref: '#/components/schemas/SecondaryProcessingCode'
         secondary_description:
-          $ref: '#/components/schemas/SecondaryPlanDescription'
+          type: string
+          description: >
+            Used to create a description for the secondary transaction. Use
+            "{counter}" to indicate where the cycle count should be placed.
+
+            Example: "{counter} Annuity" generates "2/12 Annuity" for the second
+            of twelve installments. If "{counter}" is not present, the counter
+            is be placed at the end of the description. If no description is
+            provided, the transaction type's description is used and the counter
+            is not shown.
         number_of_cycles:
           $ref: '#/components/schemas/NumberOfCycles'
         first_cycles_to_discount:
@@ -685,27 +675,6 @@ components:
           $ref: '#/components/schemas/SecondaryAuthorizationTrackingID'
         cycle:
           $ref: '#/components/schemas/ChargeCycleNumber'
-    SecondaryLinkDescription:
-      type: string
-      example: Link between an account and a recurring charge plan
-      minLength: 1
-      maxLength: 100
-      description: >
-        Optional secondary description of the scheduled charge. Use `counter` to
-        specify where the cycle count should be placed.
-
-        Example: "Annuity {counter}" generates "Annuity 2/12" for the second of
-        twelve annutities.
-    SecondaryPlanDescription:
-      type: string
-      description: >
-        Used to create a description for the secondary transaction. Use
-        "{counter}" to indicate where the cycle count should be placed.
-
-        Example: "{counter} Annuity" generates "2/12 Annuity" for the second of
-        twelve installments. If "{counter}" is not present, the counter is
-        placed at the end of the description. If no description is provided, the
-        transaction type's description is used and the counter is not shown.
   securitySchemes:
     BearerAuth:
       type: http
@@ -761,7 +730,7 @@ paths:
         Unauthorized** message.
       operationId: create-recurring-charge-plan
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - $ref: '#/components/parameters/CorrelationID'
       requestBody:
         content:
           application/json:
@@ -794,10 +763,18 @@ paths:
         in a **401 Unauthorized** message.
       operationId: list-recurring-charge-plans
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/PerPageQuery'
-        - $ref: '#/components/parameters/ActiveQuery'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: active
+          in: query
+          description: If `true`, the request returns only active plans.
+          required: false
+          style: form
+          schema:
+            default: false
+            type: boolean
+            example: true
       responses:
         '200':
           description: >-
@@ -826,8 +803,8 @@ paths:
         in a **401 Unauthorized** message.
       operationId: get-recurring-charge-plan
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/RecurringChargePlanIdPath'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/RecurringChargePlanID'
       responses:
         '200':
           description: >-
@@ -861,8 +838,8 @@ paths:
         in a **401 Unauthorized** message.
       operationId: disable-recurring-charge-plan
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/RecurringChargePlanIdPath'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/RecurringChargePlanID'
       responses:
         '200':
           description: >-
@@ -907,9 +884,9 @@ paths:
         in a **401 Unauthorized** message.
       operationId: create-recurring-charge-link
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/RecurringChargePlanIdPath'
-        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/RecurringChargePlanID'
+        - $ref: '#/components/parameters/PathAccountID'
       requestBody:
         content:
           application/json:
@@ -958,17 +935,16 @@ paths:
         in a **401 Unauthorized** message.
       operationId: get-recurring-charge-link
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/RecurringChargePlanIdPath'
-        - $ref: '#/components/parameters/AccountIdPath'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/PerPageQuery'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/RecurringChargePlanID'
+        - $ref: '#/components/parameters/PathAccountID'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
       responses:
         '200':
           description: >-
             OK - Indicates that the server accepted the request and found the
-            link. If no links are found, an empty array is returned and
-            `total_items` is 0.
+            link.
           content:
             application/json:
               schema:
@@ -997,8 +973,8 @@ paths:
         in a **401 Unauthorized** message.
       operationId: delete-recurring-charge-link
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/RecurringChargeLinkIdPath'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/RecurringChargeLinkID'
       responses:
         '200':
           description: >-
@@ -1028,10 +1004,10 @@ paths:
         in a **401 Unauthorized** message.
       operationId: list-recurring-charge-links
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/RecurringChargePlanIdPath'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/PerPageQuery'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/RecurringChargePlanID'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
       responses:
         '200':
           description: >-
@@ -1060,10 +1036,10 @@ paths:
         in a **401 Unauthorized** message.
       operationId: list-account-links
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/AccountIdPath'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/PerPageQuery'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/PathAccountID'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
       responses:
         '200':
           description: >-
@@ -1093,14 +1069,56 @@ paths:
         in a **401 Unauthorized** message.
       operationId: list-scheduled-charges
       parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-        - $ref: '#/components/parameters/AccountIdPath'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/PerPageQuery'
-        - $ref: '#/components/parameters/RecurringChargeLinkIDQuery'
-        - $ref: '#/components/parameters/StatementIdQuery'
-        - $ref: '#/components/parameters/StatusQuery'
-        - $ref: '#/components/parameters/AuthorizationIdQuery'
+        - $ref: '#/components/parameters/CorrelationID'
+        - $ref: '#/components/parameters/PathAccountID'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: recurringChargeLinkId
+          in: query
+          description: >-
+            Link ID. Only scheduled charges generated by the given link are
+            returned.
+          required: false
+          style: form
+          schema:
+            type: integer
+            example: 100123
+        - name: statementId
+          in: query
+          description: >-
+            Statement ID. Only scheduled charges that appear on the given
+            statement are returned.
+          required: false
+          style: form
+          schema:
+            type: integer
+            example: 200123
+        - name: status
+          in: query
+          description: >-
+            Charge status. The possible values are `PENDING`,`PROCESSING`,
+            `PROCESSED`, `SETTLED`, and `CANCELLED`.
+          required: false
+          style: form
+          schema:
+            type: string
+            example: PROCESSED
+            enum:
+              - PENDING
+              - PROCESSING
+              - PROCESSED
+              - SETTLED
+              - CANCELLED
+        - name: authorizationId
+          in: query
+          description: >-
+            Authorization ID. Only scheduled charges with this authorization ID
+            are returned.
+          required: false
+          style: form
+          schema:
+            type: integer
+            example: 300123
       responses:
         '200':
           description: >-
@@ -1129,8 +1147,8 @@ paths:
         in a **401 Unauthorized** message.
       operationId: get-scheduled-charge
       parameters:
-        - $ref: '#/components/parameters/AccountIdPath'
-        - $ref: '#/components/parameters/RecurringScheduledChargeIdPath'
+        - $ref: '#/components/parameters/PathAccountID'
+        - $ref: '#/components/parameters/RecurringScheduledChargeID'
       responses:
         '200':
           description: >-
@@ -1153,6 +1171,8 @@ paths:
       description: >
         Updates a scheduled charge by account ID and recurring scheduled charge
         ID. It's only possible to update charges with current status `PENDING`.
+        An update to a charge that is scheduled for a particular cycle must be
+        done before that cycle's closing date.
 
         This endpoint generates a [Recurring scheduled charge
         updated](https://developers.pismo.io/events/docs/balance-recurring-scheduled-charge-updated-1)
@@ -1164,8 +1184,8 @@ paths:
         in a **401 Unauthorized** message.
       operationId: update-scheduled-charge
       parameters:
-        - $ref: '#/components/parameters/AccountIdPath'
-        - $ref: '#/components/parameters/RecurringScheduledChargeIdPath'
+        - $ref: '#/components/parameters/PathAccountID'
+        - $ref: '#/components/parameters/RecurringScheduledChargeID'
       requestBody:
         content:
           application/json:

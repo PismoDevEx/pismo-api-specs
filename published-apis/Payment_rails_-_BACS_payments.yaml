@@ -1,0 +1,1669 @@
+openapi: 3.1.0
+info:
+  title: Payment rails - BACS payments
+  description: BACS payments system API
+  contact:
+    name: API Support
+    url: https://developers.pismo.io/support/
+  license:
+    name: Copyright Pismo
+  version: '1.0'
+servers:
+  - url: https://sandbox.pismolabs.io/bacs
+    description: Sandbox API server for testing.
+tags:
+  - name: BACS
+    description: Banking Automated Clearing System (BACS) endpoints
+components:
+  parameters:
+    authHeader:
+      name: Authorization
+      in: header
+      schema:
+        type: string
+      description: >
+        Account token - token encoded with a Pismo account ID. Tokens can expire
+        quickly, which can result in a <b>401 Unauthorized</b> message
+      required: true
+    idPath:
+      name: id
+      in: path
+      description: BACS transaction ID.
+      required: true
+      schema:
+        type: string
+        maxLength: 31
+    idempotencyKeyHeader:
+      name: Idempotency-key
+      in: header
+      schema:
+        type: string
+      description: >
+        A UUID (without hyphens) to ensure the operation remains idempotent,
+        allowing for operation repetition without causing unintended effects or
+        duplication. Identifies the transaction on future events.
+      required: true
+    tenantHeader:
+      name: x-tenant
+      in: header
+      schema:
+        type: string
+      description: |
+        Organization identifier.
+      required: true
+    reqTrackingIdHeader:
+      name: x-cid
+      in: header
+      schema:
+        type: string
+      description: >
+        Request tracking identifier. If not provided, a random UUID is
+        generated.
+      required: false
+  schemas:
+    amount:
+      type: number
+      description: Transaction amount.
+      example: 600
+    bacs_cancel.BacsCancelResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        status:
+          $ref: '#/components/schemas/bacs_cancel.status'
+    bacs_cancel.status:
+      type: string
+      enum:
+        - CANCELLED
+      description: >
+        - `CANCELLED` - Something went wrong and the transaction was cancelled.
+        Refer to `reason` for details,
+      example: CANCELLED
+    bacs_get.BacsGetResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        status:
+          $ref: '#/components/schemas/status'
+        amount:
+          $ref: '#/components/schemas/amount'
+    bacs_out.CreditorAccount:
+      type: object
+      description: Creditor's account information
+      pattern: ^[a-zA-Z0-9\/\-?:().,'+\s#=!"%&*<>;{@\r\n]*$
+      required:
+        - identification
+        - name
+        - scheme_name
+      properties:
+        name:
+          maxLength: 40
+          type: string
+          description: Creditor name.
+          example: Len Lease
+        scheme_name:
+          $ref: '#/components/schemas/schemeName'
+        identification:
+          $ref: '#/components/schemas/schemeID'
+    bacs_out.BacsOutRequest:
+      type: object
+      required:
+        - reference
+        - creditor_account
+        - currency
+      properties:
+        reference:
+          $ref: '#/components/schemas/bacs_out.RemittanceInformation'
+        creditor_account:
+          $ref: '#/components/schemas/bacs_out.CreditorAccount'
+        currency:
+          $ref: '#/components/schemas/bacs_out.Currency'
+    bacs_out.BacsOutResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        status:
+          $ref: '#/components/schemas/status'
+    bacs_out.Currency:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        code:
+          type: string
+          enum:
+            - GBP
+          description: Transaction currency (ISO 4217 3-letter code).
+          example: GBP
+    bacs_out.RemittanceInformation:
+      type: string
+      maxLength: 140
+      pattern: ^[a-zA-Z0-9\/\-?:().,'+\s#=!"%&*<>;{@\r\n]*$
+      description: Remittance reference.
+      example: Weekly money for Mom
+    bacs_release.BacsReleaseResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        status:
+          $ref: '#/components/schemas/bacs_release.status'
+        amount:
+          $ref: '#/components/schemas/amount'
+    bacs_release.status:
+      type: string
+      enum:
+        - SETTLED
+      description: |
+        - `SETTLED`—Transaction completed, processed, and settled.
+      example: SETTLED
+    bacs_return.ClientReturnRequest:
+      type: object
+      required:
+        - return_reason
+        - amount
+      properties:
+        return_reason:
+          type: string
+          enum:
+            - account_closed
+            - account_currency_mismatch
+            - other
+            - cancelled_by_payer
+          description: |
+            The reason for the return.
+              - `account_closed`—The beneficiary account is no longer active.
+              - `account_currency_mismatch`—The payment currency does not match the account currency.
+              - `other`—A reason that the other specific codes do not cover.
+              - `cancelled_by_payer`—The payer requests cancellation of the payment.
+          example: account_closed
+        amount:
+          type: number
+          format: float
+          description: >-
+            Amount to return. Must match the original transaction amount, since
+            the Pismo platform does not support partial returns.
+          example: 100
+    bacs_return.ClientReturnResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - PROCESSING
+            - SETTLED
+            - CANCELLED
+          description: >
+            - `PROCESSING`—The system processes the return and awaits
+            settlement.
+
+            - `SETTLED`—The return settles successfully.
+
+            - `CANCELLED`—The system cancels the return due to an error.
+          example: PROCESSING
+        return_transaction_id:
+          type: string
+          description: The ID of the new return transaction.
+          example: 019e92ec-3362-7c54-9d17-89f5542a06e4
+        original_transaction_id:
+          type: string
+          description: The ID of the original inbound transaction that this return targets.
+          example: 08ec4cf7-2d74-5453-80e0-e940ac8fc219
+        return_origin:
+          type: string
+          enum:
+            - CLIENT
+            - SYSTEM
+          description: |
+            Indicates whether the client or the system initiates the return.
+              - `CLIENT`—The client initiates the return via this endpoint.
+              - `SYSTEM`—The system initiates the return automatically.
+          example: CLIENT
+    bacs_reversal.BacsReversalResponse:
+      type: object
+      properties:
+        payment_id:
+          $ref: '#/components/schemas/id'
+        outbound_reversal_id:
+          $ref: '#/components/schemas/id'
+        status:
+          $ref: '#/components/schemas/bacs_reversal.status'
+    bacs_reversal.status:
+      type: string
+      enum:
+        - PROCESSING
+      description: |
+        - `PROCESSING` - Reversal has been submitted and is awaiting settlement
+      example: PROCESSING
+    customer.DetailMessage:
+      type: object
+      properties:
+        external:
+          type: array
+          items:
+            $ref: '#/components/schemas/customer.ExternalMessage'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/customer.ParameterMessage'
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/customer.PayloadMessage'
+    customer.Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error's code.
+          example: EPT0001
+        details:
+          $ref: '#/components/schemas/customer.DetailMessage'
+        message:
+          type: string
+          description: Error's message.
+          example: User not found
+    customer.ExternalMessage:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Code
+          example: PBE315
+        message:
+          type: string
+          description: Message
+          example: Generic error
+    customer.ParameterMessage:
+      type: object
+      required:
+        - field
+        - message
+      properties:
+        field:
+          type: string
+          description: Field
+          example: Query parameter
+        message:
+          type: string
+          description: Message
+          example: Generic error
+    customer.PayloadMessage:
+      type: object
+      required:
+        - field
+        - message
+      properties:
+        field:
+          type: string
+          description: Field
+          example: Entity.field
+        message:
+          type: string
+          description: Message
+          example: Generic error
+    id:
+      maxLength: 32
+      type: string
+      description: >
+        Client-generated transaction identifier. This is the idempotency key
+        UUID passed in the [Send direct credit outbound
+        payment](ref:post-create-bacs) endpoint.
+      example: 1374f841568e4ff4b363b023c170ecdr
+    schemeID:
+      maxLength: 22
+      type: string
+      description: >
+        Creditor's scheme value. A scheme identifies an account - UK-SCAN, IBAN,
+        or BBAN. Refer to `schemeName` for details.
+
+          * `uk-scan` - Sort code and account number (SCAN) scheme. Format: `sortcode + accountnumber`
+          * `bban` - Basic Bank Account Number scheme. Format: `bankidentifier + branchidentifier + accountnumber`
+          * `iban` - International Bank Account Number scheme. Format: `country code + check digits + bban`
+
+        For example, for an IBAN account `GB93UBKL12345612345678`, the
+        identification would be:
+
+          `iban`: `GB93UBKL12345612345678`
+          `bban`: `UBKL12345612345678`
+          `uk-scan`: `12345612345678`
+      example: AA00AAA000000000000000
+    schemeName:
+      type: string
+      enum:
+        - uk-scan
+        - bban
+        - iban
+      description: |
+        Bank scheme that identifies the account.
+          * `uk-scan` - Sort code and account number (SCAN) scheme
+          * `bban` - Basic Bank Account Number scheme
+          * `iban` - International Bank Account Number scheme
+      example: iban
+    status:
+      type: string
+      enum:
+        - CREATED
+        - PROCESSING
+        - SETTLED
+        - CANCELLED
+        - HOLD
+      description: >
+        - `CREATED` - Payment has been created and is pending processing
+
+        - `PROCESSING` - P2P balance was impacted and waiting for provider
+        confirmation. For cashin, the transaction means the money will be
+        credited on the next Working Day
+
+        - `SETTLED` - Transaction completed processing and is settled
+
+        - `CANCELLED` - Something went wrong and the transaction is cancelled.
+        Refer to `reason` for more details
+
+        - `HOLD` - The payment is on hold, pending further review
+      example: PROCESSING
+paths:
+  /v1/payments/bacs/directcredit/out:
+    post:
+      summary: Send BACS direct credit outbound payment [beta]
+      description: >
+        Send a <a href="https://www.moderntreasury.com/learn/what-is-bacs"
+        target="_blank">Banking Automated Clearing System</a> (BACS) direct
+        credit outbound payment.
+
+
+        BACS is a UK service that facilitates electronic money transfers between
+        banks within a 3-day settlement cycle&mdash; Day 1 (submission), Day 2
+        (processing), and Day 3 (clearing/credit).
+
+
+        There are two main concepts in BACS:
+
+
+        1. **Direct credit** - A company can use this format to pay their
+        employees.
+
+
+        2. **Direct debit** - When an electricity company charges their
+        costumers recurrently it will have a subscription (called *mandates*).
+        When a mandate is generated monthly, the originator creates a charge.
+        When this charge comes to the client here at Pismo. Pismo then debits
+        the customer account.
+
+
+        Both of these methods generate a cashin, cashout, and return.
+
+
+        For more information, refer to the [BACS
+        guide](https://developers.pismo.io/pismo-docs/docs/banking-automated-clearing-system).
+
+
+        **Notes:**
+
+          * Participating accounts must be [registered as a UK account](https://developers.pismo.io/pismo-docs/reference/post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-uk-scan)
+
+          * In case of failure, the transaction is updated with `status` = `CANCELLED` and the `status_reason` field details why it failed.
+
+          * If the counterparty bank rejects the transaction, the transaction is still considered `SETTLED` and, when the provider webhook return is processed, a new [BACS direct credit outbound return payment processed](https://developers.pismo.io/events/docs/bacs-direct-credit-out-return-status-change-1) event is generated and
+        the amount is credited back to the debtor's account.
+
+          * This endpoint generates a [BACS direct credit outbound payment processed](https://developers.pismo.io/events/docs/bacs-direct-credit-out-status-change-1) event.
+      operationId: post-create-bacs
+      tags:
+        - BACS
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/idempotencyKeyHeader'
+      requestBody:
+        description: Send payment request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bacs_out.BacsOutRequest'
+        required: true
+      responses:
+        '201':
+          description: Response Body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bacs_out.BacsOutResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0004:
+                  summary: Validation Error
+                  value:
+                    code: EBACS0004
+                    message: Validation error
+                EBACS0016:
+                  summary: Unmarshal Error
+                  value:
+                    code: EBACS0016
+                    message: Unmarshal error
+                EBACS0019:
+                  summary: Accounts API Invalid Request Error
+                  value:
+                    code: EBACS0019
+                    message: Accounts - API returned 4xx error
+                EBACS0025:
+                  summary: P2P API Invalid Request Error
+                  value:
+                    code: EBACS0025
+                    message: P2p - API returned 4xx error
+                EBACS0029:
+                  summary: Ledger API Invalid Request Error
+                  value:
+                    code: EBACS0029
+                    message: Ledger - API returned 4xx error
+                EBACS0037:
+                  summary: Invalid Creditor Sort Code Account Number
+                  value:
+                    code: EBACS0037
+                    message: Invalid creditor sort code/account number
+                EBACS0038:
+                  summary: Invalid Creditor IBAN
+                  value:
+                    code: EBACS0038
+                    message: Invalid creditor IBAN
+                EBACS0039:
+                  summary: Invalid Creditor BBAN
+                  value:
+                    code: EBACS0039
+                    message: Invalid creditor BBAN
+                EBACS0046:
+                  summary: IntlBankAccounts API Invalid Request Error
+                  value:
+                    code: EBACS0046
+                    message: IntlBankAccounts - API returned 4xx error
+                EBACS0047:
+                  summary: PSP Gateway API Bad Request
+                  value:
+                    code: EBACS0047
+                    message: >-
+                      Invalid BACS Request. Check error details for more
+                      information.
+                EBACS0073:
+                  summary: Amount Greater Than Balance
+                  value:
+                    code: EBACS0073
+                    message: The amount passed is greater than the current balance
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EBACS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EBACS0021:
+                  summary: Account Blocked Or Cancelled
+                  value:
+                    code: EBACS0021
+                    message: Account blocked or cancelled
+                EBACS0033:
+                  summary: Invalid Account Id
+                  value:
+                    code: EBACS0033
+                    message: 'Invalid account id header: ''x-account-id'''
+                EBACS0034:
+                  summary: Invalid Idempotency Key
+                  value:
+                    code: EBACS0034
+                    message: 'Missing required header: ''x-idempotency-key'''
+                EBACS0035:
+                  summary: Account Has No Active Addresses
+                  value:
+                    code: EBACS0035
+                    message: Account has no active addresses
+                EBACS0040:
+                  summary: BACS Not Enabled
+                  value:
+                    code: EBACS0040
+                    message: BACS is not enabled for the creditor sort code
+                EBACS0041:
+                  summary: Modulus Check Error
+                  value:
+                    code: EBACS0041
+                    message: Failed to execute account number modulus check
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0010:
+                  summary: Sort Code Not Found
+                  value:
+                    code: EBACS0010
+                    message: Sort Code not found
+                EBACS0018:
+                  summary: Accounts API Not Found Error
+                  value:
+                    code: EBACS0018
+                    message: Accounts - Not found
+                EBACS0028:
+                  summary: Ledger API Not Found Error
+                  value:
+                    code: EBACS0028
+                    message: Ledger - Not found
+                EBACS0031:
+                  summary: IntlBankAccounts API Not Found Error
+                  value:
+                    code: EBACS0031
+                    message: IntlBankAccounts - Not found
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0022:
+                  summary: Transaction Already Exists
+                  value:
+                    code: EBACS0022
+                    message: >-
+                      A transaction with the specified idempotency key or id
+                      already exists
+                EBACS0036:
+                  summary: Mismatching Currency Error
+                  value:
+                    code: EBACS0036
+                    message: >-
+                      The provided currency does not match with the account's
+                      configured currency
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0015:
+                  summary: PSP Gateway API Rate Limit
+                  value:
+                    code: EBACS0015
+                    message: PSPGateway API Rate Limit exceeded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0006:
+                  summary: HTTP Error
+                  value:
+                    code: EBACS0006
+                    message: HTTP request error
+                EBACS0009:
+                  summary: IntlBankAccounts API Timeout
+                  value:
+                    code: EBACS0009
+                    message: IntlBankAccounts API timeout error
+                EBACS0011:
+                  summary: IntlBankAccounts API Internal Error
+                  value:
+                    code: EBACS0011
+                    message: IntlBankAccounts API Internal Server error
+                EBACS0012:
+                  summary: PSP Gateway API Timeout
+                  value:
+                    code: EBACS0012
+                    message: PSPGateway API timeout error
+                EBACS0017:
+                  summary: Accounts API Timeout
+                  value:
+                    code: EBACS0017
+                    message: Accounts API timeout error
+                EBACS0020:
+                  summary: Accounts API Server Error
+                  value:
+                    code: EBACS0020
+                    message: Accounts - API returned 5xx error
+                EBACS0023:
+                  summary: Transaction Database Error
+                  value:
+                    code: EBACS0023
+                    message: Transaction database error
+                EBACS0024:
+                  summary: P2P API Timeout
+                  value:
+                    code: EBACS0024
+                    message: P2p - API timeout error
+                EBACS0026:
+                  summary: P2P API Server Error
+                  value:
+                    code: EBACS0026
+                    message: P2p - API returned 5xx error
+                EBACS0027:
+                  summary: Ledger API Timeout
+                  value:
+                    code: EBACS0027
+                    message: Ledger API timeout error
+                EBACS0030:
+                  summary: Ledger API Server Error
+                  value:
+                    code: EBACS0030
+                    message: Ledger - API returned 5xx error
+                EBACS0032:
+                  summary: IntlBankAccounts API Server Error
+                  value:
+                    code: EBACS0032
+                    message: IntlBankAccounts - API returned 5xx error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0014:
+                  summary: PSP Gateway API Bad Gateway
+                  value:
+                    code: EBACS0014
+                    message: PSPGateway API Bad Gateway
+  /v1/payments/bacs/directcredit/{id}:
+    get:
+      summary: Get BACS transaction [beta]
+      description: |
+        Get a BACS transaction given its identifier in the path.
+      operationId: get-bacs-in-transaction
+      tags:
+        - BACS
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/tenantHeader'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
+        - $ref: '#/components/parameters/idPath'
+      responses:
+        '200':
+          description: Get BACS transaction response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bacs_get.BacsGetResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0004:
+                  summary: Validation Error
+                  value:
+                    code: EBACS0004
+                    message: Validation error
+                EBACS0016:
+                  summary: Unmarshal Error
+                  value:
+                    code: EBACS0016
+                    message: Unmarshal error
+                EBACS0019:
+                  summary: Accounts API Invalid Request Error
+                  value:
+                    code: EBACS0019
+                    message: Accounts - API returned 4xx error
+                EBACS0025:
+                  summary: P2P API Invalid Request Error
+                  value:
+                    code: EBACS0025
+                    message: P2p - API returned 4xx error
+                EBACS0029:
+                  summary: Ledger API Invalid Request Error
+                  value:
+                    code: EBACS0029
+                    message: Ledger - API returned 4xx error
+                EBACS0037:
+                  summary: Invalid Creditor Sort Code Account Number
+                  value:
+                    code: EBACS0037
+                    message: Invalid creditor sort code/account number
+                EBACS0038:
+                  summary: Invalid Creditor IBAN
+                  value:
+                    code: EBACS0038
+                    message: Invalid creditor IBAN
+                EBACS0039:
+                  summary: Invalid Creditor BBAN
+                  value:
+                    code: EBACS0039
+                    message: Invalid creditor BBAN
+                EBACS0046:
+                  summary: IntlBankAccounts API Invalid Request Error
+                  value:
+                    code: EBACS0046
+                    message: IntlBankAccounts - API returned 4xx error
+                EBACS0047:
+                  summary: PSP Gateway API Bad Request
+                  value:
+                    code: EBACS0047
+                    message: >-
+                      Invalid BACS Request. Check error details for more
+                      information.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EBACS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EBACS0021:
+                  summary: Account Blocked Or Cancelled
+                  value:
+                    code: EBACS0021
+                    message: Account blocked or cancelled
+                EBACS0033:
+                  summary: Invalid Account Id
+                  value:
+                    code: EBACS0033
+                    message: 'Invalid account id header: ''x-account-id'''
+                EBACS0034:
+                  summary: Invalid Idempotency Key
+                  value:
+                    code: EBACS0034
+                    message: 'Missing required header: ''x-idempotency-key'''
+                EBACS0035:
+                  summary: Account Has No Active Addresses
+                  value:
+                    code: EBACS0035
+                    message: Account has no active addresses
+                EBACS0040:
+                  summary: BACS Not Enabled
+                  value:
+                    code: EBACS0040
+                    message: BACS is not enabled for the creditor sort code
+                EBACS0041:
+                  summary: Modulus Check Error
+                  value:
+                    code: EBACS0041
+                    message: Failed to execute account number modulus check
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0010:
+                  summary: Sort Code Not Found
+                  value:
+                    code: EBACS0010
+                    message: Sort Code not found
+                EBACS0018:
+                  summary: Accounts API Not Found Error
+                  value:
+                    code: EBACS0018
+                    message: Accounts - Not found
+                EBACS0028:
+                  summary: Ledger API Not Found Error
+                  value:
+                    code: EBACS0028
+                    message: Ledger - Not found
+                EBACS0031:
+                  summary: IntlBankAccounts API Not Found Error
+                  value:
+                    code: EBACS0031
+                    message: IntlBankAccounts - Not found
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0022:
+                  summary: Transaction Already Exists
+                  value:
+                    code: EBACS0022
+                    message: >-
+                      A transaction with the specified idempotency key and id
+                      already exists
+                EBACS0036:
+                  summary: Mismatching Currency Error
+                  value:
+                    code: EBACS0036
+                    message: >-
+                      The provided currency does not match with the account's
+                      configured currency
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0015:
+                  summary: PSP Gateway API Rate Limit
+                  value:
+                    code: EBACS0015
+                    message: PSPGateway API Rate Limit exceeded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0006:
+                  summary: HTTP Error
+                  value:
+                    code: EBACS0006
+                    message: HTTP request error
+                EBACS0009:
+                  summary: IntlBankAccounts API Timeout
+                  value:
+                    code: EBACS0009
+                    message: IntlBankAccounts API timeout error
+                EBACS0011:
+                  summary: IntlBankAccounts API Internal Error
+                  value:
+                    code: EBACS0011
+                    message: IntlBankAccounts API Internal Server error
+                EBACS0012:
+                  summary: PSP Gateway API Timeout
+                  value:
+                    code: EBACS0012
+                    message: PSPGateway API timeout error
+                EBACS0017:
+                  summary: Accounts API Timeout
+                  value:
+                    code: EBACS0017
+                    message: Accounts API timeout error
+                EBACS0020:
+                  summary: Accounts API Server Error
+                  value:
+                    code: EBACS0020
+                    message: Accounts - API returned 5xx error
+                EBACS0023:
+                  summary: Transaction Database Error
+                  value:
+                    code: EBACS0023
+                    message: Transaction database error
+                EBACS0024:
+                  summary: P2P API Timeout
+                  value:
+                    code: EBACS0024
+                    message: P2p - API timeout error
+                EBACS0026:
+                  summary: P2P API Server Error
+                  value:
+                    code: EBACS0026
+                    message: P2p - API returned 5xx error
+                EBACS0027:
+                  summary: Ledger API Timeout
+                  value:
+                    code: EBACS0027
+                    message: Ledger API timeout error
+                EBACS0030:
+                  summary: Ledger API Server Error
+                  value:
+                    code: EBACS0030
+                    message: Ledger - API returned 5xx error
+                EBACS0032:
+                  summary: IntlBankAccounts API Server Error
+                  value:
+                    code: EBACS0032
+                    message: IntlBankAccounts - API returned 5xx error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0014:
+                  summary: PSP Gateway API Bad Gateway
+                  value:
+                    code: EBACS0014
+                    message: PSPGateway API Bad Gateway
+  /v1/payments/bacs/directcredit/cancel/{id}:
+    post:
+      summary: Cancel BACS inbound transaction [beta]
+      description: >
+        Cancel a suspended transaction, which was kept on hold based on client's
+        anti-fraud (AF) provider analysis, and return the transaction.
+
+
+        **Suspense transaction flow**
+
+
+        You can use the suspense transaction flow to manage incoming BACS
+        transactions that have been temporarily placed on hold due to suspected
+        fraud pending a decision from the client's anti-fraud (AF) provider.
+
+
+        **Supported scenarios:**
+
+          * An incoming (cash-in) BACS transaction is received.
+
+          * Client' s anti-fraud provider returns "hold" instead of approve or reject.
+
+          * Pismo places the transaction amount into additional fund (unavailable balance) so the beneficiary cannot use the funds until a final decision is made.
+
+          * The client later calls Pismo's [release](ref:post-release-bacs-1) or cancel endpoints to finalize the transaction.
+
+        This endpoint generates a [BACS direct credit inbound payment
+        processed](https://developers.pismo.io/events/docs/bacs-direct-credit-in-status-change-1)
+        event with `status` = `CANCELLED`.
+      operationId: post-cancel-bacs
+      tags:
+        - BACS
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/tenantHeader'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
+        - $ref: '#/components/parameters/idPath'
+      responses:
+        '200':
+          description: Response Body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bacs_cancel.BacsCancelResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0004:
+                  summary: Validation Error
+                  value:
+                    code: EBACS0004
+                    message: Validation error
+                EBACS0016:
+                  summary: Unmarshal Error
+                  value:
+                    code: EBACS0016
+                    message: Unmarshal error
+                EBACS0019:
+                  summary: Accounts API Invalid Request Error
+                  value:
+                    code: EBACS0019
+                    message: Accounts - API returned 4xx error
+                EBACS0025:
+                  summary: P2P API Invalid Request Error
+                  value:
+                    code: EBACS0025
+                    message: P2p - API returned 4xx error
+                EBACS0029:
+                  summary: Ledger API Invalid Request Error
+                  value:
+                    code: EBACS0029
+                    message: Ledger - API returned 4xx error
+                EBACS0037:
+                  summary: Invalid Creditor Sort Code Account Number
+                  value:
+                    code: EBACS0037
+                    message: Invalid creditor sort code/account number
+                EBACS0038:
+                  summary: Invalid Creditor IBAN
+                  value:
+                    code: EBACS0038
+                    message: Invalid creditor IBAN
+                EBACS0039:
+                  summary: Invalid Creditor BBAN
+                  value:
+                    code: EBACS0039
+                    message: Invalid creditor BBAN
+                EBACS0046:
+                  summary: IntlBankAccounts API Invalid Request Error
+                  value:
+                    code: EBACS0046
+                    message: IntlBankAccounts - API returned 4xx error
+                EBACS0047:
+                  summary: PSP Gateway API Bad Request
+                  value:
+                    code: EBACS0047
+                    message: >-
+                      Invalid BACS Request. Check error details for more
+                      information.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EBACS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EBACS0021:
+                  summary: Account Blocked Or Cancelled
+                  value:
+                    code: EBACS0021
+                    message: Account blocked or cancelled
+                EBACS0033:
+                  summary: Invalid Account Id
+                  value:
+                    code: EBACS0033
+                    message: 'Invalid account id header: ''x-account-id'''
+                EBACS0034:
+                  summary: Invalid Idempotency Key
+                  value:
+                    code: EBACS0034
+                    message: 'Missing required header: ''x-idempotency-key'''
+                EBACS0035:
+                  summary: Account Has No Active Addresses
+                  value:
+                    code: EBACS0035
+                    message: Account has no active addresses
+                EBACS0040:
+                  summary: BACS Not Enabled
+                  value:
+                    code: EBACS0040
+                    message: BACS is not enabled for the creditor sort code
+                EBACS0041:
+                  summary: Modulus Check Error
+                  value:
+                    code: EBACS0041
+                    message: Failed to execute account number modulus check
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0010:
+                  summary: Sort Code Not Found
+                  value:
+                    code: EBACS0010
+                    message: Sort Code not found
+                EBACS0018:
+                  summary: Accounts API Not Found Error
+                  value:
+                    code: EBACS0018
+                    message: Accounts - Not found
+                EBACS0028:
+                  summary: Ledger API Not Found Error
+                  value:
+                    code: EBACS0028
+                    message: Ledger - Not found
+                EBACS0031:
+                  summary: IntlBankAccounts API Not Found Error
+                  value:
+                    code: EBACS0031
+                    message: IntlBankAccounts - Not found
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0022:
+                  summary: Transaction Already Exists
+                  value:
+                    code: EBACS0022
+                    message: >-
+                      A transaction with the specified idempotency key and id
+                      already exists
+                EBACS0036:
+                  summary: Mismatching Currency Error
+                  value:
+                    code: EBACS0036
+                    message: >-
+                      The provided currency does not match with the account's
+                      configured currency
+                EBACS0096:
+                  summary: Cancel Not Allowed - Invalid Status
+                  value:
+                    code: EBACS0096
+                    message: 'Cancel not allowed: transaction is already finalised'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0015:
+                  summary: PSP Gateway API Rate Limit
+                  value:
+                    code: EBACS0015
+                    message: PSPGateway API Rate Limit exceeded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0006:
+                  summary: HTTP Error
+                  value:
+                    code: EBACS0006
+                    message: HTTP request error
+                EBACS0009:
+                  summary: IntlBankAccounts API Timeout
+                  value:
+                    code: EBACS0009
+                    message: IntlBankAccounts API timeout error
+                EBACS0011:
+                  summary: IntlBankAccounts API Internal Error
+                  value:
+                    code: EBACS0011
+                    message: IntlBankAccounts API Internal Server error
+                EBACS0012:
+                  summary: PSP Gateway API Timeout
+                  value:
+                    code: EBACS0012
+                    message: PSPGateway API timeout error
+                EBACS0017:
+                  summary: Accounts API Timeout
+                  value:
+                    code: EBACS0017
+                    message: Accounts API timeout error
+                EBACS0020:
+                  summary: Accounts API Server Error
+                  value:
+                    code: EBACS0020
+                    message: Accounts - API returned 5xx error
+                EBACS0023:
+                  summary: Transaction Database Error
+                  value:
+                    code: EBACS0023
+                    message: Transaction database error
+                EBACS0024:
+                  summary: P2P API Timeout
+                  value:
+                    code: EBACS0024
+                    message: P2p - API timeout error
+                EBACS0026:
+                  summary: P2P API Server Error
+                  value:
+                    code: EBACS0026
+                    message: P2p - API returned 5xx error
+                EBACS0027:
+                  summary: Ledger API Timeout
+                  value:
+                    code: EBACS0027
+                    message: Ledger API timeout error
+                EBACS0030:
+                  summary: Ledger API Server Error
+                  value:
+                    code: EBACS0030
+                    message: Ledger - API returned 5xx error
+                EBACS0032:
+                  summary: IntlBankAccounts API Server Error
+                  value:
+                    code: EBACS0032
+                    message: IntlBankAccounts - API returned 5xx error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0014:
+                  summary: PSP Gateway API Bad Gateway
+                  value:
+                    code: EBACS0014
+                    message: PSPGateway API Bad Gateway
+  /v1/payments/bacs/directcredit/release/{id}:
+    post:
+      summary: Release BACS inbound transaction [beta]
+      description: >
+        Move a suspended transaction amount from additional funds to available
+        balance and mark the transaction as settled.
+
+
+        **Suspense transaction flow**
+
+
+        You can use the suspense transaction flow to manage incoming BACS
+        transactions that have been temporarily placed on hold due to suspected
+        fraud pending a decision from the client's anti-fraud (AF) provider.
+
+
+        **Supported scenarios:**
+
+          * A incoming (cash-in) BACS transaction is received.
+
+          * Client' s anti-fraud provider returns "hold" instead of approve or reject.
+
+          * Pismo places the transaction amount into additional funds (unavailable balance) so the beneficiary cannot use the funds until a final decision is made.
+
+          * The client later calls Pismo's release or [cancel](ref:post-cancel-bacs-1) endpoints to finalize the transaction.
+
+        This endpoint generates a [BACS direct credit inbound payment
+        processed](https://developers.pismo.io/events/docs/bacs-direct-credit-in-status-change-1)
+        event with status `SETTLED`.
+      operationId: post-release-bacs
+      tags:
+        - BACS
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/tenantHeader'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
+        - $ref: '#/components/parameters/idPath'
+      responses:
+        '200':
+          description: Response Body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bacs_release.BacsReleaseResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0004:
+                  summary: Validation Error
+                  value:
+                    code: EBACS0004
+                    message: Validation error
+                EBACS0016:
+                  summary: Unmarshal Error
+                  value:
+                    code: EBACS0016
+                    message: Unmarshal error
+                EBACS0019:
+                  summary: Accounts API Invalid Request Error
+                  value:
+                    code: EBACS0019
+                    message: Accounts - API returned 4xx error
+                EBACS0025:
+                  summary: P2P API Invalid Request Error
+                  value:
+                    code: EBACS0025
+                    message: P2p - API returned 4xx error
+                EBACS0029:
+                  summary: Ledger API Invalid Request Error
+                  value:
+                    code: EBACS0029
+                    message: Ledger - API returned 4xx error
+                EBACS0037:
+                  summary: Invalid Creditor Sort Code Account Number
+                  value:
+                    code: EBACS0037
+                    message: Invalid creditor sort code/account number
+                EBACS0038:
+                  summary: Invalid Creditor IBAN
+                  value:
+                    code: EBACS0038
+                    message: Invalid creditor IBAN
+                EBACS0039:
+                  summary: Invalid Creditor BBAN
+                  value:
+                    code: EBACS0039
+                    message: Invalid creditor BBAN
+                EBACS0046:
+                  summary: IntlBankAccounts API Invalid Request Error
+                  value:
+                    code: EBACS0046
+                    message: IntlBankAccounts - API returned 4xx error
+                EBACS0047:
+                  summary: PSP Gateway API Bad Request
+                  value:
+                    code: EBACS0047
+                    message: >-
+                      Invalid BACS Request. Check error details for more
+                      information.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EBACS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EBACS0021:
+                  summary: Account Blocked Or Cancelled
+                  value:
+                    code: EBACS0021
+                    message: Account blocked or cancelled
+                EBACS0033:
+                  summary: Invalid Account Id
+                  value:
+                    code: EBACS0033
+                    message: 'Invalid account id header: ''x-account-id'''
+                EBACS0034:
+                  summary: Invalid Idempotency Key
+                  value:
+                    code: EBACS0034
+                    message: 'Missing required header: ''x-idempotency-key'''
+                EBACS0035:
+                  summary: Account Has No Active Addresses
+                  value:
+                    code: EBACS0035
+                    message: Account has no active addresses
+                EBACS0040:
+                  summary: BACS Not Enabled
+                  value:
+                    code: EBACS0040
+                    message: BACS is not enabled for the creditor sort code
+                EBACS0041:
+                  summary: Modulus Check Error
+                  value:
+                    code: EBACS0041
+                    message: Failed to execute account number modulus check
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0010:
+                  summary: Sort Code Not Found
+                  value:
+                    code: EBACS0010
+                    message: Sort Code not found
+                EBACS0018:
+                  summary: Accounts API Not Found Error
+                  value:
+                    code: EBACS0018
+                    message: Accounts - Not found
+                EBACS0028:
+                  summary: Ledger API Not Found Error
+                  value:
+                    code: EBACS0028
+                    message: Ledger - Not found
+                EBACS0031:
+                  summary: IntlBankAccounts API Not Found Error
+                  value:
+                    code: EBACS0031
+                    message: IntlBankAccounts - Not found
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0022:
+                  summary: Transaction Already Exists
+                  value:
+                    code: EBACS0022
+                    message: >-
+                      A transaction with the specified idempotency key and id
+                      already exists
+                EBACS0036:
+                  summary: Mismatching Currency Error
+                  value:
+                    code: EBACS0036
+                    message: >-
+                      The provided currency does not match with the account's
+                      configured currency
+                EBACS0097:
+                  summary: Release Not Allowed - Invalid Status
+                  value:
+                    code: EBACS0097
+                    message: 'Release not allowed: transaction is already finalised'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0015:
+                  summary: PSP Gateway API Rate Limit
+                  value:
+                    code: EBACS0015
+                    message: PSPGateway API Rate Limit exceeded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0006:
+                  summary: HTTP Error
+                  value:
+                    code: EBACS0006
+                    message: HTTP request error
+                EBACS0009:
+                  summary: IntlBankAccounts API Timeout
+                  value:
+                    code: EBACS0009
+                    message: IntlBankAccounts API timeout error
+                EBACS0011:
+                  summary: IntlBankAccounts API Internal Error
+                  value:
+                    code: EBACS0011
+                    message: IntlBankAccounts API Internal Server error
+                EBACS0012:
+                  summary: PSP Gateway API Timeout
+                  value:
+                    code: EBACS0012
+                    message: PSPGateway API timeout error
+                EBACS0017:
+                  summary: Accounts API Timeout
+                  value:
+                    code: EBACS0017
+                    message: Accounts API timeout error
+                EBACS0020:
+                  summary: Accounts API Server Error
+                  value:
+                    code: EBACS0020
+                    message: Accounts - API returned 5xx error
+                EBACS0023:
+                  summary: Transaction Database Error
+                  value:
+                    code: EBACS0023
+                    message: Transaction database error
+                EBACS0024:
+                  summary: P2P API Timeout
+                  value:
+                    code: EBACS0024
+                    message: P2p - API timeout error
+                EBACS0026:
+                  summary: P2P API Server Error
+                  value:
+                    code: EBACS0026
+                    message: P2p - API returned 5xx error
+                EBACS0027:
+                  summary: Ledger API Timeout
+                  value:
+                    code: EBACS0027
+                    message: Ledger API timeout error
+                EBACS0030:
+                  summary: Ledger API Server Error
+                  value:
+                    code: EBACS0030
+                    message: Ledger - API returned 5xx error
+                EBACS0032:
+                  summary: IntlBankAccounts API Server Error
+                  value:
+                    code: EBACS0032
+                    message: IntlBankAccounts - API returned 5xx error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0014:
+                  summary: PSP Gateway API Bad Gateway
+                  value:
+                    code: EBACS0014
+                    message: PSPGateway API Bad Gateway
+  /v1/payments/bacs/directcredit/return/{id}:
+    post:
+      summary: Return BACS direct credit inbound payment [beta]
+      description: >
+        Initiates a client return for a settled BACS direct credit inbound
+        payment. The return amount must match the original transaction amount
+        exactly, since the platform does not allow partial returns. The platform
+        permits only one return per original transaction.
+
+
+        Returns initiated through this endpoint are marked with `return_origin`
+        = `CLIENT` to distinguish them from system-initiated returns
+        (`return_origin` = `SYSTEM`).
+
+
+        This endpoint generates a [BACS direct credit inbound return payment
+        processed](https://developers.pismo.io/events/docs/bacs-direct-credit-in-return-status-change-1)
+        event with `return_origin` = `CLIENT`.
+      operationId: post-bacs-client-return
+      tags:
+        - BACS
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/tenantHeader'
+        - $ref: '#/components/parameters/reqTrackingIdHeader'
+        - $ref: '#/components/parameters/idempotencyKeyHeader'
+        - $ref: '#/components/parameters/idPath'
+      requestBody:
+        description: Client return request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bacs_return.ClientReturnRequest'
+        required: true
+      responses:
+        '200':
+          description: Response Body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bacs_return.ClientReturnResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0004:
+                  summary: Validation Error
+                  value:
+                    code: EBACS0004
+                    message: Validation error
+                EBACS0095:
+                  summary: Partial Returns Not Allowed
+                  value:
+                    code: EBACS0095
+                    message: Partial returns are not allowed
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EBACS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EBACS0033:
+                  summary: Invalid Account Id
+                  value:
+                    code: EBACS0033
+                    message: 'Invalid account id header: ''x-account-id'''
+                EBACS0086:
+                  summary: Missing Idempotency Key
+                  value:
+                    code: EBACS0086
+                    message: 'Missing required header: ''Idempotency-key'''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0067:
+                  summary: Transaction Not Found
+                  value:
+                    code: EBACS0067
+                    message: Transaction not found
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0015:
+                  summary: PSP Gateway API Rate Limit
+                  value:
+                    code: EBACS0015
+                    message: PSPGateway API Rate Limit exceeded
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0006:
+                  summary: HTTP Error
+                  value:
+                    code: EBACS0006
+                    message: HTTP request error
+                EBACS0012:
+                  summary: PSP Gateway API Timeout
+                  value:
+                    code: EBACS0012
+                    message: PSPGateway API timeout error
+                EBACS0023:
+                  summary: Transaction Database Error
+                  value:
+                    code: EBACS0023
+                    message: Transaction database error
+                EBACS0048:
+                  summary: PSP Gateway Client Error
+                  value:
+                    code: EBACS0048
+                    message: PSPGateway API returned 4xx error
+                EBACS0049:
+                  summary: PSP Gateway Server Error
+                  value:
+                    code: EBACS0049
+                    message: PSPGateway API returned 5xx error
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0014:
+                  summary: PSP Gateway API Bad Gateway
+                  value:
+                    code: EBACS0014
+                    message: PSPGateway API Bad Gateway

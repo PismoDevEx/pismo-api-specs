@@ -1,0 +1,559 @@
+openapi: 3.1.0
+info:
+  title: Control Center
+  description: Provides Control Center audit records.
+  version: 1.0.0
+  contact:
+    name: Pismo Support
+    url: https://developers.pismo.io/support/
+  license:
+    name: Copyright Pismo
+servers:
+  - url: https://sandbox.pismolabs.io/audit-api
+    description: Sandbox API server for testing
+security:
+  - BearerAuth: []
+tags:
+  - name: Audit
+    description: Audit record information search and retrieval
+components:
+  parameters:
+    ActionQuery:
+      name: action
+      in: query
+      description: Comma-separated list of actions to filter by
+      required: false
+      example: create,update
+      schema:
+        type: string
+        maxLength: 80
+    BeginDateQuery:
+      name: beginDate
+      in: query
+      description: >
+        Inclusive begin datetime filter in RFC 3339 format. Format =
+        `YYYY-MM-DDTHH:mm:ssZ`.
+      required: false
+      example: '2025-09-15T00:00:00Z'
+      schema:
+        type: string
+        format: date-time
+    CIDQuery:
+      name: cid
+      in: query
+      description: >-
+        Correlation ID for request tracing, used to group related operations
+        across services.
+      required: false
+      example: 4a9d2f3c-b617-4e82-a3f1-9c7d5b0eaf42
+      schema:
+        type: string
+        maxLength: 40
+    EndDateQuery:
+      name: endDate
+      in: query
+      description: >
+        Exclusive end datetime filter in RFC 3339 format. Format =
+        `YYYY-MM-DDTHH:mm:ssZ`.
+      required: false
+      example: '2025-09-30T00:00:00Z'
+      schema:
+        type: string
+        format: date-time
+    FeatureQuery:
+      name: feature
+      in: query
+      description: >-
+        Comma-separated list of features to filter by. Feature names are mapped
+        to specific values such as `account-status`, `program-parameter`, or
+        `account-phone`.
+      required: false
+      example: account-status, program-parameter, account-phone
+      schema:
+        type: string
+        maxLength: 80
+    FeatureIDQuery:
+      name: featureID
+      in: query
+      description: >-
+        Feature ID to filter by. Feature IDs are mapped to specific values such
+        as `user`, `card`, `transaction`.
+      required: false
+      example: '56789'
+      schema:
+        type: string
+        maxLength: 80
+    OrderQuery:
+      name: order
+      in: query
+      description: >
+        Sort order by operation date. Supported values: `asc` (oldest first),
+        `desc` (newest first)
+      required: false
+      example: desc
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+    PageQuery:
+      name: page
+      in: query
+      description: Page number to return
+      required: false
+      example: 12
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        default: 1
+    PerPageQuery:
+      name: perPage
+      in: query
+      description: Number of items per page
+      required: false
+      example: 10
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 10
+    UserQuery:
+      name: user
+      in: query
+      description: Email address of the user who performed the action
+      required: false
+      example: jrones@example.com
+      schema:
+        type: string
+        maxLength: 80
+  schemas:
+    Audit:
+      description: >-
+        Audit record describing an action performed in the Pismo Control Center,
+        including an action's operation, user, geographic location, and HTTP
+        details
+      type: object
+      required:
+        - http
+        - id
+        - operation
+        - user
+        - user_agent
+      properties:
+        http:
+          description: Audit HTTP details
+          allOf:
+            - $ref: '#/components/schemas/AuditHttp'
+          example:
+            code: 201
+        id:
+          type: integer
+          format: int64
+          description: Identifier for the audit record
+          example: 3644
+        operation:
+          description: Audit operation details
+          allOf:
+            - $ref: '#/components/schemas/AuditOperation'
+        user:
+          description: Audit user details
+          allOf:
+            - $ref: '#/components/schemas/AuditUser'
+          example:
+            id: user-123
+            email: user@example.com
+            roles:
+              - owner
+        user_agent:
+          description: Audit user agent details
+          allOf:
+            - $ref: '#/components/schemas/AuditUserAgent'
+          example:
+            user_agent_label: Mozilla/5.0
+            device_ip: 192.0.2.1
+        geographic_location:
+          description: Audit geographic location details
+          allOf:
+            - $ref: '#/components/schemas/AuditGeographicLocation'
+          example:
+            latitude: -23.592049
+            longitude: -46.685087
+    AuditGeographicLocation:
+      description: Geographic location details
+      type: object
+      properties:
+        latitude:
+          description: Request origin's geographic latitude
+          type: number
+          format: double
+          example: 37
+        longitude:
+          description: Request origin's geographic longitude
+          type: number
+          format: double
+          example: -122
+      required:
+        - latitude
+        - longitude
+    AuditHttp:
+      description: HTTP request and response details
+      type: object
+      required:
+        - code
+        - request
+        - response
+      properties:
+        code:
+          description: HTTP status code returned by the operation
+          type: integer
+          format: int32
+          example: 201
+        request:
+          description: Raw HTTP request payload
+          type: string
+          example: >-
+            {"name": "Rosetta Jones", "email": "rjones@example.com", "roles":
+            ["controlc-admin"]}
+        response:
+          description: Raw HTTP response payload
+          type: string
+          example: >-
+            {"name": "Rosetta Jones", "email": "rjones@example.com", "roles":
+            ["controlc-admin"]}
+    AuditOperation:
+      description: Audit operation details
+      type: object
+      required:
+        - action
+        - audit_details
+        - changes
+        - cid
+        - date
+        - description
+        - feature
+        - feature_id
+        - feature_translation
+        - tenant
+      example:
+        tenant: TN_12345678-1234-1234-1234-123456789012
+        action: update
+        feature: program
+        feature_id: '5678'
+        origin: console
+        cid: 4a9d2f3c-b617-4e82-a3f1-9c7d5b0eaf42
+        date: '2025-11-21T10:30:00Z'
+        feature_translation:
+          en: Programs
+          pt: Programas
+        audit_details:
+          en:
+            - label: Program ID
+              value: '3579'
+            - label: Program name
+              value: program_123
+          pt:
+            - label: ID do Programa
+              value: '3579'
+            - label: Nome do Programa
+              value: program_123
+        description:
+          en: Update program details or BIN or Due Date
+          pt: Atualizar detalhes do programa OU BIN OU data de vencimento
+        changes: {}
+      properties:
+        action:
+          description: >-
+            Action performed in the system. These values vary based on the
+            specific operation being audited, but common examples include:
+            `create`, `update`, `delete`, `login`, and `logout`.
+          type: string
+          example: create
+        audit_details:
+          description: Additional audit context details
+          type: object
+          additionalProperties: true
+          example:
+            en:
+              - label: Program ID
+                value: '3579'
+              - label: Program name
+                value: program_123
+            pt:
+              - label: ID do Programa
+                value: '3579'
+              - label: Nome do Programa
+                value: program_123
+            description:
+              en: Update program details or BIN or Due Date
+              pt: Atualizar detalhes do programa OU BIN OU data de vencimento
+        changes:
+          description: Map of field-level changes applied during the operation
+          type: object
+          additionalProperties: true
+          example: {}
+        cid:
+          description: Correlation ID for request tracing
+          type: string
+          example: 4a9d2f3c-b617-4e82-a3f1-9c7d5b0eaf42
+        date:
+          description: >-
+            Datetime the operation was performed. Format =
+            `yyyy-MM-ddTHH:mm:ssZ`
+          type: string
+          format: date-time
+          example: '2025-09-19T16:59:15Z'
+        description:
+          description: Human-readable description of the operation
+          type: object
+          additionalProperties: true
+          example: {}
+        feature:
+          description: >-
+            Feature area where the operation was performed. Values are specific
+            to the service being audited, but common examples include: `user`,
+            `card`, `transaction`.
+          type: string
+          example: user
+        feature_id:
+          description: Identifier of the resource within the feature
+          type: string
+          example: '12345'
+        feature_translation:
+          description: Feature-specific translation details
+          type: object
+          additionalProperties: true
+          example: {}
+        tenant:
+          description: Tenant ID where the operation was performed
+          type: string
+          example: TN_12345678-1234-1234-1234-123456789012
+        origin:
+          description: >-
+            Origin identifier when the operation was triggered by another
+            service. Common examples include: `console`, `api`, `scheduler`
+          type: string
+          example: console
+        source_id:
+          description: Source system identifier
+          example: pismo-control-center
+          type: string
+    AuditUser:
+      description: User details for the user who performed the action in the audit record
+      type: object
+      required:
+        - email
+        - id
+        - roles
+      properties:
+        email:
+          description: Email of the user who performed the action
+          type: string
+          example: rjones@example.com
+        id:
+          description: ID of the user who performed the action
+          type: string
+          example: user-123
+        roles:
+          description: List of roles assigned to the user who performed the action
+          type: array
+          example:
+            - owner
+            - backoffice-operator
+          items:
+            type: string
+            description: Role name, such as owner, controlc-admin, or backoffice-operator
+            example: owner
+    AuditUserAgent:
+      description: >-
+        User agent details for the device from which the action in the audit
+        record was performed
+      type: object
+      required:
+        - device_ip
+        - user_agent_label
+      properties:
+        device_ip:
+          description: Device IP address
+          type: string
+          example: 192.0.2.1
+        user_agent_label:
+          description: User-agent string from the device
+          type: string
+          example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+    Error:
+      type: object
+      description: Error response details
+      properties:
+        message:
+          description: Error message details
+          allOf:
+            - $ref: '#/components/schemas/ErrorDetail'
+          example:
+            code: ECAD0007
+            message: Error binding request
+    ErrorDetail:
+      type: object
+      description: >-
+        Error detail containing an internal error code and a human-readable
+        message.
+      properties:
+        code:
+          type: string
+          description: Internal error code (e.g. ECAD0004).
+          example: ECAD0004
+        message:
+          type: string
+          description: Human-readable error message.
+          example: Error fetching audit details
+    SearchAuditPage:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          description: Current page number
+          example: 1
+        items:
+          type: array
+          example: []
+          items:
+            $ref: '#/components/schemas/Audit'
+        pages:
+          type: integer
+          description: Total number of pages
+          example: 136
+        per_page:
+          type: integer
+          description: Number of items per page
+          example: 10
+        total_items:
+          type: integer
+          description: Total number of items matching the query
+          example: 1357
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /v1/audit:
+    get:
+      summary: List audit records [beta]
+      description: Returns paginated audit records based on filter parameters.
+      operationId: listAuditRecords
+      tags:
+        - Audit
+      parameters:
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/PerPageQuery'
+        - $ref: '#/components/parameters/OrderQuery'
+        - $ref: '#/components/parameters/BeginDateQuery'
+        - $ref: '#/components/parameters/EndDateQuery'
+        - $ref: '#/components/parameters/UserQuery'
+        - $ref: '#/components/parameters/ActionQuery'
+        - $ref: '#/components/parameters/FeatureQuery'
+        - $ref: '#/components/parameters/FeatureIDQuery'
+        - $ref: '#/components/parameters/CIDQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchAuditPage'
+              example:
+                pages: 136
+                current_page: 1
+                per_page: 1
+                total_items: 1357
+                items:
+                  - id: 1
+                    operation:
+                      tenant: TN_12345678-1234-1234-1234-123456789012
+                      action: update
+                      feature: program
+                      feature_id: '5678'
+                      origin: console
+                      cid: 4a9d2f3c-b617-4e82-a3f1-9c7d5b0eaf42
+                      date: '2025-11-21T10:30:00Z'
+                      feature_translation:
+                        en: Programs
+                        pt: Programas
+                      audit_details:
+                        en:
+                          - label: Program ID
+                            value: '3579'
+                          - label: Program name
+                            value: program_123
+                        pt:
+                          - label: ID do Programa
+                            value: '3579'
+                          - label: Nome do Programa
+                            value: program_123
+                      description:
+                        en: Update program details or BIN or Due Date
+                        pt: >-
+                          Atualizar detalhes do programa OU BIN OU data de
+                          vencimento
+                    user:
+                      id: 7c4a1f92-3e6d-4c81-9b27-ae5f0d8c41b6
+                      email: rjones@example.com
+                      roles:
+                        - controlc-admin
+                        - controlc-setup-viewer
+                    user_agent:
+                      user_agent_label: >-
+                        Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                        AppleWebKit/537.36
+                      device_ip: 192.0.2.1
+                    geographic_location:
+                      latitude: -23.5505199
+                      longitude: -46.6333094
+                    http:
+                      code: 204
+                      request: >-
+                        {"bin":{"value":"49382810","end_range":"1999999","start_range":"0"},"name":"Z+
+                        Global Full balance
+                        (AUD)","timezone":"Asia/Kolkata","country_code":"AUS","currency_numeric_code":"036"}
+                      response: '{}'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                bindingError:
+                  summary: Binding error — invalid query parameter type or format
+                  value:
+                    message:
+                      code: ECAD0007
+                      message: Error binding request
+                validationError:
+                  summary: >-
+                    Validation error — one or more parameters violate
+                    constraints
+                  value:
+                    message:
+                      code: ECAD0005
+                      message: >-
+                        Key: 'SearchAuditParams.Page' Error:Field validation for
+                        'Page' failed on the 'min' tag
+                dateRangeError:
+                  summary: Date range error — beginDate is after endDate
+                  value:
+                    message:
+                      code: ECAD0006
+                      message: beginDate must be before or equal to endDate
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message:
+                  code: ECAD0000
+                  message: Something went wrong, please try again later

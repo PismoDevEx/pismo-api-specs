@@ -12,7 +12,7 @@ info:
   version: 0.0.1
 servers:
   - url: https://sandbox.pismolabs.io/pix-dict
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: Keys
     description: Manage DICT keys endpoints
@@ -25,6 +25,8 @@ tags:
     description: Manage anti-fraud endpoints
   - name: Refunds
     description: Manage DICT refunds endpoints
+  - name: Participants
+    description: List Pix participants registered in BCB DICT
 components:
   securitySchemes:
     BearerAuth:
@@ -99,6 +101,17 @@ components:
         * `PORTABILITY`- Transfers key ownership for the same individual to
         another bank.
       example: OWNERSHIP
+    ForceUpdateQuery:
+      name: force_update
+      in: query
+      required: false
+      description: >-
+        Force a fresh computation of BACEN DICT statistics instead of returning
+        cached results? Default is `false`.
+      schema:
+        type: boolean
+        default: false
+        example: false
     FraudMarkerIDpath:
       name: id
       in: path
@@ -372,6 +385,13 @@ components:
         fallback to DICT? Default is `false`.
       required: false
       example: true
+    UseProviderQuery3:
+      name: useProvider
+      in: query
+      schema:
+        type: string
+      description: Search fraud marker in provider? Default is `true`.
+      example: 'true'
   headers:
     XCidResponseHeader:
       description: Request tracking identifier.
@@ -1299,13 +1319,6 @@ components:
           $ref: '#/components/schemas/entry.Details'
         watermark:
           $ref: '#/components/schemas/Watermark'
-    EntryCreationReason:
-      type: string
-      description: Reason for entry creation
-      example: USER_REQUESTED
-      enum:
-        - USER_REQUESTED
-        - RECONCILIATION
     EntryUpdateNameType:
       type: string
       description: |
@@ -1316,19 +1329,6 @@ components:
         - REGISTRATION_NAME
         - SOCIAL_NAME
       example: SOCIAL_NAME
-    EntryUpdateReason:
-      type: string
-      description: |
-
-        Reason for request
-
-        * `USER_REQUESTED` - EVP keys are not supported
-      example: USER_REQUESTED
-      enum:
-        - USER_REQUESTED
-        - BRANCH_TRANSFER
-        - RECONCILIATION
-        - RFB_VALIDATION
     FlowType:
       type: string
       description: |
@@ -1629,7 +1629,8 @@ components:
     InfractionReportID:
       type: string
       format: uuid
-      description: Infraction report ID
+      maxLength: 36
+      description: Infraction report ID (UUID)
       example: cfdff46e-5d58-45b8-b7aa-591a65f74444
     InfractionReportList:
       type: object
@@ -1788,6 +1789,13 @@ components:
           example: 4
         updated_at:
           $ref: '#/components/schemas/UpdatedDatetime'
+    Ispb:
+      type: string
+      description: >
+        ISPB identifier - the Brazilian payment system identifier, an 8-digit
+        value.
+      maxLength: 8
+      example: '19875244'
     Key:
       type: string
       description: Value, based on a key's type, used to encrypt Pix key.
@@ -1898,6 +1906,8 @@ components:
     ListFraudMarkersResponse:
       type: object
       properties:
+        infraction_id:
+          $ref: '#/components/schemas/InfractionReportID'
         response_date_time:
           $ref: '#/components/schemas/ResponseDateTime'
         has_more_elements:
@@ -2050,6 +2060,80 @@ components:
         - the Brazilian Payment System identifier, an 8-digit value.
       maxLength: 8
       example: '00115678'
+    ParticipantModality:
+      type: string
+      description: |
+        Pix modality: 
+          * `PDCT` = Transactional account provider
+          * `PSTI` = Payment initiation service provider
+      enum:
+        - PDCT
+        - PSTI
+      example: PDCT
+    ParticipantType:
+      type: string
+      description: |
+        Pix institution type: 
+          * `DRCT` = Direct participant
+          * `IDRT` = Indirect participant
+      enum:
+        - DRCT
+        - IDRT
+      example: IDRT
+    participant.Participant:
+      type: object
+      required:
+        - ispb
+        - name
+        - short_name
+        - type
+        - modality
+        - start_operation_datetime
+        - date
+      properties:
+        ispb:
+          $ref: '#/components/schemas/Ispb'
+        name:
+          type: string
+          description: Full institution name.
+          maxLength: 200
+          example: >-
+            COOPERATIVA DE ECONOMIA E CRÉDITO MÚTUO DAS EMPRESAS, EMPREGADOS E
+            PRESTADORES DE SERVIÇO DAS METALÚRGICAS, SIDERÚRGICAS E INDUSTRIAIS
+            – SICOOB COPESITA
+        short_name:
+          type: string
+          description: Short institution name.
+          maxLength: 60
+          example: CECM EMPR EMP PREST SERV METAL SIDER E IND SICOOB COPESITA
+        type:
+          $ref: '#/components/schemas/ParticipantType'
+        modality:
+          $ref: '#/components/schemas/ParticipantModality'
+        start_operation_datetime:
+          type: string
+          format: date-time
+          description: >-
+            Datetime when the institution started operating in Pix. RFC 3339
+            format.
+          example: '2020-11-03T09:30:00+00:00'
+        date:
+          type: string
+          format: date
+          description: >-
+            Participant data reference date. Format = YYYY-MM-DD. For example -
+            `2021-09-30`.
+          example: '2021-09-30'
+    participant.ListParticipantsResponse:
+      type: object
+      required:
+        - participants
+      properties:
+        participants:
+          type: array
+          description: List of Pix participants.
+          items:
+            $ref: '#/components/schemas/participant.Participant'
     Person:
       type: object
       properties:
@@ -2445,6 +2529,26 @@ components:
       enum:
         - STANDARD_ALGORITHM
         - TRANSACTION_LIST
+    EntryCreationReason:
+      type: string
+      description: Reason for entry creation
+      example: USER_REQUESTED
+      enum:
+        - USER_REQUESTED
+        - RECONCILIATION
+    EntryUpdateReason:
+      type: string
+      description: |
+
+        Reason for request
+
+        * `USER_REQUESTED` - EVP keys are not supported
+      example: USER_REQUESTED
+      enum:
+        - USER_REQUESTED
+        - BRANCH_TRANSFER
+        - RECONCILIATION
+        - RFB_VALIDATION
     Reason:
       type: string
       description: Reason for request
@@ -2686,6 +2790,11 @@ components:
         - FRAUDULENT_ACCESS
         - OTHER
         - UNKNOWN
+    statistic.GetClientStatisticsResponse:
+      type: object
+      properties:
+        person_statistics:
+          $ref: '#/components/schemas/entry.OwnerStatistics'
     TaxIdNumber:
       type: string
       description: >-
@@ -2698,7 +2807,7 @@ components:
     TrackingGraphParameters:
       type: object
       description: >
-        Graph parameters (`AUTOMATED` only). 
+        Graph parameters. 
 
 
         Higher values for `min_transaction_amount` and lower values for
@@ -2724,16 +2833,12 @@ components:
             The window duration between transactions
 
               * `PT30M` -  30 minutes
+              * `PT45M` - 45 minutes
               * `PT1H` - 1 hour
-              * `PT24H` - 24 hours
-              * `P7D` - 7 days
+              * `PT2H` - 2 hours
               
-          enum:
-            - PT1H
-            - PT30M
-            - P7D
-            - PT24H
-          example: PT1H
+              
+          example: PT2H
         max_hops:
           type: integer
           description: Maxium tracking depth (1-10 layers)
@@ -3100,6 +3205,120 @@ x-readme:
   proxy-enabled: true
   samples-enabled: true
 paths:
+  /v2/pix/dict/participants:
+    get:
+      summary: List Pix participants
+      description: >
+        Returns the list of all Pix participants (institutions) registered in
+        the BCB DICT, including each participant's ISPB, institution name, type
+        and Pix participation modality.
+
+
+        This endpoint proxies the request in real time to the configured DICT
+        provider — no local cache or database is involved — so response latency
+        reflects the upstream provider.
+      operationId: get-v2-pix-dict-participants
+      tags:
+        - Participants
+      parameters:
+        - $ref: '#/components/parameters/OrgIDheader'
+        - $ref: '#/components/parameters/CIDheader'
+      responses:
+        '200':
+          description: OK
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/participant.ListParticipantsResponse'
+              examples:
+                Success:
+                  value:
+                    participants:
+                      - ispb: '19875244'
+                        name: >-
+                          COOPERATIVA DE ECONOMIA E CRÉDITO MÚTUO DAS EMPRESAS,
+                          EMPREGADOS E PRESTADORES DE SERVIÇO DAS METALÚRGICAS,
+                          SIDERÚRGICAS E INDUSTRIAIS – SICOOB COPESITA
+                        short_name: >-
+                          CECM EMPR EMP PREST SERV METAL SIDER E IND SICOOB
+                          COPESITA
+                        type: IDRT
+                        modality: PDCT
+                        start_operation_datetime: '2020-11-03T09:30:00+00:00'
+                        date: '2021-09-30'
+        '403':
+          description: Forbidden
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                Missing required header 'x-tenant':
+                  value:
+                    code: EPDA0009
+                    message: Missing required header 'x-tenant'
+        '404':
+          description: Not Found
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                Provider not found:
+                  value:
+                    code: EPDA0187
+                    message: SPI Dict Gateway - Not found
+        '500':
+          description: Internal Server Error
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                Internal error:
+                  value:
+                    code: EPDA0004
+                    message: Internal error
+        '502':
+          description: Bad Gateway
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                Provider returned 5xx:
+                  value:
+                    code: EPDA0018
+                    message: SPI Gateway - API returned error
+        '504':
+          description: Gateway Timeout
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                Provider timeout:
+                  value:
+                    code: EPDA0030
+                    message: SPI Gateway - API returned a timeout error
   /v2/pix/keys:
     post:
       summary: Create key entry
@@ -4381,29 +4600,50 @@ paths:
         '504':
           $ref: '#/components/responses/504GatewayTimeout1'
   /v2/pix/infraction-reports:
-    get:
-      summary: List account infractions
+    post:
+      summary: Create infraction report (outdated)
       description: >
-        List account infraction notifications.
+        This endpoint is outdated and no longer works. It is recommended you
+        call [Create funds
+        recovery](https://developers.pismo.io/pismo-docs/reference/post-create-funds-recovery)
+        instead.
 
 
-        Notifications are sorted in ascending order by the
-        `bacen_last_modified_datetime` response return field.
-      operationId: get-v2-pix-account-infractions
+        Creates an infraction report. Both the debited participant and the
+        credited participant can create an infraction report.
+
+
+        For refund requests, the original transaction payer's payment service
+        provider (PSP) **must** create the report. 
+
+
+        Only the PSP or the original transaction's recipient can cancel a
+        refund. 
+
+
+        On PSP timeout, a `202 Accepted` response is returned and the process
+        continues asynchronously, eventually emitting a success or failure
+        event.
+
+
+        This endpoint generates a <a
+        href="https://developers.pismo.io/events/docs/pix-dict-infraction-status-change-1"
+        >Pix infraction status changed</a> event.
+      operationId: post-v2-pix-infraction-create
       tags:
         - Infraction reports
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
-        - $ref: '#/components/parameters/FundsRecoveryIdQuery2'
-        - $ref: '#/components/parameters/IsReporterQuery'
-        - $ref: '#/components/parameters/IsCounterpartyQuery'
-        - $ref: '#/components/parameters/IncludeDetailsQuery'
-        - $ref: '#/components/parameters/StatusFilterQuery2'
-        - $ref: '#/components/parameters/ModifiedAfterQuery2'
-        - $ref: '#/components/parameters/ModifiedBeforeQuery2'
-        - $ref: '#/components/parameters/LimitQuery'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        description: Infraction report
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/InfractionCreationRequest'
+        required: true
       responses:
-        '200':
+        '201':
           description: OK
           headers:
             x-cid:
@@ -4411,7 +4651,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InfractionReportList'
+                $ref: '#/components/schemas/CreateInfractionReportResponse'
+        '202':
+          $ref: '#/components/responses/202InfractionAccepted'
         '400':
           description: Bad Request
           headers:
@@ -4422,10 +4664,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/message.Message'
               examples:
-                Tenant not found:
-                  value:
-                    code: EPDA0001
-                    message: Missing x-tenant header.
                 Invalid binding:
                   value:
                     code: EPDA0002
@@ -4435,13 +4673,13 @@ paths:
                     code: EPDA0003
                     message: >-
                       There are invalid fields when trying to validate request
-                      body.
+                      body
                     details:
                       payload:
-                        - field: status
+                        - field: InfractionReportRequest.infraction_type
                           message: >-
-                            Field validation for 'status' failed on the 'oneof'
-                            tag
+                            Field validation for 'infraction_type' failed on the
+                            'oneof' tag
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -4514,44 +4752,29 @@ paths:
           $ref: '#/components/responses/504GatewayTimeout2'
       security:
         - BearerAuth: []
-    post:
-      summary: Create infraction report
+    get:
+      summary: List account infractions
       description: >
-        Creates an infraction report. Both the debited participant and the
-        credited participant can create an infraction report.
+        List account infraction notifications.
 
 
-        For refund requests, the original transaction payer's payment service
-        provider (PSP) **must** create the report. 
-
-
-        Only the PSP or the original transaction's recipient can cancel a
-        refund. 
-
-
-        On PSP timeout, a `202 Accepted` response is returned and the process
-        continues asynchronously, eventually emitting a success or failure
-        event.
-
-
-        This endpoint generates a <a
-        href="https://developers.pismo.io/events/docs/pix-dict-infraction-status-change-1"
-        >Pix infraction status changed</a> event.
-      operationId: post-v2-pix-infraction-create
+        Notifications are sorted in ascending order by the
+        `bacen_last_modified_datetime` response return field.
+      operationId: get-v2-pix-account-infractions
       tags:
         - Infraction reports
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
-        - $ref: '#/components/parameters/IdempotencyKeyHeader'
-      requestBody:
-        description: Infraction report
-        content:
-          '*/*':
-            schema:
-              $ref: '#/components/schemas/InfractionCreationRequest'
-        required: true
+        - $ref: '#/components/parameters/FundsRecoveryIdQuery2'
+        - $ref: '#/components/parameters/IsReporterQuery'
+        - $ref: '#/components/parameters/IsCounterpartyQuery'
+        - $ref: '#/components/parameters/IncludeDetailsQuery'
+        - $ref: '#/components/parameters/StatusFilterQuery2'
+        - $ref: '#/components/parameters/ModifiedAfterQuery2'
+        - $ref: '#/components/parameters/ModifiedBeforeQuery2'
+        - $ref: '#/components/parameters/LimitQuery'
       responses:
-        '201':
+        '200':
           description: OK
           headers:
             x-cid:
@@ -4559,9 +4782,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateInfractionReportResponse'
-        '202':
-          $ref: '#/components/responses/202InfractionAccepted'
+                $ref: '#/components/schemas/InfractionReportList'
         '400':
           description: Bad Request
           headers:
@@ -4572,6 +4793,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/message.Message'
               examples:
+                Tenant not found:
+                  value:
+                    code: EPDA0001
+                    message: Missing x-tenant header.
                 Invalid binding:
                   value:
                     code: EPDA0002
@@ -4581,13 +4806,13 @@ paths:
                     code: EPDA0003
                     message: >-
                       There are invalid fields when trying to validate request
-                      body
+                      body.
                     details:
                       payload:
-                        - field: InfractionReportRequest.infraction_type
+                        - field: status
                           message: >-
-                            Field validation for 'infraction_type' failed on the
-                            'oneof' tag
+                            Field validation for 'status' failed on the 'oneof'
+                            tag
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -4839,6 +5064,7 @@ paths:
           $ref: '#/components/responses/504GatewayTimeout2'
       security:
         - BearerAuth: []
+      x-codegen-request-body-name: request
   /v2/pix/infraction-reports/{id}/cancel:
     post:
       summary: Cancel infraction report
@@ -5103,8 +5329,13 @@ paths:
       security:
         - BearerAuth: []
     patch:
-      summary: Update infraction report [beta]
+      summary: Update infraction report (outdated)
       description: >
+        This endpoint is outdated and no longer works. It is recommended you
+        call [Update funds
+        recovery](https://developers.pismo.io/pismo-docs/reference/patch-funds-recovery).
+
+
         Update some infraction report fields. Fields not passed are not updated.
 
 
@@ -6563,7 +6794,7 @@ paths:
         the original fraudulent transaction.
 
 
-        **`AUTOMATED` flow**
+        **Automated flow**
 
            DICT manages the entire process automatically. You only define the initial parameters and the system executes tracking, prioritization, and blocking.
            **Use for**: Standard cases, high volume of recoveries, or when you trust DICT's default algorithm.
@@ -6594,9 +6825,8 @@ paths:
               $ref: '#/components/schemas/CreateFundsRecoveryRequest'
             examples:
               automated:
-                summary: AUTOMATED flow example
+                summary: Example
                 value:
-                  flow_type: AUTOMATED
                   root_transaction_id: E9876543210987654321098765432109
                   situation_type: COERCION
                   contact_information:
@@ -6607,9 +6837,9 @@ paths:
                     #12345/2025.
                   tracking_graph_parameters:
                     min_transaction_amount: 100
-                    max_transactions: 50
-                    hop_window: PT24H
-                    max_hops: 5
+                    max_transactions: 5
+                    hop_window: PT2H
+                    max_hops: 10
       responses:
         '201':
           description: Created - synchronous success
@@ -6640,9 +6870,6 @@ paths:
                   value:
                     code: EPDA0000
                     message: Invalid request payload
-                    details:
-                      field: flow_type
-                      error: must be AUTOMATED
                 transactionTooOld:
                   summary: Transaction too old
                   value:
@@ -7316,12 +7543,14 @@ paths:
           $ref: '#/components/responses/504GatewayTimeout2'
   /v2/pix/fraud-markers/list:
     post:
-      summary: List fraud markers [beta]
+      summary: List fraud markers
       description: |
         List fraud markers
       operationId: post-list-fraud-markers
       tags:
         - Anti-fraud
+      parameters:
+        - $ref: '#/components/parameters/UseProviderQuery3'
       requestBody:
         description: List fraud markers request
         content:
@@ -7423,3 +7652,117 @@ paths:
                     message: Provider authentication service is unavailable
         '504':
           $ref: '#/components/responses/504GatewayTimeout2'
+  /v2/pix/statistics:
+    get:
+      summary: Get PIX client statistics
+      description: >
+        Retrieve client account aggregated PIX statistics from BACEN DICT. 
+
+
+        **Statistics include:**
+
+
+        - **SPI settlements**: count of settlements over the last 90 days, 12
+        months, and 60 months
+
+        - **Fraud markers**: categorized fraud report counts (application
+        frauds, mule accounts, scammer accounts, etc.)
+
+        - **Infraction reports**: open reports, distinct reporters, and rejected
+        reports counts
+
+        - **Entries**: number of registered accounts linked to the client
+
+
+        Statistics are pre-computed and cached. Use `force_update=true` to
+        trigger a fresh
+
+        computation from BACEN DICT.
+      operationId: get-v2-pix-statistics
+      tags:
+        - Anti-fraud
+      parameters:
+        - $ref: '#/components/parameters/AuthHeader'
+        - $ref: '#/components/parameters/ForceUpdateQuery'
+      responses:
+        '200':
+          description: OK
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/statistic.GetClientStatisticsResponse'
+              example:
+                person_statistics:
+                  spi:
+                    settlements:
+                      d90: 5
+                      m12: 62
+                      m60: 310
+                    watermark: '2024-01-01T00:00:00Z'
+                  fraud_markers:
+                    application_frauds:
+                      d90: 0
+                      m12: 1
+                      m60: 2
+                    mule_accounts:
+                      d90: 0
+                      m12: 0
+                      m60: 0
+                    scammer_accounts:
+                      d90: 0
+                      m12: 0
+                      m60: 0
+                    other_frauds:
+                      d90: 0
+                      m12: 0
+                      m60: 0
+                    unknown_frauds:
+                      d90: 0
+                      m12: 0
+                      m60: 0
+                    total_fraud_transaction_amount:
+                      d90: 0
+                      m12: 0
+                      m60: 0
+                    distinct_fraud_reporters:
+                      d90: 0
+                      m12: 0
+                      m60: 0
+                    watermark: '2024-01-01T00:00:00Z'
+                  infraction_reports:
+                    open_reports: 0
+                    open_reports_distinct_reporters: 0
+                    rejected_reports:
+                      d90: 0
+                      m12: 0
+                      m60: 0
+                    watermark: '2024-01-01T00:00:00Z'
+                  entries:
+                    registered_accounts: 3
+                    watermark: '2024-01-01T00:00:00Z'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          description: Internal Server Error
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                EPDA0004:
+                  summary: Internal error
+                  value:
+                    code: EPDA0004
+                    message: Internal error
+      security:
+        - BearerAuth: []

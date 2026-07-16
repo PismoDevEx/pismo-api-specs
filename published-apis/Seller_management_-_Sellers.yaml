@@ -113,8 +113,9 @@ components:
           * `branch` if it is another merchant's branch.
           * `individual` if it isn't a branch nor headquarters.
 
-        These relationships can be created using [this
-        endpoint](https://developers.pismo.io/pismo-docs/reference/postmerchantbranchesv1).
+        To create these relationships, use the [Link marketplace to
+        merchants](https://developers.pismo.io/pismo-docs/reference/createmarketplacemerchantslink)
+        endpoint.
       required: false
       example: hq
       schema:
@@ -123,6 +124,73 @@ components:
           - individual
           - hq
           - branch
+    DocumentNumberFilter:
+      in: query
+      name: documentNumber
+      description: Filter by marketplace document number (exact match, case-sensitive)
+      required: false
+      example: '12345678901234'
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 14
+    ExternalIdFilter:
+      in: query
+      name: externalId
+      description: Filter by external system identifier (exact match, case-sensitive)
+      required: false
+      example: EXT-123
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+    BrandNameFilter:
+      in: query
+      name: brandName
+      description: Filter by brand name (partial match, case-insensitive)
+      required: false
+      example: Acme
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+    MarketplaceNameFilter:
+      in: query
+      name: marketplaceName
+      description: Filter by marketplace name (partial match, case-insensitive)
+      required: false
+      example: Store
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+    Order:
+      in: query
+      name: order
+      description: Sort order direction (case-insensitive)
+      required: false
+      example: asc
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+    OrderBy:
+      in: query
+      name: orderBy
+      description: |
+        Field name to sort by. Supported fields:
+        - `marketplace_id`
+        - `document_number`
+        - `brand_name`
+        - `marketplace_name`
+        - `external_id`
+      required: false
+      example: brand_name
+      schema:
+        type: string
+        maxLength: 50
   schemas:
     AdditionalPhoneNumber:
       type: string
@@ -573,6 +641,14 @@ components:
         - COMPOUND
         - SIMPLIFIED
       example: SIMPLIFIED
+    AdvancementCurrencyCode:
+      anyOf:
+        - type: string
+        - type: 'null'
+      description: >-
+        ISO 4217 alphanumeric currency code of the advancement request. `null`
+        when no currency is recorded.
+      example: BRL
     ListAdvancementRequestsResponse:
       type: object
       properties:
@@ -597,22 +673,23 @@ components:
                 $ref: '#/components/schemas/AdvancedNetAmount'
               interest_method:
                 $ref: '#/components/schemas/InterestMethod'
+              currency_code:
+                $ref: '#/components/schemas/AdvancementCurrencyCode'
     ListMarketplaceMerchantsLinkResponse:
+      type: object
+      description: >-
+        Paginated list of marketplaces. `has_next` field indicates a next page
+        is available
+      required:
+        - has_next
+        - items
+        - page
+        - per_page
       properties:
-        page_size:
-          type: integer
-          format: int32
-          description: Number of items per page
-          minimum: 1
-          maximum: 1000
-        current_page:
-          type: integer
-          format: int32
-          description: Current page number
-          minimum: 1
-        has_next_page:
+        has_next:
           type: boolean
-          description: Is there a next page of results?
+          description: Is a next page available?
+          example: true
         items:
           type: array
           items:
@@ -626,6 +703,83 @@ components:
               document_number:
                 type: string
                 description: Merchant document number
+        page:
+          type: integer
+          format: int32
+          description: Current page number (starts at 1)
+          minimum: 1
+          example: 1
+        per_page:
+          type: integer
+          format: int32
+          description: Number of items per page
+          minimum: 1
+          maximum: 100
+          example: 10
+    GetMarketplacesResponse:
+      type: object
+      description: >-
+        Paginated list of marketplaces. `has_next` field indicates a next page
+        is available
+      required:
+        - has_next
+        - items
+        - page
+        - per_page
+      properties:
+        has_next:
+          type: boolean
+          description: Is a next page available?
+          example: true
+        items:
+          type: array
+          description: >-
+            Array of marketplace objects. Returns empty array if no results
+            found (HTTP 200, not 404)
+          items:
+            $ref: '#/components/schemas/MarketplaceListItem'
+        page:
+          type: integer
+          format: int32
+          description: Current page number (starts at 1)
+          minimum: 1
+          example: 1
+        per_page:
+          type: integer
+          format: int32
+          description: Number of items per page
+          minimum: 1
+          maximum: 100
+          example: 10
+    MarketplaceListItem:
+      type: object
+      description: Marketplace information in paginated list response
+      required:
+        - brand_name
+        - document_number
+        - id
+        - marketplace_name
+      properties:
+        brand_name:
+          type: string
+          description: Brand name of the marketplace
+          example: Acme Corporation
+        document_number:
+          type: string
+          description: Marketplace document number
+          example: '12345678901234'
+        id:
+          $ref: '#/components/schemas/MarketplaceId'
+        marketplace_name:
+          type: string
+          description: Registered marketplace name
+          example: Acme Store
+        external_id:
+          type:
+            - string
+            - 'null'
+          description: External system identifier
+          example: EXT-123
   examples:
     BadRequestResponse:
       summary: Bad request response
@@ -665,9 +819,9 @@ components:
           country: BR
         contact:
           name: John Doe
-          email: marketplace@teste.com
-          phone_number: '+5511999999999'
-          additional_phone_number: '+5562222233445'
+          email: alexmiller@example.com
+          phone_number: '4155551234'
+          additional_phone_number: '4155555678'
     UpdateMarketplaceRequestExample:
       summary: Update marketplace payload
       value:
@@ -683,14 +837,14 @@ components:
           complementary_address: Suite 10
           neighborhood: Downtown
           zip_code: 22345-477
-          city: Test City
-          state: SP
-          country: BR
+          city: San Francisco
+          state: CA
+          country: US
         contact:
-          name: John Doe
+          name: Alex Miller
           email: marketplace@teste.com
-          phone_number: '+5511999999999'
-          additional_phone_number: '+5562222233445'
+          phone_number: '4155551234'
+          additional_phone_number: '4155555678'
     CreateMarketplaceResponseExample:
       summary: Create marketplace payload response
       value:
@@ -736,9 +890,9 @@ components:
     ListMarketplaceMerchantsLink:
       summary: List linked merchants
       value:
-        page_size: 100
-        current_page: 1
-        has_next_page: true
+        per_page: 100
+        page: 1
+        has_next: true
         items:
           - id: 1
             name: Merchant 1
@@ -778,6 +932,86 @@ components:
         marketplace_id: 1
         merchant_ids:
           - 1
+    GetMarketplacesResponseExample:
+      summary: List marketplaces with pagination
+      value:
+        page: 1
+        per_page: 10
+        has_next: true
+        items:
+          - id: 123
+            document_number: '12345678901234'
+            brand_name: Acme Corporation
+            marketplace_name: Acme Store
+            external_id: EXT-123
+          - id: 124
+            document_number: '98765432109876'
+            brand_name: Beta Industries
+            marketplace_name: Beta Marketplace
+            external_id: null
+    GetMarketplacesEmptyResponseExample:
+      summary: Empty list response (HTTP 200, not 404)
+      value:
+        page: 1
+        per_page: 10
+        has_next: false
+        items: []
+    GetMarketplacesFilteredResponseExample:
+      summary: Filtered list combining brandName and marketplaceName
+      value:
+        page: 1
+        per_page: 20
+        has_next: false
+        items:
+          - id: 1
+            document_number: '12345678901234'
+            brand_name: Acme Corporation
+            marketplace_name: Acme Store
+            external_id: EXT-001
+          - id: 15
+            document_number: '98765432109876'
+            brand_name: Acme Industries
+            marketplace_name: Acme Marketplace
+            external_id: null
+    GetMarketplacesLastPageExample:
+      summary: Last page where `has_next` is `false`
+      value:
+        page: 5
+        per_page: 10
+        has_next: false
+        items:
+          - id: 200
+            document_number: '11122233344455'
+            brand_name: Last Marketplace
+            marketplace_name: Final Store
+            external_id: EXT-200
+    GetMarketplacesInvalidPageExample:
+      summary: Invalid page parameter error
+      value:
+        code: ESMG0900
+        message: Validation failed
+        details:
+          payload:
+            - field: page
+              message: 'Invalid page parameter: must be greater than 0'
+    GetMarketplacesInvalidPerPageExample:
+      summary: Invalid perPage parameter error
+      value:
+        code: ESMG0900
+        message: Validation failed
+        details:
+          payload:
+            - field: perPage
+              message: 'Invalid perPage parameter: maximum value is 100'
+    GetMarketplacesInvalidOrderExample:
+      summary: Invalid order parameter error
+      value:
+        code: ESMG0900
+        message: Validation failed
+        details:
+          payload:
+            - field: order
+              message: 'Invalid order parameter: must be ''asc'' or ''desc'''
   responses:
     200Success:
       description: Ok
@@ -860,6 +1094,34 @@ components:
           examples:
             generic-not-found-response:
               $ref: '#/components/examples/NotFoundResponse'
+    200GetMarketplaces:
+      description: OK - Paginated list of marketplaces
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetMarketplacesResponse'
+          examples:
+            marketplaces-list-success:
+              $ref: '#/components/examples/GetMarketplacesResponseExample'
+            marketplaces-list-empty:
+              $ref: '#/components/examples/GetMarketplacesEmptyResponseExample'
+            marketplaces-list-filtered:
+              $ref: '#/components/examples/GetMarketplacesFilteredResponseExample'
+            marketplaces-list-last-page:
+              $ref: '#/components/examples/GetMarketplacesLastPageExample'
+    400GetMarketplacesValidation:
+      description: Bad request - Invalid query parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            invalid-page:
+              $ref: '#/components/examples/GetMarketplacesInvalidPageExample'
+            invalid-perPage:
+              $ref: '#/components/examples/GetMarketplacesInvalidPerPageExample'
+            invalid-order:
+              $ref: '#/components/examples/GetMarketplacesInvalidOrderExample'
 paths:
   /v1/settlements/actions/block:
     post:
@@ -975,7 +1237,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v3/marketplaces:
     post:
-      summary: Create marketplace
+      summary: Create marketplace V3
       operationId: createMarketplace
       tags:
         - Marketplace
@@ -998,6 +1260,95 @@ paths:
           $ref: '#/components/responses/201MarketplaceCreate'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    get:
+      summary: List marketplaces
+      operationId: getMarketplaces
+      tags:
+        - Marketplace
+      description: >
+        Retrieve a paginated list of marketplaces with optional filtering and
+        sorting capabilities.
+
+
+        ## Filtering
+
+
+        Filters are provided as individual query parameters. Multiple filters
+        can be combined — each additional parameter further restricts the result
+        set (AND logic).
+
+
+        | Parameter | Field Filtered | Match Type | Case Sensitive |
+
+        |---|---|---|---|
+
+        | `documentNumber` | `document_number` | Exact | Yes |
+
+        | `externalId` | `external_id` | Exact | Yes |
+
+        | `brandName` | `brand_name` | Partial (LIKE) | No |
+
+        | `marketplaceName` | `marketplace_name` | Partial (LIKE) | No |
+
+
+        **Examples:**
+
+        - `?documentNumber=12345678901234` — exact document number match
+
+        - `?brandName=Acme` — brand name containing "Acme"
+
+        - `?brandName=Acme&marketplaceName=Store` — brand name containing "Acme"
+        AND marketplace name containing "Store"
+
+
+        ## Sorting
+
+
+        Use `order` and `orderBy` to control result ordering.
+
+        Supported `orderBy` values: `marketplace_id`, `document_number`,
+        `brand_name`, `marketplace_name`, `external_id`.
+
+        Default sort: `marketplace_id ASC`.
+
+
+        ## Empty Results
+
+
+        Empty result sets return **HTTP 200** with an empty `items` array (not
+        404).
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/DocumentNumberFilter'
+        - $ref: '#/components/parameters/ExternalIdFilter'
+        - $ref: '#/components/parameters/BrandNameFilter'
+        - $ref: '#/components/parameters/MarketplaceNameFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/200GetMarketplaces'
+        '400':
+          $ref: '#/components/responses/400GetMarketplacesValidation'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorRequestResponse'
+              examples:
+                unauthorized:
+                  summary: Unauthorized error
+                  value:
+                    code: ESMG0401
+                    message: Unauthorized
+                    details:
+                      payload:
+                        - field: Authorization
+                          message: Invalid or missing authorization token
         '500':
           $ref: '#/components/responses/500InternalServerError'
   /v3/marketplaces/{marketplaceId}:

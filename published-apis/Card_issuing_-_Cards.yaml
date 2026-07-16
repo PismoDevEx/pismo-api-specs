@@ -12,7 +12,7 @@ servers:
   - url: https://sandbox.pismolabs.io
     description: Sandbox API server for testing.
   - url: https://gw-pci.pismolabs.io
-    description: Sandbox PCI API server for testing
+    description: Sandbox PCI API server for testing.
 security:
   - BearerAuth: []
 tags:
@@ -44,6 +44,10 @@ tags:
     description: For issuer-defined PIN and PIN endpoints.
   - name: Migration
     description: Migrate card and card modes
+  - name: Mastercard benefits
+    description: Card benefits endpoints
+  - name: CVV rotation
+    description: CVV rotation management
 components:
   parameters:
     accountIdPath:
@@ -52,6 +56,7 @@ components:
       schema:
         type: integer
       description: Pismo account ID
+      example: 8675309
       required: true
     accountIdHeader:
       in: header
@@ -59,6 +64,7 @@ components:
       schema:
         type: integer
       description: Pismo account ID
+      example: 8675309
       required: true
     beginDateQuery:
       in: query
@@ -75,6 +81,7 @@ components:
       schema:
         type: string
       description: Bulk ID
+      example: 48894-kkfi8-9484-kdkd
       required: true
     cardId:
       in: path
@@ -82,6 +89,15 @@ components:
       schema:
         type: string
       description: Pismo card ID
+      example: '12345'
+      required: true
+    cardIdPath:
+      in: path
+      name: cardID
+      schema:
+        type: string
+      description: Pismo card ID
+      example: '12345'
       required: true
     configIdQuery:
       in: query
@@ -95,13 +111,13 @@ components:
 
 
         You can call [Get nominal card embossing
-        info](https://developers.pismo.io/pismo-docs/reference/get-embossing-info) 
-        to get a card's embossing group.
+        info](https://developers.pismo.io/pismo-docs/reference/get-embossing-info)
+        to get a card's embossing details.
 
 
         You can also call [Get org embosser
         info](https://developers.pismo.io/pismo-docs/reference/get-embossing-configurations-info)
-        to get an embossing group's configuration ID. 
+        to get details about an Org's embossing settings. 
       example: 6dacfdde-64bd-4a17-bbdf-3be627b271e6
     customerIdHeader:
       in: header
@@ -110,6 +126,7 @@ components:
         type: integer
       required: true
       description: Pismo customer ID
+      example: 125555
     customerIdPath:
       in: path
       name: customerId
@@ -117,6 +134,7 @@ components:
         type: string
       required: true
       description: Customer ID
+      example: '125555'
     embossingFileNameQuery:
       in: query
       name: fileName
@@ -124,6 +142,15 @@ components:
         type: string
       required: true
       description: Embossing file to download
+      example: myEmbossFile.pdf
+    enabledQuery:
+      in: query
+      name: enabled
+      description: Enabled status filter
+      schema:
+        type: boolean
+      required: false
+      example: true
     endDateQuery:
       in: query
       name: endDate
@@ -137,10 +164,11 @@ components:
       in: query
       name: format
       schema:
-        description: Set to `paged` to use paging for results.
         type: string
         enum:
           - paged
+      description: Set to `paged` to use paging for results.
+      example: paged
     idempotencyHeader:
       in: header
       name: x-idempotency-key
@@ -155,6 +183,18 @@ components:
         times, yet the outcome remains the same. it ensures that network errors,
         retries, or failures can occur without introducing inconsistencies. 36
         chars max. 
+      example: 123e4567-e89b-12d3-a456-426614174000
+    limitQuery:
+      in: query
+      name: limit
+      description: Maximum number of items to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+      required: false
+      example: 10
     modeIdPath:
       in: path
       name: modeId
@@ -165,6 +205,7 @@ components:
         Card mode ID. For more information, refer to [Create a combination card
         with card
         modes](https://developers.pismo.io/pismo-docs/docs/cards-overview-1#create-a-combination-card-with-card-modes).
+      example: 348909874dfddf
     modesQuery:
       in: query
       name: modes
@@ -182,6 +223,17 @@ components:
             - DEBIT
             - MULTIPLE
             - COMBO
+      example:
+        - CREDIT
+    nextCursorQuery:
+      in: query
+      name: nextCursor
+      description: Pagination cursor
+      schema:
+        type: integer
+        minimum: 0
+      required: false
+      example: 124
     pageQuery:
       in: query
       name: page
@@ -190,6 +242,7 @@ components:
       description: >-
         Page number. Default is initial page - `0`. To navigate between pages,
         set `format=paged`.
+      example: '1'
     perPageQuery:
       in: query
       name: perPage
@@ -198,6 +251,7 @@ components:
         `format=paged`.
       schema:
         type: string
+      example: '10'
     perPageQuery2:
       in: query
       name: perPage
@@ -205,6 +259,18 @@ components:
       required: false
       schema:
         type: string
+      example: '10'
+    reasonIdPath:
+      in: path
+      name: id
+      schema:
+        type: integer
+      description: >
+        Reissue reason identifier. You can get reason IDs using the [List
+        reissue reasons](ref:get-reissue-reasons) endpoint. The `must_block`
+        flag comes from the reissue reason object. 
+      required: true
+      example: 123
     statusQuery:
       in: query
       name: status
@@ -230,6 +296,8 @@ components:
         Card type filter:
           - If nothing is passed, all cards are returned. 
           - If one or more specific types are passed, cards with those types are returned.
+      example:
+        - PLASTIC
       schema:
         type: array
         items:
@@ -246,13 +314,7 @@ components:
         type: string
       description: Account ID
       required: true
-    x-TenantHeader:
-      in: header
-      name: x-tenant
-      schema:
-        type: string
-      description: Organization/tenant ID
-      required: true
+      example: '8675309'
   schemas:
     ABUenabled:
       type: boolean
@@ -386,6 +448,22 @@ components:
           type: boolean
           description: Has script been applied?
           example: false
+    Assign:
+      type: object
+      description: >-
+        Only one segment can currently be assigned, but`segments` is declared as
+        an array to support more being assigned in the future.
+      required:
+        - card_id
+      properties:
+        card_id:
+          $ref: '#/components/schemas/CardID2'
+        segments:
+          $ref: '#/components/schemas/AssignSegmentsEffectiveDate'
+    AssignSegmentsEffectiveDate:
+      type: array
+      items:
+        $ref: '#/components/schemas/SegmentEffectiveDate'
     ATC:
       type: string
       description: >
@@ -448,11 +526,11 @@ components:
           description: Bulk ID.
           example: Bkdj9999
         metadata:
-          additionalProperties: true
-          type: object
-          description: Additional key-value object information for operation.
+          $ref: '#/components/schemas/Metadata'
         program_id:
           $ref: '#/components/schemas/ProgramID'
+        template_id:
+          $ref: '#/components/schemas/TemplateID'
         size:
           type: integer
           description: Bulk size - number of cards
@@ -464,6 +542,7 @@ components:
       example:
         id: 3e8d9c51-64c7-420d-ae53-87e2b76cf45e
         program_id: 8519
+        template_id: EAFA693A-57B2-4029-97F3-D20D6F06D79B
         embossing_custom_field: Please make cards metal, not plastic
         contactless_enabled: false
         abu_enabled: false
@@ -479,6 +558,49 @@ components:
         - CREATED
         - RUNNING
         - COMPLETED
+    Bundle:
+      type: object
+      description: >
+        Bundle object. A Mastercard card segment **bundle** is a targeted
+        package of benefits, rewards, or services assigned to specific carholder
+        groups based on need.
+      properties:
+        code:
+          $ref: '#/components/schemas/Code'
+        effective_date:
+          $ref: '#/components/schemas/EffectiveDate'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
+    Bundles:
+      type: array
+      description: Bundle object array
+      items:
+        $ref: '#/components/schemas/Bundle'
+    BundlesResponse:
+      type: object
+      description: >-
+        Bundle response object. A Mastercard card segment **bundle** is a
+        targeted package of benefits, rewards, or services assigned to specific
+        carholder groups based on need.
+      properties:
+        bundles:
+          $ref: '#/components/schemas/Bundles'
+        network_correlation_id:
+          $ref: '#/components/schemas/NetworkCorrelationId'
+    Cancel:
+      type: object
+      description: Cancel Mastercard benefits object
+      required:
+        - card_id
+        - code
+        - expiry_date
+      properties:
+        card_id:
+          $ref: '#/components/schemas/CardID2'
+        code:
+          $ref: '#/components/schemas/Code'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
     CancelBulkRequest:
       type: object
       required:
@@ -530,6 +652,7 @@ components:
       properties:
         cardId:
           type: string
+          description: Card ID
           example: '737040484'
     CardID2:
       type: integer
@@ -825,6 +948,10 @@ components:
       type: string
       description: Response for card password update request
       example: '[:correlationId] Card updated'
+    Code:
+      type: string
+      description: Code
+      example: LAC_BBC
     Contactless:
       type: boolean
       description: >
@@ -858,14 +985,12 @@ components:
     CorrelationID:
       type: string
       description: >
-        Correlation ID used in request x-cid header. This  is used to link
-        related API requests and events. For example, if a user makes an
-        authorization request with 10 installments, this generates 1
-        authorization event and 10 transaction events all containing the same
-        correlation ID. The x-cid can help the Pismo engineering team track
-        everything related to a call. If this field isn't passed, one is
-        generated. You can find the x-cid field in the response header from an
-        API endpoint call.
+        The correlation ID is used to link related API requests and events. For
+        example, if a user makes an authorization request with 10 installments,
+        this generates 1 authorization event and 10 transaction events all
+        containing the same correlation ID. The correlation ID can help the
+        Pismo engineering team track everything related to a call. If this field
+        isn't passed, one is generated. 
       example: 3b56dbec-e509-9550-8c8c-ae5ab081e4d5
     CreateBulk:
       type: object
@@ -877,6 +1002,8 @@ components:
           $ref: '#/components/schemas/ExternalIDs'
         program_id:
           $ref: '#/components/schemas/ProgramID'
+        template_id:
+          $ref: '#/components/schemas/TemplateID'
         pin_length:
           $ref: '#/components/schemas/PinLength'
         abu_enabled:
@@ -970,6 +1097,28 @@ components:
           $ref: '#/components/schemas/ValidityPeriodHours'
         valid_until:
           $ref: '#/components/schemas/ValidUntil2'
+    CreateReasonRequest:
+      type: object
+      required:
+        - description
+        - must_block
+        - must_charge
+        - cost
+        - type
+        - enabled
+      properties:
+        description:
+          $ref: '#/components/schemas/ReissueDescription'
+        must_block:
+          $ref: '#/components/schemas/MustBlock'
+        must_charge:
+          $ref: '#/components/schemas/MustCharge'
+        cost:
+          $ref: '#/components/schemas/ReissueCost'
+        type:
+          $ref: '#/components/schemas/ReissueType'
+        enabled:
+          $ref: '#/components/schemas/ReissueEnabled'
     CustomerID:
       type: integer
       description: Pismo customer ID
@@ -1003,6 +1152,27 @@ components:
       minimum: 1
       maximum: 4320
       example: 24
+    CvvChangeRotationRequest:
+      type: object
+      description: Request to change the CVV rotation interval
+      required:
+        - cvv_rotation_interval_hours
+      properties:
+        cvv_rotation_interval_hours:
+          $ref: '#/components/schemas/CvvRotationIntervalHours'
+    CvvChangeRotationResponse:
+      type: object
+      description: CVV rotation request response
+      properties:
+        id:
+          $ref: '#/components/schemas/CardID2'
+        cvv_rotation_interval_hours:
+          $ref: '#/components/schemas/CvvRotationIntervalHours'
+    CvvRotationIntervalHours:
+      type: integer
+      description: New CVV rotation interval in hours
+      minimum: 1
+      example: 4320
     DualMessageDebit:
       type: boolean
       description: >
@@ -1013,6 +1183,10 @@ components:
 
 
         Default is `false`.
+    EffectiveDate:
+      type: string
+      description: Card effective date. Format = yyyy-mm-dd
+      example: '2025-07-31'
     Embosser:
       type: string
       description: Embosser company name
@@ -1279,13 +1453,17 @@ components:
       type: string
       description: Card expiration date. RFC 3339 format
       example: '2023-02-09T15:29:04.000Z'
+    ExpiryDate:
+      type: string
+      description: Card expiration date. Format = yyyy-dd-mm
+      example: '2026-01-20'
     ExternalIDs:
       description: >
         Client assigned IDs for internal tracking purposes. One card is created
         for each ID. The maximum number of cards in one bulk/batch is 1000.
 
 
-        f you want to use more than 36 characters for your external IDs, please
+        If you want to use more than 36 characters for your external IDs, please
         request a change in the embossing layout via a Jira ticket. By default,
         an embossing layout supports 36 digits for external IDs.
       type: array
@@ -1299,6 +1477,20 @@ components:
         - '8675309'
         - '586038'
         - '585603'
+    Freeze:
+      type: object
+      required:
+        - card_id
+        - freezing_enabled
+      properties:
+        card_id:
+          $ref: '#/components/schemas/CardID2'
+        freezing_enabled:
+          $ref: '#/components/schemas/FreezingEnabled'
+    FreezingEnabled:
+      type: boolean
+      description: Is freezing enabled?
+      example: false
     GeneratePvv:
       type: boolean
       description: >
@@ -1483,6 +1675,15 @@ components:
           example: 32a147ec-b2d9-4b0d-8c5b-557e6cf41e0e
         password_updated:
           $ref: '#/components/schemas/PasswordUpdated'
+    GetReasonsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonResponse'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     GetTemplateByIdResponse:
       type: object
       properties:
@@ -1604,9 +1805,19 @@ components:
       example: '4321'
     Metadata:
       type: object
-      description: >-
+      description: >
+
         Any key-value object. Max length = 3200 bytes. This **must** be valid
         JSON data.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that  purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
       example:
         my-custom-key: my-custom-value
       maxLength: 3200
@@ -1656,6 +1867,25 @@ components:
       enum:
         - SINGLE
         - COMBO
+    MustBlock:
+      type: boolean
+      description: >
+        Should a `PLASTIC` card be canceled upon reissue or can it be used until
+        the new card is activated?
+
+         `VIRTUAL` cards are automatically canceled when reissued, regardless of this setting.
+      example: true
+    MustCharge:
+      type: boolean
+      description: |
+        Should the reissue be charged?
+
+         This field is information only as only issuers can make debit entries to a customer's account.
+      example: true
+    NetworkCorrelationId:
+      type: string
+      description: Network correlation ID
+      example: fe1bf855f651810629107cfbce5b09d2
     NumberOfTransactions:
       type: integer
       description: Maximum transactions allowed
@@ -1733,6 +1963,18 @@ components:
       type: string
       description: Organization/tenant ID
       example: TN-f878e4a1-2879-48ba-be16-821e73ac98db
+    Pagination:
+      type: object
+      properties:
+        next_cursor:
+          type: integer
+          nullable: true
+          description: Cursor to get the next page
+          example: 124
+        has_next:
+          type: boolean
+          description: Are more pages available?
+          example: true
     PAN:
       type: string
       description: >
@@ -1921,6 +2163,23 @@ components:
       type: integer
       description: Last issued card ID
       example: 123456
+    ReissueCost:
+      type: number
+      description: Reissue card cost
+      example: 20.5
+    ReissueDescription:
+      type: string
+      minLength: 1
+      maxLength: 255
+      description: Reissue reason description
+      example: Card was lost by the customer
+    ReissueEnabled:
+      type: boolean
+      description: |
+        Is reason active?
+
+         This field is for information only and allows the issuer to provide only active reasons for re-issuance.
+      example: true
     ReissueReasons:
       type: array
       description: Get reissue card reasons response object
@@ -1928,23 +2187,17 @@ components:
         type: object
         properties:
           cost:
-            type: string
-            description: Reissue card cost
+            $ref: '#/components/schemas/ReissueCost'
           must_block:
-            type: boolean
-            description: Must card be blocked?
+            $ref: '#/components/schemas/MustBlock'
           description:
-            type: string
-            description: Reissue description
+            $ref: '#/components/schemas/ReissueDescription'
           id:
-            type: string
-            description: Reissue ID
+            $ref: '#/components/schemas/ReissuedCardID'
           must_charge:
-            type: boolean
-            description: Must customer be charged?
+            $ref: '#/components/schemas/MustCharge'
           type:
-            type: string
-            description: Issuer-defined reissue reason enum
+            $ref: '#/components/schemas/ReissueType'
       example:
         - id: '1720'
           description: Broken card
@@ -2018,6 +2271,33 @@ components:
           must_charge: false
           must_block: false
           cost: 'null'
+    ReasonId:
+      type: integer
+      description: >
+        Reissue reason identifier. You can get reason IDs using the [List
+        reissue reasons](ref:get-reissue-reasons) endpoint. The `must_block`
+        flag comes from the reissue reason object. 
+      example: 123
+    ReasonResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ReasonId'
+        description:
+          $ref: '#/components/schemas/ReissueDescription'
+        must_block:
+          $ref: '#/components/schemas/MustBlock'
+        must_charge:
+          $ref: '#/components/schemas/MustCharge'
+        cost:
+          $ref: '#/components/schemas/ReissueCost'
+        type:
+          $ref: '#/components/schemas/ReissueType'
+        enabled:
+          $ref: '#/components/schemas/ReissueEnabled'
+    ReissueType:
+      type: string
+      description: Issuer-defined reissue reason enum
     RelationshipBody:
       type: object
       description: Accounts relationship for combo cards enablement
@@ -2102,6 +2382,51 @@ components:
               description: Debit program account ID
             card_id:
               $ref: '#/components/schemas/CardID'
+    ReplaceBenefit:
+      type: object
+      required:
+        - card_id
+        - old_segment_code
+        - new_segment_code
+        - effective_date
+      properties:
+        card_id:
+          $ref: '#/components/schemas/CardID2'
+        old_segment_code:
+          $ref: '#/components/schemas/ReplaceOldCode'
+        new_segment_code:
+          $ref: '#/components/schemas/ReplaceNewCode'
+        effective_date:
+          $ref: '#/components/schemas/EffectiveDate'
+    ReplaceCard:
+      type: object
+      required:
+        - old_card_id
+        - new_card_id
+        - effective_date
+      properties:
+        old_card_id:
+          $ref: '#/components/schemas/ReplaceOldCardID'
+        new_card_id:
+          $ref: '#/components/schemas/ReplaceNewCardID'
+        effective_date:
+          $ref: '#/components/schemas/EffectiveDate'
+    ReplaceOldCardID:
+      type: integer
+      description: Pismo old card ID
+      example: 123456
+    ReplaceNewCardID:
+      type: integer
+      description: Pismo new card ID
+      example: 987654
+    ReplaceNewCode:
+      type: string
+      description: New segment code
+      example: LAC_BBD
+    ReplaceOldCode:
+      type: string
+      description: Old segment code
+      example: LAC_BBC
     ResetCvvResponse:
       type: object
       description: Response body indicating success
@@ -2159,6 +2484,13 @@ components:
           $ref: '#/components/schemas/InitializationVector'
         key_id:
           $ref: '#/components/schemas/KeyID'
+    SegmentEffectiveDate:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/Code'
+        effective_date:
+          $ref: '#/components/schemas/EffectiveDate'
     SentBrand:
       type: string
       description: |
@@ -2207,12 +2539,7 @@ components:
         - reason_id
       properties:
         reason_id:
-          type: integer
-          description: >-
-            Reissue reason ID. You can get reason IDs using the [Get card
-            reissue reasons](ref:get-v1-card-reissue-reasons) endpoint. The
-            `must_block` flag comes from the reissue reason object.
-          example: 1730
+          $ref: '#/components/schemas/ReasonId'
         printed_name:
           $ref: '#/components/schemas/PrintedName'
         pin_length:
@@ -2562,6 +2889,22 @@ components:
           example: 32a147ec-b2d9-4b0d-8c5b-557e6cf41e0e
         sync_offline_pin:
           $ref: '#/components/schemas/SyncOfflinePin'
+    UpdateReasonRequest:
+      type: object
+      minProperties: 1
+      properties:
+        description:
+          $ref: '#/components/schemas/ReissueDescription'
+        must_block:
+          $ref: '#/components/schemas/MustBlock'
+        must_charge:
+          $ref: '#/components/schemas/MustCharge'
+        cost:
+          $ref: '#/components/schemas/ReissueCost'
+        type:
+          $ref: '#/components/schemas/ReissueType'
+        enabled:
+          $ref: '#/components/schemas/ReissueEnabled'
     UpdateTokens:
       type: boolean
       description: >
@@ -2871,6 +3214,10 @@ paths:
 
         Accounts can have multiple customers, typically to accommodate primary
         and additional cardholders, but only one owner.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       tags:
         - Cards
       parameters:
@@ -2934,8 +3281,12 @@ paths:
         `contactless_enabled`, `abu_enabled`, or `metadata`.<br>
 
 
-        This endpoint generates an [Card
+        This endpoint generates a [Card
         updated](https://developers.pismo.io/events/docs/cards-update-1) event.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       operationId: patch-v2-card
       tags:
         - Cards
@@ -3085,7 +3436,12 @@ paths:
     get:
       operationId: get-v1-card-statuses
       summary: Get card statuses
-      description: Get all possible card statuses, including those used for card reissuing.
+      description: >
+        Get all possible card statuses, including those used for card reissuing.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       tags:
         - Card status
       responses:
@@ -3112,9 +3468,11 @@ paths:
         and org/tenant are parsed from the access token.
 
 
-        **Note**: Only cards with status changes after September/2022 are
-        returned.
+        **Note**: 
 
+          * Only cards with status changes after September/2022 are returned.
+
+          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
 
         For more information, refer to [Card lifecycle and
         statuses](doc:card-lifecycle-and-statuses).
@@ -3181,6 +3539,9 @@ paths:
         other card](ref:transfertokens) endpoint. 
 
         * Currently, there is no way to transfer a card's PAN
+
+        * This endpoint takes an account token - an access token encoded with a
+        Pismo account ID.
       parameters:
         - $ref: '#/components/parameters/customerIdPath'
         - $ref: '#/components/parameters/accountIdPath'
@@ -3206,54 +3567,6 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '409':
           $ref: '#/components/responses/409Conflict'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-  /wallet/v1/cards/reissue/reasons:
-    get:
-      operationId: get-v1-card-reissue-reasons
-      summary: Get card reissue reasons
-      tags:
-        - Card reissue
-      description: >
-        Get all reissue reasons together with associated costs.
-
-
-        To register reasons for reissue:
-
-
-        [Open a Jira ticket](doc:opening-a-service-desk-ticket) with type  =
-        **Settings** and enter the data below:
-
-
-        `cost` - Reissue cost value. This field is for information only - only
-        issuers can make debit entries to a customer's account.
-
-
-        `must_block` - Whether the card is canceled at reissue time or can
-        transact until new card is activated.
-
-
-        `description` - Reason description.
-
-
-        `must_charge` - Will reissue be charged? This field is for information
-        only as only the issuer can make debit entries to a customer's account.
-
-
-        `type` - Issuer defined reissue reason enum value
-      responses:
-        '200':
-          description: Reissue reasons
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReissueReasons'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '404':
-          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'
   /pcicards/v2/pcicards/card/{cardId}:
@@ -3328,8 +3641,11 @@ paths:
         event.
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - PCI
       parameters:
@@ -3526,8 +3842,11 @@ paths:
         purchases with Pinpads.
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - PCI
       parameters:
@@ -3545,74 +3864,6 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '409':
           $ref: '#/components/responses/409ConflictPinNull'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-  /pcicards/v2/pcicards/cvv/{cardId}/reset:
-    post:
-      operationId: post-v2-reset-cvv
-      summary: Rotate virtual card CVV
-      description: >
-        Force a virtual card's CVV (Card Verification Value) rotation.
-
-
-        **CVV rotation rules:**
-
-
-        Calling this endpoint can reset the CVV rotation schedule in the future.
-        For example, if you call this endpoint at 3PM and the defined rotation
-        interval is 24 hours, the next rotation will take place at 3PM the next
-        day and subsequent days after.
-
-
-        A 2-minute validation occurs between scheduling requests and, within
-        this interval, no new scheduling takes place. This can lead to the
-        following scenarios:
-
-
-        * If a forced rotation occurs less than 2 minutes after an
-        auto-rotation, the CVV is rotated and no new scheduling takes place.
-
-        * If an auto-rotation occurs less than 2 minutes after a forced
-        rotation, the CVV is rotated and no new scheduling takes place.
-
-        * If more than one forced call occurs in less than 2 minutes, the CVV is
-        rotated, but new scheduling only takes place for the first call.
-
-
-        This endpoint generates a [Card CVV
-        changed](https://developers.pismo.io/events/docs/cards-rotate-cvv-1)
-        event.
-
-
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
-      tags:
-        - PCI
-      parameters:
-        - $ref: '#/components/parameters/cardId'
-      requestBody:
-        description: Rotate CVV request body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                service_code:
-                  $ref: '#/components/schemas/ServiceCode'
-      responses:
-        '200':
-          description: Success CVV rotation response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResetCvvResponse'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '404':
-          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'
   /cards/v1/bulks:
@@ -3726,13 +3977,12 @@ paths:
 
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io/
-        environment."
+        environment.
       tags:
         - PCI
       parameters:
         - $ref: '#/components/parameters/cardId'
         - $ref: '#/components/parameters/x-AccountIdHeader'
-        - $ref: '#/components/parameters/x-TenantHeader'
       requestBody:
         description: Request body*
         required: true
@@ -3925,8 +4175,11 @@ paths:
         [bound to an account and customer](ref:post-v2-card-bind).
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Noname
       parameters:
@@ -4030,6 +4283,10 @@ paths:
         For more information, refer to the [mode
         documentation](doc:cards-overview-1#create-a-combination-card-with-card-modes)
         in the Cards overview guide.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       tags:
         - Modes
       parameters:
@@ -4281,12 +4538,16 @@ paths:
                 properties:
                   error_code:
                     type: string
+                    description: Error code
                   message:
                     type: string
+                    description: Error message
                   status:
                     type: integer
+                    description: Status
                   error:
                     type: string
+                    description: Error
               examples:
                 example-bad-request:
                   value:
@@ -4357,8 +4618,9 @@ paths:
         embossing](doc:physical-card-embossing) guide.
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
+          * This endpoint requires an account token - an access token encoded with a Pismo account ID. Tokens can expire quickly, which can result in a **401 Unauthorized** error message. 
       tags:
         - Embossing data
       parameters:
@@ -4440,8 +4702,11 @@ paths:
         card embossing](doc:physical-card-embossing) guide.
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Embossing
       parameters:
@@ -4642,8 +4907,11 @@ paths:
         embossing](doc:physical-card-embossing) guide. 
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Embossing
       parameters:
@@ -4883,8 +5151,11 @@ paths:
         flows](doc:physical-card-embossing#embossing-flows).
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Embossing data
       responses:
@@ -4960,6 +5231,7 @@ paths:
         **Notes:**
           * To use this endpoint, request it with a [Jira ticket](doc:opening-a-service-desk-ticket) with type = Settings and ask to use *ondemand* embossing.
           * If you call this endpoint, the [Change card password](ref:put-v2-card-password) endpoint will no longer add the card for embossing.
+          * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Embossing
@@ -5139,12 +5411,14 @@ paths:
     get:
       operationId: get-embossing-history
       summary: Get card embossing history
-      description: >
+      description: |
         Retrieve a card's embossing history information.
 
+         **Notes:** 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Embossing data
       parameters:
@@ -5237,8 +5511,11 @@ paths:
         event. 
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Embossing
       requestBody:
@@ -5308,6 +5585,10 @@ paths:
 
         For more information, refer to the [Card lifecycle and
         statuses](doc:card-lifecycle-and-statuses) guide.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       tags:
         - Cards
       parameters:
@@ -5344,6 +5625,9 @@ paths:
         [mode
         documentation](doc:cards-overview-1#create-a-combination-card-with-card-modes)
         in the Cards management guide.
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
       deprecated: true
       tags:
         - Cards
@@ -5373,7 +5657,6 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /pcicards/v1/pcicards/{cardId}/scripts:
     post:
-      operationId: post-v1-append-scripts
       summary: Append issuer script
       description: >
         Append issuer script to card that will be applied at the next
@@ -5388,12 +5671,12 @@ paths:
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
         environment.
+      operationId: post-v1-append-scripts
       tags:
         - PCI
       parameters:
         - $ref: '#/components/parameters/cardId'
         - $ref: '#/components/parameters/x-AccountIdHeader'
-        - $ref: '#/components/parameters/x-TenantHeader'
       requestBody:
         description: Request body
         required: true
@@ -5487,7 +5770,7 @@ paths:
 
         **Note:** This endpoint requires an account token - an access token
         encoded with a Pismo account ID. Tokens can expire quickly, which can
-        result in a **401 Unauthoried** error message. 
+        result in a **401 Unauthorized** error message. 
       operationId: patch-v2-card-validity-renew
       tags:
         - Card validity
@@ -5684,8 +5967,11 @@ paths:
         event.
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       operationId: post-generate-embossing
       tags:
         - Embossing encrypted
@@ -5802,8 +6088,12 @@ paths:
         event.
 
 
-        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment.
+        **Notes:** 
+
+         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+
+         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
+         
       operationId: post-generate-embossing-no-iv
       tags:
         - Embossing encrypted
@@ -6141,7 +6431,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
   /wallet/v2/cards/{cardId}/program-migration:
-    post:
+    patch:
       summary: Migrate card to different program [beta]
       description: >
         Migrate a card to a different program. It is possible to migrate from a
@@ -6157,8 +6447,8 @@ paths:
 
            * This endpoint **REQUIRES** an account token - an access token encoded with a Pismo account ID.
 
-           * For combination cards, this endpoint migrates the [card mode](doc:cards-overview-1#create-a-combination-card-with-card-modes) the card was originally created with. To migrate the secondary mode, call the [Migrate card mode](ref:post-migrate-card-mode) endpoint.
-      operationId: post-migrate-card
+           * For combination cards, this endpoint migrates the [card mode](doc:cards-overview-1#create-a-combination-card-with-card-modes) the card was originally created with. To migrate the secondary mode, call the [Migrate card mode](ref:patch-migrate-card-mode) endpoint.
+      operationId: patch-migrate-card
       tags:
         - Migration
       parameters:
@@ -6187,7 +6477,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
   /wallet/v2/cards/{cardId}/mode/{modeId}/program-migration:
-    post:
+    patch:
       summary: Migrate card mode [beta]
       description: >
         Migrate a [card's
@@ -6198,8 +6488,9 @@ paths:
         Migrate a card's secondary mode (debit or credit) to a new program. If a
         combination card is initially created with a credit account (has a
         `CREDIT` mode), it gets migrated when the [Migrate card to different
-        program](ref:post-migrate-card) endpoint is called. However, if you wish
-        to migrate the debit (secondary) mode, you need to call this endpoint. 
+        program](ref:patch-migrate-card) endpoint is called. However, if you
+        wish to migrate the debit (secondary) mode, you need to call this
+        endpoint. 
 
 
         This endpoint generates a [Card
@@ -6209,14 +6500,14 @@ paths:
 
         **Note:** This endpoint **REQUIRES** an account token - an access token
         encoded with a Pismo account ID.
-      operationId: post-migrate-card-mode
+      operationId: patch-migrate-card-mode
       tags:
         - Migration
       parameters:
         - $ref: '#/components/parameters/cardId'
         - $ref: '#/components/parameters/modeIdPath'
       requestBody:
-        description: Request body
+        description: Migrate card mode request body
         required: true
         content:
           application/json:
@@ -6235,5 +6526,519 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '406':
           $ref: '#/components/responses/406NotAcceptable'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v1/pcicards/benefits/segments/assign:
+    post:
+      summary: Assign card segment
+      description: >
+        Assigns segment to a card. An array of bundles are then assigned to the
+        card. 
+
+
+        A Mastercard card **segment** is a specific cardholder grouping (e.g.,
+        premium, business, or travel-focused) that issuers use to allocate
+        tailored benefit bundles such as travel insurance, concierge services,
+        or concierge access to particular cards. These segments allow for
+        personalized, dynamic, and targeted rewards assigned to cardholders via
+        API. 
+
+
+        A Mastercard card segment **bundle** is a targeted package of benefits,
+        rewards, or services assigned to specific carholder groups based on
+        need.
+
+
+        This endpoint generates a [Cards benefits allocation
+        updated](https://developers.pismo.io/events/docs/cards-benefits-allocation-1)
+        event.
+
+
+        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
+        environment.
+      operationId: post-v1-benefits-segments-assign
+      tags:
+        - Mastercard benefits
+      requestBody:
+        description: Assign card segement request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Assign'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundlesResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v1/pcicards/benefits/segments/replace:
+    put:
+      summary: Replace card segment and benefits
+      description: >
+        Replaces the segment and existing benefits with a new benefit set
+        assigned via a new segment code. The existing benefits are cancelled,
+        and new benefits are assigned. An array of newly-assigned bundles is
+        returned in the response. 
+
+
+        This endpoint generates a [Cards benefits allocation
+        updated](https://developers.pismo.io/events/docs/cards-benefits-allocation-1)
+        event.
+
+
+        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
+        environment.
+      operationId: post-v1-benefits-segments-replace
+      tags:
+        - Mastercard benefits
+      requestBody:
+        description: Replace card segment and updates request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceBenefit'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundlesResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v1/pcicards/benefits/segments/cancel:
+    put:
+      summary: Cancel card segment and benefits
+      description: >
+        Cancels a segment and the benefits associated to the card for the input
+        segment. The canceled bundle array is returned.
+
+
+        Exactly one input segment is supported at this time. It is defined as an
+        array for future support.
+
+
+        This endpoint generates a [Cards benefits allocation
+        updated](https://developers.pismo.io/events/docs/cards-benefits-allocation-1)
+        event. 
+
+
+        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
+        environment.
+      operationId: post-v1-benefits-segments-cancel
+      tags:
+        - Mastercard benefits
+      requestBody:
+        description: Cancel card segment and benefits request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cancel'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundlesResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v1/pcicards/benefits/cards/replace:
+    post:
+      summary: Replace user card number
+      description: >
+        Replaces user card number associated. The old card benefits are
+        cancelled, and the same benefit set is applied to the new card.
+
+
+        This endpoint generates a [Cards benefits allocation
+        updated](https://developers.pismo.io/events/docs/cards-benefits-allocation-1)
+        event.
+
+
+        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
+        environment.
+      operationId: post-v1-benefits-cards-cancel
+      tags:
+        - Mastercard benefits
+      parameters:
+        - $ref: '#/components/parameters/customerIdHeader'
+      requestBody:
+        description: Replace user card number request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceCard'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundlesResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v1/pcicards/benefits/cards/freeze:
+    put:
+      operationId: post-v1-benefits-cards-freeze
+      summary: Allow freezing/unfreezing card benefits
+      description: >
+        Allows freezing or unfreezing a card for benefits.
+
+
+        This endpoint generates a [Cards benefits allocation
+        updated](https://developers.pismo.io/events/docs/cards-benefits-allocation-1)
+        event.
+
+
+        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
+        environment.
+      tags:
+        - Mastercard benefits
+      requestBody:
+        description: Allow freezing/unfreezing card benefits request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Freeze'
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v2/pcicards/cvv/{cardId}/reset:
+    post:
+      operationId: post-v2-reset-cvv
+      summary: Rotate virtual card CVV
+      description: >
+        Force a virtual card's CVV (Card Verification Value) rotation.
+
+
+        **CVV rotation rules:**
+
+
+        Calling this endpoint can reset the CVV rotation schedule in the future.
+        For example, if you call this endpoint at 3PM and the defined rotation
+        interval is 24 hours, the next rotation will take place at 3PM the next
+        day and subsequent days after.
+
+
+        A 2-minute validation occurs between scheduling requests and, within
+        this interval, no new scheduling takes place. This can lead to the
+        following scenarios:
+
+
+        * If a forced rotation occurs less than 2 minutes after an
+        auto-rotation, the CVV is rotated and no new scheduling takes place.
+
+        * If an auto-rotation occurs less than 2 minutes after a forced
+        rotation, the CVV is rotated and no new scheduling takes place.
+
+        * If more than one forced call occurs in less than 2 minutes, the CVV is
+        rotated, but new scheduling only takes place for the first call.
+
+
+        This endpoint generates a [Card CVV
+        changed](https://developers.pismo.io/events/docs/cards-rotate-cvv-1)
+        event.
+
+
+        **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
+        environment.
+      tags:
+        - CVV rotation
+      parameters:
+        - $ref: '#/components/parameters/cardId'
+      requestBody:
+        description: Rotate CVV request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                service_code:
+                  $ref: '#/components/schemas/ServiceCode'
+      responses:
+        '200':
+          description: Success CVV rotation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetCvvResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v2/pcicards/cvv/{cardId}/change-rotation:
+    patch:
+      summary: Update CVV rotation interval
+      description: >
+        Allows to manage CVV rotation, for example:
+          
+          * Set CVV rotation for cards without CVV rotation
+
+          * Increase/decrease CVV rotation interval
+
+        A [Card CVV
+        changed](https://developers.pismo.io/events/docs/cards-rotate-cvv-1)
+        event is generated with `operation_type` = `CHANGE_CVV_ROTATION`
+
+
+        **Notes**
+
+          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
+
+          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
+      operationId: patch-v2-card-change-rotation
+      tags:
+        - CVV rotation
+      parameters:
+        - $ref: '#/components/parameters/cardId'
+      requestBody:
+        description: Update CVV rotation interval request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CvvChangeRotationRequest'
+      responses:
+        '200':
+          description: OK. (The CVV rotation interval was changed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CvvChangeRotationResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /pcicards/v2/pcicards/cvv/{cardId}/delete-rotation:
+    delete:
+      summary: Delete CVV card rotation interval
+      description: >
+        Deletes CVV rotation for cards with active rotation.
+
+
+        A [Card CVV
+        changed](https://developers.pismo.io/events/docs/cards-rotate-cvv-1)
+        event is generated with `operation_type` = `DELETE_CVV_ROTATION`.
+
+
+        **Notes**
+
+        * This endpoint takes an account token - an access token encoded with a
+        Pismo account ID.
+
+        * This is a PCI endpoint, use the https://gw-pci.pismolabs.io
+        environment.
+      operationId: delete-v2-card-delete-rotation
+      tags:
+        - CVV rotation
+      parameters:
+        - $ref: '#/components/parameters/cardId'
+      responses:
+        '204':
+          description: No Content (The CVV rotation was deleted)
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /cards/v1/reissue/reasons:
+    post:
+      summary: Create reissue reason
+      description: |
+        Create a new reissue reason.
+
+        All fields are required when creating a new reason.
+      operationId: create-reissue-reason
+      tags:
+        - Card reissue
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReasonRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReasonResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+    get:
+      summary: List reissue reasons
+      description: |
+        Returns a paginated list of reissue reasons for the tenant.
+
+        Supports filtering by enabled status and cursor-based pagination.
+      operationId: get-reissue-reasons
+      tags:
+        - Card reissue
+      parameters:
+        - $ref: '#/components/parameters/limitQuery'
+        - $ref: '#/components/parameters/nextCursorQuery'
+        - $ref: '#/components/parameters/enabledQuery'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetReasonsResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /cards/v1/reissue/reasons/{id}:
+    patch:
+      summary: Update reissue reason
+      description: >
+        Updates an existing reissue reason.
+
+
+        At least one field must be provided. Only the fields provided will be
+        updated.
+      operationId: update-reissue-reason
+      tags:
+        - Card reissue
+      parameters:
+        - $ref: '#/components/parameters/reasonIdPath'
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReasonRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReasonResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /wallet/v1/cards/reissue/reasons:
+    get:
+      summary: Get card reissue reasons (outdated)
+      tags:
+        - Card reissue
+      operationId: get-v1-card-reissue-reasons
+      description: >
+        This endpoint is outdated, call the [List reissue
+        reasons](ref:get-reissue-reasons) endpoint instead.
+
+
+        Get all reissue reasons together with associated costs.
+
+
+        To register reasons for reissue:
+
+
+        [Open a Jira ticket](doc:opening-a-service-desk-ticket) with type  =
+        **Settings** and enter the data below:
+
+
+        `cost` - Reissue cost value. This field is for information only - only
+        issuers can make debit entries to a customer's account.
+
+
+        `must_block` - Whether the card is canceled at reissue time or can
+        transact until new card is activated.
+
+
+        `description` - Reason description.
+
+
+        `must_charge` - Will reissue be charged? This field is for information
+        only as only the issuer can make debit entries to a customer's account.
+
+
+        `type` - Issuer defined reissue reason enum value
+      responses:
+        '200':
+          description: Reissue reasons
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReissueReasons'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'

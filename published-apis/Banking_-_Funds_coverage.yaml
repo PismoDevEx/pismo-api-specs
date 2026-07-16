@@ -1,0 +1,403 @@
+openapi: 3.0.0
+info:
+  title: Banking - Funds coverage
+  version: 1.0.0
+  description: This API manages funds coverage functionalities.
+  contact:
+    name: API Support
+    url: https://developers.pismo.io/support/
+  license:
+    name: Copyright Pismo
+servers:
+  - url: https://sandbox.pismolabs.io/funds-coverage
+    description: Sandbox API server for testing
+security:
+  - BearerAuth: []
+tags:
+  - name: Protection sources
+    description: Endpoints that manage protection sources
+components:
+  parameters:
+    authorizationTokenHeader:
+      name: AuthorizationToken
+      in: header
+      description: >
+        Account token. Token encoded with a Pismo account ID. Tokens can expire
+        quickly, which can result in a `401 Unauthorized` error.
+      required: true
+      schema:
+        type: string
+      example: '1234'
+    accountIdPath:
+      name: accountId
+      in: path
+      description: Pismo account ID
+      required: true
+      schema:
+        type: string
+      example: '78123456'
+  schemas:
+    ProtectionSourceParam:
+      type: object
+      properties:
+        covered:
+          type: string
+          enum:
+            - overdraft
+            - credit_card
+          description: |
+            The financial product you want to protect
+          example: overdraft
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+          description: The list of financial products that can act as coverage sources
+      required:
+        - covered
+        - sources
+    Source:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - savings_account
+            - loan
+          description: Funds coverage source product type
+          example: savings_account
+        hierarchy:
+          type: integer
+          description: >-
+            Funds coverage source hierarchy level. The funds coverage is
+            selected according to its configured hierarchy level. Note that
+            lower numbers have higher priority.
+          example: 1
+        processing_code:
+          type: string
+          description: Processing code associated with the source, used to move funds
+          example: '009797'
+        id:
+          type: string
+          description: >-
+            ID representing the fund source. If you don't specify a value, the
+            Pismo platform defaults to your account ID and `sources.type`.
+          example: '123'
+        is_active:
+          type: boolean
+          description: Is the source active?
+          default: false
+          example: true
+      required:
+        - type
+        - hierarchy
+        - processing_code
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code
+          example: EFCA0001
+        message:
+          type: string
+          description: Error message
+          example: Error
+        details:
+          type: string
+          description: Details about the error
+          example: Error details
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    200GetProtectionSourcesResponse:
+      description: Get protection sources successful
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProtectionSourceParam'
+          examples:
+            Get protection sources successful:
+              $ref: '#/components/examples/200GetProtectionSourcesExample'
+    201CreateProtectionSourcesResponse:
+      description: >-
+        No response body is returned when a protection source is created
+        successfully
+    204UpdateProtectionSourcesResponse:
+      description: >-
+        No response body is returned when a protection source is updated
+        successfully
+    400CreateProtectionSourcesErrorResponse:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Bad Request:
+              $ref: '#/components/examples/EFCA0001'
+            Validation error:
+              $ref: '#/components/examples/EFCA0002'
+            Organizations API 4xx error:
+              $ref: '#/components/examples/EFCA0015'
+    400GetProtectionSourcesErrorResponse:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Bad Request:
+              $ref: '#/components/examples/EFCA0001'
+    400UpdateProtectionSourcesErrorResponse:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Bad Request:
+              $ref: '#/components/examples/EFCA0001'
+            Validation error:
+              $ref: '#/components/examples/EFCA0002'
+            Organizations API 4xx error:
+              $ref: '#/components/examples/EFCA0015'
+    404CreateProtectionSourcesErrorResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Organization API resource not found:
+              $ref: '#/components/examples/EFCA0016'
+    404GetProtectionSourcesErrorResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Resource not found:
+              $ref: '#/components/examples/EFCA0009'
+    404UpdateProtectionSourcesErrorResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Organizations API resource not found:
+              $ref: '#/components/examples/EFCA0016'
+    409CreateProtectionSourcesErrorResponse:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Resource already exists:
+              $ref: '#/components/examples/EFCA0010'
+    500CreateProtectionSourcesErrorResponse:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Internal error:
+              $ref: '#/components/examples/EFCA0006'
+            HTTP request error:
+              $ref: '#/components/examples/EFCA0007'
+            Organization API request error:
+              $ref: '#/components/examples/EFCA0011'
+            Organization API unmarshal response error:
+              $ref: '#/components/examples/EFCA0012'
+            Organization API unmapped response code error:
+              $ref: '#/components/examples/EFCA0013'
+            Organization API 5xx error:
+              $ref: '#/components/examples/EFCA0014'
+    500GetProtectionSourcesErrorResponse:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Internal error:
+              $ref: '#/components/examples/EFCA0006'
+    500UpdateProtectionSourcesErrorResponse:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Internal error:
+              $ref: '#/components/examples/EFCA0006'
+            HTTP request error:
+              $ref: '#/components/examples/EFCA0007'
+            Organizations API request error:
+              $ref: '#/components/examples/EFCA0011'
+            Organizations API unmarshal response error:
+              $ref: '#/components/examples/EFCA0012'
+            Organizations API unmapped response code error:
+              $ref: '#/components/examples/EFCA0013'
+            Organizations API 5xx error:
+              $ref: '#/components/examples/EFCA0014'
+  examples:
+    200GetProtectionSourcesExample:
+      summary: Get protection sources successful
+      value:
+        covered: overdraft
+        sources:
+          type: savings_account
+          id: '123'
+          hierarchy: 1
+          is_active: true
+          processing_code: '009797'
+    EFCA0001:
+      summary: Bad Request
+      value:
+        code: EFCA0001
+        message: Bad Request
+    EFCA0002:
+      summary: Validation error
+      value:
+        code: EFCA0002
+        message: Validation error
+    EFCA0015:
+      summary: Organizations API 4xx error
+      value:
+        code: EFCA0015
+        message: Organization API 4xx error
+    EFCA0009:
+      summary: Resource not found
+      value:
+        code: EFCA0009
+        message: Resource not found
+    EFCA0016:
+      summary: Organization API resource not found
+      value:
+        code: EFCA0016
+        message: Organizations API resource not found
+    EFCA0010:
+      summary: Resource already exists
+      value:
+        code: EFCA0010
+        message: Resource already exists
+    EFCA0006:
+      summary: Internal error
+      value:
+        code: EFCA0006
+        message: Internal error
+    EFCA0007:
+      summary: HTTP request error
+      value:
+        code: EFCA0007
+        message: HTTP request error
+    EFCA0011:
+      summary: Organization API request error
+      value:
+        code: EFCA0011
+        message: Organization API request error
+    EFCA0012:
+      summary: Organization API unmarshal response error
+      value:
+        code: EFCA0012
+        message: Organization API unmarshal response error
+    EFCA0013:
+      summary: Organization API unmapped response code error
+      value:
+        code: EFCA0013
+        message: Organization API unmapped response code error
+    EFCA0014:
+      summary: Organization API 5xx error
+      value:
+        code: EFCA0014
+        message: Organization API 5xx error
+paths:
+  /v1/protection-sources:
+    post:
+      tags:
+        - Protection sources
+      summary: Create protection source
+      description: >
+        Create new funds coverage protection source to cover insufficient
+        funds.<br>
+
+        The funds coverage service enables financial products—such as savings
+        accounts, loans, and credit cards—to serve as coverage sources for other
+        products when there is an insufficient balance or a payment failure. It
+        supports overdraft coverage type, configurable fallback hierarchies, and
+        is designed for future extensibility to accommodate additional product
+        types. Refer to the [Funds coverage](doc:funds-coverage) guide for more
+        details.
+      operationId: post-protection-source
+      parameters:
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtectionSourceParam'
+      responses:
+        '201':
+          $ref: '#/components/responses/201CreateProtectionSourcesResponse'
+        '400':
+          $ref: '#/components/responses/400CreateProtectionSourcesErrorResponse'
+        '404':
+          $ref: '#/components/responses/404CreateProtectionSourcesErrorResponse'
+        '409':
+          $ref: '#/components/responses/409CreateProtectionSourcesErrorResponse'
+        '500':
+          $ref: '#/components/responses/500CreateProtectionSourcesErrorResponse'
+    patch:
+      tags:
+        - Protection sources
+      summary: Update protection source
+      description: >
+        Update protection source. If a source does not exist, the Pismo platform
+        selects one from `sources.type`.
+      operationId: update-protection-source
+      parameters:
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtectionSourceParam'
+      responses:
+        '201':
+          $ref: '#/components/responses/204UpdateProtectionSourcesResponse'
+        '400':
+          $ref: '#/components/responses/400UpdateProtectionSourcesErrorResponse'
+        '404':
+          $ref: '#/components/responses/404UpdateProtectionSourcesErrorResponse'
+        '500':
+          $ref: '#/components/responses/500UpdateProtectionSourcesErrorResponse'
+  /v1/protection-sources/accounts/{accountId}:
+    get:
+      tags:
+        - Protection sources
+      summary: Get protection source
+      description: |
+        Get funds coverage protection source using your account ID
+      operationId: get-protection-source
+      parameters:
+        - $ref: '#/components/parameters/accountIdPath'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+      responses:
+        '200':
+          $ref: '#/components/responses/200GetProtectionSourcesResponse'
+        '400':
+          $ref: '#/components/responses/400GetProtectionSourcesErrorResponse'
+        '404':
+          $ref: '#/components/responses/404GetProtectionSourcesErrorResponse'
+        '500':
+          $ref: '#/components/responses/500GetProtectionSourcesErrorResponse'

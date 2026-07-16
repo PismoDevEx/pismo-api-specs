@@ -739,7 +739,7 @@ components:
           $ref: '#/components/schemas/Fees'
     Fees:
       type: array
-      description: Additional creditor operation fees
+      description: Creditor operation additional fees
       items:
         $ref: '#/components/schemas/Fee'
       example:
@@ -1420,7 +1420,8 @@ security:
 paths:
   /v2/marketplaces:
     post:
-      summary: Create marketplace
+      deprecated: true
+      summary: Create marketplace V2 (deprecated)
       description: >
         This endpoint creates a marketplace asynchronously, which means that you
         need to wait for the [Marketplace
@@ -1438,10 +1439,8 @@ paths:
         This endpoint creates a merchant asynchronously [Merchant
         Creation](https://developers.pismo.io/pismo-docs/reference/createmerchant).
 
-        <b>Note</b>: It is mandatory to use this endpoint to create marketplaces
-        instead of using the already deprecated [Create
-        marketplaces](https://developers.pismo.io/pismo-docs/reference/postmarketplacesv1)
-        endpoint.
+        This endpoint is **deprecated**. It is replaced by [Create marketplace
+        V3](https://developers.pismo.io/pismo-docs/reference/createmarketplace).
       tags:
         - Marketplace
       operationId: PostMarketplacesV2
@@ -1504,7 +1503,8 @@ paths:
           $ref: '#/components/responses/502BadGateway'
   /v1/marketplaces/{marketplaceId}:
     put:
-      summary: Update marketplace
+      deprecated: true
+      summary: Update marketplace (deprecated)
       description: >
         Update a marketplace given its ID in the path.
 
@@ -1512,6 +1512,10 @@ paths:
         This endpoint generates a [Marketplace
         updated](https://developers.pismo.io/events/docs/marketplace-marketplace-updated-1)
         event.
+
+
+        This endpoint is **deprecated**. It is replaced by [Update
+        marketplace](https://developers.pismo.io/pismo-docs/reference/updatemarketplace).
       tags:
         - Marketplace
       operationId: PutUpdateMarketplaceV1
@@ -1542,17 +1546,16 @@ paths:
         '502':
           $ref: '#/components/responses/502BadGateway'
     get:
-      summary: Get marketplace
+      deprecated: true
+      summary: Get marketplace (deprecated)
       description: >
         This endpoint gets a marketplace by ID.
 
-        (<strong>Outdated:</strong> For an updated version of the marketplace
-        endpoint refer to [Get MarketplaceById
-        V2](https://developers.pismo.io/pismo-docs/reference/getmarketplacebyidv2).)
+        This endpoint is **deprecated**. It is replaced by [Get
+        marketplace](https://developers.pismo.io/pismo-docs/reference/getmarketplacebyid). 
       tags:
         - Marketplace
       operationId: GetMarketplaceByIdV1
-      deprecated: true
       parameters:
         - $ref: '#/components/parameters/MarketplaceIdPath'
         - $ref: '#/components/parameters/AuthorizationHeader'
@@ -1574,17 +1577,16 @@ paths:
           $ref: '#/components/responses/502BadGateway'
   /v1/marketplaces:
     post:
-      summary: Create marketplace
+      deprecated: true
+      summary: Create marketplace V1 (deprecated)
       description: >
         This endpoint creates a marketplace.
 
-        (<strong>Outdated:</strong> For an updated version of the marketplace
-        endpoint refer to [Post Marketplace
-        V2](https://developers.pismo.io/pismo-docs/reference/postmarketplacesv2).)
+        This endpoint is **deprecated**. It is replaced by [Create marketplace
+        V3](https://developers.pismo.io/pismo-docs/reference/createmarketplace).
       tags:
         - Marketplace
       operationId: PostMarketplacesV1
-      deprecated: true
       parameters:
         - $ref: '#/components/parameters/AuthorizationHeader'
         - $ref: '#/components/parameters/ContentTypeHeader'
@@ -1611,8 +1613,12 @@ paths:
         '502':
           $ref: '#/components/responses/502BadGateway'
     get:
-      summary: List marketplaces
-      description: List marketplaces using query parameters.
+      deprecated: true
+      summary: List marketplaces (deprecated)
+      description: >-
+        List marketplaces using query parameters. This endpoint is
+        **deprecated**. It is replaced by [List
+        marketplaces](https://developers.pismo.io/pismo-docs/reference/getmarketplaces).
       tags:
         - Marketplace
       operationId: GetMarketplacesV1
@@ -1640,8 +1646,12 @@ paths:
           $ref: '#/components/responses/502BadGateway'
   /v2/marketplaces/{marketplaceId}/merchants:
     get:
-      summary: List marketplace merchants
-      description: List merchants linked to the specified marketplace.
+      deprecated: true
+      summary: List marketplace merchants V2 (deprecated)
+      description: >-
+        List merchants linked to the specified marketplace. This endpoint is
+        **deprecated**. It is replaced by [List marketplace
+        merchants](https://developers.pismo.io/pismo-docs/reference/listmarketplacemerchantslinked).
       tags:
         - Marketplace merchants links
       operationId: GetMerchantsByMarketplaceIdV2
@@ -1671,8 +1681,12 @@ paths:
           $ref: '#/components/responses/502BadGateway'
   /marketplaces/v1/{marketplaceId}/merchants:
     get:
-      summary: List marketplace merchants
-      description: List merchants for specified marketplace.
+      deprecated: true
+      summary: List marketplace merchants V1 (deprecated)
+      description: >-
+        List merchants for specified marketplace. This endpoint is
+        **deprecated**. It is replaced by [List marketplace
+        merchants](https://developers.pismo.io/pismo-docs/reference/listmarketplacemerchantslinked).
       tags:
         - Marketplace merchants links
       operationId: GetMerchantsByMarketplaceIdV1
@@ -1696,8 +1710,12 @@ paths:
           $ref: '#/components/responses/502BadGateway'
   /marketplaces/v1/{marketplaceId}/merchants/{merchantId}:
     post:
-      summary: Link merchant and marketplace
-      description: Link merchant to marketplace.
+      deprecated: true
+      summary: Link merchant and marketplace (deprecated)
+      description: >-
+        Link merchant to marketplace. This endpoint is **deprecated**. It is
+        replaced by [Link marketplace to
+        merchants](https://developers.pismo.io/pismo-docs/reference/createmarketplacemerchantslink).
       tags:
         - Marketplace merchants links
       operationId: PostLinkMerchantToMarketplaceV1
@@ -1716,8 +1734,12 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete merchant and marketplace link
-      description: Unlink merchant and marketplace.
+      deprecated: true
+      summary: Delete merchant and marketplace link (deprecated)
+      description: >-
+        Unlink merchant and marketplace. This endpoint is **deprecated**. It is
+        replaced by [Unlink marketplace and
+        merchant](https://developers.pismo.io/pismo-docs/reference/deletemarketplacemerchantlink).
       tags:
         - Marketplace merchants links
       operationId: DeleteLinkBetweenMerchantAndMarketplaceV1

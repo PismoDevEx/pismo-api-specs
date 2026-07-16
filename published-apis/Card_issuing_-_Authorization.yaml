@@ -15,31 +15,10 @@ servers:
     description: Sandbox API server for migration testing
 tags:
   - name: Authorizations
+security:
+  - BearerAuth: []
 components:
   parameters:
-    AuthorizationToken:
-      name: Authorization
-      in: header
-      required: true
-      schema:
-        type: string
-      description: >-
-        Account token—a token encoded with a Pismo account ID. Tokens can expire
-        quickly, which can result in a <b>401 Unauthorized</b> message.
-    CIDheader:
-      name: x-cid
-      in: header
-      schema:
-        type: string
-      example: be0486e-073a-4f56-80bb-5c400337e721
-      description: >
-        Authorization correlation ID (CID). The CID is used to link related API
-        requests and events. For example, if a user makes an authorization
-        request with 10 installments, this generates 1 authorization event and
-        10 transaction events all containing the same correlation ID. The
-        `x-cid` can help the Pismo engineering team track everything related to
-        a call. If a CID isn't passed, it's automatically generated. You can
-        find this field in the response header.
     TenantHeader:
       in: header
       name: x-tenant
@@ -377,15 +356,34 @@ components:
     ClearingS3path:
       type: string
       description: >
-        The clearing settlement file path in the AWS S3 (storage service). The
-        composition of this field is: Tenant + from<Network_name> (Visa, Master,
-        Tecban, etc.) + specific clearing file name (ServiceB, Base II, T112,
-        T464, and so on) + year + julian date + file name. This field must be
-        used when the `mti` field equals `clearing` (representing the simulation
-        of a clearing settlement file processing).
+        The clearing settlement file path in the AWS S3 (storage service). This
+        field must be used when the `mti` field equals `clearing` (representing
+        the simulation of a clearing settlement file processing).
+
+        The composition of this field is:
+
+        <tenant>/from<KNetwork_name>/<specific_clearing_file_name>/<year>/<julian_date>/<file_name>
+
+        Where:
+
+        - `<tenant>` is the tenant ID, for example,
+        `TN-c9cccb07-41f7-493c-b796-60cc880bff4f`
+
+        - `<Network_name>` is the name of the card network, for example, Visa,
+        Mastercard, TecBan, etc.
+
+        - `<specific_clearing_file_name>` is the name of the clearing file, for
+        example, ServiceB, Base II, T112, T464, and so on.
+
+        - `<year>` is the year of the clearing file, for example, 2023.
+
+        - `<julian_date>` is the Julian date of the clearing file, for example,
+        105, where 10 is the day and 5 is the month.
+
+        - `<file_name>` is the name of the clearing file, for example,
+        17275501C489639.txt.
       example: >-
-        TN-c9cccb07-41f7-493c-b796-
-        60cc880bff4f/fromVisa/C489639/baseii/2023/105/17275501C489639.txt
+        TN-c9cccb07-41f7-493c-b796-60cc880bff4f/fromVisa/C489639/baseii/2023/105/17275501C489639.txt
     CreateAuthorization:
       type: object
       description: Creates an authorization
@@ -410,12 +408,11 @@ components:
           example: 100.5
         local_currency:
           type: string
+          maxLength: 3
           description: >-
             Local ISO 4217 currency code number where transaction occurred. For
             example, 986 (Brazil) or 840 (US).
-          enum:
-            - '986'
-            - '840'
+          example: '986'
         merchant:
           type: object
           description: Merchant details
@@ -456,10 +453,14 @@ components:
           example: '587498'
         processing_code:
           type: string
-          description: >-
+          description: >
             Transaction's effect on the customer account and the type of
-            accounts affected. For purchase, use "00"; for withdraw; use "01";
+            accounts affected. For purchase, use "00"; for withdraw, use "01";
             for refund, use "20"; for payment, use "28".
+
+
+            For information about processing codes, refer to [Processing
+            codes](doc:processing-codes-and-transaction-types).
           enum:
             - '00'
             - '01'
@@ -471,7 +472,9 @@ components:
           description: >
             Application transaction counter (ATC). The chip card application
             maintains and increments this counter. The ATC provides a sequential
-            reference for each transaction.
+            reference for each transaction. For more information, refer to
+            [Application Transaction Counter
+            (ATC)](doc:application-transaction-counter-atc).
           example: '0100'
         settlement_amount:
           type: number
@@ -615,10 +618,14 @@ components:
           example: '901'
         processing_code:
           type: string
-          description: >-
+          description: >
             Describes the effect of a transaction on the customer account and
-            the type of accounts affected. For purchase, use `00`; for
-            withdrawal, use `01`; for refund, use `20`; for payment, use `28`.
+            the type of accounts affected. For purchase, use `00`; for withdraw,
+            use `01`; for refund, use `20`; for payment, use `28`.
+
+
+            For information about processing codes, refer to [Processing
+            code](docs:processing-codes-and-transaction-types).          
           enum:
             - '00'
             - '01'
@@ -1072,325 +1079,6 @@ components:
         [MTI](https://en.wikipedia.org/wiki/ISO_8583#Message_type_indicator_(MTI)).
       nullable: false
       example: '0100'
-    NetworkAuthorization:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique ID for this network authorization record
-          nullable: false
-          example: 1230
-        message_type_indicator:
-          type: string
-          description: >
-            Message type ID. For example: `0100` = auth. request, `0110` = auth.
-            response, `0120` = auth. advice. For more information, refer to
-            [MTI](https://en.wikipedia.org/wiki/ISO_8583#Message_type_indicator_(MTI)).
-          nullable: false
-          example: '0100'
-        caller:
-          type: string
-          description: Caller - Mastercard, VISA, etc.
-          nullable: false
-          example: Mastercard
-        soft_descriptor:
-          type: string
-          description: Additional description for this authorization
-          nullable: true
-        processing_julian_date_settlement:
-          type: string
-          description: Settlement date in julian format = yydd
-          nullable: true
-          example: '1360'
-        acquirer_reference_number:
-          type: string
-          description: Acquirer generated number
-          nullable: true
-          example: '1234569876541'
-        clearing_s3_path:
-          $ref: '#/components/schemas/ClearingS3path'
-        message_number:
-          type: string
-          description: >-
-            Message number assigned to a clearing message. This **must** be a
-            numeric and sequential number.
-          nullable: true
-          example: '123'
-        partial_cancellation_total_amount:
-          type: string
-          description: Partial cancellation total amount
-          nullable: true
-          example: '100.21'
-        org_operation_id:
-          type: integer
-          description: Org Operation ID
-          example: 79985
-        clearing_file_path:
-          type: string
-          description: Clearing file path
-          nullable: true
-        password_present:
-          type: boolean
-          description: Is password used?
-          example: false
-          default: false
-        digitalization_token_id:
-          type: integer
-          nullable: true
-          description: Digitalization token ID
-          example: 1123
-        code:
-          type: string
-          description: Authorization code
-          example: R1CMED
-        status_id:
-          type: integer
-          description: |
-            Authorization status: 
-              1 - PENDING
-              2 - PROCESSED 
-              3 - DECLINED 
-              4 - CANCELLED
-              5 - DROPPED
-          example: 2
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-        response_code:
-          $ref: '#/components/schemas/ResponseCode'
-        nsu:
-          $ref: '#/components/schemas/NSU'
-        retrieval_reference_number:
-          type: string
-          description: Merchant POS system generated number
-          example: '5600001085571'
-        custom_response_code:
-          type: string
-          nullable: true
-        transmission_datetime:
-          type: string
-          nullable: true
-        event_datetime:
-          type: string
-          format: date-time ISO8601
-          description: Timestamp for when event was added into the database
-          example: '2022-08-04T14:15:43.000Z'
-        event_datetime_utc:
-          type: string
-          format: date-time ISO8601
-          description: Timestamp in UTC for when event was added into the database
-          nullable: true
-          example: '2022-08-04T14:15:43.000Z'
-        datetime:
-          type: string
-          format: date-time ISO8601
-          description: Authorization datetime in ISO8601 format
-          nullable: true
-          example: '2022-08-04T14:15:43.000Z'
-        original_network_id:
-          type: string
-          description: Network ID
-          example: ti
-        local_currency_code:
-          type: string
-          description: >-
-            Local ISO 4217 currency code number where transaction occurred. For
-            example, 986 (Brazil) or 840 (US).
-          enum:
-            - '986'
-            - '840'
-        number_of_installments:
-          type: number
-          description: Number of installments
-        org_id:
-          type: string
-          example: TN-12345678-9f53-46ce-953b-b81dd1234567
-          description: Organization/tenant ID
-        principal_amount:
-          type: string
-          description: Principal amount
-          example: '200.00'
-        local_currency_transaction_amount:
-          type: string
-          description: Local currency transaction amount
-          example: '200.00'
-        card_id:
-          type: integer
-          description: Transaction cardholder card ID
-          example: 9412645
-        merchant_name:
-          type: string
-          description: >-
-            Merchant name as registered at the payments network database
-            (Visa/Mastercard)
-          example: PISMO
-        merchant_id:
-          type: string
-          description: >-
-            Merchant code as registered at the payments network database
-            (Visa/Mastercard)
-          example: '687555537877464'
-        account_id:
-          type: integer
-          description: Transaction cardholder account ID
-          example: 1234
-        airport_tax_amount:
-          type: number
-          description: >
-            Boarding fee. In a purchase with installment, this value is present
-            at first installment. In a purchase without installment, this value
-            should not be sent since it should be summed to the authorization
-            amount.
-          example: 3.5
-        settlement_currency_code:
-          type: string
-          description: Settlement ISO 4217 currency code
-          example: '840'
-        settlement_currency_transaction_amount:
-          type: number
-          description: >-
-            Settlement amount - **must** be the transaction  amount in dollar
-            currency
-          example: 10.5
-        correlation_id:
-          type: string
-          example: be0486e-073a-4f56-80bb-5c400337e721
-          description: >
-            Authorization correlation ID. The CID is used to link related API
-            requests and events. For example, if a user makes an authorization
-            request with 10 installments, this generates 1 authorization event
-            and 10 transaction events all containing the same correlation ID.
-            The x-cid can help the Pismo engineering team track everything
-            related to a call.
-        merchant_category_id:
-          type: integer
-          description: Merchant category codes payments network
-          example: 1711
-        merchant_city:
-          type: string
-          description: >-
-            Merchant city as registered at the payments network database
-            (Visa/Mastercard)
-          example: SAO PAULO
-        merchant_state_or_country:
-          type: string
-          description: >-
-            Merchant country code outside USA OR Merchant state code from the
-            USA OR Canadian province code from Canada (NOTE:Canadian merchants
-            can either be represented through the province code or the canadian
-            country code)
-          example: BRA
-        history:
-          type: array
-          items:
-            $ref: '#/components/schemas/NetworkAuthorizationHistory'
-        migration_id:
-          type: string
-          description: Migration Id corresponding to this migrated authorization
-          example: a6081d5e-127e-4702-a09b-339ae59e7dbb
-        migration_version_datetime:
-          type: string
-          format: date-time ISO8601
-          description: >-
-            Migration version datetime corresponding to this migrated
-            authorization
-          nullable: true
-          example: '2022-08-04T14:15:43.000Z'
-      example:
-        id: 5418804
-        message_type_indicator: '0100'
-        caller: MASTERCARD
-        soft_descriptor: null
-        processing_julian_date_settlement: null
-        acquirer_reference_number: null
-        message_number: null
-        partial_cancellation_total_amount: null
-        org_operation_id: 79985
-        clearing_file_path: null
-        password_present: false
-        digitalization_token_id: null
-        code: R1CMED
-        status_id: 2
-        response_code: '00'
-        nsu: test
-        retrieval_reference_number: '664151'
-        custom_response_code: null
-        transmission_datetime: null
-        event_datetime: '2022-08-04T14:15:43.000Z'
-        event_datetime_utc: null
-        datetime: null
-        original_network_id: ti
-        local_currency_code: '986'
-        number_of_installments: 1
-        org_id: TN-191c4fff-3d3d-4de2-b072-4a7d9785e26d
-        principal_amount: '200.00'
-        local_currency_transaction_amount: '171.42'
-        card_id: 9412645
-        merchant_name: SINALOA CARTEL
-        merchant_id: ''
-        account_id: 104825816
-        airport_tax_amount: 0
-        settlement_currency_code: '840'
-        settlement_currency_transaction_amount: 200
-        correlation_id: 7ed71a20-d5b6-4698-b5d8-cc928139d998
-        merchant_category_id: 1711
-        merchant_city: ANTA GORDA
-        merchant_state_or_country: RS
-        history:
-          - network_authorization_id: 23085309
-            acquirer_reference_number: null
-            history_type: PROCESSED
-            history_datetime: '2022-08-04T14:15:43.000Z'
-            ledger_tracking_id: null
-            installment_number: null
-          - network_authorization_id: 23085308
-            acquirer_reference_number: null
-            history_type: PROCESSED
-            history_datetime: '2022-08-04T14:15:43.000Z'
-            ledger_tracking_id: null
-            installment_number: null
-        migration_id: a6081d5e-127e-4702-a09b-339ae59e7dbb
-        migration_version_datetime: '2022-08-04T14:15:43.000Z'
-    NetworkAuthorizationHistory:
-      type: object
-      properties:
-        network_authorization_id:
-          type: integer
-          description: Unique ID for authorization history record
-          example: 23085309
-        acquirer_reference_number:
-          type: string
-          nullable: true
-          description: Acquirer generated number
-          example: '1234569876541'
-        history_type:
-          type: string
-          description: History type
-          enum:
-            - CREATION
-            - PROCESSED
-            - CONFIRMATION
-            - DECLINED
-            - CANCELLATION
-            - DROPPED
-            - PARTIAL_CANCELLATION
-          example: CONFIRMATION
-        history_datetime:
-          type: string
-          format: date-time ISO8601
-          description: Timestamp for when history was entered into database
-          example: '2022-08-04T14:15:43.000Z'
-        ledger_tracking_id:
-          type: string
-          nullable: true
-          description: Ledger tracking ID
-        installment_number:
-          type: integer
-          description: Installment number
-          nullable: true
     NSU:
       type: string
       description: >
@@ -1422,8 +1110,6 @@ components:
       description: >-
         The request is acceptable but the syntax is malformed, for example, some
         type number parameter with a text content.
-    401UnauthorizedError:
-      description: Access token is missing or invalid.
     403Forbidden:
       description: Access forbidden.
     404NotFound:
@@ -1715,8 +1401,6 @@ paths:
       operationId: get-network-authorizations
       tags:
         - Authorizations
-      security:
-        - BearerAuth: []
       parameters:
         - name: authorization-id
           in: query
@@ -1759,8 +1443,6 @@ paths:
       operationId: cancel-network-authorizations
       tags:
         - Authorizations
-      security:
-        - BearerAuth: []
       parameters: []
       requestBody:
         description: Form details

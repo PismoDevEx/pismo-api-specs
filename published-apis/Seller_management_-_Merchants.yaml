@@ -1122,7 +1122,7 @@ components:
       description: Creditor name
       type: string
       minLength: 1
-      maxLength: 128
+      maxLength: 100
       example: Acme Corporation
     CreditingMethod:
       description: |
@@ -1452,8 +1452,8 @@ components:
       description: Merchant acceptance. Records the conditions agreed to by the merchant.
       type: object
       required:
-        - mdr
         - transaction_fee
+        - mdr
         - matched_mdr
         - matched_settlement
         - first_installment_interval
@@ -1615,6 +1615,26 @@ components:
       type: number
       format: double
       example: 1
+    DiscountDetail:
+      description: >-
+        Discount description. The `amount` represents the fee applied—that is,
+        the amount discounted before settlement.
+      type: object
+      properties:
+        name:
+          description: Discount name
+          type: string
+          example: EMISSION_FEE
+        amount:
+          description: Total discount amount
+          type: number
+          format: double
+          example: 10
+    DiscountAmount:
+      description: Total discount amount applied to the transaction
+      type: number
+      format: double
+      example: 1.99
     InstallmentNumber:
       description: Installment number of transaction
       type: integer
@@ -2773,6 +2793,12 @@ components:
           $ref: '#/components/schemas/OriginTransactionID'
         marketplace_id:
           $ref: '#/components/schemas/MarketplaceID'
+        discount_amount:
+          $ref: '#/components/schemas/DiscountAmount'
+        discount_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscountDetail'
       example:
         id: 123456
         authorization_id: '992023'
@@ -2795,6 +2821,12 @@ components:
         scheduled_payment_date: '2023-09-10'
         origin_transaction_id: 123455
         marketplace_id: 21
+        discount_amount: 5.5
+        discount_details:
+          - name: MDR
+            amount: 4.9
+          - name: FEE
+            amount: 0.6
     DiscountValueTotal:
       type: number
       description: Total discount value
@@ -3142,9 +3174,14 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/merchants/{merchantId}/transactions:
     post:
-      summary: Create merchant transaction
+      deprecated: true
+      summary: Create merchant transaction (deprecated)
       description: >
-        Create merchant transaction using the merchant ID.<br>
+        Create merchant transaction using the merchant ID. (Outdated: For an
+        updated version of the merchant transaction endpoint refer to [Create
+        merchant
+        transaction](https://developers.pismo.io/pismo-docs/reference/post-merchant-transaction-sale).)
+        <br>
 
         This endpoint generates a [Merchant transaction
         created](https://developers.pismo.io/events/docs/merchants-merchant-transaction-created-1)
@@ -3404,9 +3441,12 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/merchants/{merchantId}/reversal-transactions:
     post:
+      deprecated: true
       summary: Create reversal transaction
       description: >
-        Create reversal transaction using merchant ID.
+        Create reversal transaction using merchant ID. This endpoint is
+        **deprecated**. It is replaced by [Cancel merchant
+        transaction](https://developers.pismo.io/pismo-docs/reference/post-merchant-transaction-cancel).
 
         This endpoint generates a [Merchant transaction
         settled](https://developers.pismo.io/events/docs/merchants-merchant-transaction-settled-1)

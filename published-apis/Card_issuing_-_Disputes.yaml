@@ -44,6 +44,12 @@ components:
         error. 
       schema:
         type: string
+    disputeFeeID:
+      name: disputeFeeId
+      in: path
+      required: true
+      schema:
+        type: string
     disputeFormId:
       name: disputeFormId
       in: path
@@ -120,19 +126,15 @@ components:
       type: number
       description: Pismo card ID.
       example: 123456
-    ControlNumber:
+    CreatedAtUTC:
       type: string
-      description: >
-        Control number. Used in routing chargeback and retrieval documentation -
-        either a MasterCom endpoint suffix, in case of 2 characters, or a full
-        MasterCom endpoint in case of 7 characters. When MasterCom control
-        number is present, it cannot be all spaces or all zeros.
-      maxLength: 7
-      example: '1589457'
+      description: Dispute created in UTC date/time.
+      format: date-time
+      example: '2021-02-21T22:51:43.000000000Z'
     DisputeID:
       type: number
       description: Dispute ID
-      example: 1876567
+      example: 48670
     InstallmentNumber:
       type: integer
       description: Installment number.
@@ -164,6 +166,22 @@ components:
         - '20'
         - '30'
         - '40'
+    Comment:
+      type: string
+      description: |
+        Client custom dispute comment.
+
+        **REQUIRED** for Visa partial dispute to explain why partial.
+      nullable: true
+      example: Custom comment
+      maxLength: 5000
+    Comment2:
+      type: string
+      description: |
+        Client custom dispute comment.
+      nullable: true
+      example: Custom comment
+      maxLength: 5000
     CountDisputes:
       type: object
       description: Count disputes for each status group
@@ -265,10 +283,7 @@ components:
             integration.
           example: '4096860'
         is_partial:
-          type: boolean
-          description: Is partial amount chargeback? Default is `false`.
-          default: false
-          example: false
+          $ref: '#/components/schemas/IsPartial'
         installment_disputed_amount:
           type: number
           description: Installent disputed amount
@@ -280,9 +295,7 @@ components:
       description: Create dispute migration request object
       properties:
         id:
-          type: number
-          example: 5634
-          description: Dispute ID.
+          $ref: '#/components/schemas/DisputeID'
         authorization_id:
           type: number
           description: Authorization ID. **REQUIRED** for Full balance integration.
@@ -291,12 +304,66 @@ components:
           type: number
           description: Account ID. **REQUIRED** for Zero balance integration.
         comment:
-          type: string
-          description: Dispute comment
+          $ref: '#/components/schemas/Comment'
         reason:
           $ref: '#/components/schemas/reasonCode'
         dispute_installment_id:
           $ref: '#/components/schemas/DisputeInstallmentId'
+    CreateOnUsDisputeRequest:
+      type: object
+      description: Create On-Us dispute request body
+      required:
+        - source_identifier
+        - modality
+        - is_partial
+        - disputed_amount
+      properties:
+        source_identifier:
+          $ref: '#/components/schemas/SourceIdentifier'
+        modality:
+          $ref: '#/components/schemas/reasonCode2'
+        is_partial:
+          $ref: '#/components/schemas/IsPartial'
+        disputed_amount:
+          $ref: '#/components/schemas/DisputedAmount'
+        comment:
+          $ref: '#/components/schemas/Comment2'
+        protocol:
+          $ref: '#/components/schemas/Protocol'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    CreateOnUsDisputeResponse:
+      type: object
+      description: Create On-Us dispute request body
+      properties:
+        dispute_id:
+          $ref: '#/components/schemas/DisputeID'
+        dispute_status:
+          $ref: '#/components/schemas/DisputeStatusObject'
+        dispute_reason:
+          $ref: '#/components/schemas/DisputeReasonObject'
+        source:
+          $ref: '#/components/schemas/SourceIdentifier'
+        disputed_amount:
+          $ref: '#/components/schemas/DisputedAmount'
+        is_partial:
+          $ref: '#/components/schemas/IsPartial'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        comment:
+          $ref: '#/components/schemas/Comment2'
+        protocol:
+          $ref: '#/components/schemas/Protocol'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        created_at_utc:
+          $ref: '#/components/schemas/CreatedAtUTC'
+    CreditSender:
+      type: boolean
+      default: false
+      description: Credit the sender? Default is `false`.
     disputeDueTo:
       type: string
       description: >
@@ -307,45 +374,45 @@ components:
         chargeback is legitimate.<br>
 
 
-        `NR` = Merchandise/services not receive
+        `NR` = Merchandise/services not receive<br>
 
-        `CR` = Cancelled recurring transaction
+        `CR` = Cancelled recurring transaction<br>
 
-        `ND` = Not as described
+        `ND` = Not as described<br>
 
-        `DM` = Damaged or defective merchandise
+        `DM` = Damaged or defective merchandise<br>
 
-        `Q` = Quality
+        `Q` = Quality<br>
 
-        `CM` = Counterfeit merchandise
+        `CM` = Counterfeit merchandise<br>
 
-        `M` = Misrepresentation
+        `M` = Misrepresentation<br>
 
-        `CN` = Credit not processed
+        `CN` = Credit not processed<br>
 
-        `CS` = Cancelled merchandise/services
+        `CS` = Cancelled merchandise/services<br>
 
-        `OC` = Original credit not accepted
+        `OC` = Original credit not accepted<br>
 
-        `CL` = Non-receipt of cash
+        `CL` = Non-receipt of cash<br>
 
-        `TC` = Terms of contract (virtual account)
+        `TC` = Terms of contract (virtual account)<br>
 
-        `D` = Duplicate
+        `D` = Duplicate<br>
 
-        `IAN` = Incorrect account number
+        `IAN` = Incorrect account number<br>
 
-        `IA` = Incorrect amount
+        `IA` = Incorrect amount<br>
 
-        `IC` = Incorrect currency
+        `IC` = Incorrect currency<br>
 
-        `IT` = Incorrect transaction code
+        `IT` = Incorrect transaction code<br>
 
-        `ID` = Invalid data
+        `ID` = Invalid data<br>
 
-        `LP` = Late presentment
+        `LP` = Late presentment<br>
 
-        `P` = Paid by other means
+        `P` = Paid by other means<br>
 
 
         For VISA, you need to fill out the `collaborationQuestionnaire` form
@@ -397,11 +464,11 @@ components:
         credit_sender:
           type: boolean
           default: false
-          description: Credit the sender?
+          description: Credit the sender? Default is `false`.
         credit_receiver:
           type: boolean
           default: false
-          description: Credit the receiver?
+          description: Credit the receiver? Default is `false`.
         currency:
           type: string
           maxLength: 3
@@ -484,7 +551,15 @@ components:
           example: '300009520876'
           description: Fee ID to be sent in reply to created Fee.
         control_number:
-          $ref: '#/components/schemas/ControlNumber'
+          type: string
+          description: >
+            Control number. Used in routing chargeback and retrieval
+            documentation - either a MasterCom endpoint suffix, in case of 2
+            characters, or a full MasterCom endpoint in case of 7 characters.
+            When MasterCom control number is present, it cannot be all spaces or
+            all zeros.
+          maxLength: 7
+          example: '1589457'
       x-examples:
         With claim ID:
           card_id: 123456
@@ -563,6 +638,20 @@ components:
         For example - `4853` (Mastercard - cardholder dispute), `12` (Visa -
         processing error) or `72` (ELO - denied authorization)
       example: 4853
+    reasonCode2:
+      type: number
+      description: On-us issuer reason code (1-9)
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+      example: 2
     DisputeFeeResponse:
       type: object
       description: Dispute fee response object
@@ -642,15 +731,14 @@ components:
           format: date
           maxLength: 10
         control_number:
-          $ref: '#/components/schemas/ControlNumber'
+          type: string
+          description: Control number
+          maxLength: 7
+          example: '1589457'
         credit_sender:
-          type: boolean
-          default: false
-          description: Credit the sender?
+          $ref: '#/components/schemas/CreditSender'
         credit_receiver:
-          type: boolean
-          default: false
-          description: Credit the receiver?
+          $ref: '#/components/schemas/CreditReceiver'
         network_brand_type:
           $ref: '#/components/schemas/NetworkBrand'
         status:
@@ -702,17 +790,11 @@ components:
           description: When dispute created, format = yyyy-mm-ddThh:mm:ss"
           example: '2222-10-07T11:21:45'
         updated_at:
-          type: string
-          description: When dispute updated, format = yyyy-mm-ddThh:mm:ss"
-          example: '2222-10-07T11:21:45'
+          $ref: '#/components/schemas/UpdatedAt'
         created_at_utc:
-          type: string
-          description: When dispute created in UTC date/time.
-          example: 2022-10-13T19:56:010000000Z
+          $ref: '#/components/schemas/CreatedAtUTC'
         updated_at_utc:
-          type: string
-          description: When dispute updated in UTC date/time.
-          example: 2022-10-13T19:56:010000000Z
+          $ref: '#/components/schemas/UpdatedAtUTC'
     DisputeGroupStatus:
       description: |
         Group status enums
@@ -781,33 +863,53 @@ components:
         - ISSUER_LOSS
         - MIGRATION
         - FAILED_MIGRATION
+    DisputeReasonObject:
+      type: object
+      description: Dispute reason information
+      properties:
+        id:
+          type: number
+          description: Dispute reason ID.
+          example: 58
+        description:
+          type: string
+          description: Dispute reason description
+          example: Services not provided or product not received
+        reason_code:
+          $ref: '#/components/schemas/reasonCode2'
+        type:
+          type: string
+          description: Dispute reason type
+          enum:
+            - ON_US
+          example: ON_US
     DisputeStatusObject:
       type: object
       description: Dispute status informations.
       properties:
         id:
           type: number
-          example: 5634
           description: Dispute status ID.
+          example: 316
         description:
           type: string
-          example: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT
-          description: >-
+          description: >
             Description status - enums for a client's state machine, not to be
             implemented for anyone else at this point.
+          example: PENDING
         type:
           type: string
-          example: MASTERCARD_CARD
           description: Type status ID.
+          enum:
+            - PRIMITIVE_ON_US
+          example: PRIMITIVE_ON_US
         group:
           $ref: '#/components/schemas/DisputeGroupStatus'
     DisputeResponse:
       type: object
       properties:
         id:
-          type: number
-          example: 1
-          description: Dispute ID.
+          $ref: '#/components/schemas/DisputeID'
         org_id:
           $ref: '#/components/schemas/OrgID'
         account_id:
@@ -817,10 +919,7 @@ components:
           example: 4352243
           description: Authorization ID.
         comment:
-          type: string
-          example: Some comment
-          description: Custom client comment.
-          nullable: true
+          $ref: '#/components/schemas/Comment'
         dispute_reason:
           $ref: '#/components/schemas/reasonCode'
         modality:
@@ -834,46 +933,24 @@ components:
         dispute_status_group:
           $ref: '#/components/schemas/DisputeGroupStatus'
         created_at:
-          type: string
-          example: '2021-02-21'
-          description: Dispute created date, format = yyyy-mm-dd.
-          format: date
+          $ref: '#/components/schemas/CreatedAt'
         updated_at:
-          type: string
-          example: '2021-02-22'
-          description: Dispute last updated date, format = yyyy-mm-dd.
-          format: date
+          $ref: '#/components/schemas/UpdatedAt2'
         created_at_utc:
-          type: string
-          example: '2021-02-21T22:51:43.000000000Z'
-          description: Dispute created as UTC date (ISO-8601).
-          format: date-time
+          $ref: '#/components/schemas/CreatedAtUTC'
         updated_at_utc:
-          type: string
-          description: Dispute last updated as UTC date (ISO-8601).
-          example: '2021-02-25T01:43:06.000000000Z'
-          format: date-time
+          $ref: '#/components/schemas/UpdatedAtUTC'
         timeline:
           type: string
           example: '{ "data": "test"}'
           description: Client custom timeline information.
           nullable: true
         protocol:
-          type: string
-          example: 20190321L123456
-          description: >
-            Client custom protocol ID. This is primarily for you to internally
-            identify a request. If not provided, Pismo creates a CID
-            (correlation ID) field for this purpose.
+          $ref: '#/components/schemas/Protocol'
         metadata:
-          type: object
-          description: >-
-            Can be used for caller's dispute information and process. Objects
-            and name-value pairs.
+          $ref: '#/components/schemas/Metadata'
         disputed_amount:
-          type: number
-          example: 10
-          description: Disputed amount.
+          $ref: '#/components/schemas/DisputedAmount'
         is_network:
           type: boolean
           example: true
@@ -901,8 +978,8 @@ components:
         currency_code:
           type: string
           description: >
-            ISO-4217 code for transaction currency. For example, 986 = Brazilian
-            real.  
+            ISO-4217 code for transaction currency. For example, `986` =
+            Brazilian real.  
           example: '986'
     Event:
       type: string
@@ -931,6 +1008,11 @@ components:
         - DECLINE_PRE_ARBITRATION
         - RECALL_PRE_ARBITRATION
         - FAILED_ON_MIGRATION
+    IsPartial:
+      type: boolean
+      description: Is partial amount chargeback? Default is `false`.
+      default: false
+      example: false
     NetworkBrand:
       type: string
       example: Visa
@@ -960,9 +1042,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          example: 1
-          description: Dispute ID.
+          $ref: '#/components/schemas/DisputeID'
         org_id:
           $ref: '#/components/schemas/OrgID'
         account_id:
@@ -972,13 +1052,9 @@ components:
           example: 4352243
           description: Authorization ID.
         disputed_amount:
-          type: number
-          example: 10.5
-          description: Disputed amount.
+          $ref: '#/components/schemas/DisputedAmount'
         comment:
-          type: string
-          example: Some comment
-          description: Client custom comment.
+          $ref: '#/components/schemas/Comment'
         airport_tax:
           type: boolean
           description: >-
@@ -1015,34 +1091,17 @@ components:
           example: '{ "data": "test"}'
           description: Client custom timeline information.
         protocol:
-          type: string
-          example: 20190321L123456
-          description: Client custom protocol ID.
+          $ref: '#/components/schemas/Protocol'
         metadata:
-          type: object
-          description: >-
-            Can be used for caller's dispute information and process. Objects
-            and name-value pairs.
+          $ref: '#/components/schemas/Metadata'
         created_at:
-          type: string
-          example: '2021-02-21'
-          description: Dispute created date, format = yyyy-mm-dd.
-          format: date
+          $ref: '#/components/schemas/CreatedAt'
         updated_at:
-          type: string
-          example: '2021-02-22'
-          description: Dispute last updated date, format = yyyy-mm-dd.
-          format: date
+          $ref: '#/components/schemas/UpdatedAt2'
         created_at_utc:
-          type: string
-          example: '2021-02-21T22:51:43.000000000Z'
-          description: Dispute created as UTC date (ISO-8601).
-          format: date-time
+          $ref: '#/components/schemas/CreatedAtUTC'
         updated_at_utc:
-          type: string
-          description: Dispute last updated as UTC date (ISO-8601).
-          example: '2021-02-25T01:43:06.000000000Z'
-          format: date-time
+          $ref: '#/components/schemas/UpdatedAtUTC'
         is_network:
           type: boolean
           example: true
@@ -1151,13 +1210,9 @@ components:
         modality:
           $ref: '#/components/schemas/reasonCode'
         disputed_amount:
-          type: number
-          example: 10
-          description: Disputed value
+          $ref: '#/components/schemas/DisputedAmount'
         is_partial:
-          type: boolean
-          description: Open partial dispute?
-          default: false
+          $ref: '#/components/schemas/IsPartial'
         network_brand_type:
           type: string
           description: Network brand
@@ -1173,24 +1228,11 @@ components:
             Related authorization ID. **REQUIRED** when disputed in a Full
             balance program or the network brand is Elo.
         comment:
-          type: string
-          example: Custom comment
-          description: >-
-            Client custom dispute comment. **REQUIRED** for Visa partial dispute
-            to explain why partial.
-          maxLength: 5000
+          $ref: '#/components/schemas/Comment'
         protocol:
-          type: string
-          example: client-custom-protocol-identifier
-          description: >-
-            Client custom protocol identifier. ID for customer's internal
-            record-keeping.
-          maxLength: 500
+          $ref: '#/components/schemas/Protocol'
         metadata:
-          type: object
-          description: >-
-            Can be used for caller's dispute information and process. Objects
-            and name-value pairs.
+          $ref: '#/components/schemas/Metadata'
         first_installment_amount:
           type: number
           example: 5
@@ -1221,19 +1263,31 @@ components:
           example: '986'
         fraud_type:
           type: string
-          description: |
-            Fraud type:
-            `0` - Lost
-            `1` - Stolen
-            `2` - Card not received as issued (NRI)
-            `3` - Fraudulent application (cardholder never applied for the card)
-            `4` - Issuer-reported counterfeit
-            `5` - Miscellaneous
-            `6` - Fraudulent use of account number
-            `A` = Incorrect processing
-            `B` = Account or credentials takeover
-            `C` = Merchant misrepresentation
-            `D` = Manipulation of account holder
+          description: >
+            Fraud type:<br>
+
+            `0` - Lost<br>
+
+            `1` - Stolen<br>
+
+            `2` - Card not received as issued (NRI)<br>
+
+            `3` - Fraudulent application (cardholder never applied for the
+            card)<br>
+
+            `4` - Issuer-reported counterfeit<br>
+
+            `5` - Miscellaneous<br>
+
+            `6` - Fraudulent use of account number<br>
+
+            `A` = Incorrect processing<br>
+
+            `B` = Account or credentials takeover<br>
+
+            `C` = Merchant misrepresentation<br>
+
+            `D` = Manipulation of account holder<br>
           enum:
             - '0'
             - '1'
@@ -1284,9 +1338,7 @@ components:
       type: object
       properties:
         id:
-          type: number
-          example: 42
-          description: Dispute ID.
+          $ref: '#/components/schemas/DisputeID'
         authorization_id:
           type: number
           example: 1001
@@ -1311,9 +1363,7 @@ components:
             `airport_tax_partial` is `true`.
           example: 25
         comment:
-          type: string
-          example: Dispute comment.
-          description: Custom dispute comment.
+          $ref: '#/components/schemas/Comment'
         dispute_installment_id:
           $ref: '#/components/schemas/DisputeInstallmentId'
         reason:
@@ -1700,6 +1750,7 @@ components:
           form:
             allocationQuestionnaire:
               accountStatus: AC
+              oneAuthForMultipleSalesInd: 'Y'
         Dispute Form Sample Request Visa Collaboration Questionnaire:
           dispute_installment_id: 2
           form:
@@ -1762,7 +1813,7 @@ components:
               howChAttemptReturnAndDispOfMerchandise: >-
                 Provide a detailed description of how the cardholder attempted
                 to return and the disposition of the merchandise
-              merchantRefuseAdvise: MRRA
+              merchantRefuseAdvise: MRRM
               didCardholderCancel: 'Y'
               timeshareDate: '2022-05-20'
               dateOfService: '2022-05-20'
@@ -1833,6 +1884,8 @@ components:
               merchantInBankruptcyLiquidationInd: 'Y'
               nonFiatCurrencyNotMatching: 'Y'
               dispositionOfMerchandise: a
+              merchantAcceptInd: 'Y'
+              explainCreditIssuedLateDetailsOfNegotiations: Pending
         Dispute Form Sample Request Visa without Installment Id - Will use first Installment:
           form:
             collaborationQuestionnaire:
@@ -1894,7 +1947,7 @@ components:
               howChAttemptReturnAndDispOfMerchandise: >-
                 Provide a detailed description of how the cardholder attempted
                 to return and the disposition of the merchandise
-              merchantRefuseAdvise: MRRA
+              merchantRefuseAdvise: MRRM
               didCardholderCancel: 'Y'
               timeshareDate: '2022-05-20'
               dateOfService: '2022-05-20'
@@ -1965,6 +2018,8 @@ components:
               merchantInBankruptcyLiquidationInd: 'Y'
               nonFiatCurrencyNotMatching: 'Y'
               dispositionOfMerchandise: a
+              merchantAcceptInd: 'Y'
+              explainCreditIssuedLateDetailsOfNegotiations: Pending
       description: Dispute form request
     DisputeFormResponse:
       title: DisputeFormResponse
@@ -1991,22 +2046,31 @@ components:
             - MASTERCARD_CARD
             - PRIMITIVE
         form:
-          type: string
-          description: >-
-            This string field contains data from many objects and properties. 
-            For information on these objects and properties, refer to the `form`
-            object in the [Create dispute
-            form](ref:post-v1-disputes-disputeid-forms) endpoint.
+          type: object
+          properties:
+            ebdf:
+              type: object
+              properties:
+                fraudDrfDocument:
+                  $ref: '#/components/schemas/FraudDrfDocumentStructure'
+                cardholderDisputeChargebackDrfDocument:
+                  $ref: >-
+                    #/components/schemas/CardholderDisputeChargebackDrfDocumentStructure
+                pointOfInteractionErrorsDrfDocument:
+                  $ref: >-
+                    #/components/schemas/PointOfInteractionErrorsDrfDocumentStructure
+            allocationQuestionnaire:
+              $ref: >-
+                #/components/schemas/VisaAllocationQuestionnaireDocumentStructure
+            collaborationQuestionnaire:
+              $ref: >-
+                #/components/schemas/VisaCollaborationQuestionnaireDocumentStructure
+            preArbitration:
+              $ref: '#/components/schemas/PreArbitration'
         created_at:
-          description: Created at date, format = yyyy-mm-dd
-          type: string
-          format: date
-          example: '2021-02-22'
+          $ref: '#/components/schemas/CreatedAt'
         created_at_utc:
-          description: Created at UTC date
-          type: string
-          format: date-time
-          example: '2021-02-21T22:51:43.000000000Z'
+          $ref: '#/components/schemas/CreatedAtUTC'
         update_at:
           description: Update date, format = yyyy-mm-dd
           type: string
@@ -2124,7 +2188,7 @@ components:
               howChAttemptReturnAndDispOfMerchandise: >-
                 Provide a detailed description of how the cardholder attempted
                 to return and the disposition of the merchandise
-              merchantRefuseAdvise: MRRA
+              merchantRefuseAdvise: MRRM
               didCardholderCancel: 'Y'
               timeshareDate: '2022-05-20'
               dateOfService: '2022-05-20'
@@ -2195,6 +2259,8 @@ components:
               merchantInBankruptcyLiquidationInd: 'Y'
               nonFiatCurrencyNotMatching: 'Y'
               dispositionOfMerchandise: a
+              merchantAcceptInd: 'Y'
+              explainCreditIssuedLateDetailsOfNegotiations: Pending
           created_at: '2021-02-22'
           created_at_utc: '2021-02-21T22:51:43.000000000Z'
           update_at: '2021-02-22'
@@ -2339,6 +2405,10 @@ components:
             Valid Values/Format: Alphanumeric / Special Char
             (~!@#$%^&*()_+{}|:"<>?,./;'[]-=)
           example: Ahsta LaVista Baybee
+    DisputedAmount:
+      type: number
+      example: 10
+      description: Disputed amount.
     PointOfInteractionErrorsDrfDocumentStructure:
       type: object
       properties:
@@ -2446,11 +2516,11 @@ components:
           description: |-
             Card issuer region.
 
-            Valid Values:
-               `AP` - Asian Pacific
-               `Europe` - Europe
-               `NAM` - North America
-               `LAC` - Latin America and Caribbean
+            Valid Values:<br>
+               `AP` - Asian Pacific<br>
+               `Europe` - Europe<br>
+               `NAM` - North America<br>
+               `LAC` - Latin America and Caribbean<br>
                `MEA` - Middle East and Africa
           example: Europe
           enum:
@@ -2466,10 +2536,10 @@ components:
       properties:
         transactionDestinationInstitutionIdCode:
           type: string
-          description: Transaction destination institution id code
+          description: Transaction destination institution ID code
         filePathMessageNumber:
           type: string
-          description: file path message number
+          description: File path message number
         additionalDataRecord:
           $ref: '#/components/schemas/AdditionalDataRecordStructure'
         authorizationCode:
@@ -2478,7 +2548,7 @@ components:
           example: '661810'
         caller:
           type: string
-          description: caller
+          description: Caller
           example: ELO
         clearingType:
           type: string
@@ -2486,9 +2556,7 @@ components:
           example: CREDIT
         correlationId:
           type: string
-          description: >-
-            The Correlation IDentifier field links related API requests and
-            events
+          description: Correlation IDentifier that links related API requests and events
         endpoint:
           type: string
           description: Endpoint
@@ -2760,6 +2828,24 @@ components:
           type: string
           description: Transaction time - Registry 00 - Field 10
           example: '092225'
+    Metadata:
+      type: object
+      description: >
+        Can be used for caller's dispute information and process. Objects and
+        name-value pairs.
+
+         **Note**: This field must not be used to send Personally Identifiable Information (PII), Payment Card Industry (PCI) data, or any sensitive/regulated information. Metadata fields are intended for operational, non-sensitive data only. For sensitive data, use the specific parameters designed for that purpose. For more information, refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis#metadata).
+      example:
+        field1: value
+        field2: value
+    Protocol:
+      type: string
+      description: >
+        Client custom protocol ID. This is primarily for you to internally
+        identify a request. If not provided, Pismo creates a CID (correlation
+        ID) field for this purpose.
+      maxLength: 500
+      example: '20251128111532456'
     RegistrationFundsTransferDataStructure:
       type: object
       properties:
@@ -2905,7 +2991,7 @@ components:
             - ACCT_HAS_BEEN_CLOSED
         chgbk_indicator:
           type: string
-          description: Indicates if this is a chargeback. true =  `1`, false = `0`
+          description: Is this a chargeback? true =  `1`, false = `0`.
           example: '1'
           enum:
             - '0'
@@ -2992,10 +3078,10 @@ components:
           type: string
           description: >
             Authorization origin indicator, default is null. **REQUIRED** for
-            ELO network.
-              `Y` - Issuer authorized
-              `X` - Parameter authorized
-              `N` - Not Authorized
+            ELO network.<br>
+              `Y` - Issuer authorized<br>
+              `X` - Parameter authorized<br>
+              `N` - Not Authorized<br>
           enum:
             - 'Y'
             - X
@@ -3008,12 +3094,12 @@ components:
           type: string
           description: >
             Notification type code. Default is null. **REQUIRED** for ELO
-            network.
-              `1` - First notification
-              `2` - Notification sent again
-              `3` - Change
-              `4` - Deletion (cancellation fraud warning)
-              `5` = Reactivation
+            network.<br>
+              `1` - First notification<br>
+              `2` - Notification sent again<br>
+              `3` - Change<br>
+              `4` - Deletion (cancellation fraud warning)<br>
+              `5` = Reactivation<br>
           enum:
             - '1'
             - '2'
@@ -3026,10 +3112,11 @@ components:
           example: '1'
         exchange_indicator:
           type: string
-          description: |
-            Is this an exchange? Default is `N`. **REQUIRED** for ELO network.
-              `Y` - Yes
-              `N` - No
+          description: >
+            Is this an exchange? Default is `N`. **REQUIRED** for ELO
+            network.<br>
+              `Y` - Yes<br>
+              `N` - No<br>
           enum:
             - 'N'
             - 'Y'
@@ -3043,9 +3130,9 @@ components:
         card_service_code:
           type: string
           description: |
-            Card type. **REQUIRED** for ELO network.
-              `C` - Chip
-              `M` - Stripe
+            Card type. **REQUIRED** for ELO network.<br>
+              `C` - Chip<br>
+              `M` - Stripe<br>
           enum:
             - C
             - M
@@ -3143,13 +3230,9 @@ components:
             system Last item fraud is not a FD1.
           description: Fraud Report comment network.
         created_at:
-          type: string
-          format: date-time
-          example: '2021-02-22T22:51:43.000000000Z'
+          $ref: '#/components/schemas/CreatedAt'
         updated_at:
-          type: string
-          format: date-time
-          example: '2021-02-22T22:51:43.000000000Z'
+          $ref: '#/components/schemas/UpdatedAt'
     preArbitrationDto:
       title: ''
       type: object
@@ -3189,17 +3272,13 @@ components:
           description: Justify why not accepted fully
           example: Only partial amount in dispute.
         is_partial:
-          type: boolean
-          description: Is this a partial dispute? Default is `false`.
-          default: false
+          $ref: '#/components/schemas/IsPartial'
         currency_code_request:
           type: string
           description: ISO 4217 3-letter currency code request.
           example: '840'
         currency_code_response:
-          type: string
-          description: ISO 4217 3-letter currency code reesponse
-          example: '840'
+          $ref: '#/components/schemas/CurrencyCode'
         amount_request:
           type: number
           description: Request amount
@@ -3208,6 +3287,32 @@ components:
           type: number
           description: Response amount
           example: 15.25
+        acquirer_memo:
+          type: string
+          description: >-
+            Memo from the acquirer included in the Mastercard pre-arbitration
+            rejection response.
+          example: Not valid
+        action:
+          type: string
+          description: Network pre-arbitration action.
+          enum:
+            - ACCEPT
+            - REJECT
+            - REBUT
+            - ESCALATE
+            - WITHDRAW
+            - FAVORSENDER
+            - FAVORRECEIVER
+            - DECLINED
+            - MODIFYCASE
+            - CREATECASE
+            - EXPIRED
+          example: REJECT
+        response_date:
+          type: string
+          description: Date of the network's pre-arbitration response. Format = yyyy-mm-dd
+          example: '2021-02-14'
     VisaAllocationQuestionnaireDocumentStructure:
       type: object
       title: AllocationQuestionnaire
@@ -3217,18 +3322,26 @@ components:
         accountStatus:
           type: string
           description: |
-            Valid in VISA Authorization Flux (reason code 11).
-              `AC` = Account closed
-              `CP` = Credit problem
-              `F` = Fraud
+            Valid in VISA Authorization Flux (reason code 11).<br>
+              `AC` = Account closed<br>
+              `CP` = Credit problem<br>
+              `F` = Fraud<br>
           enum:
             - AC
             - CP
             - F
           example: AC
+        oneAuthForMultipleSalesInd:
+          type: string
+          description: Valid in VISA Authorization Flux (reason code 11).
+          enum:
+            - 'Y'
+            - 'N'
+          example: 'Y'
       x-examples:
         allocationQuestionnaire:
           accountStatus: AC
+          oneAuthForMultipleSalesInd: 'Y'
     VisaCollaborationQuestionnaireDocumentStructure:
       title: CollaborationQuestionnaire
       x-stoplight:
@@ -3556,9 +3669,8 @@ components:
         merchantRefuseAdvise:
           type: string
           description: Valid in VISA Consumer Disputes Flux (Reason Code 13).
-          example: MRRA
+          example: MRRM
           enum:
-            - MRRA
             - MRRM
             - MICNRM
         didCardholderCancel:
@@ -3893,6 +4005,15 @@ components:
           type: string
           description: Valid in VISA Consumer Disputes Flux (Reason Code 13).
           example: a
+        merchantAcceptInd:
+          type: string
+          description: Valid in VISA Consumer Disputes Flux (Reason Code 13).
+          enum:
+            - 'Y'
+            - 'N'
+        explainCreditIssuedLateDetailsOfNegotiations:
+          type: string
+          description: Valid in VISA Consumer Disputes Flux (Reason Code 13).
       x-examples:
         collaborationQuestionnaire:
           incorrectCurrencyReason: CD
@@ -3953,7 +4074,7 @@ components:
           howChAttemptReturnAndDispOfMerchandise: >-
             Provide a detailed description of how the cardholder attempted to
             return and the disposition of the merchandise
-          merchantRefuseAdvise: MRRA
+          merchantRefuseAdvise: MRRM
           didCardholderCancel: 'Y'
           timeshareDate: '2022-05-20'
           dateOfService: '2022-05-20'
@@ -4017,6 +4138,8 @@ components:
           merchantInBankruptcyLiquidationInd: 'Y'
           nonFiatCurrencyNotMatching: 'Y'
           dispositionOfMerchandise: a
+          merchantAcceptInd: 'Y'
+          explainCreditIssuedLateDetailsOfNegotiations: Pending
     ProcessedDataRequest:
       title: ProcessedDataRequest
       x-stoplight:
@@ -4083,19 +4206,26 @@ components:
         newInformationInd:
           type: string
           example: 'Y'
-          description: New information?  'Y' or 'N'
+          description: New information  - `Y` or `N`
           enum:
             - 'Y'
             - 'N'
         newInformationDescription:
           type: string
           description: New information description
-          example: description if newInformationInd is field filled
+          example: New information...
+        issuerCertifiesCardholderContactedInd:
+          type: string
+          description: Issuer certifies cardholder contact
+          enum:
+            - 'Y'
+            - 'N'
       x-examples:
         pre-arbitration visa collaboration request:
           preArbReason: Reason
           newInformationInd: 'Y'
-          newInformationDescription: test
+          newInformationDescription: New information
+          issuerCertifiesCardholderContactedInd: 'Y'
     DisputeFormType:
       title: DisputeFormType
       x-stoplight:
@@ -4151,18 +4281,13 @@ components:
           description: Chargeback ID, same as dispute ID for VISA.
           example: '88996'
         disputed_amount:
-          type: number
-          description: Amount under dispute.
-          example: 215
+          $ref: '#/components/schemas/DisputedAmount'
         dispute_installment_id:
           $ref: '#/components/schemas/DisputeInstallmentId'
         network_brand_type:
           $ref: '#/components/schemas/NetworkBrand'
         is_partial:
-          type: boolean
-          description: Is partial amount chargeback? Default is `false`.
-          default: false
-          example: false
+          $ref: '#/components/schemas/IsPartial'
         arn:
           type: string
           description: >-
@@ -4175,9 +4300,9 @@ components:
     stopAutomatedInstallment:
       type: boolean
       description: >
-        Automated dispute installment control? If an issuer opens a dispute for
-        a transaction that has more than one installment, with installments that
-        can still be posted, the issuer will need to open a dispute for
+        Automated dispute installment control flag. If an issuer opens a dispute
+        for a transaction that has more than one installment, with installments
+        that can still be posted, the issuer will need to open a dispute for
         subsequent installments as well. With automated dispute installment
         control, once you open a chargeback for the first installment, the same
         information can be used for subsequent transaction installments.
@@ -4186,9 +4311,7 @@ components:
       type: object
       properties:
         disputed_amount:
-          type: number
-          description: Amount under dispute.
-          example: 215
+          $ref: '#/components/schemas/DisputedAmount'
         currency_code:
           type: string
           description: >
@@ -4202,10 +4325,7 @@ components:
         reason_code:
           $ref: '#/components/schemas/reasonCode'
         comment:
-          type: string
-          example: Some comment
-          maxLength: 5000
-          description: Updated dispute comment.
+          $ref: '#/components/schemas/Comment'
         first_installment_amount:
           type: number
           description: Amount to be updated on first installment chargeback.
@@ -4261,6 +4381,12 @@ components:
       type: string
       description: Created at datetime, format = yyyy-mm-dd hh:mm:ss"
       example: '2024-10-18 11:21:45'
+    CurrencyCode:
+      type: string
+      description: >-
+        ISO 4217 3-letter currency code, For example, `986` = Brazilian real and
+        `840` = US dollar.
+      example: '840'
     CustomerId:
       type: number
       example: 10203040
@@ -4282,40 +4408,41 @@ components:
     EloInternationalPrimaryReason:
       type: string
       description: >
-        Fraud report reasons:
+        Fraud report reasons:<br>
 
         `AT`: Account Takeover - The unauthorized use of a card account by any
         person who gains access to that card account with the intent to defraud
-        the Issuer.
+        the Issuer.<br>
 
         `CA`: Counterfeit/altered Cards - Any card that is manufactured
-        illegally, stamped, or coded.
+        illegally, stamped, or coded.<br>
 
         `ED`: Employee Fraud - Any manipulation or misuse of a card account by
-        an employee of the issuer with the intention of defrauding the issuer.
+        an employee of the issuer with the intention of defrauding the
+        issuer.<br>
 
         `FA`: Application fraud - Acquisition of a card account as a result of
         presenting false or incorrect information with the intention of
-        deceiving and  defrauding an issuer.
+        deceiving and  defrauding an issuer.<br>
 
         `LS`: Lost/Stolen - Unauthorized use of lost or stolen card, checks, or
-        balance transfer coupons.
+        balance transfer coupons.<br>
 
         `MS`: Skimmed - Unauthorized use or possession of an account through
         theft of content of the complete magnetic stripe data of a valid card
-        and duplication on the stripe magnetic from another card.
+        and duplication on the stripe magnetic from another card.<br>
 
         `ND`: No device - Unauthorized use of a valid card number to make
-        purchases by mail, telephone, or electronic order.
+        purchases by mail, telephone, or electronic order.<br>
 
         `NR`: Non-Receipt - Non-receipt or theft through the card sending
-        process by mail, checks, or balance transfer coupons.
+        process by mail, checks, or balance transfer coupons.<br>
 
         `OT`: Others - Generally not used. This type of fraud is only used when
         the fraud activity cannot be classified by the remaining fraud types.
         **Exception for prepaid only**: This type of fraud must be used to
         classify the activity determined to be the conversion of unsettled
-        funds.
+        funds.<br>
       enum:
         - AT
         - CA
@@ -4330,64 +4457,65 @@ components:
     EloInternationalSecondaryReason:
       type: string
       description: >
-        Secondary fraud report reasons.
+        Secondary fraud report reasons.<br>
 
         `BT`\* - Balance Transfer Coupon - An unauthorized, completed balance
         transfer by telephone, at the request of a person claiming to be the
-        Owner.
+        Owner.<br>
 
-        `CD` - Card - An altered card.
+        `CD` - Card - An altered card.<br>
 
         `CK`\* - Verification - Any non-receipt of money access checks or
-        balance transfer. Or changed check(s).
+        balance transfer. Or changed check(s).<br>
 
         `FF`\* - Family Fraud - The information (Name, social security number
         (SSN), date of birth, etc.) belongs to another person (the victim), who
         actually knows the individual(fraudster) who committed the fraud,
         forging his (the victim's) identity. The fraudster may be a household,
         non-domestic, or a distant family member relative or friend. This is the
-        most common application of fraud.
+        most common application of fraud.<br>
 
         `FP` - Forced emission of plastic - Plastics that were sent due to the
         update platinum, marketing initiative, or any issue outside the usual
-        reissue cycle.
+        reissue cycle.<br>
 
         `IT`\* - Internet - An unauthorized change of address made via the
-        internet.
+        internet.<br>
 
-        `MI`\* - Mail - An unauthorized address change request sent via US mail.
+        `MI`\* - Mail - An unauthorized address change request sent via US
+        mail.<br>
 
-        `NA` - Nova Conta - Plastics shipped upon issuance of a new bill.
+        `NA` - Nova Conta - Plastics shipped upon issuance of a new bill.<br>
 
         `P!`\* - Telephone - A request for authorization for a change of
-        address, plastics, or checks by a person claiming to be the holder.
+        address, plastics, or checks by a person claiming to be the holder.<br>
 
         `PN` - Card and PIN - unauthorized cash advances at an ATM for a lost or
-        stolen personal card number and password (PIN).
+        stolen personal card number and password (PIN).<br>
 
         `RI` - Card reissuance - Plastics sent automatically to replace those
-        that approaching their expiration date.
+        that approaching their expiration date.<br>
 
         `RT` - Retail - Sales are keyed in commercial establishments where a
         card is normally necessary and there is no direct evidence that any card
-        was present at the time of sale.
+        was present at the time of sale.<br>
 
         `ST`\* - Student - A long format "student" application, usually
-        requested in university campuses.
+        requested in university campuses.<br>
 
         `TM`\* - Telemarketing - A request made over the telephone via an
-        outgoing call from the center or via marketing service.
+        outgoing call from the center or via marketing service.<br>
 
         `TO`\* - Take One - Unsolicited Application. This is the most common
         type of application. Lots of It are sometimes displayed at sales
-        counters.
+        counters.<br>
 
         `TP` - Telephone - An inbound telephone call to the Customer Service
         Department to the cardholder, in which the representative, assumed the
-        information provided  by telephone.
+        information provided  by telephone.<br>
 
         `TR`- Account Transfer - Plastics that were shipped as a result of any
-        type replacement account.
+        type replacement account.<br>
 
 
         \* - Can only be used for Credit.
@@ -4413,10 +4541,10 @@ components:
     EloNationalAuthorizationOriginIndicator:
       type: string
       description: |
-        Authorization origin indicator.
-          `Y` - Issuer authorized
-          `X` - Parameter authorized
-          `N` - Not authorized
+        Authorization origin indicator.<br>
+          `Y` - Issuer authorized<br>
+          `X` - Parameter authorized<br>
+          `N` - Not authorized<br>
       enum:
         - 'Y'
         - 'N'
@@ -4425,9 +4553,9 @@ components:
     EloNationalCardServiceCode:
       type: string
       description: |
-        Card type:
-          * `C` - Chip
-          * `M` - Stripe
+        Card type:<br>
+          * `C` - Chip<br>
+          * `M` - Stripe<br>
       enum:
         - C
         - M
@@ -4448,20 +4576,20 @@ components:
     EloNationalFraudType:
       type: string
       description: |
-        Elo national fraud type:
+        Elo national fraud type:<br>
 
-          `00` - Cartão Perdido pelo Portador/ Lost card
-          `01` - Cartão Roubado do Portador/ Stolen card
-          `02` - Cartão extraviado (Portador não recebeu cartão do emissor, porém emissor alega que enviou o cartão)/ Card not received as issued
-          `03` - Falsidade ideológica/ Fraudulent use
-          `04` - Cartão clonado/falsificado/ Cloned card
-          `05` - Transação autorizada sem o envolvimento do portador/invasão da conta/ Fraudulent use of account number
-          `06` - Número do cartão foi usado em transação de marketing direto ou no comércio eletrônico/ Card number was used in a direct marketing or e-commerce transaction.
-          `07` - Fraude Familiar / Friendly fraud
-          `08` - Suspeita de Golpe / Suspected scam
-          `09` - Auto Fraude / Auto fraud
-          `10` - Fraude Interna / Internal fraud
-          `11` - Prilex / Brazilian malware
+          `00` - Cartão Perdido pelo Portador/ Lost card<br>
+          `01` - Cartão Roubado do Portador/ Stolen card<br>
+          `02` - Cartão extraviado (Portador não recebeu cartão do emissor, porém emissor alega que enviou o cartão)/ Card not received as issued<br>
+          `03` - Falsidade ideológica/ Fraudulent use<br>
+          `04` - Cartão clonado/falsificado/ Cloned card<br>
+          `05` - Transação autorizada sem o envolvimento do portador/invasão da conta/ Fraudulent use of account number<br>
+          `06` - Número do cartão foi usado em transação de marketing direto ou no comércio eletrônico/ Card number was used in a direct marketing or e-commerce transaction.<br>
+          `07` - Fraude Familiar / Friendly fraud<br>
+          `08` - Suspeita de Golpe / Suspected scam<br>
+          `09` - Auto Fraude / Auto fraud<br>
+          `10` - Fraude Interna / Internal fraud<br>
+          `11` - Prilex / Brazilian malware<br>
       enum:
         - '00'
         - '01'
@@ -4479,12 +4607,12 @@ components:
     EloNationalNotificationCode:
       type: string
       description: |
-        Notification type code.
-        `1` - First notification
-        `2` - Notification sent again
-        `3` - Change
-        `4` - Deletion (cancellation fraud warning)
-        `5` = Reactivation
+        Notification type code.<br>
+        `1` - First notification<br>
+        `2` - Notification sent again<br>
+        `3` - Change<br>
+        `4` - Deletion (cancellation fraud warning)<br>
+        `5` = Reactivation<br>
       enum:
         - '1'
         - '2'
@@ -4510,14 +4638,14 @@ components:
           type: object
           description: >
             Payload array returning all fields with problems on request
-            validation. 
+            validation. <br>
 
-            These validations can be: 
-              * Invalid length 
-              * Invalid type 
-              * Invalid accepted 
+            These validations can be: <br>
+              * Invalid length <br>
+              * Invalid type <br>
+              * Invalid accepted <br>
 
-            Values are explained in the message.
+            Values are explained in the message.<br>
     Fraud_Report_Create_Elo_International:
       type: object
       description: Create Elo international fraud report
@@ -5537,6 +5665,15 @@ components:
       type: string
       description: Datetime when updated, format = yyyy-mm-dd hh:mm:ss
       example: '2024-10-18 11:21:45'
+    UpdatedAt2:
+      type: string
+      description: Dispute last updated date, format = yyyy-mm-dd.
+      format: date
+      example: '2021-02-22'
+    UpdatedAtUTC:
+      type: string
+      description: When dispute updated in UTC date/time.
+      example: 2022-10-13T19:56:010000000Z
     VisaCloseFraudCaseInd:
       type: boolean
       description: |
@@ -5546,19 +5683,19 @@ components:
     VisaFraudType:
       type: string
       description: |
-        Visa fraud type:
+        Visa fraud type:<br>
 
-          `0` - Lost
-          `1` - Stolen
-          `2` - Card not received as issued (NRI)
-          `3` - Fraudulent application (cardholder never applied for the card)
-          `4` - Issuer-reported counterfeit
-          `5` - Miscellaneous
-          `6` - Fraudulent use of account number
-          `A` = Incorrect processing
-          `B` = Account or credentials takeover
-          `C` = Merchant misrepresentation
-          `D` = Manipulation of account holder
+          `0` - Lost<br>
+          `1` - Stolen<br>
+          `2` - Card not received as issued (NRI)<br>
+          `3` - Fraudulent application (cardholder never applied for the card)<br>
+          `4` - Issuer-reported counterfeit<br>
+          `5` - Miscellaneous<br>
+          `6` - Fraudulent use of account number<br>
+          `A` = Incorrect processing<br>
+          `B` = Account or credentials takeover<br>
+          `C` = Merchant misrepresentation<br>
+          `D` = Manipulation of account holder<br>
       enum:
         - '0'
         - '1'
@@ -5575,9 +5712,9 @@ components:
     VisaFraudTypeCategory:
       type: string
       description: |
-        Visa fraud type category: 
-          `CARDTXN` - Card transaction
-          `NRI` - Not received as issued
+        Visa fraud type category: <br>
+          `CARDTXN` - Card transaction<br>
+          `NRI` - Not received as issued<br>
       default: CARDTXN
       enum:
         - CARDTXN
@@ -5587,11 +5724,11 @@ components:
       type: number
       description: >
         Notification code specifying action performed on the fraud report.
-        Domain values:
-          `1`: Addition
-          `2`: Addition of dup
-          `3`: Change
-          `4`: Delete
+        Domain values:<br>
+          `1`: Addition<br>
+          `2`: Addition of dup<br>
+          `3`: Change<br>
+          `4`: Delete<br>
           `5`: Reactivate. No edits restricting values based on the value of existing report in case.
     Amount:
       type: number
@@ -5606,9 +5743,6 @@ components:
     CreditReceiver:
       type: boolean
       description: Should receiver be credited?
-    CreditSender:
-      type: boolean
-      description: Should sender be credited?
     Currency:
       type: string
       description: ISO-4217 currency code.
@@ -5653,9 +5787,7 @@ components:
       example: Visa
     NetworkCaseId:
       type: string
-      description: >-
-        Network case ID. The case number the card network gives you when you
-        file a dispute.
+      description: Network case ID.
       example: '1234567890'
       nullable: true
     NetworkFeeId:
@@ -5672,22 +5804,22 @@ components:
     FeeStatus:
       type: string
       description: >
-        Fee status
+        Fee status:<br>
 
 
         - `PENDING`&mdash;The fee creation request has been received and is
-        awaiting Pismo processing within the network.
+        awaiting Pismo processing within the network.<br>
 
         - `FAILED`&mdash;An error occurred while attempting to create the fee in
-        the network. The operation was not completed.
+        the network. The operation was not completed.<br>
 
         - `WAITING_NETWORK`&mdash;The request has been successfully sent to the
-        network and is currently awaiting a response.
+        network and is currently awaiting a response.<br>
 
         - `PROCESSED`&mdash;The fee was successfully created and
-        network-confirmed.
+        network-confirmed.<br>
 
-        - `REJECTED`&mdash;The network declined the fee creation request.
+        - `REJECTED`&mdash;The network declined the fee creation request.<br>
       example: PENDING
       enum:
         - PENDING
@@ -5704,22 +5836,22 @@ components:
     FeeReasonCode:
       type: string
       description: >
-        Fee reason code.
-         `100`&mdash;Telecommunication charges (non-US)
-         `110`&mdash;Auto telex charges (non-US)
-         `130`&mdash;Lost/stolen card report fees
-         `140`&mdash;Merchant service fees
-         `150`&mdash;Recovered Visa card, Electron card, or Visa Electron card. Handling fees/rewards. Non-US - Recovered card handling fee
-         `170`&mdash;Recovery of retrieval request fees. 
-         `200`&mdash;Emergency replacement card distribution fee
-         `210`&mdash;Emergency cash disbursement handling fee
-         `220`&mdash;Arbitration/compliance/resolution case decision or filing fee
-         `230`&mdash;Incorrect merchant ID/transacton date handling
-         `240`&mdash;"Good faith" collection letter settlement funds disbursement. Non-US - Funds disbursement transactions
-         `250`&mdash;Cardholder does not recognize transacton chargeback handling fee.
-         `350`&mdash;Pre-arbitration/Pre-compliance settlement funds disbursement
-         `401`&mdash;Prepaid load revenue sharing
-         `402`&mdash;Non-US - Collection for an unsettled prepaid of original credit authorization
+        Fee reason code.<br>
+         `100`&mdash;Telecommunication charges (non-US)<br>
+         `110`&mdash;Auto telex charges (non-US)<br>
+         `130`&mdash;Lost/stolen card report fees<br>
+         `140`&mdash;Merchant service fees<br>
+         `150`&mdash;Recovered Visa card, Electron card, or Visa Electron card. Handling fees/rewards. Non-US - Recovered card handling fee<br>
+         `170`&mdash;Recovery of retrieval request fees. <br>
+         `200`&mdash;Emergency replacement card distribution fee<br>
+         `210`&mdash;Emergency cash disbursement handling fee<br>
+         `220`&mdash;Arbitration/compliance/resolution case decision or filing fee<br>
+         `230`&mdash;Incorrect merchant ID/transacton date handling<br>
+         `240`&mdash;"Good faith" collection letter settlement funds disbursement. Non-US - Funds disbursement transactions<br>
+         `250`&mdash;Cardholder does not recognize transacton chargeback handling fee.<br>
+         `350`&mdash;Pre-arbitration/Pre-compliance settlement funds disbursement<br>
+         `401`&mdash;Prepaid load revenue sharing<br>
+         `402`&mdash;Non-US - Collection for an unsettled prepaid of original credit authorization<br>
 
         **Note:** This is from the Visa IES spreadsheet. This spreadsheet is
         updated every 6 months or so. Check periodically with Visa for latest
@@ -6073,6 +6205,23 @@ components:
           $ref: '#/components/schemas/Source'
         status:
           $ref: '#/components/schemas/FeeStatus'
+    SourceIdentifier:
+      type: object
+      properties:
+        id:
+          type: string
+          description: >-
+            On-Us source ID - authorization or transaction ID depending on
+            `type`.
+          maxLength: 255
+          example: '10001011169'
+        type:
+          type: string
+          description: On-Us dispute type
+          enum:
+            - AUTHORIZATION
+            - TRANSACTION
+          example: AUTHORIZATION
   securitySchemes:
     BearerAuth:
       type: http
@@ -6143,7 +6292,7 @@ paths:
                   authorization_id: 123
                   modality: 123
                   comment: Custom comment
-                  protocol: client-custom-protocol-identifier
+                  protocol: 20190321L123456
                   disputed_amount: 10
                   metadata: {}
                   is_partial: true
@@ -6156,7 +6305,7 @@ paths:
                 value:
                   modality: 123
                   comment: Custom comment
-                  protocol: client-custom-protocol-identifier
+                  protocol: 20190321L123456
                   disputed_amount: 10
                   metadata: {}
                   is_partial: true
@@ -6171,7 +6320,7 @@ paths:
                   authorization_id: 123
                   modality: 13
                   comment: Custom comment
-                  protocol: client-custom-protocol-identifier
+                  protocol: 20190321L123456
                   disputed_amount: 10
                   metadata: {}
                   is_network: true
@@ -6185,7 +6334,7 @@ paths:
                   modality: 77
                   disputed_amount: 86753.09
                   comment: Custom comment
-                  protocol: client-custom-protocol-identifier
+                  protocol: c20190321L123456
                   is_network: true
                   is_partial: false
                   network_brand_type: Elo
@@ -6270,7 +6419,7 @@ paths:
             example: 2
             minimum: 1
           required: false
-          description: Page to return. Default = `1`.
+          description: Page to return.
         - in: query
           name: perPage
           schema:
@@ -6279,7 +6428,7 @@ paths:
             example: 20
             minimum: 1
           required: false
-          description: Number of items per page. Default = `30`.
+          description: Number of items per page
         - in: query
           name: accountId
           schema:
@@ -6670,10 +6819,13 @@ paths:
                           id: 1
                           memo: This is a test memo.
                           updated_chargeback_reason_code: '4836'
-                          merchant_name: This is a test merchant name.
+                          merchant_name: Acme Widgets
                           acquiring_institution_code: '004321'
                           change_reason_code_reason: This is a test reason.
                           case_network_response: COMPLETED_SND_2/10/2021 8:43:21 AM
+                          acquirer_memo: Not valid
+                          action: REJECT
+                          response_date: '2021-02-14'
                         chargeback_ref_num: null
                         network_response_amount: 12.3
                         network_response_currency: USD
@@ -6978,7 +7130,7 @@ paths:
                 pre_arb_is_partial:
                   type: boolean
                   description: >
-                    Is pre-arbitration for a partial amount and not the full
+                    Pre-arbitration is for a partial amount and not the full
                     amount?
 
                     Used when `event` = `SEND_PRE_ARBITRATION`.
@@ -7590,7 +7742,7 @@ paths:
                         Provide a detailed description of how the cardholder
                         attempted to return and the disposition of the
                         merchandise
-                      merchantRefuseAdvise: MRRA
+                      merchantRefuseAdvise: MRRM
                       didCardholderCancel: 'Y'
                       timeshareDate: '2022-05-20'
                       dateOfService: '2022-05-20'
@@ -7661,6 +7813,8 @@ paths:
                       merchantInBankruptcyLiquidationInd: 'Y'
                       nonFiatCurrencyNotMatching: 'Y'
                       dispositionOfMerchandise: a
+                      merchantAcceptInd: 'Y'
+                      explainCreditIssuedLateDetailsOfNegotiations: Pending
               Create a Dispute Form Clearing Elo with success:
                 value:
                   dispute_installment_id: 0
@@ -7897,7 +8051,7 @@ paths:
                         Provide a detailed description of how the cardholder
                         attempted to return and the disposition of the
                         merchandise
-                      merchantRefuseAdvise: MRRA
+                      merchantRefuseAdvise: MRRM
                       didCardholderCancel: 'Y'
                       timeshareDate: '2022-05-20'
                       dateOfService: '2022-05-20'
@@ -7968,6 +8122,8 @@ paths:
                       merchantInBankruptcyLiquidationInd: 'Y'
                       nonFiatCurrencyNotMatching: 'Y'
                       dispositionOfMerchandise: a
+                      merchantAcceptInd: 'Y'
+                      explainCreditIssuedLateDetailsOfNegotiations: Pending
         description: >-
           NOTE: When chargebackEbdfDocuments is used for automatic EBDF document
           generation for fraudDrfDocument (or)
@@ -8018,7 +8174,7 @@ paths:
                     $ref: '#/components/schemas/NetworkBrand'
                   error:
                     type: boolean
-                    description: Error?
+                    description: Error flag
                   reason:
                     type: string
                     description: Reason if error
@@ -8062,7 +8218,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/disputes/{disputeId}/fraud-report:
     post:
-      summary: Create fraud report
+      summary: Create dispute fraud report
       description: Create a dispute fraud report and one related installment.
       operationId: post-v1-disputes-fraud-report
       tags:
@@ -8109,7 +8265,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/disputes/{fraudReportId}/fraud-report:
     put:
-      summary: Update fraud report
+      summary: Update dispute fraud report
       description: Update a fraud report.
       operationId: put-v1-disputes-fraud-report
       tags:
@@ -8418,12 +8574,12 @@ paths:
             type: integer
           in: query
           name: page
-          description: Page to return. Default = `1`.
+          description: Page to return.
         - schema:
             type: integer
           in: query
           name: perPage
-          description: Number of items per page. Default = `30`.
+          description: Number of items per page.
       responses:
         '200':
           description: OK
@@ -8445,11 +8601,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/fee/{disputeFeeId}:
     parameters:
-      - schema:
-          type: string
-        name: disputeFeeId
-        in: path
-        required: true
+      - $ref: '#/components/parameters/disputeFeeID'
     get:
       summary: Get dispute fee
       description: >-
@@ -9798,6 +9950,11 @@ paths:
 
 
         This feature is **only** currently available for **Visa**.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID. Tokens can expire quickly, which can result in
+        a <b>401 Unauthorized</b> message.
       operationId: create-fee-v2
       tags:
         - Fees V2

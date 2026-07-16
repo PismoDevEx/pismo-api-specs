@@ -160,6 +160,12 @@ components:
         example: FIXED_CYCLE_CLOSING
         enum:
           - FIXED_CYCLE_CLOSING
+          - MONTHLY_CYCLE_CLOSING
+          - MONTHLY_DUE_DATE
+          - WEEKLY_CYCLE_CLOSING
+          - WEEKLY_DUE_DATE
+          - DAILY_CYCLE_CLOSING
+          - DAILY_DUE_DATE
     XCidHeader:
       name: x-cid
       in: header
@@ -343,6 +349,80 @@ components:
       format: int32
       description: Number of days between cycle closing and due date
       example: 5
+    DueDay:
+      type: integer
+      format: int32
+      description: Day of the month for the due date. Must be in the range 1 to 28.
+      minimum: 1
+      maximum: 28
+      example: 20
+    EveryXMonths:
+      type: integer
+      format: int32
+      description: >-
+        Interval in months between cycles. Must be between 1 and 12. Defaults to
+        1.
+      minimum: 1
+      maximum: 12
+      default: 1
+      example: 1
+    EveryXWeeks:
+      type: integer
+      format: int32
+      description: >-
+        Interval in weeks between cycles. Must be between 1 and 52. Defaults to
+        1.
+      minimum: 1
+      maximum: 52
+      default: 1
+      example: 2
+    EveryXDays:
+      type: integer
+      format: int32
+      description: >-
+        Interval in days between cycles. Must be between 1 and 365. Defaults to
+        1.
+      minimum: 1
+      maximum: 365
+      default: 1
+      example: 7
+    DayOfWeek:
+      type: string
+      description: Day of the week.
+      enum:
+        - MONDAY
+        - TUESDAY
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY
+      example: FRIDAY
+    WeekOfMonth:
+      type: integer
+      format: int32
+      description: >-
+        Week of the month. 1 = first, 2 = second, 3 = third, 4 = fourth, 5 =
+        last.
+      minimum: 1
+      maximum: 5
+      example: 3
+    NthSpecificWeekday:
+      type: object
+      description: >-
+        Nth specific weekday of the month (e.g. 3rd Friday). Mutually exclusive
+        with fixed day fields.
+      required:
+        - day_of_week
+        - week_of_month
+      properties:
+        day_of_week:
+          $ref: '#/components/schemas/DayOfWeek'
+        week_of_month:
+          $ref: '#/components/schemas/WeekOfMonth'
+      example:
+        day_of_week: FRIDAY
+        week_of_month: 3
     ErrorCode:
       type: string
       description: Error code
@@ -370,9 +450,41 @@ components:
     CreateOrPatchProgramCalendarStrategyRequestDto:
       oneOf:
         - $ref: '#/components/schemas/FIXED_CYCLE_CLOSING'
+        - $ref: '#/components/schemas/MONTHLY_CYCLE_CLOSING'
+        - $ref: '#/components/schemas/MONTHLY_DUE_DATE'
+        - $ref: '#/components/schemas/WEEKLY_CYCLE_CLOSING'
+        - $ref: '#/components/schemas/WEEKLY_DUE_DATE'
+        - $ref: '#/components/schemas/DAILY_CYCLE_CLOSING'
+        - $ref: '#/components/schemas/DAILY_DUE_DATE'
+      discriminator:
+        propertyName: strategy
+        mapping:
+          FIXED_CYCLE_CLOSING: '#/components/schemas/FIXED_CYCLE_CLOSING_response'
+          MONTHLY_CYCLE_CLOSING: '#/components/schemas/MONTHLY_CYCLE_CLOSING_response'
+          MONTHLY_DUE_DATE: '#/components/schemas/MONTHLY_DUE_DATE_response'
+          WEEKLY_CYCLE_CLOSING: '#/components/schemas/WEEKLY_CYCLE_CLOSING_response'
+          WEEKLY_DUE_DATE: '#/components/schemas/WEEKLY_DUE_DATE_response'
+          DAILY_CYCLE_CLOSING: '#/components/schemas/DAILY_CYCLE_CLOSING_response'
+          DAILY_DUE_DATE: '#/components/schemas/DAILY_DUE_DATE_response'
     CreateProgramOrPatchCalendarStrategyResponseDto:
       oneOf:
         - $ref: '#/components/schemas/FIXED_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/MONTHLY_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/MONTHLY_DUE_DATE_response'
+        - $ref: '#/components/schemas/WEEKLY_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/WEEKLY_DUE_DATE_response'
+        - $ref: '#/components/schemas/DAILY_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/DAILY_DUE_DATE_response'
+      discriminator:
+        propertyName: strategy
+        mapping:
+          FIXED_CYCLE_CLOSING: '#/components/schemas/FIXED_CYCLE_CLOSING_response'
+          MONTHLY_CYCLE_CLOSING: '#/components/schemas/MONTHLY_CYCLE_CLOSING_response'
+          MONTHLY_DUE_DATE: '#/components/schemas/MONTHLY_DUE_DATE_response'
+          WEEKLY_CYCLE_CLOSING: '#/components/schemas/WEEKLY_CYCLE_CLOSING_response'
+          WEEKLY_DUE_DATE: '#/components/schemas/WEEKLY_DUE_DATE_response'
+          DAILY_CYCLE_CLOSING: '#/components/schemas/DAILY_CYCLE_CLOSING_response'
+          DAILY_DUE_DATE: '#/components/schemas/DAILY_DUE_DATE_response'
     FIXED_CYCLE_CLOSING:
       title: Fixed cycle closing strategy
       description: Cycle closing date is fixed. Due date is dynamic.
@@ -403,8 +515,12 @@ components:
       properties:
         program_calendar_strategy_id:
           $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
         created_at:
           $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
         strategy:
           $ref: '#/components/schemas/FixedCycleClosingStrategy'
         configuration:
@@ -423,8 +539,12 @@ components:
       properties:
         program_calendar_strategy_id:
           $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
         created_at:
           $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
         strategy:
           $ref: '#/components/schemas/FixedCycleClosingStrategy'
         configuration:
@@ -439,10 +559,32 @@ components:
     FixedCycleClosingStrategy:
       type: string
       description: Program calendar strategy
-      example: FIXED_CYCLE_CLOSING
+      enum:
+        - FIXED_CYCLE_CLOSING
+    ProgramId:
+      type: integer
+      description: Program ID
+      format: int64
+      example: 1122
     GetCalendarStrategyResponseDto:
       oneOf:
         - $ref: '#/components/schemas/FIXED_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/MONTHLY_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/MONTHLY_DUE_DATE_response'
+        - $ref: '#/components/schemas/WEEKLY_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/WEEKLY_DUE_DATE_response'
+        - $ref: '#/components/schemas/DAILY_CYCLE_CLOSING_response'
+        - $ref: '#/components/schemas/DAILY_DUE_DATE_response'
+      discriminator:
+        propertyName: strategy
+        mapping:
+          FIXED_CYCLE_CLOSING: '#/components/schemas/FIXED_CYCLE_CLOSING_response'
+          MONTHLY_CYCLE_CLOSING: '#/components/schemas/MONTHLY_CYCLE_CLOSING_response'
+          MONTHLY_DUE_DATE: '#/components/schemas/MONTHLY_DUE_DATE_response'
+          WEEKLY_CYCLE_CLOSING: '#/components/schemas/WEEKLY_CYCLE_CLOSING_response'
+          WEEKLY_DUE_DATE: '#/components/schemas/WEEKLY_DUE_DATE_response'
+          DAILY_CYCLE_CLOSING: '#/components/schemas/DAILY_CYCLE_CLOSING_response'
+          DAILY_DUE_DATE: '#/components/schemas/DAILY_DUE_DATE_response'
     GetCalendarsResponseDto:
       type: object
       description: Response returned by calendar list
@@ -473,22 +615,571 @@ components:
         total_items:
           $ref: '#/components/schemas/TotalItems'
         items:
-          oneOf:
-            - $ref: '#/components/schemas/FIXED_CYCLE_CLOSING_ListResponse'
-          discriminator:
-            propertyName: strategy
-            description: Choose calendar strategy
-            program_calendar_strategy_id:
-              $ref: '#/components/schemas/ProgramCalendarStrategyId'
-            created_at:
-              $ref: '#/components/schemas/CreatedAt'
-            updated_at:
-              $ref: '#/components/schemas/UpdatedAt'
-            strategy:
-              oneOf:
-                - $ref: '#/components/schemas/FIXED_CYCLE_CLOSING'
-            active:
-              $ref: '#/components/schemas/Active'
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/FIXED_CYCLE_CLOSING_ListResponse'
+              - $ref: '#/components/schemas/MONTHLY_CYCLE_CLOSING_ListResponse'
+              - $ref: '#/components/schemas/MONTHLY_DUE_DATE_ListResponse'
+              - $ref: '#/components/schemas/WEEKLY_CYCLE_CLOSING_ListResponse'
+              - $ref: '#/components/schemas/WEEKLY_DUE_DATE_ListResponse'
+              - $ref: '#/components/schemas/DAILY_CYCLE_CLOSING_ListResponse'
+              - $ref: '#/components/schemas/DAILY_DUE_DATE_ListResponse'
+            discriminator:
+              propertyName: strategy
+              mapping:
+                FIXED_CYCLE_CLOSING: '#/components/schemas/FIXED_CYCLE_CLOSING_ListResponse'
+                MONTHLY_CYCLE_CLOSING: '#/components/schemas/MONTHLY_CYCLE_CLOSING_ListResponse'
+                MONTHLY_DUE_DATE: '#/components/schemas/MONTHLY_DUE_DATE_ListResponse'
+                WEEKLY_CYCLE_CLOSING: '#/components/schemas/WEEKLY_CYCLE_CLOSING_ListResponse'
+                WEEKLY_DUE_DATE: '#/components/schemas/WEEKLY_DUE_DATE_ListResponse'
+                DAILY_CYCLE_CLOSING: '#/components/schemas/DAILY_CYCLE_CLOSING_ListResponse'
+                DAILY_DUE_DATE: '#/components/schemas/DAILY_DUE_DATE_ListResponse'
+    MONTHLY_CYCLE_CLOSING:
+      title: Monthly cycle closing strategy
+      description: >
+        Cycle closes on a fixed day or Nth weekday each month. Due date is
+        derived forward from the close date.
+
+        Either `cycle_closing_day` or `nth_specific_weekday` must be provided —
+        not both.
+      type: object
+      required:
+        - configuration
+      properties:
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - MONTHLY_CYCLE_CLOSING
+        configuration:
+          type: object
+          required:
+            - days_between_cycle_closing_and_due_date
+          properties:
+            cycle_closing_day:
+              $ref: '#/components/schemas/CycleClosingDay'
+            nth_specific_weekday:
+              $ref: '#/components/schemas/NthSpecificWeekday'
+            every_x_months:
+              $ref: '#/components/schemas/EveryXMonths'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+          example:
+            cycle_closing_day: 15
+            every_x_months: 1
+            days_between_cycle_closing_and_due_date: 10
+        active:
+          $ref: '#/components/schemas/Active'
+    MONTHLY_CYCLE_CLOSING_response:
+      title: Monthly cycle closing strategy
+      description: >-
+        Cycle closes on a fixed day or Nth weekday each month. Due date is
+        derived forward from the close date.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - MONTHLY_CYCLE_CLOSING
+        configuration:
+          type: object
+          properties:
+            cycle_closing_day:
+              $ref: '#/components/schemas/CycleClosingDay'
+            nth_specific_weekday:
+              $ref: '#/components/schemas/NthSpecificWeekday'
+            every_x_months:
+              $ref: '#/components/schemas/EveryXMonths'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    MONTHLY_CYCLE_CLOSING_ListResponse:
+      description: Cycle closes on a fixed day or Nth weekday each month.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - MONTHLY_CYCLE_CLOSING
+        configuration:
+          type: object
+          properties:
+            cycle_closing_day:
+              $ref: '#/components/schemas/CycleClosingDay'
+            nth_specific_weekday:
+              $ref: '#/components/schemas/NthSpecificWeekday'
+            every_x_months:
+              $ref: '#/components/schemas/EveryXMonths'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    MONTHLY_DUE_DATE:
+      title: Monthly due date strategy
+      description: >
+        Due date falls on a fixed day or Nth weekday each month. Cycle close is
+        derived backward from the due date.
+
+        Either `due_day` or `nth_specific_weekday` must be provided — not both.
+      type: object
+      required:
+        - configuration
+      properties:
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - MONTHLY_DUE_DATE
+        configuration:
+          type: object
+          required:
+            - days_between_cycle_closing_and_due_date
+          properties:
+            due_day:
+              $ref: '#/components/schemas/DueDay'
+            nth_specific_weekday:
+              $ref: '#/components/schemas/NthSpecificWeekday'
+            every_x_months:
+              $ref: '#/components/schemas/EveryXMonths'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+          example:
+            due_day: 20
+            every_x_months: 2
+            days_between_cycle_closing_and_due_date: 10
+        active:
+          $ref: '#/components/schemas/Active'
+    MONTHLY_DUE_DATE_response:
+      title: Monthly due date strategy
+      description: >-
+        Due date falls on a fixed day or Nth weekday each month. Cycle close is
+        derived backward from the due date.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - MONTHLY_DUE_DATE
+        configuration:
+          type: object
+          properties:
+            due_day:
+              $ref: '#/components/schemas/DueDay'
+            nth_specific_weekday:
+              $ref: '#/components/schemas/NthSpecificWeekday'
+            every_x_months:
+              $ref: '#/components/schemas/EveryXMonths'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    MONTHLY_DUE_DATE_ListResponse:
+      description: Due date falls on a fixed day or Nth weekday each month.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - MONTHLY_DUE_DATE
+        configuration:
+          type: object
+          properties:
+            due_day:
+              $ref: '#/components/schemas/DueDay'
+            nth_specific_weekday:
+              $ref: '#/components/schemas/NthSpecificWeekday'
+            every_x_months:
+              $ref: '#/components/schemas/EveryXMonths'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    WEEKLY_CYCLE_CLOSING:
+      title: Weekly cycle closing strategy
+      description: >-
+        Cycle closes on a specific weekday every N weeks. Due date is derived
+        forward from the close date.
+      type: object
+      required:
+        - configuration
+      properties:
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - WEEKLY_CYCLE_CLOSING
+        configuration:
+          type: object
+          required:
+            - day_of_week
+            - days_between_cycle_closing_and_due_date
+          properties:
+            day_of_week:
+              $ref: '#/components/schemas/DayOfWeek'
+            every_x_weeks:
+              $ref: '#/components/schemas/EveryXWeeks'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+          example:
+            day_of_week: MONDAY
+            every_x_weeks: 2
+            days_between_cycle_closing_and_due_date: 5
+        active:
+          $ref: '#/components/schemas/Active'
+    WEEKLY_CYCLE_CLOSING_response:
+      title: Weekly cycle closing strategy
+      description: >-
+        Cycle closes on a specific weekday every N weeks. Due date is derived
+        forward from the close date.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - WEEKLY_CYCLE_CLOSING
+        configuration:
+          type: object
+          properties:
+            day_of_week:
+              $ref: '#/components/schemas/DayOfWeek'
+            every_x_weeks:
+              $ref: '#/components/schemas/EveryXWeeks'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    WEEKLY_CYCLE_CLOSING_ListResponse:
+      description: Cycle closes on a specific weekday every N weeks.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - WEEKLY_CYCLE_CLOSING
+        configuration:
+          type: object
+          properties:
+            day_of_week:
+              $ref: '#/components/schemas/DayOfWeek'
+            every_x_weeks:
+              $ref: '#/components/schemas/EveryXWeeks'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    WEEKLY_DUE_DATE:
+      title: Weekly due date strategy
+      description: >-
+        Due date falls on a specific weekday every N weeks. Cycle close is
+        derived backward from the due date.
+      type: object
+      required:
+        - configuration
+      properties:
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - WEEKLY_DUE_DATE
+        configuration:
+          type: object
+          required:
+            - day_of_week
+            - days_between_cycle_closing_and_due_date
+          properties:
+            day_of_week:
+              $ref: '#/components/schemas/DayOfWeek'
+            every_x_weeks:
+              $ref: '#/components/schemas/EveryXWeeks'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+          example:
+            day_of_week: FRIDAY
+            every_x_weeks: 2
+            days_between_cycle_closing_and_due_date: 5
+        active:
+          $ref: '#/components/schemas/Active'
+    WEEKLY_DUE_DATE_response:
+      title: Weekly due date strategy
+      description: >-
+        Due date falls on a specific weekday every N weeks. Cycle close is
+        derived backward from the due date.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - WEEKLY_DUE_DATE
+        configuration:
+          type: object
+          properties:
+            day_of_week:
+              $ref: '#/components/schemas/DayOfWeek'
+            every_x_weeks:
+              $ref: '#/components/schemas/EveryXWeeks'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    WEEKLY_DUE_DATE_ListResponse:
+      description: Due date falls on a specific weekday every N weeks.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - WEEKLY_DUE_DATE
+        configuration:
+          type: object
+          properties:
+            day_of_week:
+              $ref: '#/components/schemas/DayOfWeek'
+            every_x_weeks:
+              $ref: '#/components/schemas/EveryXWeeks'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    DAILY_CYCLE_CLOSING:
+      title: Daily cycle closing strategy
+      description: >-
+        Cycle closes every N days. Due date is derived forward from the close
+        date.
+      type: object
+      required:
+        - configuration
+      properties:
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - DAILY_CYCLE_CLOSING
+        configuration:
+          type: object
+          required:
+            - days_between_cycle_closing_and_due_date
+          properties:
+            every_x_days:
+              $ref: '#/components/schemas/EveryXDays'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+          example:
+            every_x_days: 7
+            days_between_cycle_closing_and_due_date: 3
+        active:
+          $ref: '#/components/schemas/Active'
+    DAILY_CYCLE_CLOSING_response:
+      title: Daily cycle closing strategy
+      description: >-
+        Cycle closes every N days. Due date is derived forward from the close
+        date.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - DAILY_CYCLE_CLOSING
+        configuration:
+          type: object
+          properties:
+            every_x_days:
+              $ref: '#/components/schemas/EveryXDays'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    DAILY_CYCLE_CLOSING_ListResponse:
+      description: Cycle closes every N days.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - DAILY_CYCLE_CLOSING
+        configuration:
+          type: object
+          properties:
+            every_x_days:
+              $ref: '#/components/schemas/EveryXDays'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    DAILY_DUE_DATE:
+      title: Daily due date strategy
+      description: >-
+        Due date falls every N days. Cycle close is derived backward from the
+        due date.
+      type: object
+      required:
+        - configuration
+      properties:
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - DAILY_DUE_DATE
+        configuration:
+          type: object
+          required:
+            - days_between_cycle_closing_and_due_date
+          properties:
+            every_x_days:
+              $ref: '#/components/schemas/EveryXDays'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+          example:
+            every_x_days: 7
+            days_between_cycle_closing_and_due_date: 3
+        active:
+          $ref: '#/components/schemas/Active'
+    DAILY_DUE_DATE_response:
+      title: Daily due date strategy
+      description: >-
+        Due date falls every N days. Cycle close is derived backward from the
+        due date.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - DAILY_DUE_DATE
+        configuration:
+          type: object
+          properties:
+            every_x_days:
+              $ref: '#/components/schemas/EveryXDays'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
+    DAILY_DUE_DATE_ListResponse:
+      description: Due date falls every N days.
+      type: object
+      properties:
+        program_calendar_strategy_id:
+          $ref: '#/components/schemas/ProgramCalendarStrategyId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        strategy:
+          type: string
+          description: Program calendar strategy
+          enum:
+            - DAILY_DUE_DATE
+        configuration:
+          type: object
+          properties:
+            every_x_days:
+              $ref: '#/components/schemas/EveryXDays'
+            days_between_cycle_closing_and_due_date:
+              $ref: '#/components/schemas/DaysBetweenCycleClosingAndDueDate'
+        active:
+          $ref: '#/components/schemas/Active'
     NumberOfPages:
       type: integer
       format: int32
@@ -617,6 +1308,88 @@ components:
                 message: >-
                   To proceed with this operation, please provide either the
                   configuration update, the active flag, or both.
+            Every x months out of range:
+              description: Field every_x_months must be between 1 and 12
+              value:
+                code: EX1101
+                message: Field every_x_months must be between 1 and 12.
+            Cycle closing day and nth specific weekday mutually exclusive:
+              description: >-
+                cycle_closing_day and nth_specific_weekday cannot both be
+                provided
+              value:
+                code: EX1102
+                message: >-
+                  Fields cycle_closing_day and nth_specific_weekday are mutually
+                  exclusive.
+            Cycle closing day or nth specific weekday required:
+              description: >-
+                Either cycle_closing_day or nth_specific_weekday must be
+                provided
+              value:
+                code: EX1103
+                message: >-
+                  Either cycle_closing_day or nth_specific_weekday must be
+                  provided.
+            Day of week required (nth weekday):
+              description: Field day_of_week is required inside nth_specific_weekday
+              value:
+                code: EX1104
+                message: Field day_of_week is required.
+            Day of week invalid (nth weekday):
+              description: Field day_of_week must be a valid Java DayOfWeek constant
+              value:
+                code: EX1105
+                message: Field day_of_week must be a valid day of the week.
+            Week of month required:
+              description: Field week_of_month is required inside nth_specific_weekday
+              value:
+                code: EX1106
+                message: Field week_of_month is required.
+            Week of month out of range:
+              description: Field week_of_month must be between 1 and 5
+              value:
+                code: EX1107
+                message: Field week_of_month must be between 1 and 5.
+            Due day and nth specific weekday mutually exclusive:
+              description: due_day and nth_specific_weekday cannot both be provided
+              value:
+                code: EX1108
+                message: >-
+                  Fields due_day and nth_specific_weekday are mutually
+                  exclusive.
+            Due day or nth specific weekday required:
+              description: Either due_day or nth_specific_weekday must be provided
+              value:
+                code: EX1109
+                message: Either due_day or nth_specific_weekday must be provided.
+            Due day out of range:
+              description: Field due_day must be between 1 and 28
+              value:
+                code: EX1110
+                message: Field due_day must be between 1 and 28.
+            Day of week required (weekly):
+              description: Field day_of_week is required for weekly strategies
+              value:
+                code: EX1200
+                message: Field day_of_week is required.
+            Day of week invalid (weekly):
+              description: Field day_of_week must be one of MONDAY through SUNDAY
+              value:
+                code: EX1201
+                message: >-
+                  Field day_of_week must be a valid day of the week (MONDAY,
+                  TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY).
+            Every x weeks out of range:
+              description: Field every_x_weeks must be between 1 and 52
+              value:
+                code: EX1203
+                message: Field every_x_weeks must be between 1 and 52.
+            Every x days out of range:
+              description: Field every_x_days must be between 1 and 365
+              value:
+                code: EX1301
+                message: Field every_x_days must be between 1 and 365.
     500InternalServerError:
       description: Internal server error
       content:
@@ -821,7 +1594,12 @@ paths:
       summary: Update account calendar strategy
       operationId: UpdateAcountCalendarStrategy
       description: >
-        Update an account calendar strategy.
+        Update an account calendar strategy. After a program calendar strategy
+        is defined using [Create program calendar
+        strategy](ref:createprogramcalendarstrategy), you must use this endpoint
+        to assign the strategy to an account. If you have more than one program
+        calendar strategy defined for a program, you can also use this endpoint
+        to change the strategy assigned to an account.
 
 
         This endpoint generates a [Balance account
@@ -829,14 +1607,7 @@ paths:
         event.
 
 
-        <b>Notes:</b> 
-
-        - A program calendar strategy is defined for a specific program.
-        However, it can be associated with an account in that program, so you
-        change the program calendar strategy associated with the account by
-        specifying its ID.
-
-        - This endpoint cannot be used to update a [fixed due date
+        <b>Note:</b> This endpoint cannot be used to update a [fixed due date
         calendar](doc:fixed-due-date-calendars).
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'

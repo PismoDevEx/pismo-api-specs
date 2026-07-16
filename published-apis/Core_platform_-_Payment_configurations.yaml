@@ -414,9 +414,10 @@ components:
           type: boolean
           description: >-
             Should the confirmation verification endpoint be called using Mutual
-            Transport Layer Security (mTLS)? This flag can only be true if
+            Transport Layer Security (mTLS)? This can only be `true` if
             `confirmation_verification_endpoint` and
-            `confirmation_verification_mtls_prefix` are configured.
+            `confirmation_verification_mtls_prefix` are passed. Default is
+            `false`.
           example: true
           default: false
         confirmation_verification_mtls_prefix:
@@ -446,16 +447,16 @@ components:
         allow_authorization_by_document_number:
           type: boolean
           description: >-
-            Flag to indicate whether this Org/program/account is allowed to
-            authorize using document number as the account holder verification
-            method.
+            Is org/program/account allowed to be authorized using document
+            number as the account holder verification method? Default is
+            `false`.
           example: true
           default: false
         require_external_authentication:
           type: boolean
           description: >-
-            Flag to indicate whether this Org/program/account requires a call to
-            an external authentication entity.
+            Does this org/program/account require a call to an external
+            authentication entity? Default is `false`.
           example: true
           default: false
         update_balance_after_discharge:
@@ -509,8 +510,8 @@ components:
             require_external_authentication:
               type: boolean
               description: >-
-                Flag to indicate whether this Org/program/account requires a
-                call to an external authentication entity.
+                Does this org/program/account require a call to an external
+                authentication entity? Default is `false`.
               example: true
               default: false
             rules:
@@ -522,8 +523,8 @@ components:
             require_external_authentication:
               type: boolean
               description: >-
-                Flag to indicate whether this Org/program/account requires a
-                call to an external authentication entity.
+                Does this org/program/account require a call to an external
+                authentication entity? Default is `false`.
               example: true
               default: false
             rules:
@@ -542,14 +543,14 @@ components:
         disable:
           type: boolean
           description: >-
-            Flag to disable this rule throughout the payment methods validation
-            flow.
+            Should this rule be disabled throughout the payment methods
+            validation flow? Default is `false`.
           default: false
         force:
           type: boolean
           description: >-
-            Flag to force this rule throughout the payment methods validation
-            flow.
+            Should this rule be forced throughout the payment methods validation
+            flow? Default is `false`.
           default: false
     ReasonConfig:
       type: object
@@ -578,8 +579,8 @@ components:
         require_external_authentication:
           type: boolean
           description: >-
-            Flag to indicate whether this Org/program/account requires a call to
-            an external authentication entity.
+            Does this org/program/account require a call to an external
+            authentication entity? Default is `false`.
           example: true
           default: false
         update_balance_after_discharge:
@@ -676,8 +677,8 @@ components:
     RequireExternalAuthentication:
       type: boolean
       description: >-
-        Flag to indicate whether this Org/Program/Account requires a call to an
-        external authentication entity.
+        Does this org/program/account require a call to an external
+        authentication entity? Default is `false`.
       example: true
       default: false
     CancellationThreshold:
@@ -701,8 +702,8 @@ components:
       type: boolean
       description: >-
         Should the confirmation verification endpoint be called using mTLS? This
-        flag can only be true if `confirmation_verification_endpoint` and
-        `confirmation_verification_mtls_prefix` are configured.
+        can only be `true` if `confirmation_verification_endpoint` and
+        `confirmation_verification_mtls_prefix` are passed. Default is `false`.
       example: true
       default: false
     ConfirmationVerificationMTLSPrefix:
@@ -731,8 +732,8 @@ components:
     AllowAuthorizationByDocumentNumber:
       type: boolean
       description: >-
-        Flag to indicate whether this Org/Program/Account is allowed to
-        authorize using Document Number as account holder verification method.
+        Is this org/program/account allowed to authorize using document number
+        as the account holder verification method? Default is `false`.
       example: true
       default: false
     RetroactivePaymentTimeRestriction:
@@ -897,7 +898,7 @@ components:
 security:
   - BearerAuth: []
 tags:
-  - name: Payment method configs
+  - name: Payment method configurations
     description: Payment methods configurations endpoints.
   - name: Payment method acceptances
     description: Payment methods acceptances endpoints.
@@ -906,12 +907,12 @@ tags:
 paths:
   /payment-methods-configs/v1/configs:
     post:
-      summary: Create configuration by Org
+      summary: Create org configuration
       description: >
         Create a payment methods configuration for an authorization at the
-        organization (Org) level. This level can be used as a default
-        configuration for all programs and accounts in this Org. There can be
-        only one configuration by Org. New creation attempts for the same Org
+        organization (org) level. This level can be used as a default
+        configuration for all programs and accounts in this org. There can be
+        only one org configuration. New creation attempts for the same org
         receive a conflict response.
 
 
@@ -919,7 +920,7 @@ paths:
         environment.
       operationId: post-config-by-tenant
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Create payment methods configuration request body.
         required: true
@@ -945,13 +946,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get configuration by Org
+      summary: Get org configuration
       description: >-
-        Get a payment methods configuration at the Org level. Note that the
-        organization and account information is pulled from the access token.
+        Get a payment methods configuration at the organization level. Note that
+        the organization and account information is pulled from the access
+        token.
       operationId: get-config-by-tenant
       tags:
-        - Payment method configs
+        - Payment method configurations
       responses:
         '200':
           description: Retrieved successfully
@@ -970,14 +972,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Replace configuration by Org
+      summary: Replace org configuration
       description: >-
-        Update a payment methods configuration at the organization (Org) level.
-        This operation updates the entire configuration, so all fields must be
-        sent to avoid data loss.
+        Update a payment methods configuration at the organization level. This
+        operation updates the entire configuration, so all fields must be sent
+        to avoid data loss.
       operationId: put-config-by-tenant
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Create Payment methods configuration request body.
         required: true
@@ -1003,13 +1005,13 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     patch:
-      summary: Update configuration by Org
+      summary: Update org configuration
       description: >-
-        Update a payment methods configuration at the organization (Org) level.
-        This operation updates only the fields with the provided values.
+        Update a payment methods configuration at the organization level. This
+        operation updates only the fields with the passed values.
       operationId: patch-config-by-tenant
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Update payment methods configuration request body.
         required: true
@@ -1035,11 +1037,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete configuration by Org
-      description: Delete a payment methods configuration at the organization (Org) level.
+      summary: Delete org configuration
+      description: Delete a payment methods configuration at the organization level.
       operationId: delete-config-by-tenant
       tags:
-        - Payment method configs
+        - Payment method configurations
       responses:
         '204':
           $ref: '#/components/responses/204NoContent'
@@ -1062,20 +1064,20 @@ paths:
         required: true
         description: ID of program to which to apply this configuration.
     post:
-      summary: Create configuration by program
+      summary: Create program configuration
       description: >
         Create a payment methods configuration at the program level. This level
         can be used as a default configuration for all accounts in this program
-        and at a more granular level than Org. There can be only one
-        configuration by program. New creation attempts for the same program
-        receive a conflict response.
+        and at a more granular level than org. There can be only one program
+        configuration. New creation attempts for the same program receive a
+        conflict response.
 
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
         environment.      
       operationId: post-config-by-program
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Create Payment methods configuration request body
         required: true
@@ -1101,11 +1103,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get configuration by program
+      summary: Get program configuration
       description: Get the Payment methods configuration on the program level.
       operationId: get-config-by-program
       tags:
-        - Payment method configs
+        - Payment method configurations
       responses:
         '200':
           description: Retrieved successfully
@@ -1124,14 +1126,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Replace configuration by program
+      summary: Replace program configuration
       description: >-
         Update a payment methods configuration at the program level. This
-        operation updates the entire configuration, so all fields must be sent
+        operation updates the entire configuration, so all fields must be passed
         to avoid data loss.
       operationId: put-config-by-program
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Update payment methods configuration request body
         required: true
@@ -1157,13 +1159,13 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     patch:
-      summary: Update configuration by program
+      summary: Update program configuration
       description: >-
         Update a payment methods configuration at the program level. This
         operation updates only the fields with the provided values.
       operationId: patch-config-by-program
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Update payment methods configuration request body
         required: true
@@ -1189,11 +1191,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete configuration by program
+      summary: Delete program configuration
       description: Delete a payment methods configuration at the program level.
       operationId: delete-config-by-program
       tags:
-        - Payment method configs
+        - Payment method configurations
       responses:
         '204':
           $ref: '#/components/responses/204NoContent'
@@ -1216,7 +1218,7 @@ paths:
         required: true
         description: ID of account to which to apply the configuration.
     post:
-      summary: Create configuration by account
+      summary: Create account configuration
       description: >
         Create a payment methods configuration at the account level. This is the
         most granular level allowed and can be used to customize a specific
@@ -1228,7 +1230,7 @@ paths:
         environment.
       operationId: post-config-by-account
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Create Payment methods configuration request body
         required: true
@@ -1254,11 +1256,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get configuration by account
+      summary: Get account configuration
       description: Get a payment methods configuration at the account level.
       operationId: get-config-by-account
       tags:
-        - Payment method configs
+        - Payment method configurations
       responses:
         '200':
           description: Retrieved successfully
@@ -1277,14 +1279,14 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Replace configuration by account
+      summary: Replace account configuration
       description: >-
         Update a payment methods configuration at the account level. This
         operation updates the entire configuration, so all fields must be sent
         to avoid data loss.
       operationId: put-config-by-account
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Update Payment methods configuration request body
         required: true
@@ -1310,13 +1312,13 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     patch:
-      summary: Update configuration by account
+      summary: Update account configuration
       description: >-
         Update a payment methods configuration at the account level. This
         operation updates only the fields with the provided values.
       operationId: patch-config-by-account
       tags:
-        - Payment method configs
+        - Payment method configurations
       requestBody:
         description: Update payment methods configuration request body
         required: true
@@ -1342,11 +1344,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete configuration by account
+      summary: Delete account configuration
       description: Delete a payment methods configuration at the account level.
       operationId: delete-config-by-account
       tags:
-        - Payment method configs
+        - Payment method configurations
       responses:
         '204':
           $ref: '#/components/responses/204NoContent'
@@ -1365,14 +1367,14 @@ paths:
       summary: Get configuration by hierarchy
       description: >
         Get a payment methods configuration based on the hierarchy from the most
-        granular to the least granular (account > program > Org).
+        granular to the least granular (account > program > org).
 
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
         environment. 
       operationId: get-config-by-priority
       tags:
-        - Payment method configs
+        - Payment method configurations
       parameters:
         - name: program_id
           schema:
@@ -1420,13 +1422,13 @@ paths:
           Processing code that defines the operation related to this acceptance
           configuration.
     post:
-      summary: Create acceptance configuration by Org
+      summary: Create org acceptance configuration
       description: >
         Create acceptance configuration for a processing code operation on the
-        organization (Org) level. This level can be used as a default
-        configuration for all programs and accounts in this Org. There is always
-        only one configuration by operation by Org. New creation attempts for
-        the same operation receive a conflict response.
+        organization level. This level can be used as a default configuration
+        for all programs and accounts in this org. There is always only one
+        configuration by operation by org. New creation attempts for the same
+        operation receive a conflict response.
 
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
@@ -1459,11 +1461,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Replace acceptance configuration by Org
+      summary: Replace org acceptance configuration
       description: >-
         Update acceptance configuration for a processing code operation on the
-        Org level. This operation updates the entire configuration, so all
-        fields must be sent to avoid data loss.
+        organization level. This operation updates the entire configuration, so
+        all fields must be passed to avoid data loss.
       operationId: put-acceptance-by-tenant
       tags:
         - Payment method acceptances
@@ -1492,11 +1494,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     patch:
-      summary: Update acceptance configuration by Org
+      summary: Update org acceptance configuration
       description: >-
         Update acceptance configuration for a processing code operation on the
-        Org level. This operation updates only the fields with the provided
-        values.
+        organization level. This operation updates only the fields with the
+        passed values.
       operationId: patch-acceptance-by-tenant
       tags:
         - Payment method acceptances
@@ -1525,10 +1527,10 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get acceptance configuration by Org
+      summary: Get org acceptance configuration
       description: >-
-        Get acceptance configuration for a processing code operation on the Org
-        level.
+        Get acceptance configuration for a processing code operation on the
+        organization level.
       operationId: get-acceptance-by-tenant
       tags:
         - Payment method acceptances
@@ -1550,10 +1552,10 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete acceptance configuration by Org
+      summary: Delete org acceptance configuration
       description: >-
         Delete acceptance configuration for a processing code operation on the
-        Org level.
+        organization level.
       operationId: delete-acceptance-config-by-tenant
       tags:
         - Payment method acceptances
@@ -1587,11 +1589,11 @@ paths:
         required: true
         description: Program ID to which to apply this configuration.
     post:
-      summary: Create acceptance configuration by program
+      summary: Create program acceptance configuration
       description: >
         Create acceptance configuration for a processing code operation on the
         program level. This level can be used as a default configuration for all
-        accounts in this program and at a more granular level than Org. There is
+        accounts in this program and at a more granular level than org. There is
         always only one configuration by operation by program. New creation
         attempts for the same operation receive a conflict response.
 
@@ -1626,7 +1628,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Replace acceptance configuration by program
+      summary: Replace program acceptance configuration
       description: >-
         Update acceptance configuration for a processing code operation on the
         program level. This operation updates the entire configuration, so all
@@ -1659,7 +1661,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     patch:
-      summary: Update acceptance configuration by program
+      summary: Update program acceptance configuration
       description: >-
         Update acceptance configuration for a processing code operation on the
         program level. This operation updates only the fields with the provided
@@ -1692,7 +1694,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get acceptance configuration by program
+      summary: Get program acceptance configuration
       description: >-
         Get acceptance configuration for a processing code operation on the
         program level.
@@ -1717,7 +1719,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete acceptance configuration by program
+      summary: Delete program acceptance configuration
       description: >-
         Delete acceptance configuration for a processing code operation on the
         program level.
@@ -1754,7 +1756,7 @@ paths:
         required: true
         description: ID of account to which to apply the configuration.
     post:
-      summary: Create acceptance configuration by account
+      summary: Create account acceptance configuration
       description: >
         Create acceptance configuration for a processing code operation on the
         account level. This is the most granular level allowed and can be used
@@ -1793,7 +1795,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
-      summary: Replace acceptance configuration by account
+      summary: Replace account acceptance configuration
       description: >-
         Update acceptance configuration for a processing code operation on the
         account level. This operation updates the entire configuration, so all
@@ -1826,7 +1828,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     patch:
-      summary: Update acceptance configuration by account
+      summary: Update account acceptance configuration
       description: >-
         Update acceptance configuration for a processing code operation on the
         account level. This operation updates only the fields with the provided
@@ -1859,7 +1861,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      summary: Get acceptance configuration by account
+      summary: Get account acceptance configuration
       description: >-
         Get acceptance configuration for a processing code operation on the
         account level.
@@ -1884,7 +1886,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     delete:
-      summary: Delete acceptance configuration by account
+      summary: Delete account acceptance configuration
       description: >-
         Delete acceptance configuration for a processing code operation on the
         account level.
@@ -1910,7 +1912,7 @@ paths:
       description: >
         Get acceptance configuration for a processing code operation based on
         the hierarchy from the most granular to the least granular (account >
-        program > Org).
+        program > org).
 
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
@@ -1951,8 +1953,8 @@ paths:
           in: query
           required: false
           description: >-
-            Flag to identify whether the Authorization configurations should be
-            retrieved along with the acceptances or not.
+            Should authorization configurations be retrieved along with the
+            acceptances? Default is `false`.
       responses:
         '200':
           description: Retrieved Successfully
@@ -1970,134 +1972,6 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'
-  /payments-config/v1/processing-codes:
-    post:
-      summary: Create processing code (deprecated)
-      deprecated: true
-      description: >
-        This endpoint is **deprecated**. Use the [Create processing
-        code](ref:createprocessingcode) endpoint instead. 
-
-
-        Create a processing code that identifies a financial operation for the
-        organization and defines how the Pismo platform handles this operation
-        type.
-
-
-        If you provide the required fields only, the platform creates and
-        returns only one `processing_code` for the operation.
-
-
-        If you provide all available fields, the platform creates and returns
-        two processing codes: `processing_code` for the operation and
-        `undo_processing_code` for its reversal.
-
-
-        See the [Payments configuration](doc:payments-configurations) guide for
-        more information.
-      operationId: post-processing-code-by-tenant
-      tags:
-        - Processing codes
-      requestBody:
-        description: Create processing code configuration request body.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateProcessingCodeRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateProcessingCodeResponse'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-              examples:
-                Fields violations:
-                  value:
-                    code: FIELDS-VIOLATIONS
-                    error_code: FIELDS-VIOLATIONS
-                    message: One or more fields are invalid.
-                    error: >-
-                      processing_code must be an alphanumeric
-                      value;undo_processing_code must be an alphanumeric value
-                    violations:
-                      processing_code: processing_code must be an alphanumeric value
-                      undo_processing_code: undo_processing_code must be an alphanumeric value
-                Invalid payload:
-                  value:
-                    code: PC-INVALID-SAVE-PAYLOAD
-                    error_code: PC-INVALID-SAVE-PAYLOAD
-                    message: Save payload is invalid. It must be a valid JSON.
-                Invalid Undo Information Payload:
-                  value:
-                    code: PC-INVALID-UNDO-INFORMATION-PAYLOAD
-                    error_code: PC-INVALID-UNDO-INFORMATION-PAYLOAD
-                    message: >-
-                      Undo information in payload is invalid. All fields must be
-                      present.
-                Invalid Same Code And UndoCode:
-                  value:
-                    code: PC-INVALID-UNDO-EQUALS-CODE
-                    error_code: PC-INVALID-UNDO-EQUALS-CODE
-                    message: undo_processing_code cannot be equal to processing_code.
-                InvalidPatchInformationPayload:
-                  value:
-                    code: PC-INVALID-PATCH-INFORMATION-PAYLOAD
-                    error_code: PC-INVALID-PATCH-INFORMATION-PAYLOAD
-                    message: >-
-                      Patch information in payload is invalid. All fields must
-                      be present.
-        '409':
-          $ref: '#/components/responses/409Conflict'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-    get:
-      summary: List processing codes (deprecated)
-      deprecated: true
-      description: >
-        This endpoint is **deprecated**. Use the [List processing
-        codes](ref:processingcodelist) endpoint instead. 
-
-
-        List processing codes, which you can filter by code or description.
-
-
-        If you don't specify any query parameters, then the response lists all
-        processing codes defined for the organization.
-      operationId: get-processing-code-by-tenant
-      parameters:
-        - in: query
-          name: processingCode
-          schema:
-            type: string
-          description: >-
-            Unique alphanumeric identifier that defines how the Pismo platform
-            handles this financial operation type.
-        - in: query
-          name: description
-          schema:
-            type: string
-          description: Processing code description.
-      tags:
-        - Processing codes
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetProcessingCodeResponse'
-        '404':
-          $ref: '#/components/responses/404NotFound'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
   /payments-config/v1/processing-codes/{processing_code}:
     parameters:
       - schema:
@@ -2106,39 +1980,3 @@ paths:
         in: path
         required: true
         description: Processing code to update.
-    patch:
-      summary: Update processing code (deprecated)
-      deprecated: true
-      description: >
-        This endpoint is **deprecated**. Use the [Update processing
-        code](ref:processingcodeupdate) endpoint instead. 
-
-
-        Update description of this processing code or provide the
-        `undo_processing_code` field that links to the existing processing code
-        that reverses this operation.
-      operationId: patch-undo-processing-code-by-tenant
-      tags:
-        - Processing codes
-      requestBody:
-        description: Patch undo processing code configuration request body.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateProcessingCodeRequest'
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateProcessingCodeResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '404':
-          $ref: '#/components/responses/404NotFound'
-        '409':
-          $ref: '#/components/responses/409Conflict'
-        '500':
-          $ref: '#/components/responses/500InternalServer'

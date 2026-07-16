@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Core platform - Accounting
   version: 1.0.0
-  description: API used to manage the accounting context.
+  description: API used to manage the accounting context
   contact:
     name: API Support
     url: https://developers.pismo.io/support/
@@ -13,305 +13,6 @@ servers:
     description: Sandbox API server for testing
 components:
   schemas:
-    AccountingScriptV2:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        program_id:
-          type: integer
-          format: int64
-        event_type_id:
-          type: integer
-          format: int64
-        entry_type_id:
-          type: integer
-          format: int64
-        debit_accounting:
-          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
-        credit_accounting:
-          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
-        cost_center:
-          $ref: '#/components/schemas/CostCenterAccountingScriptPost'
-        processing_code:
-          type: string
-        expression:
-          type: string
-          description: >
-            Expression to calculate the value of the accounting entry. 
-
-            It can be a simple mathematical expression or a more complex one
-            using functions.
-        fee_information:
-          type: object
-          description: |
-            Information about the fee applied to the accounting entry.
-            It can include details such as fee type, amount, and currency.
-        parameters:
-          $ref: '#/components/schemas/AccountingScriptParameters'
-        cash_in_bucket:
-          $ref: '#/components/schemas/AccountingScriptBucket'
-        cash_out_bucket:
-          $ref: '#/components/schemas/AccountingScriptBucket'
-        is_database_stage:
-          type: string
-          description: >
-            Indicates if the accounting script is for a database stage.
-
-            If yes, the script is used for testing purposes and does not affect
-            production data.
-          default: 'no'
-          example: 'yes'
-        min_days_due:
-          type: integer
-          format: int64
-          description: Minimum number of days for the due date.
-          example: 30
-        max_days_due:
-          type: integer
-          format: int64
-          description: Maximum number of days for the due date.
-          example: 90
-        history:
-          $ref: '#/components/schemas/History'
-    AccountingScriptPostV2:
-      type: object
-      required:
-        - program_id
-        - event_type_id
-        - entry_type_id
-        - debit_accounting
-        - credit_accounting
-        - cost_center
-        - parameters
-      properties:
-        program_id:
-          type: integer
-          format: int64
-        event_type_id:
-          type: integer
-          format: int64
-        entry_type_id:
-          type: integer
-          format: int64
-        debit_accounting:
-          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
-        credit_accounting:
-          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
-        cost_center:
-          $ref: '#/components/schemas/CostCenterAccountingScriptPost'
-        processing_code:
-          type: string
-        expression:
-          type: string
-          description: >
-            Expression to calculate the value of the accounting entry. 
-
-            It can be a simple mathematical expression or a more complex one
-            using functions.
-        fee_information:
-          type: object
-          description: |
-            Information about the fee applied to the accounting entry.
-            It can include details such as fee type, amount, and currency.
-        parameters:
-          $ref: '#/components/schemas/AccountingScriptParameters'
-        cash_in_bucket:
-          $ref: '#/components/schemas/AccountingScriptBucket'
-        cash_out_bucket:
-          $ref: '#/components/schemas/AccountingScriptBucket'
-        is_database_stage:
-          type: string
-          description: >
-            Indicates if the accounting script is for a database stage.
-
-            If yes, the script is used for testing purposes and does not affect
-            production data.
-          default: 'no'
-          example: 'yes'
-        min_days_due:
-          type: integer
-          format: int64
-          description: Minimum number of days for the due date.
-          example: 30
-        max_days_due:
-          type: integer
-          format: int64
-          description: Maximum number of days for the due date.
-          example: 90
-        reason:
-          $ref: '#/components/schemas/HistoryReason'
-        responsible:
-          $ref: '#/components/schemas/HistoryResponsible'
-    EventType:
-      required:
-        - id
-        - description
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Event type ID
-        description:
-          type: string
-          maximum: 100
-          description: Event type description
-      example:
-        id: 101
-        description: CREDIT
-    EntryType:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/EntryTypeID'
-        description:
-          $ref: '#/components/schemas/EntryTypeDescription'
-        type:
-          $ref: '#/components/schemas/EntryTypeType'
-        org_id:
-          $ref: '#/components/schemas/OrgID'
-        history:
-          $ref: '#/components/schemas/History'
-    EntryTypeDelete:
-      required:
-        - reason
-      type: object
-      properties:
-        reason:
-          $ref: '#/components/schemas/HistoryReason'
-        responsible:
-          $ref: '#/components/schemas/HistoryResponsible'
-      example:
-        reason: Deleting accounting entry type configuration.
-        responsible: John Doe
-    EntryTypeGetById:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/EntryTypeID'
-        description:
-          $ref: '#/components/schemas/EntryTypeDescription'
-        type:
-          $ref: '#/components/schemas/EntryTypeType'
-        reason:
-          $ref: '#/components/schemas/HistoryReason'
-        responsible:
-          $ref: '#/components/schemas/HistoryResponsible'
-        history:
-          type: array
-          items:
-            $ref: '#/components/schemas/History'
-    EntryTypePost:
-      required:
-        - id
-        - description
-        - type
-        - reason
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/EntryTypeID'
-        description:
-          $ref: '#/components/schemas/EntryTypeDescription'
-        type:
-          $ref: '#/components/schemas/EntryTypeType'
-        reason:
-          $ref: '#/components/schemas/HistoryReason'
-        responsible:
-          $ref: '#/components/schemas/HistoryResponsible'
-    EntryTypePatch:
-      required:
-        - reason
-      type: object
-      properties:
-        description:
-          $ref: '#/components/schemas/EntryTypeDescription'
-        type:
-          $ref: '#/components/schemas/EntryTypeType'
-        reason:
-          $ref: '#/components/schemas/HistoryReason'
-        responsible:
-          $ref: '#/components/schemas/HistoryResponsible'
-      example:
-        description: DEBIT
-        type: CREATION
-        reason: Updating accounting entry type configuration.
-        responsible: John Doe
-    EntryTypeID:
-      type: integer
-      format: int64
-      description: Entry type ID
-      example: 101
-    EntryTypeDescription:
-      type: string
-      maximum: 250
-      description: Entry type description.
-      example: CREDIT
-    EntryTypeType:
-      type: string
-      maximum: 100
-      description: >
-        Set the entry type:
-
-
-        * `CREATION`: Default value for new entries. Also, this value is assumed
-        when type is not provided.
-
-        * `DUE_DATE`: Used only with a credit program to indicate a due date
-        entry.
-      enum:
-        - DUE_DATE
-        - CREATION
-      example: DUE_DATE
-    OrgID:
-      type: string
-      description: Organization ID
-      example: TN-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-    History:
-      type: object
-      description: Historical information for auditing the entity.
-      properties:
-        org_id:
-          $ref: '#/components/schemas/OrgID'
-        action:
-          type: string
-          description: Action performed on the entity.
-          example: Created
-        reason:
-          $ref: '#/components/schemas/HistoryReason'
-        responsible:
-          $ref: '#/components/schemas/HistoryResponsible'
-        version:
-          type: integer
-          format: int64
-          description: Entity version.
-          example: 1
-        jsonb:
-          type: string
-          description: JSON representation of the request body.
-          example: >-
-            {"id": 101, "description": "CREDIT", "type": "DUE_DATE", "reason":
-            "Creation of a new entry type configuration.", "responsible": "John
-            Doe", "created_at": "2021-10-10T10:10:00Z"}
-        created_at:
-          type: string
-          format: date-time
-          description: >-
-            Date and time when the history was created (ISO 8601). Format:
-            YYYY-MM-DDThh:mm:ssZ.
-          example: '2021-10-10T10:10:00Z'
-    HistoryReason:
-      type: string
-      maximum: 250
-      description: Reason for the operation.
-      example: Creation of a new entry type configuration.
-    HistoryResponsible:
-      type: string
-      maximum: 100
-      description: User name or ID of the person performing the operation.
-      example: John Doe
     AccountingAccount:
       type: object
       properties:
@@ -347,29 +48,6 @@ components:
         account: 123123132-x
         program_id: 12
         created_at: '2021-10-10T10:10:00.000Z'
-    AccountingAccountPost:
-      required:
-        - description
-        - account
-        - program_id
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description that helps to identify the accounting account
-          maximum: 100
-        account:
-          type: string
-          description: Accounting account number
-          maximum: 50
-        program_id:
-          type: integer
-          format: int64
-          description: Related program ID
-      example:
-        description: SAMPLE ACCOUNT
-        account: 123123132-x
-        program_id: 12
     AccountingAccountAccountSctiptPost:
       required:
         - description
@@ -378,20 +56,19 @@ components:
       properties:
         description:
           type: string
-          description: Description that helps to identify the accounting account
+          description: >-
+            Description that helps to identify the accounting account.  Can be
+            `0` or any value if there's no corresponding account.
           maximum: 100
         account:
           type: string
-          description: Accounting account number
-          maximum: 50
-        cosif:
-          type: string
-          description: Accounting account number
+          description: >-
+            Accounting account number.  Can be `0` or any value if there's no
+            corresponding account.
           maximum: 50
       example:
         description: SAMPLE ACCOUNT
         account: 123123132-x
-        cosif: '1234567'
     AccountingAccountPatch:
       required:
         - description
@@ -403,6 +80,586 @@ components:
           maximum: 100
       example:
         description: SAMPLE ACCOUNT
+    AccountingAccountPost:
+      required:
+        - description
+        - account
+        - program_id
+      type: object
+      properties:
+        description:
+          type: string
+          description: >-
+            Description that helps to identify the accounting account.  Can be
+            `0` or any value if there's no corresponding account.
+          maximum: 100
+        account:
+          type: string
+          description: >-
+            Accounting account number. Can be `0` or any value if there's no
+            corresponding account.
+          maximum: 50
+        program_id:
+          type: integer
+          format: int64
+          description: Related program ID
+      example:
+        description: SAMPLE ACCOUNT
+        account: 123123132-x
+        program_id: 12
+    AccountingEntryPost:
+      required:
+        - event_date
+        - program_id
+        - entry_type_id
+        - amount
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Accounting entry amount
+        entry_type_id:
+          type: integer
+          format: int64
+          description: Entry type ID
+        event_date:
+          type: string
+          format: date
+          description: Event date
+          example: '2021-06-26'
+        program_id:
+          type: integer
+          format: int64
+          description: Related program ID
+        account_id:
+          type: integer
+          format: int64
+          description: Related account ID, required if Transaction_ID is present.
+        credit_accounting_account:
+          type: string
+          description: Credit accounting account
+        debit_accounting_account:
+          type: string
+          description: Debit accounting account
+        tracking_id:
+          type: string
+          description: >-
+            Tracking ID in UUID format, optional idempotence key. You can use
+            [Online UUID Generator](https://www.uuidgenerator.net/version4) to
+            generate a random UUID value.
+          maximum: 50
+        transaction_id:
+          type: integer
+          format: int64
+          description: Related transaction ID
+      example:
+        amount: 10
+        entry_type_id: 2100
+        event_date: '2021-02-01T00:00:00.000Z'
+        program_id: 12
+        account_id: 21
+        credit_accounting_account: '0'
+        debit_accounting_account: '0'
+        tracking_id: c5f2f677-d9aa-4285-8a08-d297a72d8949
+        transaction_id: 12342
+    AccountingScript:
+      type: object
+      properties:
+        credit_accounting:
+          $ref: '#/components/schemas/AccountingAccount'
+        cost_center:
+          $ref: '#/components/schemas/CostCenter'
+        debit_accounting:
+          $ref: '#/components/schemas/AccountingAccount'
+        entry_name:
+          type: string
+          description: Base entry ID
+        entry_type_id:
+          type: integer
+          format: int64
+          description: Related entry type ID
+        event_type_id:
+          type: integer
+          format: int64
+          description: Related event type ID
+        id:
+          type: integer
+          format: int64
+          description: Account script ID
+        processing_code:
+          type: string
+          description: >-
+            Processing code. When the script is based on a processing code, this
+            field is **REQUIRED**.
+        program_id:
+          type: integer
+          format: int64
+          description: Related program ID
+    AccountingScriptBucket:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Bucket name
+          example: bacen_pre_2039
+        account:
+          type: integer
+          format: int64
+          description: Account ID
+          example: 123456
+    AccountingScriptBucketResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Bucket name
+          example: bacen_pre_2039
+        account:
+          type: integer
+          format: int64
+          description: Account ID
+          example: 123456
+        currency:
+          type: string
+          description: Bucket currency
+          example: BRL
+        value:
+          type: number
+          description: Bucket value
+          example: 100
+    AccountingScriptParameters:
+      required:
+        - name
+        - value
+      type: object
+      properties:
+        name:
+          type: string
+          description: Parameter name [pismo:timing or bacen:classification]
+          example: pismo:timing
+        value:
+          type: string
+          description: Parameter value [REGULAR, DUEDATE, TRUE, or 3]
+          example: REGULAR, DUEDATE
+    AccountingScriptPatch:
+      type: object
+      properties:
+        debit_account_number:
+          type: string
+          description: Debit account accounting number
+        credit_account_number:
+          type: string
+          description: Credit account accounting number
+        debit_cost:
+          type: string
+          description: Debit cost center
+        credit_cost:
+          type: string
+          description: Credit cost center
+    AccountingScriptPatchResponse:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          has_error:
+            description: Indicates whether an error occurred during the update process.
+            type: boolean
+          error_message:
+            description: Provides a detailed description of the error encountered, if any.
+            type: string
+          new_id:
+            type: integer
+            format: int64
+            description: >-
+              Unique identifier of the newly created accounting script. (The old
+              one will be deactivated)
+    AccountingScriptPost:
+      required:
+        - program_id
+        - event_type_id
+        - entry_type_id
+        - debit_accounting_account_id
+        - credit_accounting_account_id
+      type: object
+      properties:
+        entry_type_id:
+          type: integer
+          format: int64
+          description: Related entry type ID
+        event_type_id:
+          type: integer
+          format: int64
+          description: Related event type ID
+        credit_accounting_account_id:
+          type: integer
+          format: int64
+          description: Accounting account ID assigned as credit account
+        debit_accounting_account_id:
+          type: integer
+          format: int64
+          description: Accounting account ID assigned as debit account
+        program_id:
+          type: integer
+          format: int64
+          description: Related program ID
+        cost_center:
+          $ref: '#/components/schemas/CostCenter'
+        entry_name:
+          type: string
+          enum:
+            - amount
+            - amount-advancement
+            - amount-advancement-dueDate
+            - amount-advancement-shift
+            - amount-advancement-shift-dueDate
+            - amount-anticipation
+            - amount-cancelment-anticipation
+            - amount-clearing
+            - amount-contract
+            - amount-dueDate
+            - amount-dueDate-cancelment
+            - amount-reversal
+            - contractAmount
+            - daily-interest
+            - fine
+            - interest
+            - interest-advancement
+            - interest-advancement-dueDate
+            - interest-anticipation
+            - interest-dueDate
+            - interest-not-appropriated
+            - interest-partial
+            - iof
+            - iof-dueDate
+            - overdue
+          default: amount
+          description: >
+            Base entry ID. If not provided, defaults to 'amount'.
+
+            * `amount`: Principal amount of the transaction on the event date.
+            It usually represents the gross value of the operation associated
+            with the corresponding flow/`entry_type`.
+
+            * `amount-advancement`: Principal amount of the advance (excluding
+            interest/charges), that is, the principal being advanced (for
+            example, installment agreement advance, invoice advance, receivables
+            advance).
+
+            * `amount-advancement-dueDate`: Principal amount of the advance,
+            posted on the due date of the cycle to which the transaction was
+            advanced.
+
+            * `amount-advancement-shift`: Principal amount of the advance using
+            the “shift” API (date change / flow adjustment), for example advance
+            of an installment or invoice where there is a replacement/change of
+            the original flow. Used to represent the principal of the
+            installment/amount that is being moved from a future date to a
+            present date through an advance.
+
+            * `amount-advancement-shift-dueDate`: Same concept as
+            `amount-advancement-shift`, but related to the due date. It
+            represents the principal of the advance associated with the original
+            due date of the obligation that was “shifted” (moved/adjusted) by
+            the advance process.
+
+            * `amount-anticipation`: This amount name is deprecated. Standard
+            routings that were eventually created with it are deprecated and
+            have corresponding routings with `-advancement` amount values.
+
+            * `amount-cancelment-anticipation`: This amount name is deprecated.
+            Standard routings that were created with it are deprecated and have
+            corresponding routings with `-advancement` amount values.
+
+            * `amount-clearing`: Amount used exclusively for configuring the
+            posting of the installment principal (without interest) upon the
+            clearing arrival of each installment.
+
+            * `amount-contract`: This amount name is deprecated. Standard
+            routings that were created with it are deprecated and have
+            corresponding routings with `amount` values.
+
+            * `amount-dueDate`: Principal amount of the transaction related to
+            the due date (for example, an installment or invoice that is due).
+            Used when the amount to be posted is linked to a specific due date,
+            even if the event occurs before that date. It represents the due
+            date posting of the `amount`. 
+
+            * `amount-dueDate-cancelment`: This amount name is deprecated. 
+
+            * `amount-reversal`: This amount name is deprecated and has no
+            corresponding movement, as there are no mapped usage scenarios for
+            it.
+
+            * `contractAmount`: This amount is deprecated. The transactions for
+            which it may be configured are transactions 608 and 612. If it is
+            currently used, the recommendation is to create routings with
+            `amount`, which will return the total transaction value. Used as a
+            reference for the total obligation assumed at the time of
+            contracting.
+
+            * `daily-interest`: Amount of daily interest calculated for a period
+            (for example, between two specific dates), usually used in scenarios
+            such as pro-rata interest calculation.
+
+            * `fine`: Fine amount included in a payment (amount that is
+            discharged). This type should only be used when linked to
+            transaction 201 (payment). When used, it provides details of how
+            much of that payment corresponds to the fine.
+
+            * `interest`: Amount of interest calculated/incurred on the
+            transaction, whether it is a contract transaction or an installment.
+            Important: this should only be used if the interest is included
+            together with the transaction's total amount, so that the `interest`
+            is explicitly identified as such. If the interest is already in a
+            separate transaction, `amount` should be used instead.
+
+            * `interest-advancement`: Interest amount related to the advance
+            operation, for example, interest amount of an advanced installment.
+
+            * `interest-advancement-dueDate`: Interest amount of the advance,
+            posted on the due date of the cycle to which the transaction was
+            advanced.
+
+            * `interest-anticipation`: This amount name is deprecated. Standard
+            routings that were created with it are deprecated and have
+            corresponding routings with `-advancement` amount values.
+
+            * `interest-dueDate`: Interest amount of an operation at the due
+            date. The usage logic is the same as for `interest`, but in this
+            case the posting occurs on the due date.
+
+            * `interest-not-appropriated`: Amount exclusively used for posting
+            interest from transaction 706 (invoice installment cancellation). It
+            obtains the interest amount to be posted from the original
+            contracting transaction.
+
+            * `interest-partial`: This amount name is deprecated and has been
+            replaced by `daily-interest`.
+
+            * `iof`: IOF amount (financial transactions tax) associated with the
+            event operation. As with interest, the same logic applies: if the
+            IOF is already in a specific and separate transaction, this option
+            should not be used, and `amount` is the correct option.
+
+            * `iof-dueDate`: IOF amount (financial transactions tax) associated
+            with the event operation. As with interest, the same logic applies:
+            if the IOF is already in a specific and separate transaction, this
+            option should not be used, and `amount`` is the correct option. This
+            due-date option posts the value on the due date of the invoice that
+            contains the transaction.
+
+            * `overdue`: Late interest (penalty interest) amount included in a
+            payment (amount that is discharged). This type should only be used
+            when linked to transaction 201 (payment). When used, it provides
+            details of how much of that payment corresponds to late interest.
+        processing_code:
+          type: string
+          maximum: 6
+          description: >-
+            Processint code. When the script is based on a processing code, this
+            field is **REQUIRED**.
+    AccountingScriptSinglePatchResponse:
+      type: object
+      properties:
+        new_id:
+          type: integer
+          format: int64
+          description: >-
+            Unique identifier of the newly created accounting script. (The old
+            one will be deactivated)
+    AccountingScriptV2:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Accounting script ID
+        program_id:
+          type: integer
+          format: int64
+          description: Program ID
+        event_type_id:
+          type: integer
+          format: int64
+          description: Event type ID
+        entry_type_id:
+          type: integer
+          format: int64
+          description: Entry type ID
+        debit_accounting:
+          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
+        credit_accounting:
+          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
+        cost_center:
+          $ref: '#/components/schemas/CostCenterAccountingScriptPost'
+        processing_code:
+          type: string
+          description: Processing code
+        expression:
+          type: string
+          description: >
+            Expression to calculate the value of the accounting entry.
+
+            It can be a simple mathematical expression or a more complex one
+            using functions.
+        fee_information:
+          type: object
+          description: |
+            Information about the fee applied to the accounting entry.
+            It can include details such as fee type, amount, and currency.
+        parameters:
+          $ref: '#/components/schemas/AccountingScriptParameters'
+        cash_in_bucket:
+          $ref: '#/components/schemas/AccountingScriptBucket'
+        cash_out_bucket:
+          $ref: '#/components/schemas/AccountingScriptBucket'
+        is_database_stage:
+          type: string
+          description: >
+            Indicates if the accounting script is for a database stage.
+
+            If yes, the script is used for testing purposes and does not affect
+            production data.
+          default: 'no'
+          example: 'yes'
+        min_days_due:
+          type: integer
+          format: int64
+          description: Minimum number of days for the due date
+          example: 30
+        max_days_due:
+          type: integer
+          format: int64
+          description: Maximum number of days for the due date
+          example: 90
+        history:
+          $ref: '#/components/schemas/History'
+    AccountingScriptPostV2:
+      type: object
+      required:
+        - entry_type_id
+        - debit_accounting
+        - credit_accounting
+        - expression
+      properties:
+        credit_accounting:
+          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
+        debit_accounting:
+          $ref: '#/components/schemas/AccountingAccountAccountSctiptPost'
+        entry_type_id:
+          $ref: '#/components/schemas/EntryTypePost'
+        expression:
+          type: string
+          description: >
+            Expression to calculate the value of the accounting entry.
+
+            It can be a simple mathematical expression or a more complex one
+            using functions.
+        cash_in_bucket:
+          $ref: '#/components/schemas/AccountingScriptBucket'
+        cash_out_bucket:
+          $ref: '#/components/schemas/AccountingScriptBucket'
+        cost_center:
+          $ref: '#/components/schemas/CostCenterAccountingScriptPost'
+        event_type_id:
+          type: integer
+          format: int64
+          description: Event type ID
+        except_program_ids:
+          items:
+            type: integer
+            description: List of program IDs to exclude
+          example:
+            - 78
+            - 91
+        fee_information:
+          type: object
+          description: |
+            Information about the fee applied to the accounting entry.
+            It can include details such as fee type, amount, and currency.
+        is_database_stage:
+          type: string
+          description: >
+            Is this accounting script for database staging?
+
+            If yes, the script is used for testing purposes and does not affect
+            production data.
+          default: 'no'
+          example: 'yes'
+        max_days_due:
+          type: integer
+          format: int64
+          description: Maximum number of days for the due date
+          example: 90
+        min_days_due:
+          type: integer
+          format: int64
+          description: Minimum number of days for the due date
+          example: 30
+        parameters:
+          $ref: '#/components/schemas/AccountingScriptParameters'
+        processing_code:
+          type: string
+          description: Processing code
+        program_id:
+          type: integer
+          format: int64
+          description: Program ID
+        program_list_id:
+          type: array
+          items:
+            type: integer
+            description: List of program IDs to include
+          example:
+            - 12
+            - 34
+            - 56
+        program_types:
+          type: array
+          items:
+            type: string
+            description: Program types
+          example:
+            - CREDIT
+            - DEBIT
+        reason:
+          $ref: '#/components/schemas/HistoryReason'
+        responsible:
+          $ref: '#/components/schemas/HistoryResponsible'
+    BatchAccountingScriptPatch:
+      type: object
+      properties:
+        operations:
+          type: array
+          items:
+            properties:
+              accounting_script_id:
+                type: integer
+                format: int64
+                description: Accounting script ID
+              set:
+                $ref: '#/components/schemas/AccountingScriptPatch'
+    Bucket:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Bucket name
+          example: bacen_pre_2039
+        account:
+          type: integer
+          format: int64
+          description: Account ID
+          example: 123456
+        value:
+          type: number
+          description: Bucket value
+          example: 100
+        updated_at:
+          type: string
+          format: date
+          description: Bucket last updated date
+          example: '2021-06-26'
     CostCenter:
       required:
         - debit_org
@@ -468,251 +725,174 @@ components:
         credit_org: '999999'
         debit_cost: '999999'
         credit_cost: '999999'
-    AccountingScriptPost:
+    EntryType:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntryTypeID'
+        description:
+          $ref: '#/components/schemas/EntryTypeDescription'
+        type:
+          $ref: '#/components/schemas/EntryTypeType'
+        org_id:
+          $ref: '#/components/schemas/OrgID'
+        history:
+          $ref: '#/components/schemas/History'
+    EntryTypeDelete:
       required:
-        - program_id
-        - event_type_id
-        - entry_type_id
-        - debit_accounting_account_id
-        - credit_accounting_account_id
-        - cost_center
+        - reason
       type: object
       properties:
-        program_id:
-          type: integer
-          format: int64
-          description: Related program ID
-        event_type_id:
-          type: integer
-          format: int64
-          description: Related event type ID
-        entry_type_id:
-          type: integer
-          format: int64
-          description: Related entry type ID
-        entry_name:
-          type: string
-          enum:
-            - amount
-            - interest
-            - iof
-            - amount-dueDate
-            - amount-clearing
-            - amount-contract
-            - deactivated
-            - amount-cancelment-anticipation
-            - amount-dueDate-cancelment
-            - daily-interest
-          default: amount
-          description: Base entry ID. If not provided, 'amount' will be assumed.
-        debit_accounting_account_id:
-          type: integer
-          format: int64
-          description: Accounting account identifier assigned as debit account.
-        credit_accounting_account_id:
-          type: integer
-          format: int64
-          description: Accounting account identifier assigned as credit account.
-        cost_center:
-          $ref: '#/components/schemas/CostCenter'
-        processing_code:
-          type: string
-          maximum: 6
-          description: >-
-            When the script is based on a processing code, this field is
-            **REQUIRED**.
-    AccountingScriptPatch:
+        reason:
+          $ref: '#/components/schemas/HistoryReason'
+        responsible:
+          $ref: '#/components/schemas/HistoryResponsible'
+      example:
+        reason: Deleting accounting entry type configuration.
+        responsible: John Doe
+    EntryTypeDescription:
+      type: string
+      maximum: 250
+      description: Entry type description.
+      example: CREDIT
+    EntryTypeGetById:
       type: object
       properties:
-        debit_account_number:
-          type: string
-          description: Debit account accounting number
-        credit_account_number:
-          type: string
-          description: Credit account accounting number
-        debit_cost:
-          type: string
-          description: Debit cost center
-        credit_cost:
-          type: string
-          description: Credit cost center
-    BatchAccountingScriptPatch:
-      type: object
-      properties:
-        operations:
+        id:
+          $ref: '#/components/schemas/EntryTypeID'
+        description:
+          $ref: '#/components/schemas/EntryTypeDescription'
+        type:
+          $ref: '#/components/schemas/EntryTypeType'
+        reason:
+          $ref: '#/components/schemas/HistoryReason'
+        responsible:
+          $ref: '#/components/schemas/HistoryResponsible'
+        history:
           type: array
           items:
-            properties:
-              accounting_script_id:
-                type: integer
-                format: int64
-                description: Accounting script id
-              set:
-                $ref: '#/components/schemas/AccountingScriptPatch'
-    AccountingScriptPatchResponse:
-      type: object
-      additionalProperties:
-        type: object
-        properties:
-          has_error:
-            description: Indicates whether an error occurred during the update process.
-            type: boolean
-          error_message:
-            description: Provides a detailed description of the error encountered, if any.
-            type: string
-          new_id:
-            type: integer
-            format: int64
-            description: >-
-              Unique identifier of the newly created accounting script. (The old
-              one will be deactivated)
-    AccountingScriptSinglePatchResponse:
+            $ref: '#/components/schemas/History'
+    EntryTypeID:
+      type: integer
+      format: int64
+      description: Entry type ID
+      example: 101
+    EntryTypePatch:
+      required:
+        - reason
       type: object
       properties:
-        new_id:
-          type: integer
-          format: int64
-          description: >-
-            Unique identifier of the newly created accounting script. (The old
-            one will be deactivated)
-    AccountingScript:
+        description:
+          $ref: '#/components/schemas/EntryTypeDescription'
+        type:
+          $ref: '#/components/schemas/EntryTypeType'
+        reason:
+          $ref: '#/components/schemas/HistoryReason'
+        responsible:
+          $ref: '#/components/schemas/HistoryResponsible'
+      example:
+        description: DEBIT
+        type: CREATION
+        reason: Updating accounting entry type configuration.
+        responsible: John Doe
+    EntryTypePost:
+      required:
+        - id
+        - description
+        - type
+        - reason
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntryTypeID'
+        description:
+          $ref: '#/components/schemas/EntryTypeDescription'
+        type:
+          $ref: '#/components/schemas/EntryTypeType'
+        reason:
+          $ref: '#/components/schemas/HistoryReason'
+        responsible:
+          $ref: '#/components/schemas/HistoryResponsible'
+    EntryTypeType:
+      type: string
+      maximum: 100
+      description: >
+        Set the entry type:
+
+
+        * `CREATION`: Default value for new entries. Also, this value is assumed
+        when type is not provided.
+
+        * `DUE_DATE`: Used only with a credit program to indicate a due date
+        entry.
+      enum:
+        - DUE_DATE
+        - CREATION
+      example: DUE_DATE
+    EventType:
+      required:
+        - id
+        - description
       type: object
       properties:
         id:
           type: integer
           format: int64
-          description: Account script ID
-        program_id:
-          type: integer
-          format: int64
-          description: Related program ID
-        event_type_id:
-          type: integer
-          format: int64
-          description: Related event type ID
-        entry_type_id:
-          type: integer
-          format: int64
-          description: Related entry type ID
-        entry_name:
+          description: Event type ID
+        description:
           type: string
-          description: Base entry ID
-        debit_accounting:
-          $ref: '#/components/schemas/AccountingAccount'
-        credit_accounting:
-          $ref: '#/components/schemas/AccountingAccount'
-        cost_center:
-          $ref: '#/components/schemas/CostCenter'
-        processing_code:
-          type: string
-          description: >-
-            When the script is based on a processing code, this field is
-            **REQUIRED**.
-    AccountingEntryPost:
-      required:
-        - event_date
-        - program_id
-        - entry_type_id
-        - amount
-      type: object
-      properties:
-        event_date:
-          type: string
-          format: date
-          description: Event date
-          example: '2021-06-26T00:00:00.000Z'
-        transaction_id:
-          type: integer
-          format: int64
-          description: Related transaction ID
-        account_id:
-          type: integer
-          format: int64
-          description: Related account ID, required if Transaction_ID is present.
-        program_id:
-          type: integer
-          format: int64
-          description: Related program ID
-        debit_accounting_account:
-          type: string
-          description: Debit accounting account
-        credit_accounting_account:
-          type: string
-          description: Credit accounting account
-        entry_type_id:
-          type: integer
-          format: int64
-          description: Entry type ID
-        amount:
-          type: number
-          description: Accounting entry amount
-        tracking_id:
-          type: string
-          description: Tracking ID, optional idempotence key
-          maximum: 50
+          maximum: 100
+          description: Event type description
       example:
-        entry_type_id: 2100
-        tracking_id: c5f2f677-d9aa-4285-8a08-d297a72d8949
-        debit_accounting_account: '0'
-        credit_accounting_account: '0'
-        event_date: '2021-02-01T00:00:00.000Z'
-        amount: 10
-        program_id: 12
-        transaction_id: 12342
-        account_id: 21
-    Bucket:
+        id: 101
+        description: CREDIT
+    History:
       type: object
+      description: Historical information for auditing the entity.
       properties:
-        name:
+        org_id:
+          $ref: '#/components/schemas/OrgID'
+        action:
           type: string
-          description: Bucket name
-          example: bacen_pre_2039
-        account:
+          description: Action performed on the entity.
+          example: Created
+        reason:
+          $ref: '#/components/schemas/HistoryReason'
+        responsible:
+          $ref: '#/components/schemas/HistoryResponsible'
+        version:
           type: integer
           format: int64
-          description: Account ID
-          example: 123456
-        value:
-          type: number
-          description: Bucket value
-          example: 100
-        updated_at:
+          description: Entity version.
+          example: 1
+        jsonb:
           type: string
-          format: date
-          description: Bucket last updated date
-          example: '2021-06-26T00:00:00.000Z'
-    AccountingScriptBucket:
-      type: object
-      properties:
-        name:
+          description: JSON representation of the request body.
+          example: >-
+            {"id": 101, "description": "CREDIT", "type": "DUE_DATE", "reason":
+            "Creation of a new entry type configuration.", "responsible": "John
+            Doe", "created_at": "2021-10-10T10:10:00Z"}
+        created_at:
           type: string
-          description: Bucket name
-          example: bacen_pre_2039
-        account:
-          type: integer
-          format: int64
-          description: Account ID
-          example: 123456
-    AccountingScriptBucketResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Bucket name
-          example: bacen_pre_2039
-        account:
-          type: integer
-          format: int64
-          description: Account ID
-          example: 123456
-        currency:
-          type: string
-          description: Bucket currency
-          example: BRL
-        value:
-          type: number
-          description: Bucket value
-          example: 100
+          format: date-time
+          description: >-
+            Date and time when the history was created (ISO 8601). Format:
+            YYYY-MM-DDThh:mm:ssZ.
+          example: '2021-10-10T10:10:00Z'
+    HistoryReason:
+      type: string
+      maximum: 250
+      description: Reason for the operation.
+      example: Creation of a new entry type configuration.
+    HistoryResponsible:
+      type: string
+      maximum: 100
+      description: User name or ID of the person performing the operation.
+      example: John Doe
+    OrgID:
+      type: string
+      description: Organization ID
+      example: TN-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
     Page:
       type: object
       properties:
@@ -724,20 +904,6 @@ components:
           description: Items retrieved from a given request.
           items:
             type: object
-    AccountingScriptParameters:
-      required:
-        - name
-        - value
-      type: object
-      properties:
-        name:
-          type: string
-          description: Parameter name [pismo:timing or bacem:classification]
-          example: pismo:timing
-        value:
-          type: string
-          description: value of the parameter [REGULAR,DUEDATE OR TRUE OR 3]
-          example: REGULAR,DUEDATE
   parameters:
     pageSize:
       in: query
@@ -761,8 +927,6 @@ components:
         Account access token. Tokens can expire quickly, which can result in an
         "Unauthorized" error.
       bearerFormat: JWT
-security:
-  - BearerAuth: []
 tags:
   - name: Accounting event types
     description: Endpoints to manage accounting event types.
@@ -772,8 +936,10 @@ tags:
     description: >-
       Endpoints to manage the accounting plan, which is a set of accounting
       accounts.
-  - name: Accounting scripts
-    description: Endpoints to manage accounting scripts.
+  - name: Accounting scripts V2
+    description: Endpoints to manage accounting scripts V2
+  - name: Accounting scripts V1
+    description: Endpoints to manage accounting scripts V1
   - name: Accounting entry
     description: Endpoints to manage accounting entries.
   - name: Buckets
@@ -840,78 +1006,6 @@ paths:
                 $ref: '#/components/schemas/EventType'
         '404':
           description: Event type not found
-      deprecated: false
-  /v1/entry-types:
-    get:
-      operationId: SearchEntryTypes
-      summary: List accounting entry types (outdated)
-      description: >
-        List accounting entry types from your organization.
-
-
-        This endpoint is outdated and new endpoint is available: [List
-        accounting entry types](ref:searchentrytypesv2).
-
-
-        Refer to [Search for accounting entry
-        types](doc:create-accounting-entries#search-for-accounting-entry-types)
-        for more information.
-      tags:
-        - Accounting entry types
-      parameters:
-        - $ref: '#/components/parameters/pageSize'
-        - $ref: '#/components/parameters/pageOffset'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - properties:
-                      items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/EntryType'
-        '400':
-          description: Bad request
-      deprecated: false
-  /v1/entry-types/{entryTypeId}:
-    get:
-      operationId: GetEntryTypeById
-      summary: Get accounting entry type (outdated)
-      description: >
-        Get a specific accounting entry type by its ID.
-
-
-        This endpoint is outdated and new endpoint is available: [Get accounting
-        entry type](ref:getentrytypebyidv2).
-
-
-        Refer to [Search for accounting entry
-        types](doc:create-accounting-entries#search-for-accounting-entry-types)
-        for more information.
-      tags:
-        - Accounting entry types
-      parameters:
-        - in: path
-          name: entryTypeId
-          schema:
-            type: integer
-            format: int64
-          required: true
-          description: Entry type ID
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EntryType'
-        '404':
-          description: Entry type not found
       deprecated: false
   /v2/entry-types:
     post:
@@ -1064,6 +1158,78 @@ paths:
         '500':
           description: Internal server error
       deprecated: false
+  /v1/entry-types:
+    get:
+      operationId: SearchEntryTypes
+      summary: List accounting entry types (outdated)
+      description: >
+        List accounting entry types from your organization.
+
+
+        This endpoint is outdated and new endpoint is available: [List
+        accounting entry types](ref:searchentrytypesv2).
+
+
+        Refer to [Search for accounting entry
+        types](doc:create-accounting-entries#search-for-accounting-entry-types)
+        for more information.
+      tags:
+        - Accounting entry types
+      parameters:
+        - $ref: '#/components/parameters/pageSize'
+        - $ref: '#/components/parameters/pageOffset'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/EntryType'
+        '400':
+          description: Bad request
+      deprecated: false
+  /v1/entry-types/{entryTypeId}:
+    get:
+      operationId: GetEntryTypeById
+      summary: Get accounting entry type (outdated)
+      description: >
+        Get a specific accounting entry type by its ID.
+
+
+        This endpoint is outdated and new endpoint is available: [Get accounting
+        entry type](ref:getentrytypebyidv2).
+
+
+        Refer to [Search for accounting entry
+        types](doc:create-accounting-entries#search-for-accounting-entry-types)
+        for more information.
+      tags:
+        - Accounting entry types
+      parameters:
+        - in: path
+          name: entryTypeId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Entry type ID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryType'
+        '404':
+          description: Entry type not found
+      deprecated: false
   /v1/accounting-accounts:
     post:
       operationId: CreateAccountingAccount
@@ -1072,7 +1238,7 @@ paths:
         Create an accounting account.
 
 
-        Refer to the [Create an accounting
+        Refer to the [How to create accounting
         account](doc:create-an-accounting-account) guide for more information.
       tags:
         - Accounting accounts
@@ -1222,18 +1388,148 @@ paths:
           description: >-
             Accounting account cannot be deleted, because it's being used by an
             active accounting script.
-  /v1/accounting-scripts:
+  /v2/accounting-scripts:
     post:
-      operationId: CreateAccountingScript
-      summary: Create accounting script
+      operationId: CreateAccountingScriptV2
+      summary: Create accounting script V2
       description: >
         Create an accounting script. 
 
 
-        Refer to the [Create an accounting
+        Refer to the [How to create accounting
         script](doc:create-an-accounting-script) guide for more information.
       tags:
-        - Accounting scripts
+        - Accounting scripts V2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountingScriptPostV2'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountingScriptV2'
+        '400':
+          description: Bad request
+        '409':
+          description: Conflict
+      deprecated: false
+    get:
+      tags:
+        - Accounting scripts V2
+      summary: List accounting scripts V2
+      operationId: listAccountingScriptsV2
+      description: |
+        List existing accounting scripts for your organization.
+      parameters:
+        - $ref: '#/components/parameters/pageSize'
+        - $ref: '#/components/parameters/pageOffset'
+        - in: query
+          name: debitAccountingAccount
+          description: List all accounting scripts related to a debit accounting account
+          schema:
+            type: string
+        - in: query
+          name: creditAccountingAccount
+          description: List all accounting scripts related to a credit accounting account
+          schema:
+            type: string
+        - in: query
+          name: programId
+          description: List all accounting scripts related to a program
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: eventTypeId
+          description: List all accounting scripts related to an event type
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: entryTypeId
+          description: List all accounting scripts related to an entry type
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: cashInBucketName
+          description: List all accounting scripts related to a cash-in bucket name
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: cashOutBucketName
+          description: List all accounting scripts related to a cash-out bucket name
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: isStage
+          description: List all accounting scripts in production or staging environment
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/Page'
+                  - properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AccountingScriptV2'
+        '400':
+          description: Bad request
+      deprecated: false
+  /v2/accounting-scripts/{accountingScriptId}:
+    get:
+      tags:
+        - Accounting scripts V2
+      summary: Get accounting script V2
+      operationId: getAccountingScriptByIdV2
+      description: |
+        Get a specific accounting script by its ID.
+      parameters:
+        - in: path
+          name: accountingScriptId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Accounting script ID
+      responses:
+        '200':
+          description: Accounting script found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingScriptV2'
+        '404':
+          description: Not found
+      deprecated: false
+  /v1/accounting-scripts:
+    post:
+      operationId: CreateAccountingScript
+      summary: Create accounting script V1
+      description: >
+        Create an accounting script. 
+
+
+        Refer to the [How to create accounting
+        script](doc:create-an-accounting-script) guide for more information.
+      tags:
+        - Accounting scripts V1
       requestBody:
         content:
           application/json:
@@ -1261,38 +1557,38 @@ paths:
           description: Accounting script already exists
     get:
       operationId: SearchAccountingScript
-      summary: List accounting scripts
+      summary: List accounting scripts V1
       description: List existing accounting scripts for your organization.
       tags:
-        - Accounting scripts
+        - Accounting scripts V1
       parameters:
         - $ref: '#/components/parameters/pageSize'
         - $ref: '#/components/parameters/pageOffset'
         - in: query
           name: debitAccountingAccount
-          description: List all accounting scripts related to a debit accounting account.
+          description: List all accounting scripts related to a debit accounting account
           schema:
             type: string
         - in: query
           name: creditAccountingAccount
-          description: List all accounting scripts related to a credit accounting account.
+          description: List all accounting scripts related to a credit accounting account
           schema:
             type: string
         - in: query
           name: programId
-          description: List all accounting scripts related to a program.
+          description: List all accounting scripts related to a program
           schema:
             type: integer
             format: int64
         - in: query
           name: eventTypeId
-          description: List all accounting scripts related to an event type.
+          description: List all accounting scripts related to an event type
           schema:
             type: integer
             format: int64
         - in: query
           name: entryTypeId
-          description: List all accounting scripts related to an entry type.
+          description: List all accounting scripts related to an entry type
           schema:
             type: integer
             format: int64
@@ -1316,11 +1612,11 @@ paths:
   /v1/accounting-scripts/batch:
     patch:
       operationId: BatchUpdateAccountingScript
-      summary: Update accounting scripts
+      summary: Update accounting scripts V1
       description: |
         Update accounting scripts.
       tags:
-        - Accounting scripts
+        - Accounting scripts V1
       requestBody:
         content:
           application/json:
@@ -1390,10 +1686,10 @@ paths:
   /v1/accounting-scripts/{accountingScriptId}:
     get:
       operationId: GetAccountingScriptById
-      summary: Get accounting script
+      summary: Get accounting script V1
       description: Get a specific accounting script by its ID.
       tags:
-        - Accounting scripts
+        - Accounting scripts V1
       parameters:
         - in: path
           name: accountingScriptId
@@ -1414,11 +1710,11 @@ paths:
       deprecated: false
     patch:
       operationId: UpdateAccountingScript
-      summary: Update accounting script
+      summary: Update accounting script V1
       description: |
         Update accounting script.
       tags:
-        - Accounting scripts
+        - Accounting scripts V1
       parameters:
         - in: path
           name: accountingScriptId
@@ -1449,10 +1745,10 @@ paths:
                 message: Debit account not found
     delete:
       operationId: DeactivateAccountingScript
-      summary: Deactivate accounting script
+      summary: Deactivate accounting script V1
       description: Deactivate an accounting script by its ID.
       tags:
-        - Accounting scripts
+        - Accounting scripts V1
       parameters:
         - in: path
           name: accountingScriptId
@@ -1483,8 +1779,8 @@ paths:
         event.
 
 
-        Refer to the [Create accounting entries](doc:create-accounting-entries)
-        guide for more information.
+        Refer to the [How to create accounting
+        entries](doc:create-accounting-entries) guide for more information.
       tags:
         - Accounting entry
       requestBody:
@@ -1503,129 +1799,3 @@ paths:
           description: Bad request when a provided parameter is invalid.
         '409':
           description: Conflict when TrackingId already exists.
-  /v2/accounting-scripts:
-    get:
-      tags:
-        - Accounting scripts
-      summary: List Accounting Scripts
-      operationId: listAccountingScriptsV2
-      description: |
-        List accounting scripts.
-      parameters:
-        - $ref: '#/components/parameters/pageSize'
-        - $ref: '#/components/parameters/pageOffset'
-        - in: query
-          name: debitAccountingAccount
-          description: List all accounting scripts related to a debit accounting account.
-          schema:
-            type: string
-        - in: query
-          name: creditAccountingAccount
-          description: List all accounting scripts related to a credit accounting account.
-          schema:
-            type: string
-        - in: query
-          name: programId
-          description: List all accounting scripts related to a program.
-          schema:
-            type: integer
-            format: int64
-        - in: query
-          name: eventTypeId
-          description: List all accounting scripts related to an event type.
-          schema:
-            type: integer
-            format: int64
-        - in: query
-          name: entryTypeId
-          description: List all accounting scripts related to an entry type.
-          schema:
-            type: integer
-            format: int64
-        - in: query
-          name: cashInBucketName
-          description: List all accounting scripts related to an cashin bucket name.
-          schema:
-            type: integer
-            format: int64
-        - in: query
-          name: cashOutBucketName
-          description: List all accounting scripts related to an cashout bucket name.
-          schema:
-            type: integer
-            format: int64
-        - in: query
-          name: isStage
-          description: List all accounting scripts of production or stage.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - properties:
-                      items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/AccountingScriptV2'
-        '400':
-          description: Bad request
-      deprecated: false
-    post:
-      operationId: CreateAccountingScriptV2
-      summary: Create accounting script
-      description: >
-        Create an accounting script. 
-
-
-        Refer to the [Create an accounting
-        script](doc:create-an-accounting-script) guide for more information.
-      tags:
-        - Accounting scripts
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountingScriptPostV2'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccountingScriptV2'
-        '400':
-          description: Bad request
-        '409':
-          description: Conflict
-      deprecated: false
-  /v2/accounting-scripts/{accountingScriptId}:
-    get:
-      tags:
-        - Accounting scripts
-      summary: Get Accounting Script by ID
-      operationId: getAccountingScriptByIdV2
-      parameters:
-        - in: path
-          name: accountingScriptId
-          schema:
-            type: integer
-            format: int64
-          required: true
-          description: Accounting script ID
-      responses:
-        '200':
-          description: Accounting script found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccountingScriptV2'
-        '404':
-          description: Not found
-      deprecated: false
