@@ -276,6 +276,64 @@ components:
       type: boolean
       description: Is the account exempt from taxes?
       example: true
+    WithholdingMoment:
+      type: string
+      description: Moment at which tax is withheld. When omitted, no withholding applies.
+      enum:
+        - ACCRUAL
+        - CAPITALIZATION
+      example: ACCRUAL
+    TaxRule:
+      type: object
+      description: A single tax rule applied within a tax withholding configuration.
+      required:
+        - description
+        - fixed_percentage
+      properties:
+        description:
+          type: string
+          maxLength: 128
+          description: Description of the tax rule.
+          example: IOF
+        fixed_percentage:
+          type: number
+          description: Fixed percentage applied by the tax rule.
+          example: 0.0038
+        threshold_amount:
+          type: number
+          description: Amount threshold above which the tax rule applies.
+          example: 1000
+    TaxWithholding:
+      type: object
+      description: >
+        Tax withholding configuration. Replaces the standalone
+        `fee_processing_code` field.
+
+        Conditional rules enforced at creation/update time:
+
+        - `ACCRUAL`: `fee_processing_code` is required; `tax_rules` must be
+        omitted.
+
+        - `CAPITALIZATION`: `tax_rules` is required; `fee_processing_code` must
+        be omitted.
+
+        - Omitted `withholding_moment`: both `fee_processing_code` and
+        `tax_rules` must be omitted.
+
+        In GET responses, legacy plans that predate this field may return
+        `fee_processing_code` with a null `withholding_moment`.
+      required:
+        - withholding_moment
+      properties:
+        withholding_moment:
+          $ref: '#/components/schemas/WithholdingMoment'
+        fee_processing_code:
+          $ref: '#/components/schemas/FeeProcessingCode'
+        tax_rules:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/TaxRule'
     FixedInterestRate:
       type: number
       format: float
@@ -334,6 +392,19 @@ components:
           $ref: '#/components/schemas/MarginRate'
         margin:
           $ref: '#/components/schemas/Margin'
+        tax_withholding:
+          $ref: '#/components/schemas/TaxWithholding'
+        taxes_exemption:
+          $ref: '#/components/schemas/TaxesExemption'
+        interest_by_tiers:
+          $ref: '#/components/schemas/InterestByTiers'
+        capitalization_frequency:
+          $ref: '#/components/schemas/CapitalizationFrequency'
+          description: >-
+            Account-level capitalization frequency configured for the interest
+            account. Returned only when explicitly configured at account level.
+            If not returned, the account uses the capitalization frequency from
+            the associated interest plan during processing.
     GetInterestPlanResponse:
       title: Get interest plan response
       type: object
@@ -354,8 +425,8 @@ components:
           $ref: '#/components/schemas/MarginRate'
         margin:
           $ref: '#/components/schemas/Margin'
-        fee_processing_code:
-          $ref: '#/components/schemas/FeeProcessingCode'
+        tax_withholding:
+          $ref: '#/components/schemas/TaxWithholding'
         accrual_basis:
           $ref: '#/components/schemas/AccrualBasis'
         interest_type:
@@ -364,6 +435,8 @@ components:
           $ref: '#/components/schemas/CapitalizationFrequency'
         accrual_frequency:
           $ref: '#/components/schemas/AccrualFrequency'
+        interest_base_model:
+          $ref: '#/components/schemas/InterestBaseModel'
     InterestAccountRequest:
       title: Interest account request
       type: object
@@ -395,20 +468,29 @@ components:
         `fixed_interest_rate is not allowed when benchmark is passed`.
 
 
-        **Tax-exemption rule**: Driven by `taxes_exemption`:
+        **Tax-withholding rule**: Driven by
+        `tax_withholding.withholding_moment`:
 
-        - When `taxes_exemption` is `false`, `fee_processing_code` is required.
+        - When `withholding_moment` is `ACCRUAL`, `fee_processing_code` is
+        required and `tax_rules` must be omitted.
 
-        - When `taxes_exemption` is `true`, `fee_processing_code` must be
-        omitted.
+        - When `withholding_moment` is `CAPITALIZATION`, `tax_rules` is required
+        and `fee_processing_code` must be omitted.
 
-        - When `taxes_exemption` is omitted, `fee_processing_code` is optional.
+        - When `tax_withholding` is omitted, no withholding is configured.
 
 
-        Numeric fields (`fixed_interest_rate`, `margin_rate`) must have a 
+        **Tax-exemption rule**: When `taxes_exemption` is `true`,
+        `tax_withholding` must be null.
+
+        When `taxes_exemption` is `false` or omitted, `tax_withholding` follows
+        the rule above.
+
+
+        Numeric fields (`fixed_interest_rate`, `margin_rate`) must have a
         positive value.
 
-        `fee_processing_code` is limited to 128 characters.
+        `tax_withholding.fee_processing_code` is limited to 128 characters.
       properties:
         benchmark:
           $ref: '#/components/schemas/Benchmark'
@@ -418,32 +500,47 @@ components:
           $ref: '#/components/schemas/MarginRate'
         margin:
           $ref: '#/components/schemas/Margin'
-        fee_processing_code:
-          $ref: '#/components/schemas/FeeProcessingCode'
         taxes_exemption:
-          $ref: '#/components/schemas/TaxesExemption'
+          type: boolean
+          description: >-
+            When true, the account is exempt from tax withholding and
+            `tax_withholding` must be null.
+        tax_withholding:
+          $ref: '#/components/schemas/TaxWithholding'
+        capitalization_frequency:
+          $ref: '#/components/schemas/CapitalizationFrequency'
+          description: >-
+            Optional account-level capitalization frequency. When provided with
+            a valid value, it overrides the capitalization frequency configured
+            in the associated interest plan. If omitted or sent as null, the
+            current account-level value remains unchanged. If there is no
+            existing account-level value, then the associated interest plan
+            value is used during processing.
       example:
         benchmark: FED
         margin_rate: 1.3
         margin: 0.05
-        fee_processing_code: '001100'
-        taxes_exemption: false
+        tax_withholding:
+          withholding_moment: ACCRUAL
+          fee_processing_code: '001100'
     InterestAccountResponse:
       title: Interest account response
       type: object
       properties:
         benchmark:
           $ref: '#/components/schemas/Benchmark'
-        fixed_interet_rate:
+        fixed_interest_rate:
           $ref: '#/components/schemas/FixedInterestRate'
         margin_rate:
           $ref: '#/components/schemas/MarginRate'
         margin:
           $ref: '#/components/schemas/Margin'
-        fee_processing_code:
-          $ref: '#/components/schemas/FeeProcessingCode'
+        tax_withholding:
+          $ref: '#/components/schemas/TaxWithholding'
         taxes_exemption:
           $ref: '#/components/schemas/TaxesExemption'
+        interest_by_tiers:
+          $ref: '#/components/schemas/InterestByTiers'
     InterestAccrualSetupResponse:
       title: Accrual setup response
       type: object
@@ -456,7 +553,7 @@ components:
         - time_utc
       example:
         division_id: d9b2c9e1-4633-4a10-841b-270f7f1493cd
-        time_utc: '07:15'
+        time_utc: '07:05'
     InterestAccrualSetupRequest:
       title: Accrual setup request
       type: object
@@ -469,7 +566,18 @@ components:
           $ref: '#/components/schemas/DivisionId'
       example:
         division_id: d9b2c9e1-4633-4a10-841b-270f7f1493cd
-        time_utc: '07:15'
+        time_utc: '07:05'
+    InterestBaseModel:
+      type: string
+      description: >-
+        Interest calculation model. `CLOSING-BALANCE` uses the end-of-day
+        balance. `BALANCE-CHANGE` uses balance variation events. Defaults to
+        `CLOSING-BALANCE`.
+      enum:
+        - CLOSING-BALANCE
+        - BALANCE-CHANGE
+      default: CLOSING-BALANCE
+      example: CLOSING-BALANCE
     InterestByTiers:
       type: object
       properties:
@@ -548,8 +656,8 @@ components:
           $ref: '#/components/schemas/InterestType'
         benchmark:
           $ref: '#/components/schemas/Benchmark'
-        fee_processing_code:
-          $ref: '#/components/schemas/FeeProcessingCode'
+        tax_withholding:
+          $ref: '#/components/schemas/TaxWithholding'
         fixed_interest_rate:
           $ref: '#/components/schemas/FixedInterestRate'
         margin:
@@ -564,6 +672,8 @@ components:
           $ref: '#/components/schemas/InterestByTiers'
         interest_thresholds:
           $ref: '#/components/schemas/InterestThresholds'
+        interest_base_model:
+          $ref: '#/components/schemas/InterestBaseModel'
       required:
         - accrual_basis
         - accrual_frequency
@@ -579,7 +689,9 @@ components:
         description: BANKING PLAN
         interest_type: COMPOUND
         benchmark: FED
-        fee_processing_code: '001100'
+        tax_withholding:
+          withholding_moment: ACCRUAL
+          fee_processing_code: '001100'
         margin: 0.05
         margin_rate: 1.2
     InterestPlanResponse:
@@ -620,8 +732,8 @@ components:
                 $ref: '#/components/schemas/MarginRate'
               margin:
                 $ref: '#/components/schemas/Margin'
-              fee_processing_code:
-                $ref: '#/components/schemas/FeeProcessingCode'
+              tax_withholding:
+                $ref: '#/components/schemas/TaxWithholding'
               accrual_basis:
                 $ref: '#/components/schemas/AccrualBasis'
               interest_type:
@@ -642,6 +754,8 @@ components:
                 $ref: '#/components/schemas/InterestThresholds'
               division_id:
                 $ref: '#/components/schemas/DivisionId'
+              interest_base_model:
+                $ref: '#/components/schemas/InterestBaseModel'
     InterestPlanVersionRequest:
       title: Interest plan version request
       type: object
@@ -793,9 +907,15 @@ components:
       type: string
       description: >-
         Time when accrual calculation is performed, specified in hours and
-        minutes. `07:15` and `19:15` are the only values accepted.
+        minutes. `05:05`, `06:05`, `07:05`, `08:05`, `09:05`, `10:05` and
+        `19:15` are the only values accepted.
       enum:
-        - '07:15'
+        - '05:05'
+        - '06:05'
+        - '07:05'
+        - '08:05'
+        - '09:05'
+        - '10:05'
         - '19:15'
       example: '19:15'
     TotalItems:
@@ -908,6 +1028,48 @@ components:
                 error: Invalid JSON format
                 message: Request contains invalid JSON structure or field types
                 status: 400
+            taxWithholdingAccrualFeeRequired:
+              summary: ACCRUAL withholding without fee_processing_code
+              value:
+                message:
+                  - >-
+                    fee_processing_code is required when
+                    tax_withholding.withholding_moment is ACCRUAL.
+            taxWithholdingAccrualTaxRulesNotAllowed:
+              summary: ACCRUAL withholding with tax_rules present
+              value:
+                message:
+                  - >-
+                    tax_rules must be null when
+                    tax_withholding.withholding_moment is ACCRUAL.
+            taxWithholdingCapitalizationFeeNotAllowed:
+              summary: CAPITALIZATION withholding with fee_processing_code present
+              value:
+                message:
+                  - >-
+                    fee_processing_code must be null when
+                    tax_withholding.withholding_moment is CAPITALIZATION.
+            taxWithholdingCapitalizationTaxRulesRequired:
+              summary: CAPITALIZATION withholding without tax_rules
+              value:
+                message:
+                  - >-
+                    tax_rules is required when
+                    tax_withholding.withholding_moment is CAPITALIZATION.
+            taxWithholdingNoneFieldsNotAllowed:
+              summary: >-
+                NULL withholding_moment with fee_processing_code or tax_rules
+                present
+              value:
+                message:
+                  - >-
+                    fee_processing_code and tax_rules must be null when
+                    tax_withholding.withholding_moment is NULL.
+            taxWithholdingNotAllowedWhenTaxesExemption:
+              summary: taxes_exemption is true with tax_withholding present
+              value:
+                message:
+                  - tax_withholding must be null when taxes_exemption is true.
     401Unauthorized:
       description: >-
         Unauthorized. The response body is produced by the upstream
@@ -1164,9 +1326,9 @@ paths:
         whole must satisfy several conditional rules. See the request body
         schema description
 
-        for the full set of `benchmark`/`fixed_interest_rate` and
+        for the full set of `benchmark`/`fixed_interest_rate`,
 
-        `taxes_exemption`/`fee_processing_code` rules.
+        `tax_withholding`, and `taxes_exemption` rules.
       tags:
         - Account interest
       operationId: put-v1-interest-account
@@ -1182,7 +1344,7 @@ paths:
           conditional required-field rules in `benchmark`,
           `fixed_interest_rate`,
 
-          `margin_rate`, `margin`, `fee_processing_code`, and `taxes_exemption`.
+          `margin_rate`, `margin`, `tax_withholding`, and `taxes_exemption`.
         required: true
         content:
           application/json:
