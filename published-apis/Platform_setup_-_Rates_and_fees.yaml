@@ -41,8 +41,7 @@ components:
             billing_method: CARD
             installment_parameters:
               minimum_installment_value:
-                type:
-                  - DYNAMIC
+                type: DYNAMIC
                 values:
                   '1': 3
                   '2': 10
@@ -93,6 +92,119 @@ components:
               custom_filters:
                 - custom_filter_01
                 - custom_filter_02
+    SimulationConfigEqualInstallments:
+      value:
+        description: Equal Installments Simulation - 3 Plans
+        plans:
+          - id: basic-plan
+            description: Basic Installment Plan without Grace Period
+            billing_method: CARD
+            day_count_method: MONTH_30_YEAR_360
+            installments:
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+              - 8
+              - 9
+              - 10
+              - 11
+              - 12
+            calculation_parameters:
+              calculation_method: EQUAL_INSTALLMENTS
+              day_count_method: MONTH_30_YEAR_360
+              interest_rate:
+                type: FIXED
+                value: 10
+              fees:
+                - calculation: PERCENTAGE
+                  id: IOF
+                  precedence: 0
+                  value: 0.38
+                  calculation_basis: PRINCIPAL_AMOUNT
+                - calculation: DAILY_PERCENTAGE
+                  id: IOF-Daily
+                  precedence: 1
+                  value: 0.0082
+                  calculation_basis: PRINCIPAL_AMOUNT
+            filters:
+              processing_codes:
+                - '508'
+          - id: plan-with-grace-period
+            description: Installment Plan with 1-Month Grace Period
+            billing_method: CARD
+            day_count_method: MONTH_30_YEAR_360
+            installments:
+              - 6
+              - 9
+              - 12
+              - 18
+              - 24
+            calculation_parameters:
+              calculation_method: EQUAL_INSTALLMENTS
+              day_count_method: MONTH_30_YEAR_360
+              interest_rate:
+                type: FIXED
+                value: 12
+              fees:
+                - calculation: PERCENTAGE
+                  id: IOF
+                  precedence: 0
+                  value: 0.38
+                  calculation_basis: PRINCIPAL_AMOUNT
+                - calculation: DAILY_PERCENTAGE
+                  id: IOF-Daily
+                  precedence: 1
+                  value: 0.0082
+                  calculation_basis: PRINCIPAL_AMOUNT
+            filters:
+              processing_codes:
+                - '508'
+                - '005'
+              merchants:
+                - premium-store
+            interest_limitation:
+              calculation_basis: PRINCIPAL_AMOUNT
+              percentage: 5
+          - id: long-term-plan
+            description: Long-Term Installment Plan with Down Payment
+            billing_method: CARD
+            day_count_method: MONTH_30_YEAR_360
+            installments:
+              - 12
+              - 18
+              - 24
+              - 36
+            calculation_parameters:
+              calculation_method: EQUAL_INSTALLMENTS
+              day_count_method: MONTH_30_YEAR_360
+              interest_rate:
+                type: FIXED
+                value: 8.5
+              fees:
+                - calculation: PERCENTAGE
+                  id: IOF
+                  precedence: 0
+                  value: 0.38
+                  calculation_basis: PRINCIPAL_AMOUNT
+                - calculation: DAILY_PERCENTAGE
+                  id: IOF-Daily
+                  precedence: 1
+                  value: 0.0082
+                  calculation_basis: PRINCIPAL_AMOUNT
+            filters:
+              custom_filters:
+                - retail-partner
+            down_payment_method:
+              type: PERCENTAGE
+              value: 20
+            installment_parameters:
+              minimum_installment_value:
+                type: FIXED
+                value: 50
     SimulationConfigPriceTable:
       value:
         description: This is my simulation configurations
@@ -118,8 +230,7 @@ components:
             frequency: MONTHLY
             installment_parameters:
               minimum_installment_value:
-                type:
-                  - DYNAMIC
+                type: DYNAMIC
                 values:
                   '1': 3
                   '2': 10
@@ -176,6 +287,29 @@ components:
               custom_filters:
                 - custom_filter_01
                 - custom_filter_02
+    SimulationConfigExternalEngine:
+      value:
+        description: External calculation engine configuration
+        plans:
+          - id: external_plan_001
+            description: Premium customer external calculation
+            engine: EXTERNAL
+            calculation_url: https://api.example.com/calculate
+            authentication:
+              authentication_method: JWT_DEFAULT
+            installments:
+              - 1
+              - 2
+              - 3
+              - 6
+              - 12
+            filters:
+              merchants:
+                - MERCHANT_001
+                - MERCHANT_002
+              processing_codes:
+                - '00'
+                - '01'
   parameters:
     AccountIDpath:
       in: path
@@ -283,6 +417,13 @@ components:
       type: string
       description: Simulation configuration ID.
       example: 47589-uuye7-84k9
+    DayCountMethod:
+      type: string
+      description: Day count convention used to calculate interest
+      example: MONTH_30_YEAR_360
+      enum:
+        - MONTH_30_YEAR_360
+        - MONTH_ACTUAL_YEAR_365
     Error:
       type: object
       properties:
@@ -396,8 +537,7 @@ components:
           description: >
 
             Hour in UTC time zone, format = HH:MM:SSZ. Using this field, you be
-            able to work with seconds precision in your international
-            purchases.  
+            able to work with seconds precision in your international purchases.
 
 
             **Note:** This field will be validated considering an offset of UTC
@@ -617,10 +757,7 @@ components:
               enum:
                 - EQUAL_INSTALLMENTS
             day_count_method:
-              type: string
-              enum:
-                - MONTH_30_YEAR_360
-              example: MONTH_30_YEAR_360
+              $ref: '#/components/schemas/DayCountMethod'
             interest_rate:
               $ref: '#/components/schemas/InterestRateWithGracePeriod'
             fees:
@@ -646,7 +783,7 @@ components:
         days_range:
           type: integer
           description: >
-            Calculation's range of days. 
+            Calculation's range of days.
 
 
             For example: 10% interest and `days_range` = 20 for $100 purchase;
@@ -754,11 +891,7 @@ components:
           enum:
             - CONSTANT_REPAYMENT
         day_count_method:
-          type: string
-          description: Day count method used to calculate interest.
-          enum:
-            - MONTH_30_YEAR_360
-          example: MONTH_30_YEAR_360
+          $ref: '#/components/schemas/DayCountMethod'
         payment_postponement_rules:
           type: object
           description: Rules for payment postponement.
@@ -865,6 +998,65 @@ components:
               - authorization
               - confirmation
             example: authorization
+        amount_range:
+          type: object
+          description: >-
+            Optional amount range filter. When specified, the fee is applied
+            only to operations whose amount falls within the given range. When
+            the object is sent, only `minimum` is required; `maximum` remains
+            optional. When two fees share at least one `processing_code`, their
+            `amount_range` intervals must not overlap — a fee with no `maximum`
+            is treated as unbounded above.
+          required:
+            - minimum
+          properties:
+            minimum:
+              type: number
+              format: double
+              description: >-
+                Minimum amount (inclusive) for the fee to be applied. BigDecimal
+                value. Required when `amount_range` is provided.
+              example: 10
+            maximum:
+              type: number
+              format: double
+              description: >-
+                Maximum amount (inclusive) for the fee to be applied. BigDecimal
+                value. Optional — when present, must be greater than or equal to
+                `minimum`.
+              example: 1000
+        merchant_category:
+          type: object
+          description: >-
+            Optional merchant category filter. When specified, the fee is
+            applied only to operations whose Merchant Category Code (MCC)
+            matches the given include/exclude criteria. MCC is treated as an
+            opaque string — no ISO 8583 validation is performed. Omitting the
+            object, or leaving both lists empty, bypasses the filter.
+            Server-side validation — `include` and `exclude` each must not
+            contain duplicate MCC values, and the two lists must not share any
+            MCC value; violations return HTTP 400.
+          properties:
+            include:
+              type: array
+              description: >-
+                When non-empty, the fee is applied only if the request MCC is in
+                this list. A request without an MCC does not match when
+                `include` is populated.
+              items:
+                type: string
+              example:
+                - '7995'
+                - '5411'
+            exclude:
+              type: array
+              description: >-
+                When non-empty, the fee is NOT applied if the request MCC is in
+                this list.
+              items:
+                type: string
+              example:
+                - '9999'
     Health:
       type: object
       properties:
@@ -976,12 +1168,25 @@ components:
           example: 0.2
         grace_period:
           type: object
+          description: >
+            Optional grace period before interest begins.
+
+
+            **Only processed for the `EQUAL_INSTALLMENTS` calculation method.**
+            Silently ignored for all other methods.
+          required:
+            - type
+            - value
           properties:
             type:
               type: string
+              enum:
+                - FIXED
               example: FIXED
             value:
-              type: numeric
+              type: number
+              minimum: 0
+              description: Number of periods to skip before interest begins.
               example: 1
         rules:
           type: array
@@ -999,7 +1204,7 @@ components:
           type: string
           description: |
             Fee type:
-              `FIXED` - Field `value` is required and will be used as interest rate.
+              `FIXED` - Field `value` is required and will be used as interest rate. Field `grace_period` is optional.
               `DYNAMIC` - Field `rules` is required and the value used as interest rate will be selected according to the installment ranges configured.
           enum:
             - FIXED
@@ -1011,6 +1216,30 @@ components:
             Percentage amount as decimal field. Value used as interest rate.
             **REQUIRED** for `FIXED` type.
           example: 0.2
+        grace_period:
+          type: object
+          description: >
+            Optional grace period before interest begins. Only applicable when
+            interest rate `type` is `FIXED`.
+
+
+            **Only processed for the `EQUAL_INSTALLMENTS` calculation method.**
+            Silently ignored for all other methods (e.g., `PRICE_TABLE`,
+            `DAILY_PERCENTAGE`).
+          required:
+            - type
+            - value
+          properties:
+            type:
+              type: string
+              enum:
+                - FIXED
+              example: FIXED
+            value:
+              type: number
+              minimum: 0
+              description: Number of periods to skip before interest begins.
+              example: 1
         rules:
           type: array
           description: >-
@@ -1027,12 +1256,12 @@ components:
       properties:
         minimum:
           type: number
-          minimum: 2
+          minimum: 1
           description: >
             First installment the rule is applied to. For example, if you enter
             "4", rule application begins on the 4th installment.
 
-            Must be 2 or higher.
+            Must be 1 or higher.
           example: 10
         maximum:
           type: number
@@ -1132,23 +1361,66 @@ components:
           example: Simulation configuration with the provided key does not exist
     Plans:
       type: object
-      required:
-        - id
-        - installments
-        - calculation_parameters
       properties:
         id:
           type: string
           description: Customer plan identifier
+          pattern: ^[a-zA-Z0-9_-]+$
+          maxLength: 36
           example: customId1
         description:
           type: string
           description: Custom simulation plan description
+          maxLength: 255
           example: Electronics
+        engine:
+          type: string
+          description: |
+            Calculation engine type:
+              `PISMO` - Uses Pismo's internal calculation methods (default). Requires `calculation_parameters`, `installments`, and `billing_method`.
+              `EXTERNAL` - Delegates calculation to an external service. Requires `calculation_url` (set on update only).
+          enum:
+            - EXTERNAL
+            - PISMO
+          example: PISMO
+          default: PISMO
+        calculation_url:
+          type: string
+          format: uri
+          description: >
+            URL of your external calculation endpoint.
+
+            **REQUIRED** when `engine` is `EXTERNAL`.
+
+            **IMPORTANT:** Cannot be provided during plan creation (POST) — set
+            this field on the first update (PUT) after creation.
+
+            Once set, this URL is immutable and cannot be changed.
+
+            Your external engine must respond within 3 seconds.
+          example: https://api.example.com/calculate
+        authentication:
+          type: object
+          description: >-
+            Authentication configuration for external calculation engine.
+            **REQUIRED** when `engine` is `EXTERNAL`.
+          properties:
+            authentication_method:
+              type: string
+              enum:
+                - JWT_DEFAULT
+              description: Authentication method for calling your external engine.
+              example: JWT_DEFAULT
+              default: JWT_DEFAULT
         calculation_parameters:
+          description: |
+            Calculation parameters for Pismo's internal calculation methods.
+            **REQUIRED** when `engine` is `PISMO` or not specified.
+            **MUST NOT** be provided when `engine` is `EXTERNAL`.
           oneOf:
             - $ref: '#/components/schemas/SimulationCalculationPriceTable'
             - $ref: '#/components/schemas/SimulationCalculationDailyPercentage'
+            - $ref: '#/components/schemas/SimulationCalculationEqualInstallments'
         interest_limitation:
           $ref: '#/components/schemas/SimulationInterestLimitation'
         down_payment_method:
@@ -1159,21 +1431,17 @@ components:
             type: integer
           description: >-
             Array containing the installment numbers for which the plan is
-            applicable
+            applicable. **REQUIRED** when `engine` is `PISMO`.
           example:
             - 6
             - 10
             - 12
         day_count_method:
-          type: string
-          description: Day count method used to calculate interest.
-          enum:
-            - MONTH_30_YEAR_360
-          example: MONTH_30_YEAR_360
+          $ref: '#/components/schemas/DayCountMethod'
         billing_method:
           type: string
           description: |
-            Plan billing method:
+            Plan billing method. **REQUIRED** when `engine` is `PISMO`.
               `BNPL` - Field `frequency` is **REQUIRED**
               `CARD` - Field `frequency` is the same as the card, and the field should be **NULL**.
           enum:
@@ -1186,6 +1454,8 @@ components:
           enum:
             - MONTHLY
           example: MONTHLY
+        installment_parameters:
+          $ref: '#/components/schemas/SimulationInstallmentParameters'
         filters:
           type: object
           description: Simulation configuration filters
@@ -1197,6 +1467,7 @@ components:
                 - abcdef
               items:
                 type: string
+                maxLength: 255
             processing_codes:
               type: array
               description: Array containing the processing codes for whom the plan applies
@@ -1205,11 +1476,13 @@ components:
                 - '02'
               items:
                 type: string
+                maxLength: 255
             custom_filters:
               type: array
               description: Array containing plan custom filters
               items:
                 type: string
+                maxLength: 255
               example:
                 - custom_filter_01
                 - custom_filter_02
@@ -1360,120 +1633,107 @@ components:
           type: object
           properties:
             type:
-              type: array
-              description: Fee type
-              items:
-                type: string
-                enum:
-                  - FIXED
-                  - DYNAMIC
-                example: FIXED
+              type: string
+              description: |
+                Value type:
+                  `FIXED` - a single scalar `value` applies to all installments.
+                  `DYNAMIC` - per-installment values provided in the `values` map.
+              enum:
+                - FIXED
+                - DYNAMIC
+              example: FIXED
             value:
               type: number
-              description: Fee value
+              description: Minimum installment value (used when `type` is `FIXED`).
               example: 100
             values:
               type: object
-              description: Minimum installment value allowed for this plan
+              description: >
+                Map of installment number (as string key) to minimum value.
+
+                Used when `type` is `DYNAMIC`. Example: `{"1": 50.0, "2":
+                100.0}`.
               additionalProperties:
-                type: object
-                description: Addition properties
-                properties:
-                  installment:
-                    type: string
-                    description: Installment number
-                  minimumInstallmentValue:
-                    type: number
-                    description: Minimum installment value
-                example:
-                  '2': 100
-                  '3': 150
+                type: number
+              example:
+                '2': 100
+                '3': 150
           example:
-            type:
-              - FIXED
+            type: FIXED
             value: 10
         number_of_initial_periods_to_skip:
           type: object
-          description: Number of initial installments to be skipped
+          description: Number of initial installments to be skipped before billing starts.
           properties:
             type:
-              type: array
-              description: Type
-              items:
-                type: string
-                enum:
-                  - FIXED
-                  - DYNAMIC
-                example: FIXED
+              type: string
+              description: |
+                Value type:
+                  `FIXED` - a single scalar `value` applies.
+                  `DYNAMIC` - per-installment values provided in the `values` map.
+              enum:
+                - FIXED
+                - DYNAMIC
+              example: FIXED
             value:
-              type: number
-              description: Value
-              example: 2
+              type: integer
+              description: Number of periods to skip (used when `type` is `FIXED`).
+              example: 1
             values:
               type: object
-              description: Values
+              description: >
+                Map of installment number (as string key) to number of periods
+                to skip.
+
+                Used when `type` is `DYNAMIC`.
               additionalProperties:
-                type: object
-                description: Additional properties
-                properties:
-                  installment:
-                    type: string
-                    description: Installment
-                  numberOfInitialPeriodsToSkip:
-                    type: number
-                    description: Number of initial periods to skip
-                example:
-                  '2': 1
-                  '3': 3
+                type: integer
+              example:
+                '2': 1
+                '3': 3
           example:
-            type:
-              - FIXED
+            type: FIXED
             value: 1
     SimulationInterestLimitation:
       type: object
+      required:
+        - calculation_basis
+        - percentage
       properties:
-        interest_limitation:
-          type: object
-          properties:
-            calculation_basis:
-              type: string
-              description: Type
-              enum:
-                - PRINCIPAL_AMOUNT
-              example: PRINCIPAL_AMOUNT
-            percentage:
-              type: number
-              description: Percentage
-              example: 3.2
+        calculation_basis:
+          type: string
+          description: Basis used to calculate the interest limitation.
+          enum:
+            - PRINCIPAL_AMOUNT
+          example: PRINCIPAL_AMOUNT
+        percentage:
+          type: number
+          description: Maximum interest percentage allowed over the life of the plan.
+          example: 3.2
     SimulationDownPaymentMethod:
       type: object
-      properties:
-        down_payment_method:
-          oneOf:
-            - $ref: '#/components/schemas/downPaymentMethodPercentage'
-            - $ref: '#/components/schemas/downPaymentMethodInstallmentEquivalent'
-    downPaymentMethodPercentage:
-      type: object
+      required:
+        - type
       properties:
         type:
           type: string
-          description: Type
+          description: |
+            Down payment calculation method:
+              `PERCENTAGE` - Field `value` is **REQUIRED**; the down payment is a percentage of the transaction amount (max 100).
+              `INSTALLMENT_EQUIVALENT` - Field `value` must be absent; the down payment equals one installment value.
           enum:
             - PERCENTAGE
+            - INSTALLMENT_EQUIVALENT
           example: PERCENTAGE
         value:
           type: number
-          description: Value
-          example: 3.5
-    downPaymentMethodInstallmentEquivalent:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type
-          enum:
-            - INSTALLMENT_EQUIVALENT
-          example: INSTALLMENT_EQUIVALENT
+          maximum: 100
+          description: >
+            Percentage value for the down payment. **REQUIRED** when `type` is
+            `PERCENTAGE`.
+
+            Must be absent when `type` is `INSTALLMENT_EQUIVALENT`.
+          example: 20
     SimulationCalculationPriceTable:
       type: object
       required:
@@ -1514,6 +1774,8 @@ components:
       type: object
       required:
         - calculation_method
+        - value
+        - identifier
       properties:
         calculation_method:
           type: string
@@ -1526,6 +1788,101 @@ components:
           type: number
           description: Percentage amount as decimal field.
           example: 0.3
+        identifier:
+          type: string
+          description: Plan identifier used to reference this daily percentage strategy.
+          pattern: ^[a-zA-Z0-9_-]+$
+          maxLength: 36
+          example: daily-pct-01
+      additionalProperties: false
+    SimulationStrategyInternalFee:
+      type: object
+      description: Internal fee applied within the Equal Installments calculation.
+      required:
+        - calculation
+        - id
+        - precedence
+        - calculation_basis
+      properties:
+        calculation:
+          type: string
+          description: Fee calculation strategy.
+          enum:
+            - PERCENTAGE
+            - FIXED
+            - DAILY_PERCENTAGE
+            - IOF
+          example: PERCENTAGE
+        id:
+          type: string
+          description: Fee identifier.
+          maxLength: 36
+          example: IOF
+        precedence:
+          type: integer
+          description: Fee calculation order. Lower numbers are applied first.
+          minimum: 0
+          example: 0
+        value:
+          type: number
+          description: >-
+            Fee value as a decimal. Required for `PERCENTAGE`, `FIXED`, and
+            `DAILY_PERCENTAGE` strategies.
+          example: 0.38
+        calculation_basis:
+          type: string
+          description: Calculation basis for the fee.
+          enum:
+            - PRINCIPAL_AMOUNT
+            - CONTRACT_AMOUNT
+          example: PRINCIPAL_AMOUNT
+        fixed_iof_rate:
+          type: number
+          description: Fixed IOF rate as a decimal. Required when `calculation` is `IOF`.
+          example: 0.38
+        daily_iof_rate:
+          type: number
+          description: Daily IOF rate as a decimal. Required when `calculation` is `IOF`.
+          example: 0.0082
+      additionalProperties: false
+    SimulationCalculationEqualInstallments:
+      type: object
+      description: >-
+        Calculation parameters for the `EQUAL_INSTALLMENTS` method. Produces
+        equal amortization installments with a fixed or dynamic interest rate
+        and optional internal fees (e.g., IOF).
+      required:
+        - calculation_method
+        - day_count_method
+        - interest_rate
+        - identifier
+      properties:
+        calculation_method:
+          type: string
+          description: Calculation method - `EQUAL_INSTALLMENTS`.
+          enum:
+            - EQUAL_INSTALLMENTS
+        day_count_method:
+          $ref: '#/components/schemas/DayCountMethod'
+        interest_rate:
+          $ref: '#/components/schemas/InterestRate'
+        identifier:
+          type: string
+          description: Plan identifier used to reference this equal installments strategy.
+          pattern: ^[a-zA-Z0-9_-]+$
+          maxLength: 36
+          example: equal-inst-01
+        fees:
+          type: array
+          description: >
+            List of internal fees applied within the installment calculation
+            (e.g., IOF).
+
+            Supported strategies: `PERCENTAGE`, `FIXED`, `DAILY_PERCENTAGE`,
+            `IOF`.
+          items:
+            $ref: '#/components/schemas/SimulationStrategyInternalFee'
+      additionalProperties: false
     SimulationConfigDetails:
       type: object
       properties:
@@ -1557,6 +1914,7 @@ components:
     SimulationConfigRequest:
       type: object
       required:
+        - description
         - plans
       properties:
         description:
@@ -1566,6 +1924,41 @@ components:
           description: Configuration of Simulation Plans
           items:
             $ref: '#/components/schemas/Plans'
+    SimulationConfigListResponse:
+      type: object
+      properties:
+        simulation_config_id:
+          type: string
+          description: Simulation configuration ID
+        has_attachments:
+          type: boolean
+          description: Indicates if attachment exists
+        updated_at:
+          type: string
+          description: Last updated timestamp
+        description:
+          $ref: '#/components/schemas/ConfigDescription'
+    SimulationAttachmentResponse:
+      type: object
+      properties:
+        simulation_config_id:
+          type: string
+          description: Simulation configuration ID
+        attachment_type:
+          type: string
+          description: Attachment Type
+        program_id:
+          type: string
+          nullable: true
+          description: Program ID when attachment_type is PROGRAM
+        account_id:
+          type: string
+          nullable: true
+          description: Account ID when attachment_type is ACCOUNT
+        org_id:
+          type: string
+          nullable: true
+          description: Organization ID when attachment_type is TENANT
   securitySchemes:
     bearerAuth:
       type: http
@@ -1625,12 +2018,12 @@ paths:
     post:
       summary: Create exchange rate
       description: >
-        Define the exchange rate for international transactions. 
+        Define the exchange rate for international transactions.
 
 
         You **must** use this endpoint or [Pismo Control
         Center](doc:exchange-rates) to define the exchange rate for today or
-        tomorrow. 
+        tomorrow.
 
 
         Exchange rates are defined at the organization level but, optionally,
@@ -1732,7 +2125,7 @@ paths:
     post:
       summary: Create fee model
       description: >
-        Create fee model. 
+        Create fee model.
 
 
         A fee model is a structure that defines a collection of fees with custom
@@ -1745,7 +2138,7 @@ paths:
         An accumulator fee model requires you call the <a
         href="https://developers.pismo.io/pismo-docs/reference/post-v1-accumulator-config"
         target="_blank">Create accumulator configuration</a> endpoint first to
-        define how transaction totals are kept. 
+        define how transaction totals are kept.
 
 
         Once the fee model is created, it needs to be <a
@@ -2009,6 +2402,9 @@ paths:
                         processing_codes:
                           - '02'
                           - '0040'
+                        amount_range:
+                          minimum: 10
+                          maximum: 1000
                       additional_fees:
                         - description: Foreign currency surchange.
                           id: dom_wdl
@@ -2044,6 +2440,13 @@ paths:
                             precedence: 1
                             fixed_iof_rate: 3.5
                             daily_iof_rate: 0.0082
+                      filters:
+                        processing_codes:
+                          - '02'
+                          - '0040'
+                        amount_range:
+                          minimum: 10
+                          maximum: 1000
               Calculation method Aging:
                 value:
                   model_description: Fee model applied to org
@@ -2085,6 +2488,9 @@ paths:
                         processing_codes:
                           - '02'
                           - '0040'
+                        amount_range:
+                          minimum: 10
+                          maximum: 1000
                       additional_fees:
                         - description: Foreign currency surchange.
                           id: dom_wdl
@@ -2142,6 +2548,31 @@ paths:
                             calculation_method: PERCENTAGE
                             value: 0.5
                           type: selios
+              Calculation method Percentage with all filters filled:
+                summary: Calculation method Percentage with all filters filled
+                description: |
+                  Demonstrates a calculation method with all filters filled.
+                value:
+                  model_description: Fee model with all filters (required and optional) filled
+                  fees:
+                    - description: Fee wdl
+                      type: dom
+                      id: dom_wdl
+                      deduct_from_transaction_value: false
+                      calculation_basis: PRINCIPAL_AMOUNT
+                      calculation:
+                        calculation_method: PERCENTAGE
+                        value: 2.5
+                      filters:
+                        processing_codes:
+                          - '02'
+                          - '0040'
+                        amount_range:
+                          minimum: 10
+                          maximum: 1000
+                        operation_types:
+                          - AUTHORIZATION
+                          - CONFIRMATION
       responses:
         '200':
           description: OK
@@ -2408,8 +2839,15 @@ paths:
   /v1/simulation/configs:
     post:
       summary: Create simulation config
-      description: |
+      description: >
         Create simulation configuration for possible custom payment option.
+
+
+        **Note:** EXTERNAL engine plans cannot be fully configured at creation
+        time — `calculation_url` is not accepted during creation.
+
+        Create the config with PISMO plans first, then use the PUT endpoint to
+        add or update EXTERNAL engine plans with their `calculation_url`.
       operationId: simulationConfigs
       tags:
         - Simulation
@@ -2425,6 +2863,10 @@ paths:
                 $ref: '#/components/examples/SimulationConfigPriceTable'
               Calculation method Daily Percentage:
                 $ref: '#/components/examples/SimulationConfigDailyPercentage'
+              Calculation method Equal Installments:
+                $ref: '#/components/examples/SimulationConfigEqualInstallments'
+              External Engine Configuration:
+                $ref: '#/components/examples/SimulationConfigExternalEngine'
       responses:
         '200':
           description: OK
@@ -2432,6 +2874,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimulationConfigOutput'
+        '400':
+          $ref: '#/components/responses/400BadRequestError'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    get:
+      summary: Get Simulation configuration details
+      description: Retrieve simulation configs based on the filters
+      operationId: getSimulationConfigsV1
+      tags:
+        - Simulation
+      parameters:
+        - name: description
+          in: query
+          description: Filter by description
+          required: false
+          schema:
+            type: string
+        - name: simulation_config_id
+          in: query
+          description: Filter by Simulation configuration ID
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/ProgramIDquery'
+        - name: has_attachments
+          in: query
+          description: Filter by attachment presence
+          required: false
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          description: Page Number(starts from 1)
+          required: true
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: Number of items per page
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SimulationConfigListResponse'
+                  pages:
+                    type: integer
+                  per_page:
+                    type: integer
+                  total_items:
+                    type: integer
         '400':
           $ref: '#/components/responses/400BadRequestError'
         '401':
@@ -2464,7 +2968,14 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
     put:
       summary: Update simulation config
-      description: Update a simulation configuration
+      description: >
+        Update a simulation configuration.
+
+
+        **Note:** EXTERNAL engine plans (with `calculation_url`) can only be set
+        via this endpoint — not during creation (POST).
+
+        Once `calculation_url` is set, it cannot be changed.
       operationId: putSimulationConfigs
       tags:
         - Simulation
@@ -2482,6 +2993,10 @@ paths:
                 $ref: '#/components/examples/SimulationConfigPriceTable'
               Calculation method Daily Percentage:
                 $ref: '#/components/examples/SimulationConfigDailyPercentage'
+              Calculation method Equal Installments:
+                $ref: '#/components/examples/SimulationConfigEqualInstallments'
+              External Engine Configuration:
+                $ref: '#/components/examples/SimulationConfigExternalEngine'
       responses:
         '200':
           description: OK
@@ -2493,6 +3008,8 @@ paths:
           $ref: '#/components/responses/400BadRequestError'
         '401':
           $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
   /v1/simulation/configs/{simulation_config_id}/attachment/tenant:
@@ -2667,5 +3184,85 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/simulation/configs/attachments:
+    get:
+      summary: Get simulation attachments
+      description: Retrieve simulation attachment details based on the filters
+      operationId: getSimulationAttachments
+      tags:
+        - Simulation
+      parameters:
+        - name: simulation_config_id
+          in: query
+          description: Filter by Simulation configuration ID
+          required: false
+          schema:
+            type: string
+        - name: attachment_type
+          in: query
+          description: Filter by attachment type
+          required: false
+          schema:
+            type: string
+            enum:
+              - PROGRAM
+              - ACCOUNT
+              - TENANT
+        - name: program_id
+          in: query
+          description: Filter by program ID
+          required: false
+          schema:
+            type: string
+        - name: account_id
+          in: query
+          description: Filter by account ID
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: page number for pagination
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: per_page
+          in: query
+          description: items per page for pagination
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SimulationAttachmentResponse'
+                  pages:
+                    type: integer
+                    format: int64
+                    example: 1
+                  per_page:
+                    type: integer
+                    format: int64
+                    example: 10
+                  total_items:
+                    type: integer
+                    format: int64
+                    example: 1
+        '400':
+          $ref: '#/components/responses/400BadRequestError'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalServerError'
