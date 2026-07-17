@@ -68,8 +68,7 @@ components:
       description: >
         JSON Web Token (JWT). Tokens expire quickly, which can result in an
         **Unauthorized** message.
-      example: >-
-        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywiaWF0IjoxNjA1MjI3NjAwfQ.s7E6zJX6Z3fN3xg6Yx6dKXlPi1JX4-3zQ7yA7sD1F8E
+      example: eyJ...F8E
   schemas:
     PostDisputeV1Request:
       description: Dispute migration payload
@@ -88,7 +87,7 @@ components:
               type: string
               pattern: ^[a-zA-Z0-9-._]+$
               maxLength: 255
-              description: Record ID for migration purposes.
+              description: Record ID for migration purposes
               example: 5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21
             version_date:
               $ref: '#/components/schemas/VersionDate'
@@ -120,6 +119,7 @@ components:
           example: Custom comment
         disputed_amount:
           type: number
+          format: float
           minimum: 0
           description: Amount being disputed.
           example: 50.42
@@ -127,7 +127,7 @@ components:
           type: string
           description: Network brand where the transaction under dispute occurred.
           maxLength: 255
-          example: Elo
+          example: ELO
         is_partial:
           type: boolean
           description: Is this a partial dispute?
@@ -160,6 +160,7 @@ components:
           example: '2024-09-08'
         transaction_amount:
           type: number
+          format: float
           minimum: 0
           description: >-
             Amount of the transaction this dispute is associated with.
@@ -187,6 +188,7 @@ components:
           example: 1
         installment_disputed_amount:
           type: number
+          format: float
           minimum: 0
           description: >-
             Installment amount being disputed. **Required** when the dispute is
@@ -200,6 +202,7 @@ components:
           example: true
         pre_arb_amount:
           type: number
+          format: float
           minimum: 0
           description: >-
             Pre-arbitration amount being disputed. **REQUIRED** when
@@ -340,6 +343,7 @@ components:
           example: 100
         number_of_cycles:
           type: integer
+          format: int32
           description: >-
             Number of cycles for which the plan generates charges. Must be
             greater than `first_cycles_to_discount`.
@@ -399,10 +403,10 @@ components:
             - account_id
           properties:
             account_id:
+              type: string
               description: >-
                 Migration ID for the account that will be linked to the
                 recurring charge plans
-              type: string
               example: a-migration-account-id
         links:
           type: array
@@ -431,10 +435,8 @@ components:
           example: a-unique-migration-id
         migration_version:
           type: string
-          format: datetime
-          description: >-
-            Migration date for updated data. Valid format
-            (`yyyy-MM-ddTHH:mm:ssZ`).
+          format: date-time
+          description: Migration date for updated data. Format = YYYY-MM-DDTHH:mm:ssZ.
           example: '2021-09-13T19:54:41Z'
         description:
           type: string
@@ -489,6 +491,7 @@ components:
       title: Account migrations (v2)
       required:
         - applicant
+        - migration
       type: object
       properties:
         applicant:
@@ -499,15 +502,12 @@ components:
             business accounts). Pass one or the other but not both.
           required:
             - document_number
-            - migration
           properties:
             document_number:
               type: string
               description: Document number
               maxLength: 60
               example: '111111111'
-            migration:
-              $ref: '#/components/schemas/AccountsV2Migration'
             birth_date:
               type: string
               format: date
@@ -532,6 +532,8 @@ components:
               $ref: '#/components/schemas/AccountsV2Company'
             account:
               $ref: '#/components/schemas/AccountsV2Account'
+        migration:
+          $ref: '#/components/schemas/AccountsV2Migration'
         due_date_id:
           type: integer
           format: int32
@@ -540,6 +542,13 @@ components:
             returned from the [Get program due dates](ref:getprogramduedates)
             endpoint.
           example: 101010
+        program_id:
+          type: integer
+          format: int32
+          description: >-
+            Account's program ID. Must be a program ID previously configured on
+            the Pismo platform.
+          example: 1234
         metadata:
           type: object
           description: >
@@ -556,13 +565,6 @@ components:
           example:
             key1: value1
             key2: value2
-        program_id:
-          type: integer
-          format: int32
-          description: >-
-            Account's program ID. Must be a program ID previously configured on
-            the Pismo platform.
-          example: 1234
     AccountsV2Personal:
       type: object
       description: >-
@@ -650,8 +652,8 @@ components:
               example: SP
             issuing_date:
               type: string
-              description: Document's issue date
               format: date
+              description: Document's issue date
               example: '2021-07-01'
         education_degree:
           type: string
@@ -718,16 +720,19 @@ components:
           example: Engineer
         assets:
           type: number
+          format: float
           description: Applicant assets
           minimum: 0
           example: 125000
         income:
           type: number
+          format: float
           description: Applicant income
           minimum: 0
           example: 5000
         net_worth:
           type: number
+          format: float
           description: Applicant net worth
           minimum: 0
           example: 200000
@@ -893,6 +898,7 @@ components:
           example: Engineering
         annual_revenues:
           type: number
+          format: float
           description: Company average monthly revenue for the last 12 months
           example: 20000000
         type:
@@ -912,15 +918,18 @@ components:
           example: Normal
         debt:
           type: number
+          format: float
           description: Company debt
           example: 500000
         income:
           type: number
+          format: float
           description: Company income
           minimum: 0
           example: 3000000
         net_worth:
           type: number
+          format: float
           description: Company net worth
           minimum: 0
           example: 20000000
@@ -942,6 +951,7 @@ components:
           example: 3500
         max_credit_limit:
           type: number
+          format: float
           description: >-
             Maximum credit limit determined by the issuer, typically by using a
             credit analysis
@@ -957,6 +967,7 @@ components:
           example: 5.5
         total_overdraft_limit:
           type: number
+          format: float
           description: >-
             Account balance that goes over the credit limit. This field
             determines to what extent the account balance limit can go negative
@@ -964,6 +975,7 @@ components:
           example: 500
         available_credit_limit:
           type: number
+          format: float
           description: >-
             Amount available to the applicant's credit or debit account. Despite
             the name `available_credit_limit`, this field is also used for debit
@@ -991,18 +1003,21 @@ components:
           example: 20
         total_installment_credit_limit:
           type: number
+          format: float
           description: >-
             Total amount for a separate credit limit, such as for a
             client-specific credit line
           example: 1000
         available_total_installment_credit:
           type: number
+          format: float
           description: >-
             Available amount for the separate credit limit, whose total is
             defined by `total_installment_credit_limit`
           example: 999
         available_withdrawal_credit:
           type: number
+          format: float
           description: Amount available for withdrawal
           example: 22
     AccountsV2Migration:
@@ -1109,8 +1124,8 @@ components:
           example: true
         issuing_date:
           type: string
+          format: date-time
           description: Issuing date and hour of a card. Format = YYYY-MM-ddTHH:mm:SSZ.
-          format: datetime
           example: '2021-09-13T19:54:41Z'
         migration:
           type: object
@@ -1210,11 +1225,32 @@ components:
         status:
           type: string
           description: >
-            Migration status of card. The platform does not consider embossing
-            on migrated cards since they are already issued. Typically set to
-            either `TO_MIGRATE` or `MIGRATING`. For more information on allowed
-            values, refer to [Card status](doc:card-lifecycle-and-statuses).
-          example: TO_MIGRATE
+            Card status. For noname cards, it must be `UNBOUND`. For named
+            cards, it must be an allowed value from the table in [Card
+            status](doc:card-lifecycle-and-statuses). Since cards are already
+            issued, the platform does not take embossing under consideration on
+            migrated cards.
+          enum:
+            - UNBOUND
+            - CREATED
+            - NORMAL
+            - REISSUED
+            - UNNUMBERED
+            - BLOCKED
+            - PENDING
+            - WARNING
+            - INOPERATIVE
+            - LOST
+            - ROBBED
+            - EXPIRED
+            - DAMAGED
+            - FRAUD
+            - CANCELED
+            - DELETED
+            - BROKEN
+            - THEFT
+            - DEFECT
+          example: CREATED
         additional:
           type: boolean
           deprecated: true
@@ -1248,7 +1284,7 @@ components:
           example: 48
         expiration_date:
           type: string
-          format: datetime
+          pattern: ^\d{4}/\d{2}$
           description: Expiration date of card. Format = YYYY/MM.
           example: 2025/12
         metadata:
@@ -1288,6 +1324,8 @@ components:
           minLength: 2
           example: Joao S Silva
         program_id:
+          type: integer
+          format: int32
           description: >
             ID of a program created specifically for noname cards. Used to link
             noname cards to this type of account.
@@ -1315,6 +1353,7 @@ components:
           example: VISA
         transaction_limit:
           type: number
+          format: float
           description: >-
             Card transaction limit. (Only for virtual cards.) Sends "0" by
             default.
@@ -1332,8 +1371,8 @@ components:
           example: PLASTIC
         unlock_date:
           type: string
+          format: date-time
           description: Card unlock date and time. Format = YYYY-MM-ddTHH:mm:ss.SSSSSZ.
-          format: datetime
           example: '2022-06-06T20:30:00Z'
     PciCardsV1Request:
       title: PCI card migrations
@@ -1464,10 +1503,10 @@ components:
               example: accountMigrationId_referenceNumber_planCode_authorizationType
         accounting_date:
           type: string
+          format: date
           description: >-
             Accounting date for the migration, which you must set to the go-live
             date. Format = YYYY-MM-DD.
-          format: date
           example: '2022-03-28'
         metadata:
           type: object
@@ -1550,6 +1589,8 @@ components:
                 example: '2.55'
               interest_rate:
                 type: number
+                format: float
+                description: Accrual interest rate
                 minimum: 0
                 example: 1
         values:
@@ -1685,11 +1726,12 @@ components:
           example: PENDING
         contract_amount:
           type: number
+          format: float
           description: Total authorization amount with fees
           example: 19.9
         currency_conversion_date:
           type: string
-          format: datetime
+          format: date-time
           description: >-
             Authorization currency conversion date. Format =
             YYYY-MM-DDTHH:mm:ssZ.
@@ -1706,7 +1748,7 @@ components:
           example: '01'
         event_date_hour:
           type: string
-          format: datetime
+          format: date-time
           description: >-
             Local authorization date and time according to value received in
             flag message (DE 12 and 13 + year). Pismo accepts this value but
@@ -1726,6 +1768,7 @@ components:
           example: '2021-08-11T8:25:43Z'
         local_amount:
           type: number
+          format: float
           description: >-
             Local currency value (DE 04), indicating the amount the cardholder
             requested in the acquirer's local currency or the transaction's
@@ -1849,6 +1892,7 @@ components:
             key2: value2
         principal_amount:
           type: number
+          format: float
           description: Total authorization amount, not including fees
           example: 171.42
         processing_code:
@@ -1878,6 +1922,7 @@ components:
           example: '664151'
         settlement_amount:
           type: number
+          format: float
           description: >-
             Settlement currency amount (DE 05, destination amount). Indicates
             the amount transferred between the acquirer and the issuer equal to
@@ -1920,6 +1965,7 @@ components:
           default: false
         cardholder_amount:
           type: number
+          format: float
           description: >-
             Transaction amount billed to the cardholder in the issuer's currency
             (DE 06 optional).
@@ -1932,12 +1978,14 @@ components:
           example: '840'
         cardholder_currency_conversion_rate:
           type: number
+          format: float
           description: >-
             Conversion rate between local amount and cardholder amount (the DE
             10 conversion rate that the brand sends)
           example: 0.99
         installment_amount:
           type: number
+          format: float
           description: Authorization installment amount
           example: 171.42
         merchant_category_code:
@@ -1981,7 +2029,7 @@ components:
           example: false
         referral_updated_at:
           type: string
-          format: datetime
+          format: date-time
           description: >-
             Date and time when the referral was last updated. Identifies when a
             fraud suspicion is no longer valid. Format = YYYY-MM-ddTHH:mm:ss.
@@ -2076,6 +2124,7 @@ components:
           example: '00'
         contract_amount:
           type: number
+          format: float
           description: Total authorized amount, including fees
           example: 15
         currency:
@@ -2083,8 +2132,8 @@ components:
           description: Requested authorization currency code (ISO 4217)
           example: USD
         datetime_utc:
-          format: date-time
           type: string
+          format: date-time
           description: Original authorization date (UTC). Format = YYYY-MM-DDThh:mm:ssZ
           example: '2021-09-13T19:54:41Z'
         destination_currency:
@@ -2109,6 +2158,7 @@ components:
           example: '01'
         local_amount:
           type: number
+          format: float
           description: Authorization amount in local currency
           example: 10
         number_of_installments:
@@ -2116,8 +2166,8 @@ components:
           description: Total number of installments related to the migrated authorization
           example: 1
         payment_datetime:
-          format: date-time
           type: string
+          format: date-time
           description: >-
             Payment date and time (UTC). Determines eligibility for time-based
             cancellations. Format = yyyy-MM-ddTHH:mm:ssZ
@@ -2212,10 +2262,12 @@ components:
             properties:
               amortization_amount:
                 type: number
+                format: float
                 description: Amortization amount related to this installment.
                 example: 111
               installment_amount:
                 type: number
+                format: float
                 description: >
                   Amount of this installment. **Note:** Total contract purchase
                   amount is the sum total of all installment amounts.
@@ -2228,6 +2280,7 @@ components:
                 example: 2
               principal_amount:
                 type: number
+                format: float
                 description: Installment amount without the addition of any fees
                 example: 111
         ledger_impact:
@@ -2457,7 +2510,8 @@ components:
 
                 **Important:** Calling the [Migrate accounts
                 Go-live](ref:postgolivev1) endpoint migrates every account that
-                has this phase ID.
+                has this phase ID. For each successfully migrated account, the
+                operation changes its status to `MIGRATED`.
               maxLength: 60
               example: Rollout_Jan2025
             status:
@@ -2477,10 +2531,11 @@ components:
           description: >
             Accounts go-live domain type. For more information, refer to the
             [Migrations
-            overview](doc:migrations-overview#pre-go-live-and-go-live) guide.
+            overview](doc:migrations-overview#go-live-and-pre-go-live) guide.
             Note that `PCI_CARD` type is deprecated.
           enum:
             - ACCOUNT
+            - PRE_GO_LIVE
           example: ACCOUNT
     PostMerchantsV1Request:
       title: Merchant migrations
@@ -2659,14 +2714,17 @@ components:
               example: Merchant name
             advancement_fee:
               type: number
+              format: float
               description: Advancement fee for creditor
               example: 15.4
             discount_rate:
               type: number
+              format: float
               description: Discount rate for creditor
               example: 11.5
             maximum_advancement_percentage:
               type: number
+              format: float
               description: Maximum advancement percentage for the creditor
               example: 10.5
             crediting_method:
@@ -2771,12 +2829,14 @@ components:
           example: '00'
         transaction_amount:
           type: number
+          format: float
           description: >-
             Transaction amount. If the transaction is an installment, this value
             must be the installment amount.
           example: 56.78
         mdr_amount:
           type: number
+          format: float
           description: >
             Merchant Discount Rate (MDR) tax amount (Brazil only). Default is
             `0`. For details about MDR, refer to the [Marketplace Creditor
@@ -2794,23 +2854,23 @@ components:
           example: 1
         event_date:
           type: string
+          format: date-time
           description: >-
             Transaction creation date and time (UTC format). Format =
             YYYY-MM-DDThh:mm:ssZ.
-          format: datetime
           example: '2021-09-21T12:00:00Z'
         scheduled_payment_date:
           type: string
+          format: date
           description: >-
             Scheduled date to settle the transaction. Setting a future date and
             the status to `PENDING` schedules the transaction. For settlements
             that already occurred, the status is `PAID`.
-          format: date
           example: '2021-09-21'
         transaction_status:
           type: string
           description: |
-            Transaction status.
+            Transaction status
           enum:
             - PENDING
             - SCHEDULED
@@ -2833,6 +2893,7 @@ components:
           example: 0.25
         mdr_tax:
           type: number
+          format: float
           description: |
             Additional MDR tax amount
           default: 0
@@ -2879,55 +2940,60 @@ components:
               example: EXTID1001
         cycle_closing_date:
           type: string
-          description: Cycle closing date
           format: date
+          description: Cycle closing date
           example: '2018-03-15'
         best_transaction_day:
           type: string
+          format: date
           description: >
             Day of best transaction. This is the cycle closing date of a credit
             card account. For purchases made after the cycle closes, payment is
             due in the next statement.
-          format: Date
           example: '2018-03-16'
         due_date:
           type: string
-          description: Due date
           format: date
+          description: Due date
           example: '2018-03-25'
         real_due_date:
           type: string
+          format: date
           description: >
             If a due date falls on a nonbusiness day, such as weekend or a
             holiday, the actual due date is the next business day on which the
             payment can be made. (Otherwise, it's the same as the due date.)
             Interest isn't charged until the real due date.
-          format: date
           example: '2018-03-25'
         previous_balance:
           type: number
+          format: float
           description: Value of previous balance
           example: 180.52
         debits:
           type: number
+          format: float
           description: Total debits of statement
           example: 50
         credits:
           type: number
+          format: float
           description: Total credits of statement
           example: 50
         current_balance:
           type: number
+          format: float
           description: Current balance
           example: 190.52
         minimum_payment:
           type: number
+          format: float
           description: Minimun payment
           example: 20
         posted_date:
           type: string
+          format: date-time
           description: Posted date
-          format: datetime
           example: '2021-10-25T19:54:41Z'
         posted_fine:
           type: boolean
@@ -3178,10 +3244,10 @@ components:
           example: '130720000148'
         clearing_date:
           type: string
+          format: date
           description: >-
             Confirmation date for clearing. Format = YYYY-MM-DD. (Only for
             `NETWORK` authorization type.)
-          format: date
           example: '2019-12-11'
         number_of_installments:
           type: integer
@@ -3217,27 +3283,29 @@ components:
           example: 2
         event_date_hour:
           type: string
+          format: date-time
           description: Original transaction date and hour. Format = YYYY-MM-DDTHH:mm:ssZ.
-          format: datetime
           example: '2021-09-21T12:00:00Z'
         due_date_hour:
           type: string
+          format: date-time
           description: Date and time when transaction is due
-          format: datetime
           example: '2020-09-21T12:00:00Z'
         accounting_date:
           type: string
+          format: date
           description: >-
             Creation date of accounting record. Using the go-live date is
             recommended. Format = YYYY-MM-DD.
-          format: date
           example: '2019-12-11'
         settlement_currency_rate:
           type: number
+          format: float
           description: Settlement currency rate. (Only for `NETWORK` authorization type.)
           example: 12.55
         cardholder_amount:
           type: number
+          format: float
           description: Transaction's cardholder amount
           example: 171.42
         cardholder_currency_code:
@@ -3246,24 +3314,28 @@ components:
           example: '840'
         cardholder_currency_rate:
           type: number
+          format: float
           description: >-
             Conversion rate between local value and cardholder value. (Only for
             `NETWORK` authorization type.)
           example: 12.6
         interest_rate:
           type: number
+          format: float
           description: >-
             Interest rate. When using `INSTALLMENTS` transaction type, this sets
             the interest rate for all installment contracts.
           example: 12.31
         interest_amount:
           type: number
+          format: float
           description: >-
             Interest amount. When using `INSTALLMENTS` transaction type, sets
             the interest amount for all installment contracts.
           example: 12.42
         iof_amount:
           type: number
+          format: float
           description: >
             IOF amount (Brazil only). If the transaction did not take place in
             Brazil, this should be left blank.
@@ -3299,6 +3371,7 @@ components:
                 example: 986
               value:
                 type: number
+                format: float
                 description: Amount value
                 example: 2.55
         installments_type:
@@ -3332,18 +3405,22 @@ components:
                 example: '2022-02-01'
               amount:
                 type: number
+                format: float
                 description: Installment amount
                 example: 56.78
               interest_rate:
                 type: number
+                format: float
                 description: Installment interest rate
                 example: 0
               interest_amount:
                 type: number
+                format: float
                 description: Installment interest amount
                 example: 0
               interest_amount_pend_approp:
                 type: number
+                format: float
                 description: >
                   Amount of pending interest in an installment transaction. When
                   you migrate an installment transaction that still has pending
@@ -3353,6 +3430,7 @@ components:
                 example: 0
               iof_amount:
                 type: number
+                format: float
                 description: Installment IOF amount
                 example: 0
               status:
@@ -3373,6 +3451,7 @@ components:
                 example: '1'
         interest_amount_pend_approp:
           type: number
+          format: float
           description: >
             Amount of pending interest in an installment transaction. When you
             migrate an installment transaction that still has pending interest,
@@ -3705,7 +3784,7 @@ components:
           example: ACTIVE
         tc_date_time:
           type: string
-          format: datetime
+          format: date-time
           description: >-
             Date-time of token confirmation message (token creation). Format =
             `yyyy-MM-ddTHH:mm:ssZ`
@@ -3752,10 +3831,10 @@ components:
           maxLength: 48
         event_date_time:
           type: string
+          format: date-time
           description: >-
             Date of last token status change or creation date if no changes
-            occurred. Format:`yyyy-MM-dd-HH.mm.ss.SSSSSS`
-          format: datetime
+            occurred. Format = yyyy-MM-dd-HH.mm.ss.SSSSSS
           example: '2022-01-06T18:00:00Z'
         line_number:
           type: string
@@ -3837,16 +3916,19 @@ components:
           example: '2024-04-23'
         overdue_amount:
           type: number
+          format: float
           description: >-
             Outstanding balance after the due date, considering only the minimum
             amount due of the statement
           example: 50
         bucket_amount:
           type: number
+          format: float
           description: Statement minimum amount due minus the previous bucket balance
           example: 60
         bucket_balance:
           type: number
+          format: float
           description: >
             Current bucket balance. Begins as equal to the bucket amount, then
             decreases whenever the account receives a credit
@@ -3869,7 +3951,7 @@ components:
             key2: value2
     VersionDate:
       type: string
-      format: datetime
+      format: date-time
       description: >
         Date-time when the record was created or last updated. Format =
         `yyyy-MM-ddTHH:mm:ss[.SSS][.SS][.S]Z`. Used together with the migration
@@ -4028,8 +4110,9 @@ paths:
     post:
       description: >
         **Go-live** is a process that happens at the end of a migration. After
-        migrating accounts, you must call this Go-live endpoint to mark all
-        migrated accounts active.
+        migrating accounts, you must call the Go-live endpoint to mark all
+        migrated accounts active. The Pismo platform responds by changing the
+        migration status of each account to `MIGRATED`.
 
 
         This endpoint generates an [Account go-live
