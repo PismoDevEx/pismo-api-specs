@@ -247,7 +247,8 @@ components:
       format: number
       description: >-
         Fixed annual interest rate for investments or deposits. If a `benchmark`
-        value is provided, this field must be null.
+        value is provided, this field must be null. Otherwise, this field is
+        required.
       example: '0.10'
     GetBenchmarkRate:
       type: object
@@ -429,7 +430,7 @@ components:
       description: >-
         Rate linked to the benchmark rate. For example, for 110% FED, margin
         rate is 110%. If a `benchmark` value is not provided, this field must be
-        null.
+        null. Otherwise, this field is required.
       example: 1.1
     OrgId:
       type: string
