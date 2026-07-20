@@ -396,7 +396,7 @@ components:
 
             This setting affects only the capitalization process. The maturity
             instruction flow always uses `payout_account`, regardless of the
-            value of this field. 
+            value of this field.
 
 
             If the field is not provided, it is omitted from the attachment and
@@ -1952,139 +1952,6 @@ components:
             Number of interest days to forfeit as the penalty amount.
             Must be at least 1 when provided.
           example: 7
-    CreateMaturityInstructionOverrideRequest:
-      type: object
-      required:
-        - principal
-        - interest
-        - reason
-      description: >
-        Amounts set to `ROLLOVER` are carried forward into a new deposit term.
-        If the principal is configured as `NO_ACTION`, it remains unchanged at
-        maturity. For interest configured as `PAY`, any positive accrued amount
-        is credited to the account’s cash balance.
-      properties:
-        principal:
-          type: string
-          enum:
-            - NO_ACTION
-            - ROLLOVER
-          description: >
-            Specifies the status of the principal amount at maturity.
-
-            - `NO_ACTION`: No action is taken with the principal amount
-
-            - `ROLLOVER`: The principal amount is rolled over to a new deposit
-            term
-
-
-            If no value is selected, principal defaults to `NO_ACTION`.
-          example: ROLLOVER
-          default: NO_ACTION
-        interest:
-          type: string
-          enum:
-            - PAY
-            - ROLLOVER
-          description: >
-            Specifies the status of the accrued interest at maturity.
-
-            - `PAY`: The accrued interest is paid to the account
-
-            - `ROLLOVER`: The accrued interest is rolled over and added to the
-            principal
-
-
-            If no value is selected, the interest defaults to `PAY`.
-          example: PAY
-          default: PAY
-        reason:
-          type: string
-          maxLength: 100
-          description: Reason for creating the maturity instruction override
-          example: Customer requested custom maturity handling
-    UpdateMaturityInstructionOverrideRequest:
-      type: object
-      properties:
-        principal:
-          type: string
-          enum:
-            - NO_ACTION
-            - ROLLOVER
-          description: >
-            Specifies the status of the principal amount at maturity.
-
-            - `NO_ACTION`: No action is taken with the principal amount
-
-            - `ROLLOVER`: The principal amount is rolled over to a new deposit
-            term
-
-
-            If no value is specified, the principal amount is not updated.
-          example: NO_ACTION
-        interest:
-          type: string
-          enum:
-            - PAY
-            - ROLLOVER
-          description: >
-            Specifies the status of the accrued interest at maturity.
-
-            - `PAY`: The accrued interest is paid to the account
-
-            - `ROLLOVER`: The accrued interest is rolled over and added to the
-            principal
-
-
-            If no value is selected, nothing is updated.
-          example: ROLLOVER
-        reason:
-          type: string
-          maxLength: 100
-          description: Reason for updating the maturity instruction override
-          example: Updated per customer request
-      description: >
-        - If principal or interest are `ROLLOVER`, the respective amounts is
-        rolled over to a new deposit term.
-
-        - When principal is `NO_ACTION`, no action is taken with the principal
-        amount at maturity.
-
-        - If interest is `PAY` and accrued interest is greater than zerto, it's
-        paid to the account's cash balance.
-    MaturityInstructionOverrideResponse:
-      type: object
-      properties:
-        product_id:
-          type: string
-          description: The product ID associated with the override
-          example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
-        principal:
-          type: string
-          description: Principal instruction setting
-          example: ROLLOVER
-        interest:
-          type: string
-          description: Interest instruction setting
-          example: PAY
-        reason:
-          type: string
-          description: Override reason
-          example: Customer requested custom maturity handling
-        status:
-          type: string
-          description: Override status
-          example: ACTIVE
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp that indicates when the override was created
-          example: '2024-01-23T13:26:25.000Z'
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp that indicates when the override was last updated
-          example: '2024-01-23T13:26:25.000Z'
     CycleSnapshotResponse:
       type: object
       description: >
@@ -3178,7 +3045,7 @@ paths:
     post:
       tags:
         - Penalty
-      summary: '[Beta] Simulate penalty'
+      summary: Simulate penalty
       description: >
         Simulate the penalty applied to a specified withdrawal on a given date.
         The operation is read‑only and does not modify any data.
