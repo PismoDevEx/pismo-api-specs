@@ -1284,7 +1284,7 @@ components:
           example: 48
         expiration_date:
           type: string
-          pattern: ^\d{4}/\d{2}$
+          pattern: ^\d{4}/(0[1-9]|1[0-2])$
           description: Expiration date of card. Format = YYYY/MM.
           example: 2025/12
         metadata:
