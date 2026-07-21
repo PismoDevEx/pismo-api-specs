@@ -3026,6 +3026,17 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/message.Message'
+          examples:
+            EPDG0035:
+              summary: Entry owned by different person
+              value:
+                code: EPDG0035
+                message: Entry owned by different person
+            EPDG0036:
+              summary: Entry owned by same person, but with different participant.
+              value:
+                code: EPDG0036
+                message: Entry owned by same person, but with different participant.
     400BadRequestCreateFundsRecovery:
       description: Bad Request
       headers:
