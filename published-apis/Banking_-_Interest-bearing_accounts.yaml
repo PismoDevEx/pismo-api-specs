@@ -2346,6 +2346,12 @@ components:
                   format: date
                   description: Explicit renewal maturity date
                   example: '2028-06-15'
+            payout_account:
+              $ref: '#/components/schemas/PayoutAccount'
+            maturity_instructions:
+              $ref: '#/components/schemas/MaturityInstructionsOverrideRequest'
+            penalties:
+              $ref: '#/components/schemas/PenaltiesOverrideRequest'
   securitySchemes:
     BearerAuth:
       type: http
@@ -2659,7 +2665,7 @@ paths:
     get:
       tags:
         - Account attachment
-      summary: Get account attachment [Beta]
+      summary: Get account attachment
       description: |
         Get an account's attached product.
       operationId: interest-bearing-v1-get-account-attachment
@@ -2683,7 +2689,7 @@ paths:
     post:
       tags:
         - Account attachment
-      summary: Attach deposit to account [Beta]
+      summary: Attach deposit to account
       description: >
         Attach a time deposit product to an account.
 
@@ -2835,7 +2841,7 @@ paths:
         Create or locate a transaction banking account and attach a validated
         deposit product in a single request. On success, the endpoint generates
         a [Deposit account opened
-        event](https://developers.pismo.io/events/docs/deposit-product-unified-deposit-open-1).
+        event](https://developers.pismo.io/events/docs/deposit-product-deposit-account-opened-1).
 
 
         This endpoint supports two scenarios:
@@ -2916,6 +2922,29 @@ paths:
                       maturity_period:
                         unit: MONTHS
                         value: 6
+                      payout_account:
+                        type: EXTERNAL
+                        external_account:
+                          account_number: '123456789'
+                          bank_code: '001'
+                      maturity_instructions:
+                        principal: ROLLOVER
+                        interest: PAY
+                        reason: VIP retention package
+                      penalties:
+                        reason: VIP retention package
+                        grace_period:
+                          waived: false
+                          duration_days: 10
+                          penalty_interest_days: 15
+                        early_withdrawal_after_opening:
+                          waived: false
+                          applicable_within_days: 30
+                          penalty_interest_days: 90
+                        withdrawal_fee:
+                          waived: false
+                          type: PERCENTAGE
+                          value: 2.5
         '400':
           description: Bad Request
           content:
@@ -3395,7 +3424,7 @@ paths:
     get:
       tags:
         - Program attachment
-      summary: Get program attachment [Beta]
+      summary: Get program attachment
       description: |
         Get a program's attached product.
       operationId: interest-bearing-v1-get-program-attachment
@@ -3419,7 +3448,7 @@ paths:
     post:
       tags:
         - Program attachment
-      summary: Attach deposit product to program [Beta]
+      summary: Attach deposit product to program
       description: >
         Attach a time deposit product to a program.
 
@@ -3558,7 +3587,7 @@ paths:
     patch:
       tags:
         - Account attachment
-      summary: Update deposit account attachment overrides [Beta]
+      summary: Update deposit account attachment overrides
       description: >
         Partially updates `deposit_configs.overrides` and
         `deposit_configs.interest_capitalization_mode` on an active deposit
@@ -3685,7 +3714,7 @@ paths:
     patch:
       tags:
         - Program attachment
-      summary: Update deposit program attachment overrides [Beta]
+      summary: Update deposit program attachment overrides
       description: >
         Partially updates `deposit_configs.overrides` and
         `deposit_configs.interest_capitalization_mode` on an active deposit
