@@ -507,6 +507,8 @@ components:
             `tax_withholding` must be null.
         tax_withholding:
           $ref: '#/components/schemas/TaxWithholding'
+        interest_by_tiers:
+          $ref: '#/components/schemas/InterestByTiers'
         capitalization_frequency:
           $ref: '#/components/schemas/CapitalizationFrequency'
           description: >-
