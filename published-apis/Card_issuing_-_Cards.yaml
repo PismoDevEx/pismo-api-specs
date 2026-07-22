@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Card issuing - Cards
   version: 1.4.6
@@ -2201,78 +2201,78 @@ components:
           type:
             $ref: '#/components/schemas/ReissueType'
       example:
-        - id: '1720'
+        - id: 1720
           description: Broken card
           type: BROKEN
           must_charge: false
           must_block: false
-          cost: '20.00'
-        - id: '1721'
+          cost: 20
+        - id: 1721
           description: Name change
           type: RENAME
           must_charge: false
           must_block: false
-          cost: '9.90'
-        - id: '1722'
+          cost: 9.9
+        - id: 1722
           description: Customer request
           type: CLIENT_ORDER
           must_charge: false
           must_block: false
-          cost: '9.90'
-        - id: '1723'
+          cost: 9.9
+        - id: 1723
           description: Scratched card
           type: SHAVED
           must_charge: false
           must_block: false
-          cost: '9.90'
-        - id: '1724'
+          cost: 9.9
+        - id: 1724
           description: Loss of relief
           type: RELIEF_LOSS
           must_charge: false
           must_block: false
-          cost: '9.90'
-        - id: '1725'
+          cost: 9.9
+        - id: 1725
           description: Lost
           type: LOST
           must_charge: false
           must_block: true
-          cost: '9.90'
-        - id: '1726'
+          cost: 9.9
+        - id: 1726
           description: Robbed
           type: ROBBED
           must_charge: false
           must_block: true
-          cost: 'null'
-        - id: '1727'
+          cost: 0
+        - id: 1727
           description: Theft
           type: THEFT
           must_charge: false
           must_block: true
-          cost: 'null'
-        - id: '1728'
+          cost: 0
+        - id: 1728
           description: Card not received
           type: UNRECEIVED
           must_charge: false
           must_block: true
-          cost: 'null'
-        - id: '1729'
+          cost: 0
+        - id: 1729
           description: Card is not working
           type: DAMAGED
           must_charge: false
           must_block: false
-          cost: 'null'
-        - id: '1730'
+          cost: 0
+        - id: 1730
           description: Defective card
           type: DEFECT
           must_charge: false
           must_block: false
-          cost: 'null'
-        - id: '1731'
+          cost: 0
+        - id: 1731
           description: Incorrect name
           type: INCORRECT_NAME
           must_charge: false
           must_block: false
-          cost: 'null'
+          cost: 0
     ReasonId:
       type: integer
       description: >
@@ -7055,7 +7055,7 @@ paths:
         sent to the network. 
 
 
-        This endpoint generates a [Automatic Updater notification file
+        This endpoint generates an [Automatic Updater notification file
         sent](https://developers.pismo.io/events/docs/cards-automatic-updater-1)
         event.
       tags:
