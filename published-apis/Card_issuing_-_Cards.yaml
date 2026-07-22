@@ -12,7 +12,7 @@ servers:
   - url: https://sandbox.pismolabs.io
     description: Sandbox API server for testing.
   - url: https://gw-pci.pismolabs.io
-    description: Sandbox PCI API server for testing.
+    description: Sandbox PCI API server for testing
 security:
   - BearerAuth: []
 tags:
@@ -48,6 +48,8 @@ tags:
     description: Card benefits endpoints
   - name: CVV rotation
     description: CVV rotation management
+  - name: Automatic updater
+    description: Endpoints for Visa's VAU and Mastercard's ABU
 components:
   parameters:
     accountIdPath:
@@ -7034,6 +7036,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReissueReasons'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /cards/v1/automatic-updater/{cardID}/opt-in:
+    post:
+      summary: Visa automatic updater opt-in
+      description: >
+        Opt a card in to Visa Automatic Updater (VAU).
+
+
+        This entry is processed during the next file generation window and be
+        sent to the network. 
+
+
+        This endpoint generates a [Automatic Updater notification file
+        sent](https://developers.pismo.io/events/docs/cards-automatic-updater-1)
+        event.
+      tags:
+        - Automatic updater
+      parameters:
+        - $ref: '#/components/parameters/cardIdPath'
+      operationId: post-vau-opt-in
+      responses:
+        '200':
+          description: Success or failure
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /cards/v1/automatic-updater/{cardID}/opt-out:
+    post:
+      summary: Automatic updater opt-out
+      description: >
+        Opt out of Visa Automatic Updater (VAU) or Mastercard's Automatic
+        Billing Updater (ABU).
+
+
+        This entry is processed during the next file generation window and be
+        sent to the network. 
+
+
+        This endpoint generates an [Automatic Updater notification file
+        sent](https://developers.pismo.io/events/docs/cards-automatic-updater-1)
+        event.
+      tags:
+        - Automatic updater
+      parameters:
+        - $ref: '#/components/parameters/cardIdPath'
+      operationId: post-vau-opt-out
+      responses:
+        '200':
+          description: Success or failure
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
