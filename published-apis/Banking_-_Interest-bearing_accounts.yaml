@@ -2733,7 +2733,7 @@ paths:
     get:
       tags:
         - Account attachment
-      summary: Get account attachment [Beta]
+      summary: Get account attachment
       description: |
         Get an account's attached product.
       operationId: interest-bearing-v1-get-account-attachment
@@ -2757,7 +2757,7 @@ paths:
     post:
       tags:
         - Account attachment
-      summary: Attach deposit to account [Beta]
+      summary: Attach deposit to account
       description: >
         Attach a time deposit product to an account.
 
@@ -3492,7 +3492,7 @@ paths:
     get:
       tags:
         - Program attachment
-      summary: Get program attachment [Beta]
+      summary: Get program attachment
       description: |
         Get a program's attached product.
       operationId: interest-bearing-v1-get-program-attachment
@@ -3516,7 +3516,7 @@ paths:
     post:
       tags:
         - Program attachment
-      summary: Attach deposit product to program [Beta]
+      summary: Attach deposit product to program
       description: >
         Attach a time deposit product to a program.
 
@@ -3655,7 +3655,7 @@ paths:
     patch:
       tags:
         - Account attachment
-      summary: Update deposit account attachment overrides [Beta]
+      summary: Update deposit account attachment overrides
       description: >
         Partially updates `deposit_configs.overrides` and
         `deposit_configs.interest_capitalization_mode` on an active deposit
@@ -3782,7 +3782,7 @@ paths:
     patch:
       tags:
         - Program attachment
-      summary: Update deposit program attachment overrides [Beta]
+      summary: Update deposit program attachment overrides
       description: >
         Partially updates `deposit_configs.overrides` and
         `deposit_configs.interest_capitalization_mode` on an active deposit
