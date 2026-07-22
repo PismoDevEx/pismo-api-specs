@@ -940,6 +940,29 @@ components:
           $ref: '#/components/schemas/TieredInterestForfeitureOverrideRequest'
         subsequent_withdrawals:
           $ref: '#/components/schemas/SubsequentWithdrawalsOverrideRequest'
+    MaturityNotice:
+      type: object
+      required:
+        - days_before_maturity
+        - description
+      properties:
+        days_before_maturity:
+          type: integer
+          minimum: 1
+          description: >
+            Number of days before the account’s maturity date when the notice is
+            sent. The value must be a positive integer greater than zero. Inputs
+            such as zero, negative numbers, decimals, null, or non-numeric
+            values result in `HTTP 400`. Each notice must use a distinct
+            `days_before_maturity` value within the array.
+          example: 30
+        description:
+          type: string
+          maxLength: 128
+          description: >
+            A short, human‑readable label for the notice. Each entry must
+            include one description, and it cannot exceed 128 characters.
+          example: 30-day advance notice
     DepositProduct:
       type: object
       properties:
@@ -1004,6 +1027,18 @@ components:
           example: Tax 1 Default
         penalties:
           $ref: '#/components/schemas/DepositPenalties'
+        notices:
+          type: array
+          maxItems: 3
+          description: >
+            Advance maturity notice configurations for deposit products only,
+            rejected for savings‑account products. If this field is included in
+            a savings‑account request, the API returns `HTTP 400`. When
+            provided, the field must contain one to three entries, each with a
+            unique `days_before_maturity` value. If the field is absent or the
+            array is empty, no notices are configured.
+          items:
+            $ref: '#/components/schemas/MaturityNotice'
         processing_codes:
           $ref: '#/components/schemas/DepositProcessingCodes'
         product_id:
@@ -1142,6 +1177,23 @@ components:
           example: 1025
         penalties:
           $ref: '#/components/schemas/DepositPenalties'
+        notices:
+          type: array
+          maxItems: 3
+          description: >
+            Advance maturity notice configurations for deposit products only,
+            rejected for savings‑account products. If this field is included in
+            a savings‑account request, the API returns `HTTP 400`. When
+            provided, the field must contain one to three entries, each with a
+            unique `days_before_maturity` value. If the field is absent or the
+            array is empty, no notices are configured.
+          items:
+            $ref: '#/components/schemas/MaturityNotice'
+          example:
+            - days_before_maturity: 30
+              description: 30-day advance notice
+            - days_before_maturity: 14
+              description: Final reminder
         start_date:
           type: string
           format: date
@@ -1258,9 +1310,10 @@ components:
           description: A collection of individual product objects.
     PatchProductRequest:
       type: object
-      description: >-
-        All fields are optional, but either `status` or `min_amount` must be
-        provided. When `status` is provided, `reason` is required.
+      description: >
+        All fields are optional, but at least one of `status`, `min_amount`, or
+        `notices` must be included. If `status` is present, `reason` becomes
+        required.
       properties:
         status:
           description: Product status
@@ -1282,6 +1335,21 @@ components:
             retroactive. Accounts already opened are not revalidated).
           example: 50
           type: number
+        notices:
+          type: array
+          maxItems: 3
+          description: >
+            Advance maturity notice configurations for deposit products only,
+            rejected for savings‑account products. If this field is included in
+            a savings‑account request, the API returns `HTTP 400`. When
+            provided, the field must contain one to three entries, each with a
+            unique `days_before_maturity` value. If the field is absent or the
+            array is empty, no notices are configured.
+          items:
+            $ref: '#/components/schemas/MaturityNotice'
+          example:
+            - days_before_maturity: 60
+              description: Updated single 60-day notice
     DepositProcessingCodes:
       type: object
       properties:
@@ -2665,7 +2733,7 @@ paths:
     get:
       tags:
         - Account attachment
-      summary: Get account attachment
+      summary: Get account attachment [Beta]
       description: |
         Get an account's attached product.
       operationId: interest-bearing-v1-get-account-attachment
@@ -2689,7 +2757,7 @@ paths:
     post:
       tags:
         - Account attachment
-      summary: Attach deposit to account
+      summary: Attach deposit to account [Beta]
       description: >
         Attach a time deposit product to an account.
 
@@ -3424,7 +3492,7 @@ paths:
     get:
       tags:
         - Program attachment
-      summary: Get program attachment
+      summary: Get program attachment [Beta]
       description: |
         Get a program's attached product.
       operationId: interest-bearing-v1-get-program-attachment
@@ -3448,7 +3516,7 @@ paths:
     post:
       tags:
         - Program attachment
-      summary: Attach deposit product to program
+      summary: Attach deposit product to program [Beta]
       description: >
         Attach a time deposit product to a program.
 
@@ -3587,7 +3655,7 @@ paths:
     patch:
       tags:
         - Account attachment
-      summary: Update deposit account attachment overrides
+      summary: Update deposit account attachment overrides [Beta]
       description: >
         Partially updates `deposit_configs.overrides` and
         `deposit_configs.interest_capitalization_mode` on an active deposit
@@ -3714,7 +3782,7 @@ paths:
     patch:
       tags:
         - Program attachment
-      summary: Update deposit program attachment overrides
+      summary: Update deposit program attachment overrides [Beta]
       description: >
         Partially updates `deposit_configs.overrides` and
         `deposit_configs.interest_capitalization_mode` on an active deposit
