@@ -7058,6 +7058,10 @@ paths:
         This endpoint generates an [Automatic Updater notification file
         sent](https://developers.pismo.io/events/docs/cards-automatic-updater-1)
         event.
+
+
+        For more information, refer to the [Automatic
+        updater](doc:automatic-updater) guide.
       tags:
         - Automatic updater
       parameters:
@@ -7089,6 +7093,10 @@ paths:
         This endpoint generates an [Automatic Updater notification file
         sent](https://developers.pismo.io/events/docs/cards-automatic-updater-1)
         event.
+
+
+        For more information, refer to the [Automatic
+        updater](doc:automatic-updater) guide.
       tags:
         - Automatic updater
       parameters:
