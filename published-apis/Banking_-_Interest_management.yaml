@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Banking - Interest management
+  title: Banking - Interest management (B3)
   version: 1.0.0
   description: API to handle interest-bearing account operations
   contact:
@@ -536,12 +536,19 @@ security:
 paths:
   /v1/interest/plan:
     post:
-      summary: Create interest plan
+      summary: Create interest plan (B3 only)
       description: >
         Create an interest plan configuration that defines how the platform
-        calculates interest accrual. Once created, you can apply the interest
-        plan to a specific product or account. For example, you can provide the
-        `interest_plan_id` when creating a [deposit
+        calculates interest accrual.
+
+
+        **Note:** Only Brazilian Stock Exchange (B3) customers should use this
+        endpoint.
+
+
+        Once created, you can apply the interest plan to a specific product or
+        account. For example, you can provide the `interest_plan_id` when
+        creating a [deposit
         product](ref:interest-bearing-v1-create-deposit-product), when creating
         a [savings
         account](ref:interest-bearing-v1-create-savings-account-product), or
@@ -557,7 +564,7 @@ paths:
         accounts](doc:interest-bearing-accounts) guide.
       tags:
         - Interest plan
-      operationId: post-v1-interest-plan
+      operationId: post-v1-interest-plan-b3
       parameters:
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/ContentType'
@@ -585,11 +592,16 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/plan/{interestPlanId}:
     get:
-      summary: Get interest plan
-      description: Get interest plan details.
+      summary: Get interest plan (B3 only)
+      description: >
+        Get interest plan details.
+
+
+        **Note:** Only Brazilian Stock Exchange (B3) customers should use this
+        endpoint.
       tags:
         - Interest plan
-      operationId: get-v1-interest-plan
+      operationId: get-v1-interest-plan-b3
       parameters:
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/InterestPlanIdPath'
@@ -610,11 +622,16 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/account/{accountId}:
     get:
-      summary: Get account interest
-      description: Get account interest details.
+      summary: Get account interest (B3 only)
+      description: >
+        Get account interest details.
+
+
+        **Note:** Only Brazilian Stock Exchange (B3) customers should use this
+        endpoint.
       tags:
         - Account interest
-      operationId: get-v1-interest-account
+      operationId: get-v1-interest-account-b3
       parameters:
         - $ref: '#/components/parameters/AccountId'
         - $ref: '#/components/parameters/Authorization'
@@ -634,12 +651,16 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     put:
-      summary: Update account interest
-      description: |
+      summary: Update account interest (B3 only)
+      description: >
         Apply specific interest accrual options to an account.
+
+
+        **Note:** Only Brazilian Stock Exchange (B3) customers should use this
+        endpoint.
       tags:
         - Account interest
-      operationId: put-v1-interest-account
+      operationId: put-v1-interest-account-b3
       parameters:
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
@@ -668,13 +689,17 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/benchmark-rate:
     post:
-      summary: Configure benchmark rate
+      summary: Configure benchmark rate (B3 only)
       description: >
         Configure the benchmark rate and its start date. Used to calculate
         interest accual for floating and hybrid investments.
+
+
+        **Note:** Only Brazilian Stock Exchange (B3) customers should use this
+        endpoint.
       tags:
         - Benchmark rate
-      operationId: post-v1-benchmark-rate
+      operationId: post-v1-benchmark-rate-b3
       parameters:
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
@@ -701,11 +726,16 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     get:
-      summary: Get Org benchmark rates
-      description: Get all benchmark rates configured for an organization.
+      summary: Get Org benchmark rates (B3 only)
+      description: >
+        Get all benchmark rates configured for an organization.
+
+
+        **Note:** Only Brazilian Stock Exchange (B3) customers should use this
+        endpoint.
       tags:
         - Benchmark rate
-      operationId: get-v1-benchmark-rate-org
+      operationId: get-v1-benchmark-rate-org-b3
       parameters:
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
@@ -726,11 +756,16 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/benchmark-rate/{benchmark}:
     get:
-      summary: Get specific benchmark rates
-      description: Get all rates configured for a specific benchmark.
+      summary: Get specific benchmark rates (B3 only)
+      description: >
+        Get all rates configured for a specific benchmark.
+
+
+        **Note:** Only Brazilian Stock Exchange (B3) customers should use this
+        endpoint.
       tags:
         - Benchmark rate
-      operationId: get-v1-benchmark-rate
+      operationId: get-v1-benchmark-rate-b3
       parameters:
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
