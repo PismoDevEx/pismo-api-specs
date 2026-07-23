@@ -432,12 +432,12 @@ components:
         - parent_account_id
         - custom_fields
       properties:
-        account_name:
-          $ref: '#/components/schemas/AccountName'
-        account_type:
-          $ref: '#/components/schemas/AccountType'
         account_id:
           $ref: '#/components/schemas/AccountID'
+        account_type:
+          $ref: '#/components/schemas/AccountType'
+        account_name:
+          $ref: '#/components/schemas/AccountName'
         creation_date:
           $ref: '#/components/schemas/AccountCreationDate'
         is_centralizer:
