@@ -402,6 +402,7 @@ components:
         - org
         - program_name
         - program_type
+        - program_id
         - status
         - status_reason_id
         - status_reason_description
@@ -428,32 +429,61 @@ components:
         - program_due_date_id
         - account_id
         - account_status_date
-        - program_id
         - parent_account_id
         - custom_fields
       properties:
-        acquisition_id:
-          $ref: '#/components/schemas/AcquisitionIdOfApplicationForm'
-        document_number:
-          $ref: '#/components/schemas/DocumentNumber'
-        entity_type:
-          $ref: '#/components/schemas/EntityType'
-        name:
-          $ref: '#/components/schemas/IndividualsName'
-        email:
-          $ref: '#/components/schemas/IndividualsEmailAddress'
-        org:
-          $ref: '#/components/schemas/OrganizationID'
-        program_name:
-          $ref: '#/components/schemas/ProgramName'
-        program_type:
-          $ref: '#/components/schemas/ProgramType'
+        account_name:
+          $ref: '#/components/schemas/AccountName'
+        account_type:
+          $ref: '#/components/schemas/AccountType'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        creation_date:
+          $ref: '#/components/schemas/AccountCreationDate'
+        is_centralizer:
+          $ref: '#/components/schemas/IsCentralizer'
+        external_id:
+          $ref: '#/components/schemas/AccountExternalId'
+        division_id:
+          $ref: '#/components/schemas/DivisionID'
+        customer_id:
+          $ref: '#/components/schemas/CustomerID'
+        parent_account_id:
+          $ref: '#/components/schemas/ParentAccountID'
+        children:
+          $ref: '#/components/schemas/Children'
         status:
           $ref: '#/components/schemas/AccountStatus'
         status_reason_id:
           $ref: '#/components/schemas/StatusReasonID'
         status_reason_description:
           $ref: '#/components/schemas/StatusReasonDescription'
+        account_status_date:
+          $ref: '#/components/schemas/AccountStatusDate'
+        program_name:
+          $ref: '#/components/schemas/ProgramName'
+        program_type:
+          $ref: '#/components/schemas/ProgramType'
+        program_id:
+          $ref: '#/components/schemas/ProgramID'
+        org:
+          $ref: '#/components/schemas/OrganizationID'
+        entity_type:
+          $ref: '#/components/schemas/EntityType'
+        name:
+          $ref: '#/components/schemas/IndividualsName'
+        social_name:
+          $ref: '#/components/schemas/SocialName'
+        email:
+          $ref: '#/components/schemas/IndividualsEmailAddress'
+        document_number:
+          $ref: '#/components/schemas/DocumentNumber'
+        postal_address_type:
+          $ref: '#/components/schemas/PostalAddressType'
+        acquisition_id:
+          $ref: '#/components/schemas/AcquisitionIdOfApplicationForm'
+        currency_numeric_code:
+          $ref: '#/components/schemas/CurrencyNumericCode'
         collections_status:
           $ref: '#/components/schemas/CollectionStatus'
         open_due_date:
@@ -482,42 +512,12 @@ components:
           $ref: '#/components/schemas/AvailableLimit'
         blocked_amount:
           $ref: '#/components/schemas/BlockedAmount'
-        postal_address_type:
-          $ref: '#/components/schemas/PostalAddressType'
-        social_name:
-          $ref: '#/components/schemas/SocialName'
         exchange_mode:
           $ref: '#/components/schemas/ExchangeMode'
-        customer_id:
-          $ref: '#/components/schemas/CustomerID'
-        external_id:
-          $ref: '#/components/schemas/AccountExternalId'
-        creation_date:
-          $ref: '#/components/schemas/AccountCreationDate'
         program_due_date_id:
           $ref: '#/components/schemas/ProgramDueDateID'
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        account_status_date:
-          $ref: '#/components/schemas/AccountStatusDate'
-        program_id:
-          $ref: '#/components/schemas/ProgramID'
-        parent_account_id:
-          $ref: '#/components/schemas/ParentAccountID'
         custom_fields:
           $ref: '#/components/schemas/CustomFieldsString'
-        children:
-          $ref: '#/components/schemas/Children'
-        account_type:
-          $ref: '#/components/schemas/AccountType'
-        account_name:
-          $ref: '#/components/schemas/AccountName'
-        division_id:
-          $ref: '#/components/schemas/DivisionID'
-        currency_numeric_code:
-          $ref: '#/components/schemas/CurrencyNumericCode'
-        is_centralizer:
-          $ref: '#/components/schemas/IsCentralizer'
     AccountDueDateID:
       type: integer
       format: int64
