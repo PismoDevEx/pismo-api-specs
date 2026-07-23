@@ -1048,11 +1048,11 @@ components:
           default: STAND-BY
         creation_date:
           type: string
-          format: date
+          format: datetime
           description: >-
             Date that the entry was created on the original system. Format =
-            YYYY-MM-DD.
-          example: '2021-08-10'
+            YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.
+          example: '2024-09-13T12:55:42Z'
         go_live_account_status:
           type: string
           description: >-
