@@ -1,0 +1,4244 @@
+openapi: 3.1.0
+info:
+  title: Lending
+  description: Lending applications
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://developers.pismo.io/support/
+  license:
+    name: Copyright Pismo
+servers:
+  - url: https://sandbox.pismolabs.io/lending
+    description: Sandbox API server for testing
+tags:
+  - name: Loan products
+    description: Creates and manages loan product features
+  - name: Simulations
+    description: Performs stateless simulations for loan bookings
+  - name: Loans
+    description: Creates the core loan management features
+  - name: Disbursements
+    description: Creates the disbursement management features
+  - name: Repayments
+    description: Creates repayment management features
+  - name: Early final settlement
+    description: Creates early final settlement management features
+  - name: Prepayment
+    description: Manages loan prepayment
+  - name: Repayment hierarchy
+    description: Creates the repayment hierarchy and manages features
+  - name: Entity limits
+    description: Manages entity limits
+components:
+  parameters:
+    EfsIdPath:
+      name: efsId
+      in: path
+      description: Early final settlement simulation ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+    ProductTypeQuery:
+      name: productType
+      in: query
+      description: Loan product type filter
+      example: BNPL
+      required: false
+      schema:
+        $ref: '#/components/schemas/ProductType'
+    ExpandQuery:
+      name: expand
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: false
+      description: Also retrieve disbursements and repayments?
+      example: true
+    CurrencyFilterQuery:
+      name: currency
+      in: query
+      required: false
+      description: ISO 4217 currency code filter
+      example: 840
+      schema:
+        $ref: '#/components/schemas/CurrencyCode'
+    IdempotencyKeyHeader:
+      name: idempotency-key
+      description: Idempotency key
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
+    RequiredIdempotencyKeyHeader:
+      name: Idempotency-Key
+      description: Idempotency key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
+    LoanIdPath:
+      name: loanId
+      description: Loan ID
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+    NextCursorQueryCamelCase:
+      name: nextCursor
+      in: query
+      required: true
+      description: Next page cursor identifier
+      example: 99999999-9999-9999-9999-999999999999
+      schema:
+        $ref: '#/components/schemas/NextCursor'
+    AccountIdPath:
+      name: accountId
+      in: path
+      required: true
+      description: Account ID
+      example: '514751581'
+      schema:
+        type: string
+    AccountIdQuery:
+      name: accountId
+      in: query
+      required: false
+      description: Account ID
+      example: '514751581'
+      schema:
+        type: string
+    LimitQuery:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return per page
+      example: 10
+      schema:
+        $ref: '#/components/schemas/Limit'
+    StatusQuery:
+      name: status
+      in: query
+      required: false
+      description: Loan status filter
+      example: ACTIVE
+      schema:
+        $ref: '#/components/schemas/LoanStatus'
+    LoanProductIdQuery:
+      name: loanProductId
+      in: query
+      required: false
+      description: Loan product ID filter
+      example: 99999999-9999-9999-9999-999999999999
+      schema:
+        $ref: '#/components/schemas/LoanProductID'
+    LoanProductNameQuery:
+      name: loanProductName
+      in: query
+      required: false
+      description: Loan product name filter
+      example: Home Loan
+      schema:
+        $ref: '#/components/schemas/ProductName'
+    ExpandLoanQuery:
+      name: expand
+      in: query
+      description: Include information about scheduled repayments in the response?
+      example: true
+      required: false
+      schema:
+        $ref: '#/components/schemas/BooleanValue'
+    AuthorizationIdQuery:
+      name: authorizationId
+      in: query
+      description: ID of the authorization that originated the loan
+      example: 123456789
+      required: false
+      schema:
+        $ref: '#/components/schemas/AuthorizationId'
+    PresentValueQuery:
+      name: presentValue
+      in: query
+      description: Retrieve the present value of the loan?
+      required: false
+      schema:
+        $ref: '#/components/schemas/BooleanValue'
+      example: true
+    ReferenceDateQuery:
+      name: referenceDate
+      in: query
+      description: Reference date to calculate the present value of the loan
+      required: false
+      schema:
+        $ref: '#/components/schemas/DateValue'
+      example: '2024-06-01'
+    FromCreatedDateQuery:
+      name: fromCreatedDate
+      in: query
+      description: >-
+        Filter loans created on or after this date (inclusive). Format =
+        `YYYY-MM-DD`. Invalid format returns 400 Bad Request. Can be used alone
+        to get all loans created from this date onwards, or combined with
+        `toCreatedDate` to filter within a specific date range.
+      required: false
+      schema:
+        $ref: '#/components/schemas/DateValue'
+      example: '2026-05-01'
+    ToCreatedDateQuery:
+      name: toCreatedDate
+      in: query
+      description: >-
+        Filter loans created on or before this date (inclusive). Format =
+        `YYYY-MM-DD`. Invalid format returns 400 Bad Request. Can be used alone
+        to get all loans created up to this date, or combined with
+        `fromCreatedDate` to filter within a specific date range.
+      required: false
+      schema:
+        $ref: '#/components/schemas/DateValue'
+      example: '2026-05-31'
+    FromStartDateQuery:
+      name: fromStartDate
+      in: query
+      description: >-
+        Filter loans with start/activation date on or after this date
+        (inclusive). Format = `YYYY-MM-DD`. Invalid format returns 400 Bad
+        Request. Can be used alone to get all loans with start date from this
+        date onwards, or combined with `toStartDate` to filter within a specific
+        date range.
+      required: false
+      schema:
+        $ref: '#/components/schemas/DateValue'
+      example: '2026-05-01'
+    ToStartDateQuery:
+      name: toStartDate
+      in: query
+      description: >-
+        Filter loans with start/activation date on or before this date
+        (inclusive). Format = `YYYY-MM-DD`. Invalid format returns 400 Bad
+        Request. Can be used alone to get all loans with start date up to this
+        date, or combined with `fromStartDate` to filter within a specific date
+        range.
+      required: false
+      schema:
+        $ref: '#/components/schemas/DateValue'
+      example: '2026-05-31'
+    SummarizeLoansQuery:
+      name: summarizeLoans
+      in: query
+      required: false
+      description: >
+        When true, returns an aggregated summary across all loans that match the
+        provided filter parameters (pagination is ignored). The response
+        contains only the `loan_summary` field. When absent or false, returns a
+        standard paginated response (`has_next`, `next_cursor`, `items`).
+      schema:
+        type: boolean
+        default: false
+      example: true
+    PrepaymentSimulationIdPath:
+      name: simulationId
+      in: path
+      description: Prepayment simulation ID returned by the V2 simulate endpoint
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
+    ProductIdPath:
+      name: productId
+      in: path
+      description: Loan product ID
+      required: true
+      schema:
+        type: string
+        description: Loan product ID
+      example: 99999999-9999-9999-9999-999999999999
+  schemas:
+    AccountID:
+      type: integer
+      format: int64
+      description: Account ID
+      example: 514751581
+    AmountPaid:
+      minimum: 0
+      type: number
+      format: double
+      example: 1000
+      description: Prepayment amount
+    Balance:
+      description: Balance details for a loan
+      properties:
+        charge:
+          $ref: '#/components/schemas/ChargeAmount'
+        fee:
+          $ref: '#/components/schemas/FeeAmount'
+        interest:
+          $ref: '#/components/schemas/InterestAmount'
+        penalty:
+          $ref: '#/components/schemas/PenaltyAmount'
+        principal:
+          $ref: '#/components/schemas/PrincipalAmount'
+        tax:
+          $ref: '#/components/schemas/TaxAmount'
+        total:
+          $ref: '#/components/schemas/TotalAmount'
+    CalculationPenalty:
+      type: number
+      example: 100
+      format: double
+      description: Calculation penalty early settlement
+    ChargeAmount:
+      type: number
+      example: 5
+      format: double
+      description: Charge amount
+    IdempotencyKey:
+      type: string
+      description: Idempotency key
+      format: uuid
+      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
+    AuthorizationId:
+      type: number
+      description: Authorization ID
+      format: int64
+      example: 123456789
+    AuthorizationTrackingId:
+      type: string
+      description: Authorization tracking ID
+      format: uuid
+      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
+    RepayV2:
+      type: object
+      properties:
+        repayment_id:
+          $ref: '#/components/schemas/RepaymentID'
+        repayment_amount:
+          $ref: '#/components/schemas/RepaymentAmount'
+        repayment_date:
+          $ref: '#/components/schemas/RepaymentDate'
+        reference_date:
+          $ref: '#/components/schemas/ReferenceDate'
+        metadata:
+          $ref: '#/components/schemas/RepaymentMetadata'
+      required:
+        - repayment_id
+    RepaymentMetadata:
+      type: object
+      description: >
+        Additional repayment information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    RepayV2Result:
+      type: object
+      properties:
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        repaid_amount:
+          $ref: '#/components/schemas/RepaidAmount'
+        installment_amount:
+          $ref: '#/components/schemas/InstallmentAmount'
+        minimum_total_payment_delta:
+          $ref: '#/components/schemas/MinimumTotalPaymentDelta'
+    Collateral:
+      type: string
+      description: Collateral
+      example: SINGLE
+      enum:
+        - NONE
+        - SINGLE
+        - COLLATERAL_MULTIPLE
+    LoanProductLoanActivationMethod:
+      type: string
+      description: >-
+        Indicate when the system changes a loan to active status. Default is
+        `ON_DISBURSEMENT_OR_REPAYMENT`. If disbursement method type is `NONE`,
+        you cannot set to `ON_DISBURSEMENT`, and if set to
+        `ON_DISBURSEMENT_OR_REPAYMENT` the system changes the loan status on
+        repayment.
+      example: ON_BOOKING
+      enum:
+        - ON_BOOKING
+        - ON_DISBURSEMENT
+        - ON_DISBURSEMENT_OR_REPAYMENT
+        - ON_REPAYMENT
+    CreateLoanProductV2Request:
+      required:
+        - collateral
+        - currency
+        - disbursement_method
+        - product_name
+        - product_type
+        - processing_codes
+      type: object
+      properties:
+        product_type:
+          $ref: '#/components/schemas/ProductTypeV2'
+        collateral:
+          $ref: '#/components/schemas/Collateral'
+        loan_activation_method:
+          $ref: '#/components/schemas/LoanProductLoanActivationMethod'
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        disbursement_method:
+          $ref: '#/components/schemas/LoanProductV2DisbursementMethod'
+        product_name:
+          $ref: '#/components/schemas/ProductName'
+        product_id:
+          $ref: '#/components/schemas/LoanProductID'
+        processing_codes:
+          $ref: '#/components/schemas/ProcessingCodes'
+        repayment_calculation_method:
+          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
+        interest_plan_ids:
+          $ref: '#/components/schemas/InterestPlanIDs'
+        early_final_settlement:
+          $ref: '#/components/schemas/LoanProductEFS'
+        prepayment:
+          $ref: '#/components/schemas/LoanProductPrepayment'
+        repayment_hierarchy_code:
+          $ref: '#/components/schemas/RepaymentHierarchyCodeV2'
+        parameters:
+          $ref: '#/components/schemas/LoanProductV2Parameters'
+        grace_period_days:
+          $ref: '#/components/schemas/GracePeriodDays'
+        minimum_total_payment:
+          $ref: '#/components/schemas/MinimumTotalPayment'
+    CreateAdjustmentV2Request:
+      required:
+        - adjustment_amount
+        - loan_balance_impact
+        - processing_code
+        - repayment_id
+      type: object
+      properties:
+        adjustment_amount:
+          $ref: '#/components/schemas/AdjustmentAmount'
+        loan_balance_impact:
+          $ref: '#/components/schemas/LoanBalanceImpact'
+        processing_code:
+          type: string
+          description: Processing code for the adjustment
+        repayment_id:
+          $ref: '#/components/schemas/RepaymentID'
+    AdjustmentPostResponse:
+      required:
+        - idempotency_key
+        - authorization_id
+      type: object
+      properties:
+        idempotency_key:
+          $ref: '#/components/schemas/IdempotencyKey'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+    ProcessingCode:
+      type: string
+      description: Processing code
+      example: '000011'
+      minLength: 2
+      maxLength: 6
+    ProcessingCodes:
+      type: object
+      description: Define processing codes for each operation during the loan lifecycle.
+      properties:
+        booking:
+          type: array
+          description: List of booking processing code
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        repayment:
+          type: array
+          description: List of repayment processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        present_value_discount:
+          type: array
+          description: List of present value discount processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        penalty_accruals:
+          type: array
+          description: List of penalty accruals processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        penalty_waiver:
+          type: array
+          description: List of penalty waiver processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        restructuring:
+          type: array
+          description: List of restructuring processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        insurance:
+          $ref: '#/components/schemas/InsurancePC'
+        disbursement:
+          $ref: '#/components/schemas/DisbursementPC'
+        prepayment:
+          $ref: '#/components/schemas/PrepaymentPC'
+        early_final_settlement:
+          $ref: '#/components/schemas/EfsPC'
+    InsurancePC:
+      type: object
+      description: Define processing codes for insurance operations.
+      properties:
+        booking:
+          type: array
+          description: List of booking processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        repayment:
+          type: array
+          description: List of repayment processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    DisbursementPC:
+      type: object
+      description: Define processing codes for disbursement operations.
+      properties:
+        internal:
+          type: array
+          description: List of processing codes for internal account
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        external:
+          type: array
+          description: List of processing codes for external account
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    PrepaymentPC:
+      type: object
+      description: Define processing codes for prepayment operations.
+      properties:
+        fee:
+          type: array
+          description: List of fee processing codes for prepayment
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    EfsPC:
+      type: object
+      description: Define processing codes for early final settlement (EFS) operations.
+      properties:
+        fee:
+          type: array
+          description: List of fee processing codes for early final settlement
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    CurrencyCode:
+      type: integer
+      description: ISO 4217 currency code
+      format: int32
+      minimum: 0
+      maximum: 999
+      example: 999
+    DisbursementAmount:
+      type: number
+      format: double
+      description: Disbursement amount
+      example: 1000
+    AdjustmentAmount:
+      type: number
+      format: double
+      description: Amount of the adjustment
+      example: 1000
+    LoanBalanceImpact:
+      type: string
+      description: Loan balance impact
+      example: PRINCIPAL
+      enum:
+        - PRINCIPAL
+        - INTEREST
+        - TAX
+        - PENALTY
+        - FEE
+    DisbursementDate:
+      type: string
+      description: Disbursement date. Format = YYYY-MM-DD.
+      format: date
+      example: '2022-06-30'
+    DisbursementID:
+      type: string
+      description: >-
+        Disbursement ID. Required if the number of loan disbursements is greater
+        than 1.
+      format: uuid
+      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+    BookingAmount:
+      type: number
+      format: double
+      description: Booking amount
+      example: 1000
+    InstallmentPlanId:
+      type: string
+      description: ID of the installment plan
+      format: uuid
+      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+    NumberOfInstallments:
+      type: number
+      format: int32
+      description: Number of installments
+    EarlyFinalSettlementV2Request:
+      type: object
+      description: Request body for early final settlement simulation V2
+      properties:
+        reference_date:
+          $ref: '#/components/schemas/ReferenceDate'
+        waive_penalty:
+          type: boolean
+          description: Waive penalty for early settlement
+          default: false
+          example: false
+    EarlyFinalSettlementV2Response:
+      type: object
+      required:
+        - early_settlement_id
+        - settlement_total
+        - outstanding
+      properties:
+        early_settlement_id:
+          type: string
+          format: uuid
+          description: Early settlement simulation ID
+          example: 72852338-5764-4c7e-b503-10dcee1cdb7e
+        settlement_total:
+          type: number
+          format: double
+          description: Total amount to settle the loan
+          example: 1584
+        outstanding:
+          $ref: '#/components/schemas/OutstandingResponse'
+    RegisterEarlyFinalSettlementV2Response:
+      type: object
+      required:
+        - early_settle_id
+        - total_settled
+        - outstanding
+      description: Response for V2 early final settlement registration
+      properties:
+        early_settle_id:
+          type: string
+          format: uuid
+          description: Early settlement ID
+          example: 72852338-5764-4c7e-b503-10dcee1cdb7e
+        total_settled:
+          type: number
+          format: double
+          description: Total amount settled for the loan
+          example: 1584
+        outstanding:
+          $ref: '#/components/schemas/OutstandingResponse'
+    LendingLoanRepaymentResponse:
+      type: object
+      required:
+        - account_id
+        - created_at
+        - loan_amount
+        - loan_id
+        - outstanding_balance
+        - product_id
+        - start_date
+        - status
+        - total_payable
+        - updated_at
+      properties:
+        loan_id:
+          $ref: '#/components/schemas/LoanID'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        external_id:
+          $ref: '#/components/schemas/ExternalID'
+        loan_amount:
+          $ref: '#/components/schemas/LoanAmount'
+        total_payable:
+          $ref: '#/components/schemas/TotalPayable'
+        total_expected_payment_amount:
+          $ref: '#/components/schemas/TotalExpectedPaymentAmount'
+        prepayments:
+          description: >-
+            List of prepayments registered for this loan. Only populated when
+            the loan aggregate is fully expanded (single GET, or paginated GET
+            with `expand=true`). Only prepayments in `REGISTERED` status are
+            returned.
+          type: array
+          items:
+            $ref: '#/components/schemas/PrepaymentSummaryV2Response'
+        grace_period_days:
+          $ref: '#/components/schemas/GracePeriodDays'
+        days_past_due:
+          $ref: '#/components/schemas/DaysPastDue'
+        original_loan_id:
+          $ref: '#/components/schemas/OriginalLoanID'
+        restructure_loan_id:
+          $ref: '#/components/schemas/RestructureLoanID'
+        product_id:
+          $ref: '#/components/schemas/LoanProductID'
+        rates:
+          $ref: '#/components/schemas/LoansRates'
+        disbursement:
+          $ref: '#/components/schemas/LoanDisbursement'
+        repayment_schedule:
+          properties:
+            repayment_id:
+              $ref: '#/components/schemas/RepaymentID'
+            transactions_id:
+              $ref: '#/components/schemas/TransactionsID'
+            status:
+              $ref: '#/components/schemas/InstallmentStatus'
+            period:
+              $ref: '#/components/schemas/Period'
+            due_date:
+              $ref: '#/components/schemas/LoanPaymentDueDate'
+            real_due_date:
+              $ref: '#/components/schemas/RealDueDate'
+            present_value_amount:
+              description: Amount of calculated loan present value
+              $ref: '#/components/schemas/PresentValueAmount'
+            present_value_discount:
+              $ref: '#/components/schemas/PresentValueDiscount'
+            amount_due:
+              type: object
+              description: Amount due for the repayment
+              allOf:
+                - $ref: '#/components/schemas/Balance'
+                - type: object
+            amount_paid:
+              type: object
+              description: Amount paid for the repayment
+              allOf:
+                - $ref: '#/components/schemas/Balance'
+                - type: object
+            initial_amount:
+              type: object
+              description: Initial amount for the repayment
+              allOf:
+                - $ref: '#/components/schemas/Balance'
+                - type: object
+        start_date:
+          $ref: '#/components/schemas/FirstActiveStartDate'
+        status:
+          $ref: '#/components/schemas/LoanStatus'
+        created_at:
+          $ref: '#/components/schemas/LoanCreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/LoanUpdatedAt'
+    PrepaymentSummaryV2Response:
+      type: object
+      description: Summary of a registered prepayment associated with a loan
+      properties:
+        prepayment_id:
+          type: string
+          format: uuid
+          description: Identifier of the prepayment
+          example: 73e45fd5-759f-4e04-a88a-7172fa948afa
+        status:
+          type: string
+          description: Lifecycle status of the prepayment
+          enum:
+            - CREATED
+            - PROCESSING
+            - REGISTERED
+          example: REGISTERED
+        settlement_date:
+          type: string
+          format: date-time
+          description: >-
+            Settlement date of the prepayment. Format =
+            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+          example: '2026-06-15T10:00:00.000+00:00'
+        amount_paid:
+          type: number
+          description: Total prepayment amount paid by the customer
+          example: 1000
+        penalty_amount_paid:
+          type: number
+          description: Penalty amount charged on the prepayment, if any
+          example: 50
+        insurance_amount_paid:
+          type: number
+          description: Insurance portion settled with the prepayment, if any
+          example: 0
+        tax_amount_paid:
+          type: number
+          description: Tax amount applied to the prepayment
+          example: 0
+        reduce_option:
+          $ref: '#/components/schemas/ReduceOption'
+        new_remaining_total:
+          type: number
+          description: Outstanding total of the loan after this prepayment was applied
+          example: 4000
+        created_at:
+          type: string
+          format: date-time
+          description: >-
+            When the prepayment record was created. Format =
+            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+          example: '2026-06-15T10:00:00.000+00:00'
+        updated_at:
+          type: string
+          format: date-time
+          description: >-
+            When the prepayment record was last updated (ISO 8601 with UTC
+            offset)
+          example: '2026-06-15T10:00:00.000+00:00'
+    ExternalAccountType:
+      type: string
+      description: External account type
+      example: EXTERNAL
+      enum:
+        - EXTERNAL
+    ExternalID:
+      type: string
+      description: External ID
+      example: my_external_id
+      maxLength: 50
+    FeeAmount:
+      type: number
+      example: 10
+      format: double
+      description: Fee amount
+    FirstActiveStartDate:
+      type: string
+      description: Date loan was first active. Format = YYYY-MM-DD.
+      format: date
+      example: '2022-06-28'
+    HasNext:
+      type: boolean
+      description: Does the query have additional items to return?
+      example: true
+    BooleanValue:
+      type: boolean
+      description: Boolean value
+      example: true
+    DateValue:
+      type: string
+      description: Date value in YYYY-MM-DD format
+      format: date
+      example: '2023-12-31'
+    InterestAmount:
+      type: number
+      format: double
+      example: 20
+      description: Interest amount
+    InternalAccountType:
+      type: string
+      description: Account type
+      example: INTERNAL
+      enum:
+        - INTERNAL
+    DisbursementV2Request:
+      required:
+        - disbursement_account
+      type: object
+      properties:
+        disbursement_account:
+          anyOf:
+            - $ref: '#/components/schemas/InternalDisburseAccountV2'
+            - $ref: '#/components/schemas/ExternalDisburseAccountV2'
+        disbursement_id:
+          $ref: '#/components/schemas/DisbursementID'
+        disbursement_date:
+          $ref: '#/components/schemas/DisbursementDate'
+        disbursement_amount:
+          $ref: '#/components/schemas/DisbursementAmount'
+        metadata:
+          $ref: '#/components/schemas/DisbursementV2Metadata'
+    InternalDisburseAccountV2:
+      required:
+        - account_type
+        - account_id
+      type: object
+      description: >-
+        Describes disbursement data for internal accounts, where the lender and
+        beneficiary have accounts with the same entity
+      properties:
+        account_type:
+          $ref: '#/components/schemas/InternalAccountType'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+    ExternalDisburseAccountV2:
+      required:
+        - account_type
+      type: object
+      description: >-
+        Describes disbursement data for external accounts, where the
+        disbursement will be made to an account at a different entity than the
+        lender
+      properties:
+        account_type:
+          $ref: '#/components/schemas/ExternalAccountType'
+    DisbursementV2Metadata:
+      type: object
+      description: >
+        Additional disbursement information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    DisbursementV2Response:
+      required:
+        - authorization_id
+      type: object
+      properties:
+        loan_id:
+          $ref: '#/components/schemas/LoanID'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        authorization_tracking_id:
+          $ref: '#/components/schemas/AuthorizationTrackingId'
+        disbursement_id:
+          $ref: '#/components/schemas/DisbursementID'
+        disbursement_amount:
+          $ref: '#/components/schemas/DisbursementAmount'
+    LoanIdResponse:
+      required:
+        - loan_id
+      type: object
+      properties:
+        loan_id:
+          $ref: '#/components/schemas/LoanID'
+    CancelLoanV2Request:
+      required:
+        - tracking_id
+      type: object
+      properties:
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        processing_code:
+          $ref: '#/components/schemas/LoanCancellationProcessingCodes'
+        refund_paid_repayments:
+          $ref: '#/components/schemas/RefundPaidRepayments'
+        metadata:
+          $ref: '#/components/schemas/CancelLoanV2Metadata'
+    CancelLoanV2Response:
+      required:
+        - cancelled_loan_id
+        - reversal_authorization_id
+        - reversal_tracking_id
+      type: object
+      properties:
+        cancelled_loan_id:
+          $ref: '#/components/schemas/LoanID'
+        reversal_authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        reversal_tracking_id:
+          $ref: '#/components/schemas/AuthorizationTrackingId'
+    LoanCancellationProcessingCodes:
+      type: object
+      description: Define processing codes for each operation during the loan cancellation.
+      properties:
+        booking:
+          description: Booking processing code
+          $ref: '#/components/schemas/ProcessingCode'
+        repayment:
+          description: Repayment processing code
+          $ref: '#/components/schemas/ProcessingCode'
+        penalty_waiver:
+          description: Penalty waiver processing code
+          $ref: '#/components/schemas/ProcessingCode'
+    CancelLoanV2Metadata:
+      type: object
+      description: >
+        Additional loan cancellation information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    RefundPaidRepayments:
+      type: boolean
+      description: Refund paid repayments upon loan cancellation?
+      default: false
+      example: true
+    BookingV2Request:
+      type: object
+      required:
+        - account_id
+        - installment_plan_id
+        - loan_product_id
+        - number_of_installments
+      description: Request body for booking a loan
+      properties:
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        installment_plan_id:
+          $ref: '#/components/schemas/InstallmentPlanId'
+        loan_product_id:
+          $ref: '#/components/schemas/LoanProductID'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallments'
+        amount:
+          $ref: '#/components/schemas/BookingAmount'
+        metadata:
+          $ref: '#/components/schemas/V2Metadata'
+    V2Metadata:
+      type: object
+      description: >
+        Additional information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    Limit:
+      maximum: 50
+      type: integer
+      description: Maximum returned list size. Default = `10`.
+      format: int32
+      example: 10
+    LoanAmount:
+      type: number
+      format: double
+      description: Loan amount
+      example: 2000
+    LoanID:
+      maxLength: 36
+      minLength: 0
+      type: string
+      description: >-
+        Custom ID for the loan. Must consist of uppercase alphanumeric
+        characters and underscores.
+      example: MY_CUSTOM_LOAN_ID
+    LoanPaymentDueDate:
+      type: string
+      description: Loan payment due date. Format = YYYY-MM-DD.
+      format: date
+      example: '2022-06-28'
+    RealDueDate:
+      type: string
+      description: Adjusted due date. Format = YYYY-MM-DD.
+      format: date
+      example: '2025-06-28'
+    LoanCreatedAt:
+      type: string
+      format: date-time
+      description: Loan created date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+      example: '2024-03-15T13:00:00.000+00:00'
+    LoanUpdatedAt:
+      type: string
+      format: date-time
+      description: Loan last updated date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+      example: '2024-03-15T13:00:00.000+00:00'
+    LoanProductV2DisbursementMethod:
+      required:
+        - type
+      type: object
+      description: Disbursement method
+      properties:
+        type:
+          $ref: '#/components/schemas/LoanProductV2DisbursementType'
+    LoanProductV2DisbursementType:
+      type: string
+      description: Disbursement method type or how the loan is delivered.
+      example: SINGLE
+      default: NONE
+      enum:
+        - NONE
+        - SINGLE
+        - MULTIPLE
+    LoanProductEFS:
+      description: Define some early settlement requirements.
+      type: object
+      required:
+        - penalty
+      properties:
+        penalty:
+          $ref: '#/components/schemas/PenaltyV2'
+        lock_in_period:
+          $ref: '#/components/schemas/LockInPeriod'
+    LoanProductID:
+      type: string
+      description: >-
+        Loan product ID. Accepts either a lowercase UUID (e.g.,
+        "2717a296-124a-47cc-b2a1-91e80dc723eb") or an uppercase alphanumeric
+        string with underscores (e.g., "MY_LOAN_PRODUCT_001"). If not provided
+        during creation, a UUID is auto-generated.
+      maxLength: 80
+      pattern: >-
+        ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z0-9_]{1,80})$
+      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+    LoanProductPrepayment:
+      description: Defines some prepayment requirements.
+      type: object
+      required:
+        - penalty
+        - reduce_option
+      properties:
+        penalty:
+          $ref: '#/components/schemas/PenaltyV2'
+        lock_in_period:
+          $ref: '#/components/schemas/LockInPeriod'
+        reduce_option:
+          $ref: '#/components/schemas/ReduceOptionsArray'
+    LoanProductPostResponse:
+      required:
+        - product_id
+      type: object
+      properties:
+        product_id:
+          $ref: '#/components/schemas/LoanProductID'
+    InstallmentAmount:
+      type: object
+      description: Installment amount
+      properties:
+        min:
+          $ref: '#/components/schemas/MinValue'
+        max:
+          $ref: '#/components/schemas/MaxValue'
+    ListLoanProductV2Response:
+      required:
+        - has_next
+        - items
+      type: object
+      properties:
+        has_next:
+          $ref: '#/components/schemas/HasNext'
+        interest_plan_ids:
+          $ref: '#/components/schemas/InterestPlanIDs'
+        items:
+          type: array
+          description: List of loan products
+          items:
+            $ref: '#/components/schemas/LoanProductV2Response'
+        next_cursor:
+          $ref: '#/components/schemas/NextCursor'
+        repayment_calculation_method:
+          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
+    LoanProductV2Response:
+      required:
+        - collateral
+        - currency
+        - disbursement_method
+        - processing_codes
+        - product_id
+        - product_name
+        - status
+      type: object
+      properties:
+        collateral:
+          $ref: '#/components/schemas/Collateral'
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        disbursement_method:
+          $ref: '#/components/schemas/LoanProductV2DisbursementMethod'
+        processing_codes:
+          $ref: '#/components/schemas/ProcessingCodes'
+        product_id:
+          $ref: '#/components/schemas/LoanProductID'
+        product_name:
+          $ref: '#/components/schemas/ProductName'
+        status:
+          $ref: '#/components/schemas/ProductStatus'
+        created_at:
+          $ref: '#/components/schemas/LoanCreatedAt'
+        early_final_settlement:
+          $ref: '#/components/schemas/LoanProductEFS'
+        grace_period_days:
+          $ref: '#/components/schemas/GracePeriodDays'
+        interest_plan_ids:
+          $ref: '#/components/schemas/InterestPlanIDs'
+        loan_activation_method:
+          $ref: '#/components/schemas/LoanProductLoanActivationMethod'
+        minimum_total_payment:
+          $ref: '#/components/schemas/MinimumTotalPayment'
+        parameters:
+          $ref: '#/components/schemas/LoanProductV2Parameters'
+        penalty_plan_codes:
+          $ref: '#/components/schemas/ProductPenaltyPlanCodes'
+        prepayment:
+          $ref: '#/components/schemas/LoanProductPrepayment'
+        product_type:
+          $ref: '#/components/schemas/ProductTypeV2'
+        repayment_calculation_method:
+          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
+        repayment_hierarchy_code:
+          $ref: '#/components/schemas/RepaymentHierarchyCodeV2'
+        updated_at:
+          $ref: '#/components/schemas/LoanUpdatedAt'
+        version:
+          $ref: '#/components/schemas/ProductVersionV2'
+    LoanStatus:
+      type: string
+      description: >
+        Loan status
+
+
+        `PENDING`-The loan has been created but has not yet been booked. Terms
+        may still be under review or awaiting confirmation.
+
+        `BOOKED`-The loan has been approved and booked. The payment schedule is
+        confirmed and the loan is ready for disbursement.
+
+        `ACTIVE`-The loan is active and in progress. Funds have been disbursed
+        and the borrower is expected to make repayments according to the agreed
+        schedule.
+
+        `CANCELED`-A repayment is no longer expected to be paid.
+
+        `SETTLED`-The loan has been fully repaid and is closed. No further
+        repayments are expected.
+
+        `RENEGOTIATED`-The original loan terms have been modified after booking,
+        typically due to a change in repayment conditions or borrower
+        circumstances.
+
+        `SCHEDULED`-A repayment is expected to be paid on or before the due date
+        of the repayment.
+
+        `PROCESSING`-An intermediate state that happens whenever there are
+        asynchronous process that demand a state change. For example, BOOKING →
+        PROCESSING → ACTIVE. Common use case - A repayment registration has just
+        been requested using the Register repayment endpoint and is being
+        processed.
+
+        `PAID`-The expected repayment amount has been paid in full on or before
+        the due date of the repayment.
+
+        `PARTIALLY_PAID`-Only part of the expected payment amount has been paid.
+        However, the repayment due date has not passed, so the borrower could
+        still make the full payment on time.
+
+        `PAST_DUE`-The repayment due date has passed and the expected repayment
+        amount has not been paid in full.
+
+        `NOT_PAID`-An attempt to execute an auto repayment for this installment
+        was not successful.
+      example: ACTIVE
+      enum:
+        - PENDING
+        - BOOKED
+        - ACTIVE
+        - CANCELED
+        - SETTLED
+        - RENEGOTIATED
+        - SCHEDULED
+        - PROCESSING
+        - PAID
+        - PARTIALLY_PAID
+        - PAST_DUE
+        - NOT_PAID
+    InstallmentStatus:
+      type: string
+      description: >
+        Current lifecycle status of a loan installment.
+
+
+        **Normal lifecycle:**
+
+        `SCHEDULED` → (due date passes) → `PAST_DUE` → (penalty accrual window
+        closes) → `OVERDUE` → (payment received) → `PAID`
+
+
+        **Grace period lifecycle:**
+
+        `SCHEDULED` → `IN_GRACE_PERIOD` → (grace period expires) → `PAST_DUE` →
+        `OVERDUE` → `PAID`
+
+        `SCHEDULED` → `IN_GRACE_PERIOD` → (payment within grace period) →
+        `PAID_WITHIN_GRACE`
+
+
+        **Partial payment lifecycle:**
+
+        `PAST_DUE` → (partial payment made) → `PARTIALLY_PAID` → (due date
+        passes) → `PAST_DUE_PARTIALLY_PAID` → (accrual window closes) →
+        `OVERDUE_PARTIALLY_PAID` → (remaining balance paid) → `PAID`
+
+        `IN_GRACE_PERIOD` → (partial payment made) →
+        `PARTIALLY_PAID_IN_GRACE_PERIOD` → (grace period expires) →
+        `PARTIALLY_PAID`
+
+
+        **`PAST_DUE` vs `OVERDUE`:**
+
+        - `PAST_DUE`: the due date has passed and daily penalty charges are
+        actively accruing.
+
+        - `OVERDUE`: the penalty accrual window has closed (configurable per
+        loan product). No further charges accrue; the installment balance is
+        frozen.
+
+
+        **`PAST_DUE_PARTIALLY_PAID` vs `OVERDUE_PARTIALLY_PAID`:**
+
+        - `PAST_DUE_PARTIALLY_PAID`: a partial payment has been received, the
+        due date has passed, and daily penalty charges are still accruing on the
+        remaining balance.
+
+        - `OVERDUE_PARTIALLY_PAID`: a partial payment has been received and the
+        penalty accrual window has closed. No further charges accrue on the
+        remaining balance.
+
+
+        **Pending payment suffixes (`*_PENDING_PAYMENT`):**
+
+        When a group payment or prepayment is initiated, the installment moves
+        to a `*_PENDING_PAYMENT` variant
+
+        (for example, `PAST_DUE` → `PAST_DUE_PENDING_PAYMENT`). If the payment
+        is confirmed the installment is settled;
+
+        if it expires the installment reverts to its base status. Penalty
+        accrual follows the base status while a payment
+
+        is pending: `PAST_DUE_*` variants keep accruing on the remaining
+        balance, `OVERDUE_*` variants do not.
+
+
+        Pending-payment variants of partially paid installments:
+
+        - `PARTIALLY_PAID_PENDING_PAYMENT`: a group payment is pending on a
+        partially paid installment (outside the grace-period and past-due
+        contexts).
+
+        - `PAST_DUE_PARTIALLY_PAID_PENDING_PAYMENT`: a group payment is pending
+        on a `PAST_DUE_PARTIALLY_PAID` installment; penalty charges keep
+        accruing until confirmation. Moves to
+        `OVERDUE_PARTIALLY_PAID_PENDING_PAYMENT` when the accrual window closes,
+        reverts to `PAST_DUE_PARTIALLY_PAID` if the payment expires, or settles
+        to `PAID` once confirmed.
+
+        - `OVERDUE_PARTIALLY_PAID_PENDING_PAYMENT`: a group payment is pending
+        on an `OVERDUE_PARTIALLY_PAID` installment; no further charges accrue.
+        Reverts to `OVERDUE_PARTIALLY_PAID` if the payment expires, or settles
+        to `PAID` once confirmed.
+
+        - `PARTIALLY_PAID_IN_GRACE_PERIOD_PENDING_PAYMENT`: a group payment is
+        pending on a `PARTIALLY_PAID_IN_GRACE_PERIOD` installment. Moves to
+        `PAST_DUE_PENDING_PAYMENT` when the grace period expires, or reverts to
+        `PARTIALLY_PAID_IN_GRACE_PERIOD` if the payment expires.
+      example: SCHEDULED
+      enum:
+        - PENDING
+        - PROCESSING
+        - SCHEDULED
+        - PAST_DUE
+        - PAID
+        - PARTIALLY_PAID
+        - CANCELED
+        - PENDING_PAYMENT
+        - PAST_DUE_PENDING_PAYMENT
+        - ACTIVE
+        - OVERDUE
+        - OVERDUE_PENDING_PAYMENT
+        - IN_GRACE_PERIOD
+        - IN_GRACE_PERIOD_PENDING_PAYMENT
+        - PARTIALLY_PAID_IN_GRACE_PERIOD
+        - PAID_WITHIN_GRACE
+        - PARTIALLY_PAID_PENDING_PAYMENT
+        - PAST_DUE_PARTIALLY_PAID
+        - OVERDUE_PARTIALLY_PAID
+        - PAST_DUE_PARTIALLY_PAID_PENDING_PAYMENT
+        - OVERDUE_PARTIALLY_PAID_PENDING_PAYMENT
+        - PARTIALLY_PAID_IN_GRACE_PERIOD_PENDING_PAYMENT
+    ProductTypeV2:
+      type: string
+      description: Loan product type
+      example: BNPL
+      default: BNPL
+      enum:
+        - BNPL
+        - PERSONAL
+    RepaymentCalculationMethodV2:
+      type: string
+      description: Method used to calculate the repayment amount
+      example: RATES
+      default: RATES
+      enum:
+        - RATES
+    InterestPlanIDs:
+      type: array
+      description: List of interest plan IDs
+      items:
+        type: string
+        format: uuid
+        example: 5a1b2c3d-4e5f-6789-abcd-1234567890ef
+    LockInPeriod:
+      description: >-
+        Minimum number of installments that must be made before early settlement
+        is possible.
+      type: integer
+      format: int32
+      minimum: 1
+      example: 9
+      default: 9
+    MaxValue:
+      type: integer
+      description: Maximum value
+      format: int32
+      example: 100
+    MinValue:
+      type: integer
+      description: Minimum value
+      format: int32
+      example: 10
+    NextCursor:
+      type: string
+      description: >-
+        Opaque pagination cursor returned by the API. Pass back exactly as
+        received to retrieve the next page; do not parse or modify it.
+      example: >-
+        NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
+    OutstandingCharge:
+      type: number
+      format: double
+      example: 10
+      description: Outstanding charge
+    OutstandingInstallments:
+      type: integer
+      format: int32
+      example: 5
+      description: Number of outstanding installments
+    OutstandingResponse:
+      type: object
+      description: Outstanding amount of a loan
+      properties:
+        principal:
+          $ref: '#/components/schemas/PrincipalAmount'
+        interest:
+          $ref: '#/components/schemas/InterestAmount'
+        charge:
+          $ref: '#/components/schemas/OutstandingCharge'
+        tax:
+          $ref: '#/components/schemas/TaxAmount'
+        fee:
+          $ref: '#/components/schemas/FeeAmount'
+        installments:
+          $ref: '#/components/schemas/OutstandingInstallments'
+        penalty:
+          $ref: '#/components/schemas/CalculationPenalty'
+    PenaltyAmount:
+      type: number
+      format: double
+      example: 27
+      description: Penalty amount
+    Period:
+      type: integer
+      format: int32
+      description: Period
+      example: 1
+    PrepaymentSimulationID:
+      type: string
+      format: uuid
+      example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
+      description: Prepayment simulation ID
+    PrepaymentSimulationV2Request:
+      type: object
+      required:
+        - amount_paid
+        - reduce_option
+      properties:
+        amount_paid:
+          allOf:
+            - $ref: '#/components/schemas/AmountPaid'
+            - type: number
+              exclusiveMinimum: 0
+        reference_date:
+          type: string
+          format: date
+          description: >-
+            Reference date used to compute the prepayment. When omitted, the
+            platform sets the value to the current date. Format = `YYYY-MM-DD`.
+          example: '2026-05-15'
+        waive_fee:
+          type: boolean
+          description: >-
+            Waive the fees applied to this prepayment? When omitted, the Pismo
+            platform sets the value to `false`.
+          example: false
+        reduce_option:
+          $ref: '#/components/schemas/ReduceOption'
+    PrepaymentSimulationV2Response:
+      type: object
+      properties:
+        simulation_id:
+          $ref: '#/components/schemas/PrepaymentSimulationID'
+        loan_id:
+          type: string
+          format: uuid
+          description: Loan ID
+          example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+        amount_paid:
+          $ref: '#/components/schemas/AmountPaid'
+        penalty_amount_paid:
+          type: number
+          format: double
+          description: Penalty portion paid as part of the prepayment
+          example: 50
+        insurance_amount_paid:
+          type: number
+          format: double
+          description: Insurance portion paid as part of the prepayment
+          example: 0
+        tax_amount_paid:
+          type: number
+          format: double
+          description: Tax portion paid as part of the prepayment
+          example: 0
+        reduce_option:
+          $ref: '#/components/schemas/ReduceOption'
+        new_remaining_total:
+          type: number
+          format: double
+          description: Total remaining loan amount after applying this prepayment
+          example: 5000
+        balance_breakdown:
+          $ref: '#/components/schemas/PrepaymentBalanceBreakdownV2'
+        new_repayment_schedule:
+          type: array
+          description: >-
+            List of resulting repayments in the schedule after applying this
+            prepayment
+          items:
+            $ref: '#/components/schemas/PrepaymentRepaymentScheduleItemV2'
+        created_at:
+          type: string
+          format: date-time
+          description: >-
+            Date and time the simulation was created. ISO 8601 with millisecond
+            precision and offset. Format = `YYYY-MM-DDThh:mm:ss.SSS-XX:00`.
+          example: '2026-05-15T10:15:30.123-03:00'
+    PrepaymentBalanceBreakdownV2:
+      type: object
+      description: >-
+        Detailed description of the outstanding balance settled by this
+        prepayment, shown by component
+      properties:
+        principal:
+          type: number
+          format: double
+          example: 1800
+        interest:
+          type: number
+          format: double
+          example: 150
+        fee:
+          type: number
+          format: double
+          example: 0
+        tax:
+          type: number
+          format: double
+          example: 0
+        penalty:
+          type: number
+          format: double
+          example: 50
+    PrepaymentRepaymentScheduleItemV2:
+      type: object
+      description: A single installment in the resulting repayment schedule
+      properties:
+        installment_number:
+          type: integer
+          description: Installment sequence number, starting at 1
+          example: 1
+        due_date:
+          type: string
+          format: date
+          description: Installment due date. Format = `YYYY-MM-DD`.
+          example: '2026-06-15'
+        principal_amount:
+          type: number
+          format: double
+          example: 200
+        interest_amount:
+          type: number
+          format: double
+          example: 15
+        fee_amount:
+          type: number
+          format: double
+          example: 0
+        tax_amount:
+          type: number
+          format: double
+          example: 0
+        total_amount:
+          type: number
+          format: double
+          example: 215
+    RegisterPrepaymentSimulationV2Request:
+      type: object
+      description: >-
+        Optional processing-code overrides applied when registering the
+        simulation. The body itself is optional.
+      properties:
+        prepayment_processing_code:
+          type: string
+          minLength: 2
+          maxLength: 6
+          description: >-
+            Processing code used to register the prepayment movement in the
+            prepayment flow.
+          example: PPMT
+        penalty_processing_code:
+          type: string
+          minLength: 2
+          maxLength: 6
+          description: >-
+            Processing code used to register the penalty movement in the
+            prepayment flow
+          example: PNLT
+        insurance_processing_code:
+          type: string
+          minLength: 2
+          maxLength: 6
+          description: >-
+            Processing code used to register the insurance movement in the
+            prepayment flow
+          example: INSR
+    RegisterPrepaymentSimulationV2Response:
+      type: object
+      properties:
+        simulation_id:
+          $ref: '#/components/schemas/PrepaymentSimulationID'
+        loan_id:
+          type: string
+          format: uuid
+          description: Loan ID
+          example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+        status:
+          type: string
+          description: Current registration status of the simulation
+          example: PROCESSING
+    PresentValueAmount:
+      type: number
+      format: double
+      example: 100
+    PresentValueDiscount:
+      type: number
+      format: double
+      example: 100
+    PrincipalAmount:
+      type: number
+      format: double
+      example: 2000
+      description: Principal amount
+    ProductName:
+      maxLength: 256
+      type: string
+      description: Open text that describes the product
+      example: Acme business loan
+    ProductPenaltyPlanCodes:
+      maxLength: 20
+      uniqueItems: true
+      type: array
+      description: List of charge plan codes in order
+      example:
+        - penalty-001
+        - penalty-002
+      items:
+        type: string
+        description: List of penalty plan codes in order
+        example: '["penalty-001","penalty-002"]'
+    ProductStatus:
+      type: string
+      description: Product status
+      example: ACTIVE
+      enum:
+        - ACTIVE
+        - INACTIVE
+    ProductType:
+      type: string
+      description: Product type
+      example: BNPL
+      enum:
+        - BNPL
+        - PERSONAL
+        - BUSINESS
+    ProductVersionV2:
+      type: integer
+      format: int64
+      description: Product version
+      example: 1762434786787
+    LoansRates:
+      type: object
+      description: >-
+        Loan rates including annual interest rate and effective annual and
+        monthly costs
+      properties:
+        interest_rate:
+          $ref: '#/components/schemas/LoanInterestRate'
+        annual_interest_rate:
+          $ref: '#/components/schemas/AnnualInterestRate'
+        effective_monthly_cost:
+          $ref: '#/components/schemas/EffectiveMonthlyCost'
+        effective_annual_cost:
+          $ref: '#/components/schemas/EffectiveAnnualCost'
+    LoanInterestRate:
+      type: number
+      format: double
+      description: Loan interest rate
+      example: 12
+    AnnualInterestRate:
+      type: number
+      format: double
+      description: Annual interest rate
+      example: 12
+    EffectiveMonthlyCost:
+      type: number
+      format: double
+      description: Effective monthly cost of the loan in configured currency
+      example: 12.7
+    EffectiveAnnualCost:
+      type: number
+      format: double
+      description: Effective annual cost of the loan in configured currency
+      example: 319.98
+    LoanDisbursement:
+      type: object
+      description: Disbursement details for the loan
+      properties:
+        type:
+          $ref: '#/components/schemas/LoanDisbursementType'
+        schedule:
+          $ref: '#/components/schemas/LoanDisbursementSchedule'
+    LoanDisbursementType:
+      type: string
+      description: Disbursement type
+      example: SINGLE
+      enum:
+        - SINGLE
+        - MULTIPLE
+    LoanDisbursementSchedule:
+      type: array
+      description: List of disbursement schedules
+      items:
+        $ref: '#/components/schemas/DisbursementScheduleItem'
+    DisbursementScheduleItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/LoanDisbursementID'
+        amount:
+          $ref: '#/components/schemas/LoanDisbursementAmount'
+        date:
+          $ref: '#/components/schemas/LoanDisbursementDate'
+        disbursement_account:
+          $ref: '#/components/schemas/LoanDisbursementAccount'
+        authorization_id:
+          $ref: '#/components/schemas/LoanAuthorizationID'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        status:
+          $ref: '#/components/schemas/LoanDisbursementStatus'
+        transactions_ids:
+          $ref: '#/components/schemas/TransactionsIDs'
+    LoanDisbursementID:
+      type: string
+      format: uuid
+      description: Disbursement ID
+      example: 54efa995-66f1-4595-9934-5b92222faf37
+    LoanDisbursementAmount:
+      type: number
+      format: double
+      description: Disbursement amount
+      example: 300
+    LoanDisbursementDate:
+      type: string
+      format: date
+      description: Disbursement date
+      example: '2025-11-13'
+    LoanDisbursementAccount:
+      type: object
+      properties:
+        account_type:
+          type: string
+          description: Account type
+          example: INTERNAL
+          enum:
+            - INTERNAL
+            - EXTERNAL
+        account_id:
+          type: integer
+          format: int64
+          description: Account ID
+          example: 317890964
+    LoanAuthorizationID:
+      type: integer
+      format: int64
+      description: Authorization ID
+      example: 2422410859
+    TrackingID:
+      type: string
+      format: uuid
+      description: Tracking ID
+      example: 003b3de8-c321-464c-a3dd-6009b8698325
+    LoanDisbursementStatus:
+      type: string
+      description: Disbursement status
+      example: PAID
+      enum:
+        - SCHEDULED
+        - PROCESSING
+        - CANCELED
+        - EXPIRED
+        - PAID
+    TransactionsIDs:
+      type: array
+      items:
+        type: integer
+        format: int64
+      description: List of transaction IDs
+      example:
+        - 6354273849
+        - 982393773
+    ReduceOption:
+      description: Defines the way that the outstanding loan amount is reduced.
+      type: string
+      example: INSTALLMENT
+      enum:
+        - INSTALLMENT
+        - TERM
+    ReduceOptionsArray:
+      description: >
+        List of options to define how to reduce an outstanding loan amount.
+        `INSTALLMENT` reduces the installment amounts over time but keeps the
+        same maturity date. `TERM` applies the prepayment amount to reduce the
+        loan term (duration), changing the loan maturity date. With either
+        option, if the amount paid is not enough to cover a full installment
+        amount, it partially pays the installment based on the prepayment
+        hierarchy settings.
+      type: array
+      minItems: 1
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/ReduceOption'
+      example:
+        - INSTALLMENT
+        - TERM
+    PenaltyV2:
+      description: Penalty configuration for early settlement or prepayment
+      type: object
+      required:
+        - type
+        - value
+      properties:
+        type:
+          $ref: '#/components/schemas/PenaltyType'
+        value:
+          $ref: '#/components/schemas/PenaltyValue'
+    PenaltyType:
+      description: Type of penalty calculation
+      type: string
+      example: PERCENTAGE
+      enum:
+        - PERCENTAGE
+        - FIXED_AMOUNT
+    PenaltyValue:
+      description: >-
+        Penalty value. For `PERCENTAGE` penalty type, enter a value between 0
+        and 1 (such as 0.05 for 5%). For `FIXED_AMOUNT` penalty type, enter the
+        fixed amount value.
+      type: number
+      format: double
+      minimum: 0
+      example: 0.05
+    RepaymentAmount:
+      type: number
+      format: double
+      description: Repayment amount
+      example: 100
+    RepaidAmount:
+      type: number
+      format: double
+      description: Repaid amount
+      example: 100
+    RepaymentDate:
+      type: string
+      description: Repayment date. Format = YYYY-MM-DD.
+      format: date
+      example: '2022-06-30'
+    RepaymentID:
+      type: string
+      description: Repayment ID
+      format: uuid
+      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+    RepaymentHierarchyCodeV2:
+      maxLength: 80
+      minLength: 1
+      type: string
+      description: >-
+        Repayment hierarchy code. Must be normalized (Unicode NFC), and may
+        contain a UUID, or uppercase letters, numbers, and underscore.
+      example: RH001
+    GracePeriodDays:
+      description: >-
+        Number of calendar days after the installment due date during which late
+        fees and delinquency are not applied. A value of `0` or omitted
+        indicates no grace period.
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 365
+      example: 7
+    DaysPastDue:
+      description: >-
+        Number of calendar days elapsed since the real due date of the loan's
+        most overdue repayment. Computed from repayments currently in a past due
+        or overdue status. A value of `0` indicates the loan has no past due or
+        overdue repayments.
+      type: integer
+      format: int32
+      minimum: 0
+      example: 12
+    MinimumTotalPayment:
+      description: Minimum total payment for the loan product. Must be positive.
+      type: number
+      format: double
+      minimum: 0
+      exclusiveMinimum: 0
+      example: 50
+    MinimumTotalPaymentDelta:
+      description: >-
+        Additional amount added to the repayment to cover the minimum total
+        payment requirement
+      type: number
+      format: double
+      minimum: 0
+      example: 43.46
+    LoanAllocationSummary:
+      type: object
+      description: Summary of a loan allocation within a group payment
+      properties:
+        loan_id:
+          type: string
+          description: Loan ID
+        loan_start_date:
+          type: string
+          format: date-time
+          description: Loan start date
+        installment_amount:
+          type: number
+          format: double
+          description: Installment amount allocated
+        minimum_total_payment_delta:
+          $ref: '#/components/schemas/MinimumTotalPaymentDelta'
+    LoanProductV2Parameters:
+      type: object
+      description: Loan product V2 parameters
+      properties:
+        stop_accrual_number_of_days:
+          description: >-
+            Number of days after which interest accrual stops on overdue
+            installments
+          type: number
+          format: int32
+          minimum: 1
+          maximum: 365
+          example: 60
+        overdue_threshold_days:
+          description: Number of days before the account is considered overdue
+          type: number
+          format: int32
+          minimum: 1
+          maximum: 365
+          example: 30
+    HierarchyCode:
+      type: string
+      description: >-
+        Repayment hierarchy code. Must be unique and can contain alphanumeric
+        characters, hyphens, and underscores.
+      maxLength: 80
+      minLength: 1
+      example: CR008
+    HierarchyV2:
+      type: array
+      description: >-
+        List that defines the repayment priority order using the order items are
+        listed. Determines which loan components are paid first during repayment
+        processing. All seven items are required.
+      minItems: 7
+      maxItems: 7
+      uniqueItems: true
+      items:
+        type: string
+        enum:
+          - PRINCIPAL
+          - INTEREST
+          - TAX
+          - FEE
+          - CHARGE
+          - PENALTY
+          - INSURANCE
+      example:
+        - PRINCIPAL
+        - INTEREST
+        - TAX
+        - FEE
+        - CHARGE
+        - PENALTY
+        - INSURANCE
+    RepaymentHierarchyV2Request:
+      required:
+        - hierarchy_code
+        - hierarchy
+      type: object
+      properties:
+        hierarchy_code:
+          $ref: '#/components/schemas/HierarchyCode'
+        hierarchy:
+          $ref: '#/components/schemas/HierarchyV2'
+    RepaymentHierarchyV2Response:
+      required:
+        - hierarchy_code
+      type: object
+      properties:
+        hierarchy_code:
+          type: string
+          description: Repayment hierarchy code
+          example: CR008
+    GetRepaymentHierarchyV2Response:
+      required:
+        - hierarchy_code
+        - hierarchy
+        - status
+      type: object
+      properties:
+        hierarchy_code:
+          $ref: '#/components/schemas/HierarchyCode'
+        hierarchy:
+          $ref: '#/components/schemas/HierarchyV2'
+        status:
+          $ref: '#/components/schemas/HierarchyStatus'
+    HierarchyStatus:
+      type: string
+      description: Repayment hierarchy status
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+      example: ENABLED
+    OriginalLoanID:
+      type: string
+      description: >-
+        Original loan ID. When a loan is created from a restructure, this field
+        contains the ID of the original loan that was restructured.
+      format: uuid
+      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+    RestructureLoanID:
+      type: string
+      description: >-
+        Restructure loan ID. When a loan has been restructured, this field
+        contains the ID of the new loan created from the restructure.
+      format: uuid
+      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+    ErrorCode:
+      type: string
+      description: Lending error code
+      example: ELND0001
+    ErrorMessage:
+      type: string
+      example: Unexpected error
+      description: Lending error message
+    AuthorizationResponseCode:
+      type: string
+      description: Payment Methods - Response Code
+      example: '62'
+      minLength: 2
+      maxLength: 2
+    AuthorizationDenialCode:
+      type: string
+      description: Payment Methods - Denial Code
+      example: IAD
+      minLength: 3
+      maxLength: 5
+    StandardErrorResponse:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          $ref: '#/components/schemas/ErrorMessage'
+    StandardAuthorizationErrorResponse:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          $ref: '#/components/schemas/ErrorMessage'
+        response_code:
+          $ref: '#/components/schemas/AuthorizationResponseCode'
+        denial_code:
+          $ref: '#/components/schemas/AuthorizationDenialCode'
+    TaxAmount:
+      type: number
+      format: double
+      example: 10
+      description: Tax amount
+    TotalAmount:
+      type: number
+      format: double
+      example: 2072
+      description: Total amount
+    TotalExpectedPaymentAmount:
+      type: number
+      format: double
+      description: >-
+        Total expected payment amount for the loan including principal,
+        interest, fees, and penalty (if applied)
+      example: 1100
+    TotalPayable:
+      type: object
+      properties:
+        principal:
+          $ref: '#/components/schemas/PrincipalAmount'
+        interest:
+          $ref: '#/components/schemas/InterestAmount'
+        fee:
+          $ref: '#/components/schemas/FeeAmount'
+        tax:
+          $ref: '#/components/schemas/TaxAmount'
+        charge:
+          $ref: '#/components/schemas/ChargeAmount'
+        penalty:
+          $ref: '#/components/schemas/PenaltyAmount'
+        total:
+          $ref: '#/components/schemas/TotalAmount'
+        amount_due:
+          type: object
+          properties:
+            principal:
+              $ref: '#/components/schemas/PrincipalAmount'
+            interest:
+              $ref: '#/components/schemas/InterestAmount'
+            fee:
+              $ref: '#/components/schemas/FeeAmount'
+            tax:
+              $ref: '#/components/schemas/TaxAmount'
+            charge:
+              $ref: '#/components/schemas/ChargeAmount'
+            penalty:
+              $ref: '#/components/schemas/PenaltyAmount'
+            total:
+              $ref: '#/components/schemas/TotalAmount'
+        arrears:
+          type: object
+          properties:
+            principal:
+              $ref: '#/components/schemas/PrincipalAmount'
+            interest:
+              $ref: '#/components/schemas/InterestAmount'
+            fee:
+              $ref: '#/components/schemas/FeeAmount'
+            tax:
+              $ref: '#/components/schemas/TaxAmount'
+            charge:
+              $ref: '#/components/schemas/ChargeAmount'
+            penalty:
+              $ref: '#/components/schemas/PenaltyAmount'
+            total:
+              $ref: '#/components/schemas/TotalAmount'
+    TransactionsID:
+      type: array
+      description: List of transactions IDs
+      items:
+        type: string
+        description: Transaction ID
+        example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
+    PrepaymentV2Request:
+      required:
+        - repayment_ids
+      type: object
+      properties:
+        repayment_ids:
+          $ref: '#/components/schemas/PrepaymentRepaymentDetails'
+        expiration_date:
+          $ref: '#/components/schemas/ExpirationDate'
+        reference_date:
+          $ref: '#/components/schemas/ReferenceDate'
+        metadata:
+          $ref: '#/components/schemas/PrepaymentMetadata'
+    PrepaymentMetadata:
+      type: object
+      description: >
+        Additional prepayment information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    PrepaymentV2Response:
+      type: object
+      description: Prepayment response
+      properties:
+        prepayment_id:
+          type: string
+          format: uuid
+          example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
+          description: Prepayment ID
+        expected_amount:
+          type: number
+          format: double
+          example: 100
+          description: Expected amount to be paid
+        insurance:
+          type: object
+          description: Insurance prepayment details (if applicable)
+          properties:
+            prepayment_id:
+              type: string
+              format: uuid
+              description: Insurance prepayment ID
+            expected_amount:
+              type: number
+              format: double
+              description: Expected insurance amount to be paid
+        allocation_summary:
+          type: array
+          description: >-
+            List of summarized loan allocations with minimum total payment
+            deltas, which represent the difference between the borrower's actual
+            payment and the scheduled installment amount, applied as a principal
+            reduction on the loan.
+          example:
+            - loan_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+              loan_start_date: '2025-01-15T00:00:00.000Z'
+              installment_amount: 156.54
+              minimum_total_payment_delta: 43.46
+            - loan_id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+              loan_start_date: '2025-03-01T00:00:00.000Z'
+              installment_amount: 200
+              minimum_total_payment_delta: 0
+          items:
+            $ref: '#/components/schemas/LoanAllocationSummary'
+    PrepaymentRepaymentDetails:
+      type: array
+      description: List of repayments to be paid in the current prepayment
+      items:
+        type: string
+        description: Repayments to be paid
+      example:
+        - c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
+        - jdu55ks2-7d9c-4099-aaf4-9ee002tkl554
+    ExpirationDate:
+      type: string
+      description: Expiration date of the prepayment. Format = YYYY-MM-DD.
+      format: date
+      example: '2025-04-28'
+    ReferenceDate:
+      type: string
+      description: Reference date of the installment. Format = YYYY-MM-DD.
+      format: date
+      example: '2025-04-14'
+    UpdateLoanProductV2Request:
+      type: object
+      description: >-
+        Request body for updating a loan product. Only provided fields will be
+        updated.
+      properties:
+        product_name:
+          $ref: '#/components/schemas/ProductName'
+        loan_activation_method:
+          $ref: '#/components/schemas/LoanProductLoanActivationMethod'
+        disbursement_method:
+          $ref: '#/components/schemas/LoanProductV2DisbursementMethod'
+        parameters:
+          $ref: '#/components/schemas/LoanProductV2Parameters'
+        interest_plan_ids:
+          $ref: '#/components/schemas/InterestPlanIDs'
+        processing_codes:
+          $ref: '#/components/schemas/UpdateProcessingCodes'
+        minimum_total_payment:
+          description: >-
+            Minimum total payment for the loan product. Set to "null" to remove.
+            Must be positive if provided.
+          anyOf:
+            - $ref: '#/components/schemas/MinimumTotalPayment'
+            - type: 'null'
+          example: 50
+    UpdateProcessingCodes:
+      type: object
+      description: Processing codes to update. Only provided fields will be updated.
+      properties:
+        booking:
+          type: array
+          description: List of booking processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        repayment:
+          type: array
+          description: List of repayment processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        present_value_discount:
+          type: array
+          description: List of present value discount processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        penalty_accruals:
+          type: array
+          description: List of penalty accruals processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        penalty_waiver:
+          type: array
+          description: List of penalty waiver processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        restructuring:
+          type: array
+          description: List of restructuring processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        insurance:
+          $ref: '#/components/schemas/InsurancePC'
+        disbursement:
+          $ref: '#/components/schemas/DisbursementPC'
+        prepayment:
+          $ref: '#/components/schemas/PrepaymentPC'
+        early_final_settlement:
+          $ref: '#/components/schemas/EfsPC'
+    LoansV2PaginatedResponse:
+      type: object
+      required:
+        - has_next
+        - items
+      properties:
+        has_next:
+          $ref: '#/components/schemas/HasNext'
+        next_cursor:
+          $ref: '#/components/schemas/NextCursor'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LendingLoanRepaymentResponse'
+    LoansV2SummaryResponse:
+      type: object
+      required:
+        - loan_summary
+      properties:
+        loan_summary:
+          $ref: '#/components/schemas/LoanSummary'
+    LoanSummary:
+      type: object
+      description: Aggregated loan data for the account matching the applied filters
+      required:
+        - loan_count_by_status
+        - loan_value_by_status
+        - total_loan_count
+        - total_loan_value
+        - total_outstanding
+        - total_paid
+        - total_principal
+      properties:
+        loan_count_by_status:
+          type: object
+          description: Number of loans per loan status for the account
+          example:
+            ACTIVE: 3
+            SETTLED: 2
+          additionalProperties:
+            type: integer
+            format: int32
+        loan_value_by_status:
+          type: object
+          description: >-
+            Sum of the original booked loan amount per loan status for the
+            account
+          example:
+            ACTIVE: 8000
+            SETTLED: 5000
+          additionalProperties:
+            type: number
+            format: double
+        total_loan_count:
+          type: integer
+          format: int32
+          description: Total number of loans for the account
+          example: 5
+        total_loan_value:
+          type: number
+          format: double
+          description: Sum of the original booked loan amount across all account loans
+          example: 13000
+        total_outstanding:
+          type: number
+          format: double
+          description: Sum of the amount due across all unpaid installments for the account
+          example: 8000
+        total_paid:
+          type: number
+          format: double
+          description: >-
+            Sum of the amount paid across all fully paid installments for the
+            account
+          example: 5000
+        total_principal:
+          type: number
+          format: double
+          description: >-
+            Sum of the principal component of the booked loan amount across all
+            account loans
+          example: 10000
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - BearerAuth: []
+paths:
+  /v2/accounts/{accountId}/loans:
+    get:
+      tags:
+        - Loans
+      summary: List account loans
+      description: >
+        Retrieve all loans associated with the specified account.
+
+
+        **Note**: This endpoint requires an [account-specific access
+        token](ref:get-an-account-specific-token-basic-authentication).
+      operationId: getLoansByAccountIdV2
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/NextCursorQueryCamelCase'
+        - $ref: '#/components/parameters/LimitQuery'
+        - $ref: '#/components/parameters/StatusQuery'
+        - $ref: '#/components/parameters/ExpandQuery'
+        - $ref: '#/components/parameters/PresentValueQuery'
+        - $ref: '#/components/parameters/ReferenceDateQuery'
+        - $ref: '#/components/parameters/FromCreatedDateQuery'
+        - $ref: '#/components/parameters/ToCreatedDateQuery'
+        - $ref: '#/components/parameters/FromStartDateQuery'
+        - $ref: '#/components/parameters/ToStartDateQuery'
+        - $ref: '#/components/parameters/SummarizeLoansQuery'
+      responses:
+        '200':
+          description: Loans retrieved
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/LoansV2PaginatedResponse'
+                  - $ref: '#/components/schemas/LoansV2SummaryResponse'
+              examples:
+                Paginated response:
+                  summary: >-
+                    Paginated list of loans (default, when summarizeLoans is
+                    omitted or false)
+                  value:
+                    has_next: true
+                    next_cursor: >-
+                      NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
+                    items:
+                      - loan_id: MY_CUSTOM_LOAN_ID
+                        account_id: 514751581
+                        external_id: my_external_id
+                        loan_amount: 2000
+                        total_payable:
+                          principal: 1800
+                          interest: 200
+                        product_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                        start_date: '2022-06-28'
+                        status: ACTIVE
+                        created_at: '2024-03-15T13:00:00.000+00:00'
+                        updated_at: '2024-03-15T13:00:00.000+00:00'
+                Summary response:
+                  summary: Aggregated loan summary (when summarizeLoans is true)
+                  value:
+                    loan_summary:
+                      loan_count_by_status:
+                        ACTIVE: 3
+                        SETTLED: 2
+                      loan_value_by_status:
+                        ACTIVE: 8000
+                        SETTLED: 5000
+                      total_loan_count: 5
+                      total_loan_value: 13000
+                      total_outstanding: 8000
+                      total_paid: 5000
+                      total_principal: 10000
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND1802:
+                  description: fromCreatedDate is after toCreatedDate.
+                  value:
+                    code: ELND1802
+                    message: >-
+                      Field fromCreatedDate must be before or equal to
+                      toCreatedDate.
+                ELND1803:
+                  description: fromStartDate is after toStartDate.
+                  value:
+                    code: ELND1803
+                    message: >-
+                      Field fromStartDate must be before or equal to
+                      toStartDate.
+                ELND1804:
+                  description: summarizeLoans is not a valid boolean value.
+                  value:
+                    code: ELND1804
+                    message: summarizeLoans must be a valid boolean value.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+      security:
+        - BearerAuth: []
+  /v2/loan-products/{productId}:
+    get:
+      tags:
+        - Loan products
+      summary: Get loan product
+      description: Get a loan product by its ID.
+      operationId: getLoanProductV2
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+      responses:
+        '200':
+          description: Loan product retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanProductV2Response'
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                '{header field} not passed':
+                  description: Missing request header.
+                  value:
+                    code: ELND0002
+                    message: '{header field} not passed'
+                '{path variable} not passed':
+                  description: Missing path variable
+                  value:
+                    code: ELND0002
+                    message: '{path variable} not passed'
+                '{related data} not found':
+                  description: Related data not found.
+                  value:
+                    code: ELND0005
+                    message: '{related data} not found'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0005:
+                  description: Loan product not found.
+                  value:
+                    code: ELND0005
+                    message: Loan product not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+    patch:
+      tags:
+        - Loan products
+      summary: Update loan product
+      description: >-
+        Update an existing loan product. Only the fields provided in the request
+        body will be updated.
+      operationId: updateLoanProductV2
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        description: Request body containing the fields to update.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLoanProductV2Request'
+            examples:
+              Update product name:
+                description: Update only the product name.
+                value:
+                  product_name: Updated Product Name
+              Update loan activation method:
+                description: Update the loan activation method.
+                value:
+                  loan_activation_method: ON_DISBURSEMENT
+              Update multiple fields:
+                description: Update multiple fields at once.
+                value:
+                  product_name: Updated BNPL Product
+                  loan_activation_method: ON_BOOKING
+                  disbursement_method:
+                    type: SINGLE
+                  parameters:
+                    stop_accrual_number_of_days: 90
+                  interest_plan_ids:
+                    - 5a1b2c3d-4e5f-6789-abcd-1234567890ef
+                  processing_codes:
+                    booking:
+                      - '000011'
+                    repayment:
+                      - '000012'
+              Update minimum total payment:
+                description: Set or update the minimum total payment.
+                value:
+                  minimum_total_payment: 50
+              Remove minimum total payment:
+                description: Remove the minimum total payment by setting it to null.
+                value:
+                  minimum_total_payment: null
+        required: true
+      responses:
+        '200':
+          description: Loan product updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanProductV2Response'
+        '202':
+          description: Duplicated request identified by Idempotency key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND1501:
+                  value:
+                    code: ELND1501
+                    message: idempotency-key is already in use
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0002:
+                  description: Missing path variable
+                  value:
+                    code: ELND0002
+                    message: loan_product_id not passed
+                ELND0352:
+                  value:
+                    code: ELND0352
+                    message: >-
+                      Field processing_codes.booking must be defined between 2
+                      and 6
+                ELND0354:
+                  value:
+                    code: ELND0354
+                    message: >-
+                      Field processing_codes.repayment must be defined between 2
+                      and 6
+                ELND0360:
+                  value:
+                    code: ELND0360
+                    message: >-
+                      Processing code PC_BOOKING already in use by product id
+                      5770c974-dcd5-4a53-b19e-08078a8cb65d, and operation
+                      Booking
+                ELND0366:
+                  value:
+                    code: ELND0366
+                    message: Interest plan PLAN1 not found
+                ELND0369:
+                  value:
+                    code: ELND0369
+                    message: Processing codes list must have at most 20 items.
+                ELND0376:
+                  value:
+                    code: ELND0376
+                    message: Field minimum_total_payment must be positive
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0005:
+                  description: Loan product not found.
+                  value:
+                    code: ELND0005
+                    message: Loan product not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - Loan products
+      summary: Delete loan product
+      description: >-
+        Delete a loan product by its ID. This operation marks the loan product
+        as deleted and it cannot be used for new loans.
+      operationId: deleteLoanProductV2
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+      responses:
+        '204':
+          description: Loan product deleted successfully.
+          content:
+            '*/*':
+              schema:
+                type: object
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0002:
+                  description: Missing path variable
+                  value:
+                    code: ELND0002
+                    message: product_id not passed
+                ELND0320:
+                  description: Invalid product ID format.
+                  value:
+                    code: ELND0320
+                    message: product_id contains invalid characters
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0005:
+                  description: Loan product not found.
+                  value:
+                    code: ELND0005
+                    message: Loan product not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+  /v2/loans/{loanId}/adjustment:
+    post:
+      tags:
+        - Loans
+      summary: Create loan adjustment
+      description: Create loan adjustment
+      operationId: createLoanAdjustmentV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/RequiredIdempotencyKeyHeader'
+      requestBody:
+        description: Request body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdjustmentV2Request'
+      responses:
+        '202':
+          description: Loan adjustment created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdjustmentPostResponse'
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+  /v2/loan-products:
+    post:
+      tags:
+        - Loan products
+      summary: Create loan product
+      description: >
+        Creates a loan product.
+
+
+        This endpoint generates a [Loan product V2
+        created](https://developers.pismo.io/events/docs/lending-loan-product-creation-3)
+        event.
+      operationId: createLoanProductV2
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        description: Request body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLoanProductV2Request'
+        required: true
+      responses:
+        '201':
+          description: Loan Product created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanProductPostResponse'
+        '202':
+          description: Duplicated request identified by Idempotency key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND1501:
+                  value:
+                    code: ELND1501
+                    message: idempotency-key is already in use
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0350:
+                  value:
+                    code: ELND0350
+                    message: Field processing_codes not passed
+                ELND0351:
+                  value:
+                    code: ELND0351
+                    message: Field processing_codes.booking not passed
+                ELND0352:
+                  value:
+                    code: ELND0352
+                    message: >-
+                      Field processing_codes.booking must be defined between 2
+                      and 6
+                ELND0353:
+                  value:
+                    code: ELND0353
+                    message: Field processing_codes.repayment not passed
+                ELND0354:
+                  value:
+                    code: ELND0354
+                    message: >-
+                      Field processing_codes.repayment must be defined between 2
+                      and 6
+                ELND0355:
+                  value:
+                    code: ELND0355
+                    message: >-
+                      Field processing_codes.prepayment_discount must be defined
+                      between 2 and 6
+                ELND0356:
+                  value:
+                    code: ELND0356
+                    message: >-
+                      Field processing_codes.penalty_accruals must be defined
+                      between 2 and 6
+                ELND0357:
+                  value:
+                    code: ELND0357
+                    message: >-
+                      Field processing_codes.penalty_waiver must be defined
+                      between 2 and 6
+                ELND0358:
+                  value:
+                    code: ELND0358
+                    message: >-
+                      Field processing_codes.insurance.booking must be defined
+                      between 2 and 6
+                ELND0359:
+                  value:
+                    code: ELND0359
+                    message: >-
+                      Field processing_codes.insurance.repayment must be defined
+                      between 2 and 6
+                ELND0360:
+                  value:
+                    code: ELND0360
+                    message: >-
+                      Processing code `%s` already in use by product id %s, and
+                      operation %s
+                ELND0361:
+                  value:
+                    code: ELND0361
+                    message: The processing code must be unique for each operation.
+                ELND0362:
+                  value:
+                    code: ELND0362
+                    message: Processing code %s is not linked to transactions types.
+                ELND0363:
+                  value:
+                    code: ELND0363
+                    message: Processing code %s is invalid or does not exist.
+                ELND0011:
+                  value:
+                    code: ELND0011
+                    message: '%s %s not valid for Disbursement Method %s'
+                ELND0012:
+                  value:
+                    code: ELND0012
+                    message: '%s %s not valid. Allowed values : %s'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+    get:
+      deprecated: false
+      tags:
+        - Loan products
+      summary: List loan products
+      description: List loan products.
+      operationId: getLoanProductsV2
+      parameters:
+        - $ref: '#/components/parameters/NextCursorQueryCamelCase'
+        - $ref: '#/components/parameters/LimitQuery'
+        - $ref: '#/components/parameters/LoanProductIdQuery'
+        - $ref: '#/components/parameters/LoanProductNameQuery'
+        - $ref: '#/components/parameters/ProductTypeQuery'
+        - $ref: '#/components/parameters/CurrencyFilterQuery'
+        - in: query
+          name: collateralType
+          description: Collateral type filter
+          schema:
+            $ref: '#/components/schemas/Collateral'
+        - in: query
+          name: disbursementType
+          description: Disbursement method type filter
+          schema:
+            $ref: '#/components/schemas/LoanProductV2DisbursementType'
+        - in: query
+          name: status
+          description: Loan product status filter
+          schema:
+            $ref: '#/components/schemas/ProductStatus'
+        - in: query
+          name: startDate
+          description: Search for products created from this date
+          schema:
+            $ref: '#/components/schemas/DateValue'
+        - in: query
+          name: endDate
+          description: >-
+            Search for products created until this date. Note: If `endDate` is
+            provided, `startDate` must also be provided. This dependency is
+            required by the API.
+          schema:
+            $ref: '#/components/schemas/DateValue'
+        - in: query
+          name: sortField
+          description: Field to sort by
+          schema:
+            type: string
+            enum:
+              - PRODUCT_ID
+              - PRODUCT_NAME
+              - CREATION_DATE
+            default: CREATION_DATE
+        - in: query
+          name: sortOrder
+          description: Sort order
+          schema:
+            type: string
+            description: Sort order
+            enum:
+              - ASC
+              - DESC
+            default: ASC
+      responses:
+        '200':
+          description: Loan Products Retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLoanProductV2Response'
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                '{header field} not passed':
+                  description: Missing request header.
+                  value:
+                    code: ELND0002
+                    message: '{header field} not passed'
+                '{path variable} not passed':
+                  description: Missing path variable
+                  value:
+                    code: ELND0002
+                    message: '{path variable} not passed'
+                '{related data} not found':
+                  description: Related data not found.
+                  value:
+                    code: ELND0005
+                    message: '{related data} not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+  /v2/loans:
+    post:
+      tags:
+        - Loans
+      summary: Book loan
+      description: >
+        Books a loan with the configuration set up in the loan product.
+
+
+        This endpoint generates a [Loan
+        booked](https://developers.pismo.io/events/docs/lending-loan-booked-1)
+        event and a [Platform authorization
+        created](https://developers.pismo.io/events/docs/platform-authorization-platform-authorization-1)
+        event.
+      operationId: bookLoanV2
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingV2Request'
+            examples:
+              Book a loan using an installment plan:
+                description: Register a loan.
+                value:
+                  amount: 2000
+                  account_id: 10483628
+                  loan_product_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                  installment_plan_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                  number_of_installments: 5
+                  metadata:
+                    external_id: cf5687d4e834
+        required: true
+      responses:
+        '202':
+          description: Loan booked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanIdResponse'
+              examples:
+                Success Disbursement:
+                  description: Loan booked.
+                  value:
+                    loan_id: 73e45fd5-759f-4e04-a88a-7172fa948afa
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/StandardErrorResponse'
+                  - $ref: '#/components/schemas/StandardAuthorizationErrorResponse'
+              examples:
+                Authorization failed:
+                  description: Authorization failed.
+                  value:
+                    code: ELND0004
+                    message: Authorization failed
+                    response_code: '62'
+                    denial_code: IAD
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+    get:
+      tags:
+        - Loans
+      summary: List loans
+      description: List loans
+      operationId: retrievePaginatedLoans
+      parameters:
+        - $ref: '#/components/parameters/NextCursorQueryCamelCase'
+        - $ref: '#/components/parameters/LimitQuery'
+        - $ref: '#/components/parameters/StatusQuery'
+        - $ref: '#/components/parameters/LoanProductIdQuery'
+        - $ref: '#/components/parameters/AccountIdQuery'
+        - $ref: '#/components/parameters/ExpandLoanQuery'
+        - $ref: '#/components/parameters/AuthorizationIdQuery'
+      responses:
+        '200':
+          description: Loan retrieved.
+          content:
+            application/json:
+              schema:
+                properties:
+                  has_next:
+                    $ref: '#/components/schemas/HasNext'
+                  next_cursor:
+                    $ref: '#/components/schemas/NextCursor'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LendingLoanRepaymentResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+  /v2/loans/{loanId}:
+    get:
+      tags:
+        - Loans
+      summary: Get loan
+      description: Get a loan by its ID.
+      operationId: getLoanV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/PresentValueQuery'
+        - $ref: '#/components/parameters/ReferenceDateQuery'
+      responses:
+        '200':
+          description: Loan retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LendingLoanRepaymentResponse'
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                '{header field} not passed':
+                  description: Missing request header.
+                  value:
+                    code: ELND0002
+                    message: '{header field} not passed'
+                '{path variable} not passed':
+                  description: Missing path variable
+                  value:
+                    code: ELND0002
+                    message: '{path variable} not passed'
+                '{body field} not passed':
+                  description: Missing request body field.
+                  value:
+                    code: ELND0002
+                    message: '{body field} not passed'
+                '{related data} not found':
+                  description: Related data not found.
+                  value:
+                    code: ELND0005
+                    message: '{related data} not found'
+                '{body field} not valid':
+                  description: Invalid request body field.
+                  value:
+                    code: ELND0003
+                    message: '{body field} not valid'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0005:
+                  description: Loan not found.
+                  value:
+                    code: ELND0005
+                    message: Loan not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+  /v2/loans/{loanId}/disburse:
+    post:
+      tags:
+        - Disbursements
+      summary: Disburse loan
+      description: Disburse a loan.
+      operationId: disburseLoanV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/RequiredIdempotencyKeyHeader'
+      requestBody:
+        description: Request body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisbursementV2Request'
+            examples:
+              Disburses the loan to an internal Pismo account:
+                description: Disburses the loan amount to an internal Pismo account.
+                value:
+                  disbursement_account:
+                    account_type: INTERNAL
+                    account_id: 784165
+                  disbursement_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                  disbursement_date: '2024-10-15T00:00:00.000Z'
+                  disbursement_amount: 1000
+                  metadata:
+                    payment_order_id: po-123456789
+                    payment_order_reference: ref-987654321
+              Disburses the loan to an external account:
+                description: Register a loan disbursement to an external account.
+                value:
+                  disbursement_account:
+                    account_type: EXTERNAL
+                  disbursement_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                  disbursement_date: '2024-10-15T00:00:00.000Z'
+                  disbursement_amount: 1000
+                  metadata:
+                    bank_id: '785'
+                    bank_account: '123456'
+                    additional_information: Additional information
+        required: true
+      responses:
+        '202':
+          description: Disburse accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisbursementV2Response'
+              examples:
+                Success Disbursement:
+                  description: Disbursement accepted.
+                  value:
+                    loan_id: 73e45fd5-759f-4e04-a88a-7172fa948afa
+                    authorization_id: 123456789
+                    authorization_tracking_id: 4df987e3-8179-11ed-8209-06c7b022d1ee
+                    disbursement_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                    disbursement_amount: 1000
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/StandardErrorResponse'
+                  - $ref: '#/components/schemas/StandardAuthorizationErrorResponse'
+              examples:
+                Validation exception:
+                  description: Validation exception.
+                  value:
+                    code: ELND0003
+                    message: disbursement_account.account_type not valid
+                Authorization failed:
+                  description: Authorization failed.
+                  value:
+                    code: ELND0004
+                    message: Authorization failed
+                    response_code: '62'
+                    denial_code: IAD
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+  /v2/loans/{loanId}/cancel:
+    post:
+      tags:
+        - Loans
+      summary: Cancel loan
+      description: >
+        Cancels a loan.
+
+
+        This endpoint generates a [Loan
+        updated](https://developers.pismo.io/events/docs/lending-lending-loan-update-1)
+        event.
+      operationId: cancelLoanV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/RequiredIdempotencyKeyHeader'
+      requestBody:
+        description: Request body for loan cancellation.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelLoanV2Request'
+            examples:
+              Cancels the loan:
+                description: Cancels the loan.
+                value:
+                  tracking_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                  processing_code:
+                    booking: 7DJ8L
+                    repayment: I1I7J
+                    penalty_waiver: 80Y39
+                  metadata:
+                    cancellation_reason: Write-off
+        required: true
+      responses:
+        '202':
+          description: Cancellation accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelLoanV2Response'
+              examples:
+                Success Cancellation:
+                  description: Cancellation accepted.
+                  value:
+                    cancelled_loan_id: 73e45fd5-759f-4e04-a88a-7172fa948afa
+                    reversal_authorization_id: 123456789
+                    reversal_tracking_id: 4df987e3-8179-11ed-8209-06c7b022d1ee
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/StandardErrorResponse'
+                  - $ref: '#/components/schemas/StandardAuthorizationErrorResponse'
+              examples:
+                Validation exception:
+                  description: Validation exception.
+                  value:
+                    code: ELND0010
+                    message: Header Idempotency-Key not passed
+                Authorization failed:
+                  description: Authorization failed.
+                  value:
+                    code: ELND0004
+                    message: Authorization failed
+                    response_code: '62'
+                    denial_code: IAD
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+  /v2/loans/{loanId}/repayment:
+    post:
+      tags:
+        - Repayments
+      summary: Register repayment
+      description: Registers a repayment for the specified loan ID.
+      operationId: registerRepaymentV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/RequiredIdempotencyKeyHeader'
+      requestBody:
+        description: Request body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepayV2'
+            examples:
+              Register repayment with full amount:
+                description: Registers a repayment with the full loan amount.
+                value:
+                  repayment_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                  repayment_date: '2025-10-24T00:00:00.000Z'
+                  repayment_amount: 1000
+                  metadata:
+                    payment_reference: ref-987654321
+                    additional_information: Full repayment
+              Register partial repayment:
+                description: Registers a partial repayment for the loan.
+                value:
+                  repayment_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                  repayment_date: '2025-10-24T00:00:00.000Z'
+                  repayment_amount: 500
+                  metadata:
+                    payment_reference: ref-123456789
+                    additional_information: Partial repayment
+        required: true
+      responses:
+        '202':
+          description: Repayment registered successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepayV2Result'
+              examples:
+                Success Repayment:
+                  description: Repayment registered successfully.
+                  value:
+                    loan_id: 73e45fd5-759f-4e04-a88a-7172fa948afa
+                    repayment_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                    repayment_amount: 1000
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/StandardErrorResponse'
+                  - $ref: '#/components/schemas/StandardAuthorizationErrorResponse'
+              examples:
+                Validation exception:
+                  description: Validation exception.
+                  value:
+                    code: ELND0003
+                    message: repayment_amount not valid
+                Authorization failed:
+                  description: Authorization failed.
+                  value:
+                    code: ELND0004
+                    message: Authorization failed
+                    response_code: '62'
+                    denial_code: IAD
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+  /v2/loans/{originalLoanId}/restructure:
+    post:
+      tags:
+        - Loans
+      summary: Restructure a loan
+      description: Restructures an existing loan based on provided details.
+      operationId: restructureLoan
+      parameters:
+        - name: originalLoanId
+          in: path
+          required: true
+          description: The ID of the original loan to restructure
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/RequiredIdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - installment_plan_id
+                - loan_product_id
+                - number_of_installments
+              properties:
+                installment_plan_id:
+                  type: string
+                  description: Installment plan ID
+                loan_product_id:
+                  type: string
+                  description: Loan product ID
+                number_of_installments:
+                  type: integer
+                  description: Number of installments
+      responses:
+        '200':
+          description: Loan successfully restructured.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loan_id:
+                    type: string
+                    description: The ID of the new loan.
+        '400':
+          description: Invalid request.
+        '500':
+          description: Internal Server Error
+  /v2/loans/{loanId}/early-settlement/simulate:
+    post:
+      tags:
+        - Early final settlement
+      summary: Simulate early final settlement
+      description: >-
+        Simulate an early final settlement (EFS) for a loan. Optionally
+        calculate present value with a future reference date
+      operationId: simulateEarlyFinalSettlementV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        description: Optional request body for simulation parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EarlyFinalSettlementV2Request'
+            examples:
+              Simulate EFS without reference date:
+                description: Simulate EFS using current outstanding balance
+                value: {}
+              Simulate EFS with reference date:
+                description: Simulate EFS with present value calculation for a future date
+                value:
+                  reference_date: '2025-04-14'
+                  waive_penalty: false
+              Simulate EFS with waived penalty:
+                description: Simulate EFS with penalty waived
+                value:
+                  waive_penalty: true
+      responses:
+        '201':
+          description: Simulation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EarlyFinalSettlementV2Response'
+              examples:
+                Simulation created:
+                  description: Simulation created successfully
+                  value:
+                    early_settlement_id: 72852338-5764-4c7e-b503-10dcee1cdb7e
+                    settlement_total: 1584
+                    outstanding:
+                      principal: 800
+                      interest: 80
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      installments: 8
+                      penalty: 704
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0400:
+                  value:
+                    code: ELND0400
+                    message: Loan must be active to perform this action
+                ELND0401:
+                  value:
+                    code: ELND0401
+                    message: Loan product does not support early final settlement.
+                ELND0402:
+                  value:
+                    code: ELND0402
+                    message: >-
+                      Lock In period defined in the current loan product did not
+                      meet the number of installments paid.
+                ELND0405:
+                  value:
+                    code: ELND0405
+                    message: >-
+                      Field reference_date must be equal to or greater than
+                      today.
+                ELND0406:
+                  value:
+                    code: ELND0406
+                    message: >-
+                      Field waive_penalty is true but no penalty is configured
+                      for this product.
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND2000:
+                  description: Loan not found
+                  value:
+                    code: ELND2000
+                    message: Loan not found
+                ELND3000:
+                  description: Loan product not found
+                  value:
+                    code: ELND3000
+                    message: Loan product not found.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+  /v2/loans/{loanId}/early-settlement/{efsId}/register:
+    post:
+      tags:
+        - Early final settlement
+      summary: Register early final settlement
+      description: >-
+        Register an early final settlement (EFS) for a loan using a previously
+        simulated EFS ID.
+      operationId: registerEarlyFinalSettlementV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/EfsIdPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      responses:
+        '202':
+          description: Early final settlement registration accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterEarlyFinalSettlementV2Response'
+              examples:
+                Success response:
+                  description: Early final settlement registration accepted successfully
+                  value:
+                    early_settle_id: 72852338-5764-4c7e-b503-10dcee1cdb7e
+                    total_settled: 1584
+                    outstanding:
+                      principal: 800
+                      interest: 80
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      installments: 8
+                      penalty: 704
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0400:
+                  value:
+                    code: ELND0400
+                    message: Loan must be active to perform this action.
+                ELND0403:
+                  value:
+                    code: ELND0403
+                    message: Early final settlement ID must be a UUID
+                ELND0404:
+                  value:
+                    code: ELND0404
+                    message: >-
+                      This EFS simulation is not valid anymore because the
+                      outstanding balance changed after the simulation was
+                      requested.
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND2000:
+                  description: Loan not found
+                  value:
+                    code: ELND2000
+                    message: Loan not found
+                ELND0005:
+                  description: EFS simulation not found
+                  value:
+                    code: ELND0005
+                    message: EFS simulation not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+  /v2/loans/{loanId}/prepayment/simulate:
+    post:
+      tags:
+        - Prepayment
+      summary: Simulate prepayment
+      description: >
+        Simulate a prepayment for a loan using the V2 prepayment engine.
+
+
+        The response includes the resulting balance breakdown, the new repayment
+
+        schedule, and a `simulation_id` that can later be used to register the
+
+        prepayment via `POST
+        /v2/loans/{loanId}/prepayment/{simulationId}/register`.
+
+
+        This endpoint generates a [Lending prepayment V2 creation
+        (beta)](https://developers.pismo.io/events/docs/lending-lending-prepayment-v2-creation-1)
+        event.
+      operationId: simulatePrepaymentV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrepaymentSimulationV2Request'
+            examples:
+              Simulate a prepayment that reduces installments:
+                value:
+                  amount_paid: 2000
+                  reference_date: '2026-05-15'
+                  waive_fee: false
+                  reduce_option: INSTALLMENT
+      responses:
+        '201':
+          description: Prepayment simulated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrepaymentSimulationV2Response'
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0504:
+                  value:
+                    code: ELND0504
+                    message: Field amount_paid not passed.
+                ELND0512:
+                  value:
+                    code: ELND0512
+                    message: Field reduce_option not passed.
+                ELND0513:
+                  value:
+                    code: ELND0513
+                    message: >-
+                      Loan product does not permit the reduce_option passed in
+                      the request.
+                ELND0511:
+                  value:
+                    code: ELND0511
+                    message: >-
+                      The calculated penalty would be greater than the amount
+                      being paid.
+                ELND0514:
+                  value:
+                    code: ELND0514
+                    message: >-
+                      Failed to calculate the new loan with the provided
+                      parameters.
+                ELND0515:
+                  value:
+                    code: ELND0515
+                    message: Simulation config not found.
+        '404':
+          description: Resource not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0005:
+                  value:
+                    code: ELND0005
+                    message: '{resource name} not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+  /v2/loans/{loanId}/prepayment/{simulationId}/register:
+    post:
+      tags:
+        - Prepayment
+      summary: Register prepayment simulation
+      description: >
+        Register a previously calculated V2 prepayment simulation, applying it
+        to
+
+        the loan. The request body is optional and is only used to override the
+
+        processing codes used to record the prepayment, penalty, and insurance
+
+        movements in the prepayment workflow.
+      operationId: registerPrepaymentSimulationV2
+      parameters:
+        - $ref: '#/components/parameters/LoanIdPath'
+        - $ref: '#/components/parameters/PrepaymentSimulationIdPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPrepaymentSimulationV2Request'
+            examples:
+              Register with custom processing codes:
+                value:
+                  prepayment_processing_code: PPMT
+                  penalty_processing_code: PNLT
+                  insurance_processing_code: INSR
+      responses:
+        '202':
+          description: Prepayment registration accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterPrepaymentSimulationV2Response'
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0500:
+                  value:
+                    code: ELND0500
+                    message: simulationId must be an UUID
+                ELND0549:
+                  value:
+                    code: ELND0549
+                    message: Prepayment processing code length must be between 2 and 6.
+                ELND0550:
+                  value:
+                    code: ELND0550
+                    message: Penalty processing code length must be between 2 and 6.
+                ELND0551:
+                  value:
+                    code: ELND0551
+                    message: Insurance processing code length must be between 2 and 6.
+                ELND0509:
+                  value:
+                    code: ELND0509
+                    message: >-
+                      This Prepayment simulation is no longer valid because the
+                      outstanding balance changed after the simulation was
+                      requested.
+        '404':
+          description: Resource not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0005:
+                  value:
+                    code: ELND0005
+                    message: '{resource name} not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+  /v2/prepayments:
+    post:
+      tags:
+        - Prepayment
+      summary: Create prepayment record
+      description: >
+        Creates a prepayment record containing one or multiple repayments.
+
+
+        This endpoint generates a [Prepayment V2
+        created](https://developers.pismo.io/events/docs/lending-prepayment-creation-1)
+        event.
+
+
+        **Note**: This endpoint requires an [account-specific access
+        token](ref:get-an-account-specific-token-basic-authentication).
+      operationId: createPrepayment
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrepaymentV2Request'
+        required: true
+      responses:
+        '201':
+          description: Prepayment created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrepaymentV2Response'
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                '{header field} not passed':
+                  description: Missing request header.
+                  value:
+                    code: ELND0002
+                    message: '{header field} not passed'
+                '{path variable} not passed':
+                  description: Missing path variable
+                  value:
+                    code: ELND0002
+                    message: '{path variable} not passed'
+                '{body field} not passed':
+                  description: Missing request body field.
+                  value:
+                    code: ELND0002
+                    message: '{body field} not passed'
+                '{related data} not found':
+                  description: Related data not found.
+                  value:
+                    code: ELND0005
+                    message: '{related data} not found'
+                '{body field} not valid':
+                  description: Invalid request body field.
+                  value:
+                    code: ELND0003
+                    message: '{body field} not valid'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+  /v2/repayment-hierarchies:
+    post:
+      tags:
+        - Repayment hierarchy
+      summary: Create repayment hierarchy
+      description: >-
+        Create a repayment hierarchy for a loan. The repayment hierarchy
+        determines the order in which loan components are paid during repayment
+        processing.
+      operationId: createRepaymentHierarchyV2
+      parameters:
+        - $ref: '#/components/parameters/RequiredIdempotencyKeyHeader'
+      requestBody:
+        description: Request body containing the hierarchy code and payment order.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepaymentHierarchyV2Request'
+            examples:
+              Create standard repayment hierarchy:
+                description: Creates a repayment hierarchy with a standard payment order.
+                value:
+                  hierarchy_code: CR008
+                  hierarchy:
+                    - PRINCIPAL
+                    - INTEREST
+                    - TAX
+                    - FEE
+                    - CHARGE
+                    - PENALTY
+                    - INSURANCE
+              Create custom repayment hierarchy:
+                description: >-
+                  Creates a repayment hierarchy with a custom payment order that
+                  prioritizes paying penalties first.
+                value:
+                  hierarchy_code: CR009
+                  hierarchy:
+                    - PENALTY
+                    - PRINCIPAL
+                    - INTEREST
+                    - TAX
+                    - FEE
+                    - CHARGE
+                    - INSURANCE
+        required: true
+      responses:
+        '201':
+          description: Repayment hierarchy created successfully.
+          headers:
+            Location:
+              description: URI of the created repayment hierarchy
+              schema:
+                type: string
+                format: uri
+              example: >-
+                https://sandbox.pismolabs.io/lending/v2/repayment-hierarchies/CR008
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepaymentHierarchyV2Response'
+              examples:
+                Success response:
+                  description: Repayment hierarchy created successfully.
+                  value:
+                    hierarchy_code: CR008
+        '202':
+          description: Duplicated request identified by Idempotency key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                WLND0001:
+                  description: Duplicated request identified by Idempotency key.
+                  value:
+                    code: WLND0001
+                    message: idempotency-key already in use
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0601:
+                  description: Field hierarchy_code not passed
+                  value:
+                    code: ELND0601
+                    message: Field hierarchy_code not passed
+                ELND0603:
+                  description: Field hierarchy not passed
+                  value:
+                    code: ELND0603
+                    message: Field hierarchy not passed
+                ELND0605:
+                  description: Field hierarchy_code length must be lower or equal to 80
+                  value:
+                    code: ELND0605
+                    message: Field hierarchy_code length must be lower or equal to 80
+                ELND0606:
+                  description: Field hierarchy size must be equal to 7
+                  value:
+                    code: ELND0606
+                    message: Field hierarchy size must be equal to 7
+                ELND0607:
+                  description: Field hierarchy_code contains invalid characters
+                  value:
+                    code: ELND0607
+                    message: Field hierarchy_code contains invalid characters
+                ELND0608:
+                  description: Invalid hierarchy type provided
+                  value:
+                    code: ELND0608
+                    message: Invalid hierarchy type provided
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+  /v2/repayment-hierarchies/{hierarchyCode}:
+    get:
+      tags:
+        - Repayment hierarchy
+      summary: Get repayment hierarchy
+      description: >-
+        Get a repayment hierarchy by its code, including the hierarchy order and
+        current status.
+      operationId: getRepaymentHierarchyV2
+      parameters:
+        - name: hierarchyCode
+          in: path
+          description: Repayment hierarchy code
+          required: true
+          schema:
+            type: string
+            maxLength: 80
+          example: CR008
+      responses:
+        '200':
+          description: Repayment hierarchy retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRepaymentHierarchyV2Response'
+              examples:
+                Success response:
+                  description: Repayment hierarchy retrieved successfully.
+                  value:
+                    hierarchy_code: CR008
+                    hierarchy:
+                      - PRINCIPAL
+                      - INTEREST
+                      - TAX
+                      - FEE
+                      - CHARGE
+                      - PENALTY
+                      - INSURANCE
+                    status: ENABLED
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0601:
+                  description: Field hierarchy_code not passed
+                  value:
+                    code: ELND0601
+                    message: Field hierarchy_code not passed
+                ELND0607:
+                  description: Field hierarchy_code contains invalid characters
+                  value:
+                    code: ELND0607
+                    message: Field hierarchy_code contains invalid characters
+        '404':
+          description: Repayment hierarchy not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0005:
+                  description: Repayment hierarchy not found.
+                  value:
+                    code: ELND0005
+                    message: Repayment hierarchy not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
