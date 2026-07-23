@@ -5168,11 +5168,19 @@ paths:
         as well as some financial data such as its current balance.
 
 
-        Some of these fields vary depending on whether the account was created
-        with a `person` or `company` object as the account owner. The
-        `entity_type` (`INDIVIDUAL`, `COMPANY`) identifies this. The fields
-        `name`, `email_address`, `customer_id` are either person or
-        company-related. The field  `social_name` is only specific to a person.
+        **Notes**
+
+
+        * Some of the fields returned vary depending on whether the account was
+        created with a `person` or `company` object as the account owner.  The
+        `entity_type` (`INDIVIDUAL`, `COMPANY`) identifies this.
+
+
+        * The fields `name`, `email_address`, `customer_id` and
+        `document_number` are either person or company-related. 
+
+
+        * The field  `social_name` is only specific to a person.
       tags:
         - Accounts
       parameters:
