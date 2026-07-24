@@ -411,6 +411,10 @@ components:
       type: number
       description: Amount to be transferred.
       example: 1050.44
+    AuthorizationID:
+      type: integer
+      description: Generated authorization ID on P2P
+      example: 82725717
     Bank:
       type: string
       description: >-
@@ -441,6 +445,12 @@ components:
         target="_blank">IBGE</a> (Instituto Brasileiro de Geografia e
         Estatística) city code.
       example: '3550308'
+    ClientRequestID:
+      description: |
+        For Pix-out, this is the client-generated ID used for idempotency.
+        For Pix-in, this is the confirmation request ID the provider received.
+      type: string
+      example: b84da2fc-dd63-4c6c-a346-797b65f334c7
     commons.AdditionalInfo:
       type: object
       properties:
@@ -854,7 +864,7 @@ components:
         Information (PII), Payment Card Industry (PCI) data, or any
         sensitive/regulated information. Metadata fields are intended for
         operational, non-sensitive data only. For sensitive data, use the
-        specific parameters designed for that purpose. For more information,
+        specific parameters designed for that  purpose. For more information,
         refer to [Get started with Pismo
         APIs](ref:get-started-with-pismo-apis#metadata).
     MinPaymentAmount:
@@ -1295,8 +1305,6 @@ components:
             mismatched code may cause processing or reconciliation failures.
           maxLength: 6
           example: '123456'
-        taxes:
-          $ref: '#/components/schemas/Taxes'
     pix.OutTransferPSPaccount:
       type: object
       description: >-
@@ -2021,6 +2029,13 @@ components:
           $ref: '#/components/schemas/AccountType'
         branch:
           $ref: '#/components/schemas/Branch'
+    pix.TransactionSearchRequest:
+      type: object
+      required:
+        - client_request_id
+      properties:
+        client_request_id:
+          $ref: '#/components/schemas/ClientRequestID'
     pix.TransactionWithDetailResponse:
       type: object
       properties:
@@ -2047,17 +2062,9 @@ components:
           description: Correlation tracking ID (CID)
           example: '8675309'
         authorization_id:
-          type: integer
-          description: Generated authorization ID on P2P
-          example: 82725717
+          $ref: '#/components/schemas/AuthorizationID'
         client_request_id:
-          description: >-
-            For Pix-out, this is the client-generated ID used for idempotency.
-
-            For Pix-in, this is the confirmation request ID the provider
-            received.
-          type: string
-          example: b84da2fc-dd63-4c6c-a346-797b65f334c7
+          $ref: '#/components/schemas/ClientRequestID'
         payee:
           $ref: '#/components/schemas/pix.TransactionExternalAccount'
         payer:
@@ -2080,17 +2087,7 @@ components:
         qr_code_additional_information:
           $ref: '#/components/schemas/QRcodeAddInfo'
         transaction_identification:
-          type: string
-          description: >
-            This field is returned from the [Validate QR Code](ref:post-qr-code)
-            endpoint.
-
-
-            Transaction ID is **REQUIRED** when `initiation_type` is
-            `DYNAMIC_QRCODE` and should not be passed otherwise. If a
-            `STATIC_QRCODE` contains the transaction identification, it is also
-            **REQUIRED** to pass it. 
-          example: 1a84daf6-a61b-4aba-919a-a9943db7102e
+          $ref: '#/components/schemas/TransactionID'
         reason:
           $ref: '#/components/schemas/ReversalReason'
         external_id:
@@ -2751,7 +2748,6 @@ components:
 
          * NFS-e (Nota Fiscal de Serviços Eletrônica): Used for the provision of services (e.g., consulting, repairs, digital subscriptions). It is regulated by individual city governments.
 
-
         The value entered must correspond to the tax document used for
         calculating the IBS and CBS taxes associated with the transaction.
       example: IS0435879820240605bcdb1fhn43a
@@ -2774,6 +2770,18 @@ components:
       type: integer
       description: Total number of items
       example: 1000
+    TransactionID:
+      type: string
+      description: >
+        This field is returned from the [Validate QR Code](ref:post-qr-code)
+        endpoint.
+
+
+        Transaction ID is **REQUIRED** when `initiation_type` is
+        `DYNAMIC_QRCODE` and should not be passed otherwise. If a
+        `STATIC_QRCODE` contains the transaction identification, it is also
+        **REQUIRED** to pass it. 
+      example: 1a84daf6-a61b-4aba-919a-a9943db7102e
     TransactionStatus:
       type: string
       description: |
@@ -3019,6 +3027,13 @@ paths:
 
         For all events, the `status` or `result` field indicates operation
         success or failure.
+
+
+        If the request times out and the `end_to_end_id` was not returned, use
+        the [Get Pix transaction by client request
+        ID](ref:post-transactions-search) endpoint passing the same
+        `Idempotency-Key` sent in this request as the `client_request_id` to
+        recover the transaction status.
 
 
         For more information, see the [Pix instant
@@ -4720,7 +4735,7 @@ paths:
     get:
       tags:
         - Pix
-      summary: Get Pix transaction
+      summary: Get Pix transaction by end-to-end ID
       description: >
         Retrieve transaction information given an `end-to-end` value in the
         path.
@@ -4805,6 +4820,141 @@ paths:
                   value:
                     code: EPIX0004
                     message: Internal server error
+  /pix/v1/pix/transactions/search:
+    post:
+      summary: Get Pix transaction by client request ID
+      description: >
+        Search a Pix transaction using the `client_request_id` the client passed
+        when it created the transaction.
+
+
+        The `client_request_id` is the value sent in the `Idempotency-Key`
+        header when creating a cashin (Pix-in) or cashout (Pix-out) transaction.
+        This endpoint is useful, for example, when a [Pix-out
+        transfer](ref:post-pix-out-transfer) request times out and the client
+        does not yet have the `end_to_end_id` needed to query the transaction
+        status through other endpoints.
+
+
+        **Note:** This endpoint takes an account token - an access token encoded
+        with a Pismo account ID.
+      operationId: post-transactions-search
+      tags:
+        - Pix
+      parameters:
+        - $ref: '#/components/parameters/AuthHeader'
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pix.TransactionSearchRequest'
+      responses:
+        '200':
+          description: Response Body
+          headers:
+            x-cid:
+              description: Request tracking ID.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pix.TransactionWithDetailResponse'
+        '400':
+          description: Bad Request
+          headers:
+            x-cid:
+              description: Request tracking ID.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EPIX0032:
+                  summary: Error unmarshalling request body
+                  value:
+                    code: EPIX0032
+                    message: Error unmarshalling request body
+                EPIX0049:
+                  summary: Payload validation
+                  value:
+                    code: EPIX0049
+                    message: Validation error
+                    details:
+                      payload:
+                        - field: client_request_id
+                          message: Field "client_request_id" is required
+        '403':
+          description: Forbidden
+          headers:
+            x-cid:
+              description: Request tracking ID.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EPIX0009:
+                  summary: 'Missing required header: "x-tenant"'
+                  value:
+                    code: EPIX0009
+                    message: 'Missing required header: "x-tenant"'
+                EPIX0010:
+                  summary: 'Invalid account id header: "x-account-id"'
+                  value:
+                    code: EPIX0010
+                    message: 'Invalid account id header: "x-account-id"'
+        '404':
+          description: Not Found
+          headers:
+            x-cid:
+              description: Request tracking ID.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EPIX0086:
+                  summary: Pix Transaction not found
+                  value:
+                    code: EPIX0086
+                    message: Pix Transaction not found
+                EPIX0087:
+                  summary: Pix TransactionDetail is not found
+                  value:
+                    code: EPIX0087
+                    message: Pix TransactionDetail is not found
+        '500':
+          description: Internal Server Error
+          headers:
+            x-cid:
+              description: Request tracking ID.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EPIX0004:
+                  summary: Internal server error
+                  value:
+                    code: EPIX0004
+                    message: Internal server error
+                EPIX0014:
+                  summary: Database internal Error
+                  value:
+                    code: EPIX0014
+                    message: Database internal Error
+      x-codegen-request-body-name: RequestBody
   /pix/v1/pix/transmitter-withdrawal/validate:
     post:
       summary: Validate bank as withdrawal servicer
