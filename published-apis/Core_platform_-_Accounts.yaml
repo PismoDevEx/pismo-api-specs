@@ -1512,7 +1512,7 @@ components:
           address_type:
             $ref: '#/components/schemas/AddressType'
           zip_code:
-            $ref: '#/components/schemas/ZipCode2'
+            $ref: '#/components/schemas/ZipCode'
           neighborhood:
             $ref: '#/components/schemas/Neighborhood'
           complementary_address:
@@ -1550,7 +1550,7 @@ components:
           state:
             $ref: '#/components/schemas/State2'
           zip_code:
-            $ref: '#/components/schemas/ZipCode2'
+            $ref: '#/components/schemas/ZipCode'
     ApplicantAddressesMigrationV3:
       description: List of addresses
       type: array
@@ -2173,7 +2173,10 @@ components:
     AvailableMonthlyCredit:
       type: number
       format: float
-      description: Monthly amount available in credit programs
+      description: >-
+        Monthly amount available in credit programs. This field is
+        **DEPRECATED**.
+      deprecated: true
       example: 100.43
     AvailableTotalInstallmentCredit:
       type: number
@@ -2550,7 +2553,9 @@ components:
     CurrentCycle:
       type: integer
       format: int32
-      description: Current statement cycle
+      description: >
+        Current statement cycle. Every cycle is numbered sequentially starting
+        at `1` when the account is ooened.
       example: 3
     CurrentPage:
       type: integer
@@ -3327,7 +3332,8 @@ components:
       example: '2022-07-03T02:02:00Z'
     MonthlyCreditLimit:
       type: number
-      description: Monthly credit limit for credit programs
+      description: Monthly credit limit for credit programs. This field is **DEPRECATED**.
+      deprecated: true
       format: float
       example: 100.43
     MothersName:
@@ -3837,7 +3843,8 @@ components:
       type: integer
       format: int64
       example: 1
-      description: ID of the mailing address registered for this account.
+      description: |
+        ID of the mailing address registered for this account.
     PostalAddressID:
       type: integer
       format: int64
@@ -4297,11 +4304,6 @@ components:
       type: string
       maxLength: 16
       description: Zip/postal code
-      example: 12345-678
-    ZipCode2:
-      type: string
-      description: Zip/postal code
-      maxLength: 16
       example: 12345-678
     AccountHierarchyResponse:
       type: object
