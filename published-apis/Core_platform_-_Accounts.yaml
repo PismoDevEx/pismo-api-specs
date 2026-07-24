@@ -336,9 +336,9 @@ components:
       in: query
       required: false
       description: >
-        If `true`, the response lists up to 3 levels of descendant account
-        numbers (children, grandchildren, and great-grandchildren) in the
-        `children` array. Default is `false`.
+        Should the response list up to 3 levels of descendant account numbers
+        (children, grandchildren, and great-grandchildren) in the `children`
+        array? Default is `false`.
 
 
         Refer to the [Related accounts](doc:accounts-overview#related-accounts)
@@ -812,7 +812,7 @@ components:
           type: object
           description: >-
             Filter by phone number, area code, and/or country code. Phone number
-            is required.
+            is **REQUIRED**.
           properties:
             number:
               $ref: '#/components/schemas/PhoneNumber'
