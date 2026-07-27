@@ -2548,7 +2548,7 @@ components:
     CurrentBalance:
       type: number
       format: float
-      description: Current balance
+      description: Current balance = previous balance + debits - credits.
       example: 100.43
     CurrentCycle:
       type: integer
