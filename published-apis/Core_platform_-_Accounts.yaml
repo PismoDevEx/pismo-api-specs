@@ -3140,7 +3140,7 @@ components:
           $ref: '#/components/schemas/ApplicatantIdentificationType'
     IndividualsName:
       type: string
-      description: Name
+      description: Name - person or company name.
       example: Hyman Roth
     IndividualsName2:
       type: string
