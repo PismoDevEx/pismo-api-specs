@@ -2548,14 +2548,14 @@ components:
     CurrentBalance:
       type: number
       format: float
-      description: Current balance = previous balance + debits - credits.
+      description: Current balance = previous balance + credits - debits.
       example: 100.43
     CurrentCycle:
       type: integer
       format: int32
       description: >
         Current statement cycle. Every cycle is numbered sequentially starting
-        at `1` when the account is ooened.
+        at `1` when the account is opened.
       example: 3
     CurrentPage:
       type: integer
