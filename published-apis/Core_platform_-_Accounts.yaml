@@ -650,9 +650,9 @@ components:
       example: MIG0305202304
     AccountName:
       type: string
-      description: Custom account's name
+      description: Account name
       maxLength: 60
-      example: Account cash management
+      example: Expenses account
     AccountPatch:
       type: object
       description: Object to update an account
