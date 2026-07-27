@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: Banking - Overdraft
   version: 1.0.0
@@ -121,7 +121,7 @@ components:
           format: uuid
           description: >-
             Interest plan ID generated during the plan's creation. Created via
-            the [Create interest plan](ref:post-v1-interest-plan-1) endpoint.
+            the [Create interest plan](ref:post-v1-interest-plan) endpoint.
           example: b935acaf-886c-4817-8f7c-c2cc3ce4d509
         processing_code:
           $ref: '#/components/schemas/ProcessingCode'
