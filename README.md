@@ -21,7 +21,7 @@ https://developers.pismo.io/ using these files.
 
 ## 💬 Get Support
 
-This OpenAPI distribution project is in **Beta**, and Pismo does not provide support for use cases with these files.
+Pismo does not provide support for use cases with these files.
 
 If you have a question, you can open a ticket in the  
 **[Pismo Service Desk](https://developers.pismo.io/pismo-docs/docs/service-desk)**.
