@@ -16,6 +16,8 @@ servers:
 tags:
   - name: Balance configurations
     description: Endpoints to manage account balance configurations.
+  - name: Filter templates
+    description: Endpoints to manage filter templates.
 components:
   parameters:
     AccountIdQuery:
@@ -1193,12 +1195,14 @@ paths:
       summary: Create filter template
       description: >
         Create a reusable filter template that can be referenced in balance
-        configurations. 
+        configurations. Filter templates allow you to define common filter
+        criteria once and reuse them across multiple configurations.
 
-        Filter templates allow you to define common filter criteria once and
-        reuse them across multiple configurations.
+
+        For more information, refer to the [Balance configurations filter
+        templates](doc:filter-templates) guide.
       tags:
-        - Balance configurations
+        - Filter templates
       security:
         - BearerAuth: []
       requestBody:
@@ -1248,7 +1252,7 @@ paths:
         List all filter templates available for the organization with pagination
         support.
       tags:
-        - Balance configurations
+        - Filter templates
       security:
         - BearerAuth: []
       parameters:
@@ -1295,7 +1299,7 @@ paths:
       description: |
         Get a specific filter template by its ID.
       tags:
-        - Balance configurations
+        - Filter templates
       security:
         - BearerAuth: []
       parameters:
@@ -1334,7 +1338,7 @@ paths:
         Update filter template. Each update will version the filter template,
         allowing you to track changes over time.
       tags:
-        - Balance configurations
+        - Filter templates
       security:
         - BearerAuth: []
       parameters:
