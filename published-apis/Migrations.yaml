@@ -490,10 +490,12 @@ components:
     AccountsV2Request:
       title: Account migrations (v2)
       required:
-        - applicant
         - migration
+        - applicant
       type: object
       properties:
+        migration:
+          $ref: '#/components/schemas/AccountsV2Migration'
         applicant:
           type: object
           description: >
@@ -532,39 +534,266 @@ components:
               $ref: '#/components/schemas/AccountsV2Company'
             account:
               $ref: '#/components/schemas/AccountsV2Account'
-        migration:
-          $ref: '#/components/schemas/AccountsV2Migration'
-        due_date_id:
-          type: integer
-          format: int32
-          description: >-
-            Account due date ID. **REQUIRED** for credit accounts. Uses a value
-            returned from the [Get program due dates](ref:getprogramduedates)
-            endpoint.
-          example: 101010
-        program_id:
-          type: integer
-          format: int32
-          description: >-
-            Account's program ID. Must be a program ID previously configured on
-            the Pismo platform.
-          example: 1234
-        metadata:
-          type: object
+            due_date_id:
+              type: integer
+              format: int32
+              description: >-
+                Account due date ID. **REQUIRED** for credit accounts. Uses a
+                value returned from the [Get program due
+                dates](ref:getprogramduedates) endpoint.
+              example: 101010
+            metadata:
+              type: object
+              description: >
+                Account metadata
+
+
+                **Note**: This field must not be used to send Personally
+                Identifiable Information (PII), Payment Card Industry (PCI)
+                data, or any sensitive/regulated information. Metadata fields
+                are intended for operational, non-sensitive data only. For
+                sensitive data, use the specific parameters designed for that 
+                purpose. For more information, refer to [Get started with Pismo
+                APIs](ref:get-started-with-pismo-apis#metadata).
+              example:
+                key1: value1
+                key2: value2
+            program_id:
+              type: integer
+              format: int32
+              description: >-
+                Account's program ID. Must be a program ID previously configured
+                on the Pismo platform.
+              example: 1234
+            corporate_account:
+              $ref: '#/components/schemas/AccountsV2Corporate'
+    AccountsV2Corporate:
+      type: object
+      description: Corporate account details.
+      required:
+        - account_creation_datetime
+        - currency_code
+        - division_code
+      properties:
+        account_creation_datetime:
+          type: string
+          format: date-time
           description: >
-            Account metadata
+            Date-time the account was created (in UTC). The date-time format
+            follows the ISO 8601 standard. Format = `yyyy-MM-ddTHH:mm:ss.sssZ`. 
+          example: '2025-02-01T22:07:58.000Z'
+        currency_code:
+          type: string
+          description: >
+            ISO 4217 currency code that identifies the currency used by the
+            corporate account. Pass either the 3-character alphabetic code (for
+            example, `USD`, `EUR`, `BRL`) or the 3-digit numeric code defined by
+            ISO 4217 (for example, `840`, `978`, or `986`), depending on the
+            data provided by the source system. `currency_code` is **REQUIRED**
+            if the corporate account object is passed.
+          maxLength: 3
+          example: '986'
+        division_code:
+          type: string
+          description: >
+            Code used to identify the division within your organization.
+            `division_code` is **REQUIRED** if the corporate account object is
+            present.
+          maxLength: 36
+          example: United States
+        inactive_since:
+          type: string
+          format: date-time
+          description: >-
+            If the account is in a dormant division/program, this field is
+            **REQUIRED**.
+          example: '2023-08-04T15:00:44.704Z'
+        account_status_update_date:
+          type: string
+          format: date-time
+          description: >
+            Date-time the account was updated to its current status.
+            **REQUIRED** in case of status change. If the
+            `account_status_update_date` is not passed, the account creation
+            date is returned.
+          example: '2025-06-09T13:45:01Z'
+        account_status_reason_ext_id:
+          type: string
+          description: External reason ID specifying account restrictions
+          enum:
+            - DEBIT_ONLY
+            - CREDIT_ONLY
+            - ALL
+            - NONE
+            - CREDIT ONLY - NO FORCE DEBIT ALLOWED
+            - DEBIT ONLY - NO FORCE CREDIT ALLOWED
+            - ANY - NO FORCE ALLOWED
+            - MANUAL - NO FORCE ALLOWED
+            - FORCE CREDIT ONLY - NO FORCE DEBIT ALLOWED
+            - FORCE DEBIT ONLY - NO FORCE CREDIT ALLOWED
+          example: DEBIT_ONLY
+        bank_statements:
+          type: array
+          description: Applicant bank statements
+          items:
+            $ref: '#/components/schemas/BankStatements'
+    BankStatements:
+      type: object
+      properties:
+        available_balance:
+          type: number
+          format: float
+          description: >-
+            Balance used for validating transactions. Equal to the account
+            balance and the credit limit.
+          maximum: 10000000000
+          example: 50.55
+        book_balance:
+          type: number
+          format: float
+          description: >-
+            Total amount of all cleared funds. Also known as the consolidated
+            balance.
+          maximum: 10000000000
+        business_date:
+          type: string
+          format: date
+          description: >-
+            Account balance business date (YYYY-MM-DD). Date of the last balance
+            information.
+          example: '2023-06-22'
+        credit_balance:
+          type: number
+          format: float
+          description: >-
+            Aggregate of the remaining balance from the credit transactions that
+            are posted to the account.
+          maximum: 10000000000
+          example: 0
+        cycle_closing_time:
+          type: string
+          format: date-time
+          description: >-
+            Date the cycle closes for a division. This field follows the
+            timezone configured in division. You can find the division timezone
+            using the [Get division by
+            code](https://developers.pismo.io/pismo-docs/reference/get-division-by-code-v2)
+            endpoint.
+          example: '2025-09-10T19:59:59.999Z'
+        debit_balance:
+          type: number
+          format: float
+          description: Total balance of debit transactions recorded for the account.
+          maximum: 10000000000
+          example: 0
+        earmarked_balance:
+          type: number
+          format: float
+          description: >-
+            An amount that is set aside for future use, but has not been debited
+            from the account. When the earmark is created, the available balance
+            decreases and the earmarked balance increases, however, the book
+            balance stays the same. No debit. When the earmark is executed, the
+            earmarked balance decreases and the available balance is unaffected,
+            however, the book balance decreases. This is the actual debit.
+          maximum: 10000000000
+          example: 0
+        future_dated_credits_balance:
+          type: number
+          format: float
+          description: >-
+            Balance that is scheduled to settle on a future date after the
+            posting date. Balance increases when future-dated credits post, and
+            decreases when those payments are either settled or cancelled.
+          maximum: 10000000000
+          example: 40
+        future_dated_debits_balance:
+          type: number
+          format: float
+          description: >-
+            Balance that is scheduled to settle on a future date after the
+            initial posting date. The account's book balance is debited when
+            settlement occurs. Balance increases when future-dated debits post,
+            and decreases when those payments are either settled or cancelled.
+          maximum: 10000000000
+          example: 0
+        ledger_balance:
+          type: number
+          format: float
+          description: The net result of all fund movements, both cleared and uncleared.
+          maximum: 10000000000
+          example: 110
+        overdraft_limit:
+          type: number
+          format: float
+          description: >-
+            When the account balance is insufficient, the overdraft limit is
+            used and the available balance decreases.
+          maximum: 10000000000
+          example: 40
+        restricted_funds:
+          type: number
+          format: float
+          description: >-
+            Portion of the account balance blocked by regulatory or operational
+            restrictions, such as judicial orders, FDIC receivership, or
+            unavailable transactions.
+          maximum: 10000000000
+        uncleared_checks_balance:
+          type: number
+          format: float
+          description: >-
+            The total value of checks that have posted to the account, but have
+            not yet cleared.
+          maximum: 10000000000
+        uncleared_funds:
+          type: number
+          format: float
+          description: >-
+            Balance under consideration for future clearing. Uncleared funds
+            have a settlement date, which is the date the funds are expected to
+            be confirmed.
+          maximum: 10000000000
+          example: 40
+        value_dated_balance:
+          type: number
+          format: float
+          description: Used to calculate interest accumulation.
+          maximum: 10000000000
+          example: 0
+      migration:
+        $ref: '#/components/schemas/AccountsV2Migration'
+      due_date_id:
+        type: integer
+        format: int32
+        description: >-
+          Account due date ID. **REQUIRED** for credit accounts. Uses a value
+          returned from the [Get program due dates](ref:getprogramduedates)
+          endpoint.
+        example: 101010
+      program_id:
+        type: integer
+        format: int32
+        description: >-
+          Account's program ID. Must be a program ID previously configured on
+          the Pismo platform.
+        example: 1234
+      metadata:
+        type: object
+        description: >
+          Account metadata
 
 
-            **Note**: This field must not be used to send Personally
-            Identifiable Information (PII), Payment Card Industry (PCI) data, or
-            any sensitive/regulated information. Metadata fields are intended
-            for operational, non-sensitive data only. For sensitive data, use
-            the specific parameters designed for that  purpose. For more
-            information, refer to [Get started with Pismo
-            APIs](ref:get-started-with-pismo-apis).
-          example:
-            key1: value1
-            key2: value2
+          **Note**: This field must not be used to send Personally Identifiable
+          Information (PII), Payment Card Industry (PCI) data, or any
+          sensitive/regulated information. Metadata fields are intended for
+          operational, non-sensitive data only. For sensitive data, use the
+          specific parameters designed for that  purpose. For more information,
+          refer to [Get started with Pismo
+          APIs](ref:get-started-with-pismo-apis).
+        example:
+          key1: value1
+          key2: value2
     AccountsV2Personal:
       type: object
       description: >-
