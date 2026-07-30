@@ -3172,51 +3172,6 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalServer'
-  /v1/merchants/{merchantId}/transactions:
-    post:
-      deprecated: true
-      summary: Create merchant transaction (deprecated)
-      description: >
-        Create merchant transaction using the merchant ID. (Outdated: For an
-        updated version of the merchant transaction endpoint refer to [Create
-        merchant
-        transaction](https://developers.pismo.io/pismo-docs/reference/post-merchant-transaction-sale).)
-        <br>
-
-        This endpoint generates a [Merchant transaction
-        created](https://developers.pismo.io/events/docs/merchants-merchant-transaction-created-1)
-        event.
-      operationId: createMerchantUsingMerchantID
-      tags:
-        - Merchant transaction
-      parameters:
-        - $ref: '#/components/parameters/ContentTypeHeader'
-        - $ref: '#/components/parameters/AuthorizationTokenHeader'
-        - $ref: '#/components/parameters/MerchantIDpath'
-      requestBody:
-        description: Request body
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
-        '409':
-          $ref: '#/components/responses/409Conflict'
-        '422':
-          $ref: '#/components/responses/422UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
   /v1/merchants/{merchantId}/workflow/statuses:
     get:
       summary: List status transitions

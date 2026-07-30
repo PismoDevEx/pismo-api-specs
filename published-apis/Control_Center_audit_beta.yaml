@@ -440,7 +440,7 @@ components:
 paths:
   /v1/audit:
     get:
-      summary: List audit records [beta]
+      summary: List audit records
       description: Returns paginated audit records based on filter parameters.
       operationId: listAuditRecords
       tags:
