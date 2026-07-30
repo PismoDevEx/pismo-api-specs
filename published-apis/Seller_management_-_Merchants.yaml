@@ -3394,49 +3394,6 @@ paths:
           $ref: '#/components/responses/408RequestTimeout'
         '500':
           $ref: '#/components/responses/500InternalServer'
-  /v1/merchants/{merchantId}/reversal-transactions:
-    post:
-      deprecated: true
-      summary: Create reversal transaction
-      description: >
-        Create reversal transaction using merchant ID. This endpoint is
-        **deprecated**. It is replaced by [Cancel merchant
-        transaction](https://developers.pismo.io/pismo-docs/reference/post-merchant-transaction-cancel).
-
-        This endpoint generates a [Merchant transaction
-        settled](https://developers.pismo.io/events/docs/merchants-merchant-transaction-settled-1)
-        event.
-      operationId: createReversalTransaction
-      tags:
-        - Merchant transaction
-      parameters:
-        - $ref: '#/components/parameters/ContentTypeHeader'
-        - $ref: '#/components/parameters/AuthorizationTokenHeader'
-        - $ref: '#/components/parameters/MerchantIDpath'
-      requestBody:
-        description: Request body
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReversalTransaction'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReversalTransactionResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
-        '409':
-          $ref: '#/components/responses/409Conflict'
-        '422':
-          $ref: '#/components/responses/422UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
   /v2/merchants/{merchantId}/advancements:
     post:
       summary: Create advancement request (outdated)
