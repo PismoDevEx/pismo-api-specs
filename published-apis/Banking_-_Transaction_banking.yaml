@@ -5000,7 +5000,7 @@ components:
         `requested_amount`.
 
 
-        Hold Method:
+        Hold method:
           * `STRICT` holds require the full requested amount. If that amount cannot be held, the operation fails.
           * `FLEXIBLE` might apply only the available portion
 
@@ -5029,7 +5029,7 @@ components:
           * For `EXECUTE_FUNDS`, this is the amount to be debited from the held funds.
           * Precision follows the currency's minor units. For example:
             * Two decimals (USD, EUR): values use increments of 0.01
-            * Three decimals (BHD, JOD, KWD, OMR, TND):values use increments of 0.001
+            * Three decimals (BHD, JOD, KWD, OMR, TND): values use increments of 0.001
             * Four‑decimal (CLF): values use increments of 0.0001
       minimum: 0.0001
       maximum: 100000000000000000
@@ -5106,7 +5106,7 @@ components:
         **Note**:
           * `RESTRICT_FUNDS`: increases the held amount of the existing restriction.
           * `RELEASE_FUNDS`: releases all or part of the held funds back to the available balance.
-          * `EXECUTE_FUNDS`: debits (consumes) all or part of the held funds against the restriction.
+          * `EXECUTE_FUNDS`: debits all or part of the held funds against the restriction.
       enum:
         - RESTRICT_FUNDS
         - RELEASE_FUNDS
