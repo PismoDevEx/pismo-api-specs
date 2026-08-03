@@ -1051,6 +1051,73 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'
+  /v1/programs/{programId}/configurations:
+    get:
+      summary: List additional accrual type configurations
+      description: >
+        List additional accrual type configurations for a program.
+
+
+        The response includes both active and deleted configurations. Deleted
+        configurations have a non-null `deleted_at` field.
+      operationId: find-configuration-by-filter
+      tags:
+        - Additional accrual type configurations
+      parameters:
+        - $ref: '#/components/parameters/ProgramIdPath'
+        - name: transactionCategoryId
+          description: Transaction category ID
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 12345
+        - name: accrualType
+          description: Accrual type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - WITHDRAWAL_INTEREST
+              - BILLPAYMENT_INTEREST
+              - OVERDRAFT_INTEREST
+              - FINANCIAL_TAX
+              - REFINANCING
+              - OVERDUE
+              - FINE
+            example: WITHDRAWAL_INTEREST
+        - name: periodToCalculate
+          description: Period to calculate the accruals
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - UNTIL_DUE_DATE
+              - AFTER_DUE_DATE
+            example: UNTIL_DUE_DATE
+        - name: configuration
+          description: Optional configuration name to filter by a specific configuration
+          in: query
+          required: false
+          schema:
+            type: string
+            example: ONCE_AFTER_TRANSACTION_DUE_DATE
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccrualTypeConfigurationGetResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
   /v2/programs/{programId}/configuration:
     post:
       summary: Create additional accrual type configuration
@@ -1214,73 +1281,6 @@ paths:
                     message: >-
                       Validation Error: The periodToCalculate (XXXXXXXX) not
                       found
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-  /v1/programs/{programId}/configurations:
-    get:
-      summary: List additional accrual type configurations
-      description: >
-        List additional accrual type configurations for a program.
-
-
-        The response includes both active and deleted configurations. Deleted
-        configurations have a non-null `deleted_at` field.
-      operationId: find-configuration-by-filter
-      tags:
-        - Additional accrual type configurations
-      parameters:
-        - $ref: '#/components/parameters/ProgramIdPath'
-        - name: transactionCategoryId
-          description: Transaction category ID
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int64
-            example: 12345
-        - name: accrualType
-          description: Accrual type
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - WITHDRAWAL_INTEREST
-              - BILLPAYMENT_INTEREST
-              - OVERDRAFT_INTEREST
-              - FINANCIAL_TAX
-              - REFINANCING
-              - OVERDUE
-              - FINE
-            example: WITHDRAWAL_INTEREST
-        - name: periodToCalculate
-          description: Period to calculate the accruals
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - UNTIL_DUE_DATE
-              - AFTER_DUE_DATE
-            example: UNTIL_DUE_DATE
-        - name: configuration
-          description: Optional configuration name to filter by a specific configuration
-          in: query
-          required: false
-          schema:
-            type: string
-            example: ONCE_AFTER_TRANSACTION_DUE_DATE
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccrualTypeConfigurationGetResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/programs/{programId}/transaction-category-id/{transactionCategoryId}/accrual-type/{accrualType}/period-to-calculate/{periodToCalculate}/configurations:
