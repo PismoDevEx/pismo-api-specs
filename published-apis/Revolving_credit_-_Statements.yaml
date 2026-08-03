@@ -1662,18 +1662,10 @@ components:
     CurrentBalance:
       type: number
       description: >-
-        Current balance of the debt. That is, the total of the debit
-        transactions for the account. `current_balance` = `previous_balance` +
-        `debits` - `credits`.
+        Total amount you owe on the account right now. It updates as
+        transactions post, so it can change many times during a billing cycle.
+        `current_balance` = `previous_balance` + `debits` - `credits`.
       example: 99.99
-    CurrentBalance2:
-      type: number
-      format: float
-      description: >-
-        Current balance of the debt. That is, the total of the debit
-        transactions for the account. `current_balance` = `previous_balance` +
-        `debits` - `credits`.
-      example: 52.2
     Currentycle:
       type: integer
       format: int64
@@ -2374,7 +2366,7 @@ components:
               previous_balance:
                 $ref: '#/components/schemas/PreviousBalance'
               current_balance:
-                $ref: '#/components/schemas/CurrentBalance2'
+                $ref: '#/components/schemas/CurrentBalance'
               minimum_payment:
                 $ref: '#/components/schemas/MinimumPayment'
               total_due_amount:
@@ -3770,7 +3762,7 @@ components:
     PreviousBalance:
       type: number
       format: float
-      description: Previous statement balance
+      description: Amount you owed on the account when the previous statement closed.
       example: 99.99
     PreviousDueDate:
       type: string
@@ -3801,6 +3793,15 @@ components:
       type: integer
       format: int64
       description: Program due date ID
+      example: 3812
+    ProgramDueDateIdForUpdateCalendar:
+      type: integer
+      format: int64
+      description: >
+        Program due date ID. This field defines the new program due date for
+        future statements for this account. After each cycle closure, the Pismo
+        platform generates a statement that uses the program due date defined in
+        this request.
       example: 3812
     ProgramDueDateResponse:
       type: object
@@ -4224,6 +4225,17 @@ components:
       description: Statement close date. Format = yyyy-mm-ddThh:mm:ss.
       format: full-date-time
       example: '2020-05-21T03:00:00Z'
+    StatementDueDateRequest:
+      required:
+        - account_default_program_due_date_id
+      type: object
+      properties:
+        account_default_program_due_date_id:
+          $ref: '#/components/schemas/ProgramDueDateIdForUpdateCalendar'
+        statements:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatementRequest'
     StatementDueDateResponse:
       type: object
       properties:
@@ -4233,17 +4245,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StatementCalendarResponse'
-    StatementDueDateRequest:
-      required:
-        - account_default_program_due_date_id
-      type: object
-      properties:
-        account_default_program_due_date_id:
-          $ref: '#/components/schemas/ProgramDueDateID'
-        statements:
-          type: array
-          items:
-            $ref: '#/components/schemas/StatementRequest'
     StatementFillingV1ResponseSuccess:
       type: object
       properties:
@@ -6303,6 +6304,11 @@ paths:
 
         - To function properly, the calendar must be updated no later than two
         days before the cycle closes.
+
+        - The endpoint only works for [fixed due date
+        calendars](doc:fixed-due-date-calendars). For other types of calendars,
+        refer to the [Calendar management
+        strategies](doc:calendar-management-strategies) guide.
 
         - This endpoint requires an account token - an access token encoded with
         a Pismo account ID. Tokens can expire quickly, which can result in a
