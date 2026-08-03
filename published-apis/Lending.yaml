@@ -667,6 +667,8 @@ components:
           $ref: '#/components/schemas/ExternalID'
         loan_amount:
           $ref: '#/components/schemas/LoanAmount'
+        loan_principal_amount:
+          $ref: '#/components/schemas/LoanPrincipalAmount'
         total_payable:
           $ref: '#/components/schemas/TotalPayable'
         total_expected_payment_amount:
@@ -1028,6 +1030,13 @@ components:
       format: double
       description: Loan amount
       example: 2000
+    LoanPrincipalAmount:
+      type: number
+      format: double
+      description: >-
+        Principal portion of the loan amount, excluding interest, fees, taxes,
+        and penalty
+      example: 1800
     LoanID:
       maxLength: 36
       minLength: 0
@@ -1957,8 +1966,10 @@ components:
       properties:
         stop_accrual_number_of_days:
           description: >-
-            Number of days after which interest accrual stops on overdue
-            installments
+            Maximum period during which delinquency-related charges accrue after
+            a payment is overdue, based on lender policy or local regulations.
+            Once this threshold is reached, new penalty charges stop posting, so
+            the outstanding debt no longer increases.
           type: number
           format: int32
           minimum: 1
@@ -2215,6 +2226,21 @@ components:
           format: double
           example: 100
           description: Expected amount to be paid
+        reference_date:
+          type: string
+          format: date
+          example: '2026-08-01'
+          description: >-
+            Reference date applied to the prepayment (pricing base); null when
+            not provided in the request.
+        expiration_date:
+          type: string
+          format: date
+          example: '2026-08-31'
+          description: >-
+            Date after which the pending prepayment expires and its installments
+            revert to their base status. Defaults to reference_date (or today
+            when absent) plus 30 days.
         insurance:
           type: object
           description: Insurance prepayment details (if applicable)
@@ -2461,22 +2487,122 @@ paths:
                     Paginated list of loans (default, when summarizeLoans is
                     omitted or false)
                   value:
-                    has_next: true
                     next_cursor: >-
                       NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
+                    has_next: true
                     items:
                       - loan_id: MY_CUSTOM_LOAN_ID
-                        account_id: 514751581
                         external_id: my_external_id
+                        status: ACTIVE
+                        product_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                        account_id: 514751582
+                        created_at: '2024-03-15T13:00:00.000+00:00'
+                        updated_at: '2024-03-15T13:00:00.000+00:00'
+                        start_date: '2022-06-28'
                         loan_amount: 2000
+                        loan_principal_amount: 1800
+                        total_expected_payment_amount: 2052
+                        grace_period_days: 7
+                        days_past_due: 12
+                        original_loan_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                        restructure_loan_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                        rates:
+                          interest_rate: 12
+                          annual_interest_rate: 12
+                          effective_monthly_cost: 12.7
+                          effective_annual_cost: 319.98
                         total_payable:
                           principal: 1800
                           interest: 200
-                        product_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
-                        start_date: '2022-06-28'
-                        status: ACTIVE
-                        created_at: '2024-03-15T13:00:00.000+00:00'
-                        updated_at: '2024-03-15T13:00:00.000+00:00'
+                          charge: 5
+                          tax: 10
+                          fee: 10
+                          penalty: 27
+                          total: 2052
+                          amount_due:
+                            principal: 1800
+                            interest: 200
+                            charge: 5
+                            tax: 10
+                            fee: 10
+                            penalty: 27
+                            total: 2052
+                          arrears:
+                            principal: 0
+                            interest: 0
+                            charge: 0
+                            tax: 0
+                            fee: 0
+                            penalty: 0
+                            total: 0
+                        prepayments:
+                          - prepayment_id: 73e45fd5-759f-4e04-a88a-7172fa948afa
+                            status: REGISTERED
+                            settlement_date: '2026-06-15T10:00:00.000+00:00'
+                            amount_paid: 1000
+                            penalty_amount_paid: 50
+                            insurance_amount_paid: 0
+                            tax_amount_paid: 0
+                            reduce_option: INSTALLMENT
+                            new_remaining_total: 4000
+                            created_at: '2026-06-15T10:00:00.000+00:00'
+                            updated_at: '2026-06-15T10:00:00.000+00:00'
+                        repayment_schedule:
+                          - repayment_id: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+                            transactions_ids:
+                              - 6354273849
+                            status: SCHEDULED
+                            period: 1
+                            due_date: '2022-06-28'
+                            real_due_date: '2025-06-28'
+                            present_value_amount: 100
+                            present_value_discount: 100
+                            amount_due:
+                              principal: 1800
+                              interest: 200
+                              charge: 5
+                              tax: 10
+                              fee: 10
+                              penalty: 27
+                              total: 2052
+                            amount_paid:
+                              principal: 0
+                              interest: 0
+                              charge: 0
+                              tax: 0
+                              fee: 0
+                              penalty: 0
+                              total: 0
+                            initial_amount:
+                              principal: 1800
+                              interest: 200
+                              charge: 5
+                              tax: 10
+                              fee: 10
+                              penalty: 27
+                              total: 2052
+                            insurance:
+                              principal: 15
+                              interest: 2
+                              charge: 1
+                              tax: 1
+                              fee: 1
+                              penalty: 0
+                              total: 20
+                        disbursement:
+                          type: SINGLE
+                          schedule:
+                            - id: 54efa995-66f1-4595-9934-5b92222faf37
+                              amount: 300
+                              date: '2025-11-13'
+                              disbursement_account:
+                                account_type: INTERNAL
+                                account_id: 317890964
+                              authorization_id: 2422410859
+                              tracking_id: 003b3de8-c321-464c-a3dd-6009b8698325
+                              status: PAID
+                              transactions_ids:
+                                - 6354273849
                 Summary response:
                   summary: Aggregated loan summary (when summarizeLoans is true)
                   value:
