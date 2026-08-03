@@ -996,7 +996,10 @@ components:
           description: >-
             The number of days in the grace period. Withdrawals are allowed
             during this period. This field applies only if no grace period
-            penalty is defined and penalties do not apply.
+            penalty is defined and penalties do not apply. The grace‑period
+            expiration is scheduled according to the account’s division
+            timezone, using the parent division’s timezone when available, or
+            UTC when no division timezone is defined.
           example: 30
         name:
           type: string
@@ -1115,7 +1118,10 @@ components:
           description: >-
             Number of days during which changes can be made to the product
             before it rolls over. If you define a grace period penalty,
-            configure it under `penalties.grace_period`.
+            configure it under `penalties.grace_period`. The grace‑period
+            expiration is scheduled according to the account’s division
+            timezone, using the parent division’s timezone when available, or
+            UTC when no division timezone is defined.
           example: 10
         min_amount:
           type: number
