@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.1.3
 info:
   title: Banking - Interest-bearing accounts
   version: 1.0.0
@@ -996,10 +996,7 @@ components:
           description: >-
             The number of days in the grace period. Withdrawals are allowed
             during this period. This field applies only if no grace period
-            penalty is defined and penalties do not apply. The grace‑period
-            expiration is scheduled according to the account’s division
-            timezone, using the parent division’s timezone when available, or
-            UTC when no division timezone is defined.
+            penalty is defined and penalties do not apply.
           example: 30
         name:
           type: string
@@ -1118,10 +1115,7 @@ components:
           description: >-
             Number of days during which changes can be made to the product
             before it rolls over. If you define a grace period penalty,
-            configure it under `penalties.grace_period`. The grace‑period
-            expiration is scheduled according to the account’s division
-            timezone, using the parent division’s timezone when available, or
-            UTC when no division timezone is defined.
+            configure it under `penalties.grace_period`.
           example: 10
         min_amount:
           type: number
@@ -2844,10 +2838,13 @@ paths:
         - Deposit account open
       summary: Open deposit account
       description: >
-        Create or locate a transaction banking account and attach a validated
-        deposit product in a single request. On success, the endpoint generates
-        a [Deposit account opened
-        event](https://developers.pismo.io/events/docs/deposit-product-deposit-account-opened-1).
+        Creates or locates a transaction banking account and attaches a
+        validated deposit product in a single request. When the operation
+        succeeds, the Pismo platform generates the [Deposit account
+        opened](https://developers.pismo.io/events/docs/deposit-product-deposit-account-opened-1)
+        and [Account
+        attached](https://developers.pismo.io/events/docs/deposit-product-account-attach-1)
+        events.
 
 
         This endpoint supports two scenarios:
