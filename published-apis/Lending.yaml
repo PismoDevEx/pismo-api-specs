@@ -2720,9 +2720,14 @@ paths:
       tags:
         - Loan products
       summary: Update loan product
-      description: >-
-        Update an existing loan product. Only the fields provided in the request
-        body will be updated.
+      description: >
+        Update an existing loan product with only the fields that are passed in
+        the request body.
+
+
+        This endpoint generates a [Loan product
+        updated](https://developers.pismo.io/events/docs/lending-loan-product-update-1)
+        event.
       operationId: updateLoanProductV2
       parameters:
         - $ref: '#/components/parameters/ProductIdPath'
@@ -2858,9 +2863,14 @@ paths:
       tags:
         - Loan products
       summary: Delete loan product
-      description: >-
+      description: >
         Delete a loan product by its ID. This operation marks the loan product
         as deleted and it cannot be used for new loans.
+
+
+        This endpoint generates a [Loan product
+        updated](https://developers.pismo.io/events/docs/lending-loan-product-update-1)
+        event.
       operationId: deleteLoanProductV2
       parameters:
         - $ref: '#/components/parameters/ProductIdPath'
@@ -4005,6 +4015,11 @@ paths:
         processing codes used to record the prepayment, penalty, and insurance
 
         movements in the prepayment workflow.
+
+
+        This endpoint generates a [Lending prepayment status
+        changed](https://developers.pismo.io/events/docs/lending-lending-prepayment-v2-status-changed-1)
+        event.
       operationId: registerPrepaymentSimulationV2
       parameters:
         - $ref: '#/components/parameters/LoanIdPath'
