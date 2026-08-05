@@ -199,7 +199,7 @@ components:
             $ref: '#/components/schemas/StatusNetworkVisa'
           default_purge_days:
             $ref: '#/components/schemas/DefaultPurgeDaysVisa'
-    BulletinPostEloModel:
+    Bulletin_Post_Elo_Model:
       type: object
       description: Register a Elo card.
       required:
@@ -207,7 +207,7 @@ components:
       properties:
         card_id:
           $ref: '#/components/schemas/CardID'
-    BulletinPostMastercardModel:
+    Bulletin_Post_Mastercard_Model:
       type: object
       description: Register a Mastercard card.
       required:
@@ -220,7 +220,7 @@ components:
           $ref: '#/components/schemas/ReasonMastercard'
         purge_date:
           $ref: '#/components/schemas/PurgeDateMastercard'
-    BulletinPostVisaModel:
+    Bulletin_Post_Visa_Model:
       type: object
       description: Register a Visa card.
       required:
@@ -310,7 +310,7 @@ components:
           $ref: '#/components/schemas/RegionCode'
         histories:
           $ref: '#/components/schemas/BulletinResponseHistoryModel'
-    BulletinSetupEloModel:
+    Bulletin_Setup_Elo_Model:
       type: object
       description: Register a Elo Protection Bulletin setup.
       required:
@@ -323,7 +323,7 @@ components:
           $ref: '#/components/schemas/ProgramID'
         allowed_status:
           $ref: '#/components/schemas/AllowedStatusEloModel'
-    BulletinSetupMastercardModel:
+    Bulletin_Setup_Mastercard_Model:
       type: object
       description: Register a Mastercard Protection Bulletin setup.
       required:
@@ -339,7 +339,7 @@ components:
           $ref: '#/components/schemas/ProgramID'
         allowed_status:
           $ref: '#/components/schemas/AllowedStatusMastercardModel'
-    BulletinSetupVisaModel:
+    Bulletin_Setup_Visa_Model:
       type: object
       description: Register a Visa Protection Bulletin setup.
       required:
@@ -625,17 +625,17 @@ components:
       type: string
       description: >
         Reason for adding card to Protection Bulletin. **REQUIRED** for
-        Mastercard. 
-          `C` - Credit 
-          `F` - Fraud 
-          `G` - ATM premium listing 
-          `L` - Lost 
-          `O` - Other 
-          `P` - Capture card 
-          `S` - Stolen 
-          `U` - Unauthorized use 
-          `V` - Premium listing 
-          `X` - Counterfeit 
+        Mastercard. <br />
+          `C` - Credit <br />
+          `F` - Fraud <br />
+          `G` - ATM premium listing <br />
+          `L` - Lost <br />
+          `O` - Other <br />
+          `P` - Capture card <br />
+          `S` - Stolen <br />
+          `U` - Unauthorized use <br />
+          `V` - Premium listing <br />
+          `X` - Counterfeit <br />
 
         Mastercard documentation: Customer Interface Specification - DE 120
         (Record Data) Layout for MCC102 - Field ID 2 (Entry Reason)
@@ -654,16 +654,17 @@ components:
     ReasonVisa:
       type: string
       description: >
-        Reason for adding card to Protection Bulletin. **REQUIRED** for Visa.
-          `04` - Pickup card
-          `05` - Do not honor
-          `07` - Pickup card, special condition
-          `11` - Approval for **VIP**
-          `14` - Invalid account number (no such number)
-          `41` - Lost card, pickup
-          `43` - Stolen card, pickup
-          `46` - Closed account
-          `54` - Expired card
+        Reason for adding card to Protection Bulletin. **REQUIRED** for Visa.<br
+        />
+          `04` - Pickup card<br />
+          `05` - Do not honor<br />
+          `07` - Pickup card, special condition<br />
+          `11` - Approval for **VIP**<br />
+          `14` - Invalid account number (no such number)<br />
+          `41` - Lost card, pickup<br />
+          `43` - Stolen card, pickup<br />
+          `46` - Closed account<br />
+          `54` - Expired card<br />
 
         Visa documentation: VisaNet Authorization-Only Online Messages –
         Technical Specifications - Table 214: Field 127E.1 Account Screen
@@ -685,14 +686,14 @@ components:
         Region code contains one or more Account Screen Authorization File
         (ASAF) region codes that define the distribution of a Visa cardholder
         account number in Card Recovery Bulletin Service files. **REQUIRED** for
-        Visa. 
-          `0` - No Bulletin / V.I.P. Only (cannot be combined with other region codes)
-          `A` - All Asia-Pacific region countries
-          `B` - All  Central Europe, Middle East, and Africa (CEMEA) region countries.
-          `C` - All Visa Canada
-          `D` - National Card Recovery Bulletin
-          `E` - All European countries
-          `F` - All Latin America and Caribbean (LAC) region countries 
+        Visa. <br />
+          `0` - No Bulletin / V.I.P. Only (cannot be combined with other region codes)<br />
+          `A` - All Asia-Pacific region countries<br />
+          `B` - All  Central Europe, Middle East, and Africa (CEMEA) region countries.<br />
+          `C` - All Visa Canada<br />
+          `D` - National Card Recovery Bulletin<br />
+          `E` - All European countries<br />
+          `F` - All Latin America and Caribbean (LAC) region countries <br />
 
         Region codes can be in any order, except no other region code can be
         specified in combination with region code 0.
@@ -732,17 +733,18 @@ components:
     StatusNetworkMastercard:
       type: string
       description: >
-        Network status equivalent to Pismo status. **REQUIRED** for Mastercard. 
-          `C` - Credit 
-          `F` - Fraud 
-          `G` - ATM Premium Listing 
-          `L` - Lost 
-          `O` - Other 
-          `P` - Capture card 
-          `S` - Stolen 
-          `U` - Unauthorized use 
-          `V` - Premium listing 
-          `X` - Counterfeit 
+        Network status equivalent to Pismo status. **REQUIRED** for Mastercard.
+        <br />
+          `C` - Credit <br />
+          `F` - Fraud <br />
+          `G` - ATM Premium Listing <br />
+          `L` - Lost <br />
+          `O` - Other <br />
+          `P` - Capture card <br />
+          `S` - Stolen <br />
+          `U` - Unauthorized use <br />
+          `V` - Premium listing <br />
+          `X` - Counterfeit <br />
 
         Mastercard documentation: Customer Interface Specification - DE 120
         (Record Data) Layout for MCC102 - Field ID 2 (Entry Reason).
@@ -761,16 +763,16 @@ components:
     StatusNetworkVisa:
       type: string
       description: >
-        Network status equivalent to Pismo status. **REQUIRED** for Visa.
-          `04` - Pickup card
-          `05` - Do not honor
-          `07` - Pickup card, special condition
-          `11` - Approval for **VIP**
-          `14` - Invalid account number (no such number)
-          `41` - Lost card, pickup
-          `43` - Stolen card, pickup
-          `46` - Closed account
-          `54` - Expired card
+        Network status equivalent to Pismo status. **REQUIRED** for Visa.<br />
+          `04` - Pickup card<br />
+          `05` - Do not honor<br />
+          `07` - Pickup card, special condition<br />
+          `11` - Approval for **VIP**<br />
+          `14` - Invalid account number (no such number)<br />
+          `41` - Lost card, pickup<br />
+          `43` - Stolen card, pickup<br />
+          `46` - Closed account<br />
+          `54` - Expired card<br />
 
         Visa documentation: VisaNet Authorization-Only Online Messages –
         Technical Specifications - Table 214: Field 127E.1 Account Screen
@@ -1558,9 +1560,9 @@ paths:
           application/json:
             schema:
               anyOf:
-                - $ref: '#/components/schemas/BulletinPostEloModel'
-                - $ref: '#/components/schemas/BulletinPostMastercardModel'
-                - $ref: '#/components/schemas/BulletinPostVisaModel'
+                - $ref: '#/components/schemas/Bulletin_Post_Elo_Model'
+                - $ref: '#/components/schemas/Bulletin_Post_Mastercard_Model'
+                - $ref: '#/components/schemas/Bulletin_Post_Visa_Model'
             examples:
               Register a Elo card:
                 value:
@@ -1732,9 +1734,9 @@ paths:
           application/json:
             schema:
               anyOf:
-                - $ref: '#/components/schemas/BulletinSetupEloModel'
-                - $ref: '#/components/schemas/BulletinSetupMastercardModel'
-                - $ref: '#/components/schemas/BulletinSetupVisaModel'
+                - $ref: '#/components/schemas/Bulletin_Setup_Elo_Model'
+                - $ref: '#/components/schemas/Bulletin_Setup_Mastercard_Model'
+                - $ref: '#/components/schemas/Bulletin_Setup_Visa_Model'
             examples:
               Setup Rule Elo with allowed status:
                 value:
