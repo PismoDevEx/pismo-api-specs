@@ -6005,8 +6005,8 @@ paths:
                 cvv2: '178'
                 icvv: '010'
                 track1_magnetic_stripe: B65...^NOT/REAL...00000?
-                track1_chip: B6505670006255449^DOE/JOHN ^2805201000000000000000010000000?
-                track2_chip: 6505670006255449D28052010000001000000F
+                track1_chip: B650...NOT/REAL...0000000?
+                track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
                 pinblock: E6...90
                 service_code_cvv1: '201'
@@ -6127,10 +6127,10 @@ paths:
                 cvv2: '178'
                 icvv: '010'
                 track1_magnetic_stripe: B65...^NOT/REAL...00000?
-                track1_chip: B6505670006255449^DOE/JOHN ^2805201000000000000000010000000?
-                track2_chip: 6505670006255449D28052010000001000000F
+                track1_chip: B650...NOT/REAL...0000000?
+                track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
-                pinblock: E6203FAE966D7D90
+                pinblock: E6...NOT/REAL...7D90
                 service_code_cvv1: '201'
                 service_code_cvv2: '000'
                 service_code_icvv: '999'
@@ -6231,10 +6231,10 @@ paths:
                 cvv2: '178'
                 icvv: '010'
                 track1_magnetic_stripe: B65...^NOT/REAL...00000?
-                track1_chip: B6505670006255449^DOE/JOHN ^2805201000000000000000010000000?
-                track2_chip: 6505670006255449D28052010000001000000F
+                track1_chip: B650...NOT/REAL...0000000?
+                track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
-                pinblock: E6203FAE966D7D90
+                pinblock: E62...NOT/REAL...D90
                 service_code_cvv1: '201'
                 service_code_cvv2: '000'
                 service_code_icvv: '999'
@@ -6347,10 +6347,10 @@ paths:
                 cvv2: '178'
                 icvv: '010'
                 track1_magnetic_stripe: B65....^NOT/REAL...00000?
-                track1_chip: B6505670006255449^DOE/JOHN ^2805201000000000000000010000000?
-                track2_chip: 6505670006255449D28052010000001000000F
+                track1_chip: B650...NOT/REAL...0000000?
+                track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
-                pinblock: E6203FAE966D7D90
+                pinblock: E62...NOT/REAL...D90
                 service_code_cvv1: '201'
                 service_code_cvv2: '000'
                 service_code_icvv: '999'
