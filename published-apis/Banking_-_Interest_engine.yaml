@@ -339,7 +339,7 @@ components:
       format: float
       description: >-
         Fixed annual interest rate for investments or deposits. If a `benchmark`
-        value is provided, this field must be null. Otherwise, this field is
+        value is provided, this field must be `null`. Otherwise, this field is
         required.
       example: 0.1
     FloorEffectiveRate:
@@ -841,7 +841,7 @@ components:
       description: >-
         Rate linked to the benchmark rate. For example, for 110% FED, margin
         rate is 110%. If a `benchmark` value is not provided, this field must be
-        null. Otherwise, this field is required.
+        `null`. Otherwise, this field is required.
       example: 1.1
     OperationType:
       type: string
