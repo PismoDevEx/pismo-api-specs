@@ -67,7 +67,9 @@ components:
       required: true
       description: >
         JSON Web Token (JWT). Tokens expire quickly, which can result in an
-        **Unauthorized** message.
+        **Unauthorized** message. For more information on authentication best
+        practices, refer to [Basic authentication with client
+        credentials](https://developers.pismo.io/pismo-docs/docs/basic-authentication-with-client-credentials#initial-authentication).
       example: eyJ...F8E
   schemas:
     PostDisputeV1Request:
