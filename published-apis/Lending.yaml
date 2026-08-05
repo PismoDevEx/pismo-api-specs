@@ -665,6 +665,8 @@ components:
           $ref: '#/components/schemas/AccountID'
         external_id:
           $ref: '#/components/schemas/ExternalID'
+        authorization_tracking_id:
+          $ref: '#/components/schemas/AuthorizationTrackingId'
         loan_amount:
           $ref: '#/components/schemas/LoanAmount'
         loan_principal_amount:
@@ -673,6 +675,8 @@ components:
           $ref: '#/components/schemas/TotalPayable'
         total_expected_payment_amount:
           $ref: '#/components/schemas/TotalExpectedPaymentAmount'
+        transactions_ids:
+          $ref: '#/components/schemas/TransactionsIDs'
         prepayments:
           description: >-
             List of prepayments registered for this loan. Only populated when
@@ -2493,6 +2497,7 @@ paths:
                     items:
                       - loan_id: MY_CUSTOM_LOAN_ID
                         external_id: my_external_id
+                        authorization_tracking_id: 4df987e3-8179-11ed-8209-06c7b022d1ee
                         status: ACTIVE
                         product_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
                         account_id: 514751582
@@ -2506,6 +2511,8 @@ paths:
                         days_past_due: 12
                         original_loan_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
                         restructure_loan_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                        transactions_ids:
+                          - 6354273849
                         rates:
                           interest_rate: 12
                           annual_interest_rate: 12
