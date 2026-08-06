@@ -693,11 +693,11 @@ components:
     returnReason:
       type: string
       description: |
-        The reason for the return.<br />
-          * `account_closed` — The beneficiary account is no longer active.<br />
-          * `account_currency_mismatch`—The payment currency does not match the account currency.<br />
-          * `other`—A reason that the other specific codes do not cover.<br />
-          * `cancelled_by_payer`—The payer requests cancellation of the payment.<br />
+        The reason for the return.
+          * `account_closed` — The beneficiary account is no longer active.
+          * `account_currency_mismatch`—The payment currency does not match the account currency.
+          * `other`—A reason that the other specific codes do not cover.
+          * `cancelled_by_payer`—The payer requests cancellation of the payment.
       enum:
         - account_closed
         - account_currency_mismatch
@@ -770,23 +770,23 @@ components:
         - CANCELLED
         - HOLD
       description: >
-        - `CREATED` - Payment has been created and is pending processing
+        - `CREATED` - Payment has been created and is pending processing<br />
 
         - `PROCESSING` - P2P balance was impacted and waiting for provider
         confirmation. For cashin, the transaction means the money will be
-        credited on the next Working Day
+        credited on the next Working Day<br />
 
-        - `SETTLED` - Transaction completed processing and is settled
+        - `SETTLED` - Transaction completed processing and is settled<br />
 
         - `CANCELLED` - Something went wrong and the transaction is cancelled.
-        Refer to `reason` for more details
+        Refer to `reason` for more details<br />
 
-        - `HOLD` - The payment is on hold, pending further review
+        - `HOLD` - The payment is on hold, pending further review<br />
       example: PROCESSING
     statusReasonCode:
       type: string
       description: |
-        Reason for the return
+        Reason for the return:
           * `1` - Instruction cancelled by payer
           * `2` - Payer deceased
           * `3` - Account transferred to a new bank or building society
