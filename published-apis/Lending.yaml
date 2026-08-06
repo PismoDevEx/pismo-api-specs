@@ -67,7 +67,7 @@ components:
       schema:
         $ref: '#/components/schemas/CurrencyCode'
     IdempotencyKeyHeader:
-      name: idempotency-key
+      name: Idempotency-Key
       description: Idempotency key
       in: header
       required: false
@@ -987,6 +987,52 @@ components:
       description: Refund paid repayments upon loan cancellation?
       default: false
       example: true
+    CancelAllLoansV2Request:
+      type: object
+      description: Request body for cancelling all loans of an account
+      properties:
+        bring_to_present_value:
+          type: boolean
+          description: >-
+            Calculate loan balances to present value before cancellation? When
+            true, the system calculates interest and charges up to the
+            cancellation date.
+          default: false
+          example: false
+    CancelAllLoansV2Response:
+      type: object
+      required:
+        - canceled_loans
+        - total_canceled
+      properties:
+        total_canceled:
+          type: integer
+          description: Total number of loans canceled
+          example: 2
+        canceled_loans:
+          type: array
+          description: List of canceled loan summaries
+          items:
+            $ref: '#/components/schemas/CanceledLoanV2Summary'
+    CanceledLoanV2Summary:
+      type: object
+      required:
+        - loan_id
+        - status
+        - tracking_id
+      properties:
+        loan_id:
+          type: string
+          description: Loan ID
+          example: 550e8400-e29b-41d4-a716-446655440000
+        tracking_id:
+          type: string
+          description: Authorization tracking ID for the cancellation
+          example: 4df987e3-8179-11ed-8209-06c7b022d1ee
+        status:
+          type: string
+          description: Loan status after cancellation
+          example: CANCELED
     BookingV2Request:
       type: object
       required:
@@ -2659,6 +2705,113 @@ paths:
                 $ref: '#/components/schemas/StandardErrorResponse'
       security:
         - BearerAuth: []
+  /v2/accounts/{accountId}/loans/cancel:
+    post:
+      tags:
+        - Loans
+      summary: Cancel all loans by account
+      description: >
+        Cancels all active loans for the specified account
+
+
+        **Note**: This endpoint requires an [account-specific access
+        token](ref:get-an-account-specific-token-basic-authentication).
+
+
+        This endpoint generates [Loan
+        updated](https://developers.pismo.io/events/docs/lending-lending-loan-update-1)
+        events for each cancelled loan.
+      operationId: cancelAllLoansByAccountV2
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/RequiredIdempotencyKeyHeader'
+      requestBody:
+        description: Request body for cancelling all loans of an account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelAllLoansV2Request'
+            examples:
+              Cancel without present value:
+                description: Cancels all loans without present value calculation
+                value:
+                  bring_to_present_value: false
+              Cancel with present value:
+                description: >-
+                  Cancels all loans with present value calculation (interest and
+                  charges up to cancellation date)
+                value:
+                  bring_to_present_value: true
+        required: true
+      responses:
+        '202':
+          description: Cancellation accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelAllLoansV2Response'
+              examples:
+                Success:
+                  description: All loans cancelled successfully
+                  value:
+                    total_canceled: 2
+                    canceled_loans:
+                      - loan_id: 550e8400-e29b-41d4-a716-446655440000
+                        tracking_id: 4df987e3-8179-11ed-8209-06c7b022d1ee
+                        status: CANCELED
+                      - loan_id: 550e8400-e29b-41d4-a716-446655440001
+                        tracking_id: 5ef098f4-9280-12fe-9310-07d8c133e2ff
+                        status: CANCELED
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND2107:
+                  description: Invalid account ID
+                  value:
+                    code: ELND2107
+                    message: Invalid account ID
+                ELND0010:
+                  description: Missing idempotency-key header
+                  value:
+                    code: ELND0010
+                    message: Header idempotency-key not passed
+                ELND2106:
+                  description: No active loans found for the account
+                  value:
+                    code: ELND2106
+                    message: No active loans found for the account.
+        '403':
+          description: >-
+            Unauthorized access — header account ID does not match path account
+            ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0002:
+                  description: Header account ID does not match path variable
+                  value:
+                    code: ELND0002
+                    message: Unauthorized access. Invalid credentials.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
   /v2/loan-products/{productId}:
     get:
       tags:
@@ -3523,7 +3676,7 @@ paths:
         required: true
       responses:
         '202':
-          description: Cancellation accepted.
+          description: Cancellation accepted
           content:
             application/json:
               schema:
@@ -3713,7 +3866,6 @@ paths:
       operationId: simulateEarlyFinalSettlementV2
       parameters:
         - $ref: '#/components/parameters/LoanIdPath'
-        - $ref: '#/components/parameters/IdempotencyKeyHeader'
       requestBody:
         description: Optional request body for simulation parameters
         content:
