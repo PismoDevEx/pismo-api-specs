@@ -93,6 +93,32 @@ components:
       example: '1233'
       schema:
         type: string
+    XTenant:
+      name: x-tenant
+      in: header
+      description: Organization ID
+      required: true
+      example: TN-cc8f8b89-233a-4582-9f36-63ee85278d6d
+      schema:
+        type: string
+    XAccountId:
+      name: x-account-id
+      in: header
+      description: Account ID
+      required: true
+      example: '8080'
+      schema:
+        type: string
+    XCid:
+      name: x-cid
+      in: header
+      description: >-
+        Optional correlation ID used to trace the request across services. When
+        omitted, one is generated automatically.
+      required: false
+      example: b3f1c2d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+      schema:
+        type: string
     VersionDate:
       name: version_date
       in: query
@@ -205,12 +231,6 @@ components:
           $ref: '#/components/schemas/StartDate'
         version:
           $ref: '#/components/schemas/Version'
-        division_id:
-          $ref: '#/components/schemas/DivisionId'
-        interest_by_tiers:
-          $ref: '#/components/schemas/InterestByTiers'
-        interest_thresholds:
-          $ref: '#/components/schemas/InterestThresholds'
     BenchmarkRateList:
       type: array
       format: array
@@ -250,7 +270,23 @@ components:
     CurrencyCode:
       type: string
       format: number
-      description: Numeric currency code in ISO 4217 standard
+      description: >-
+        Numeric currency code in ISO 4217 standard. Only the following codes are
+        accepted: 986 (BRL), 826 (GBP), 356 (INR), 840 (USD), 978 (EUR), 604
+        (PEN), 036 (AUD), 484 (MXN), 764 (THB), 208 (DKK), 752 (SEK), 578 (NOK).
+      enum:
+        - '986'
+        - '826'
+        - '356'
+        - '840'
+        - '978'
+        - '604'
+        - '036'
+        - '484'
+        - '764'
+        - '208'
+        - '752'
+        - '578'
       example: '986'
     Days:
       type: integer
@@ -363,12 +399,6 @@ components:
           $ref: '#/components/schemas/StartDate'
         version:
           $ref: '#/components/schemas/Version'
-        division_id:
-          $ref: '#/components/schemas/DivisionId'
-        interest_by_tiers:
-          $ref: '#/components/schemas/InterestByTiers'
-        interest_thresholds:
-          $ref: '#/components/schemas/InterestThresholds'
     GetBenchmarkRateResponse:
       title: Get benchmark rate response
       type: object
@@ -420,7 +450,7 @@ components:
           $ref: '#/components/schemas/CurrencyCode'
         benchmark:
           $ref: '#/components/schemas/Benchmark'
-        fixed_interet_rate:
+        fixed_interest_rate:
           $ref: '#/components/schemas/FixedInterestRate'
         margin_rate:
           $ref: '#/components/schemas/MarginRate'
@@ -432,10 +462,20 @@ components:
           $ref: '#/components/schemas/AccrualBasis'
         interest_type:
           $ref: '#/components/schemas/InterestType'
+        operation_type:
+          $ref: '#/components/schemas/OperationType'
+        status:
+          $ref: '#/components/schemas/Status'
+        start_date:
+          $ref: '#/components/schemas/PlanStartDate'
         capitalization_frequency:
           $ref: '#/components/schemas/CapitalizationFrequency'
         accrual_frequency:
           $ref: '#/components/schemas/AccrualFrequency'
+        interest_by_tiers:
+          $ref: '#/components/schemas/InterestByTiers'
+        interest_thresholds:
+          $ref: '#/components/schemas/InterestThresholds'
         interest_base_model:
           $ref: '#/components/schemas/InterestBaseModel'
     InterestAccountRequest:
@@ -544,6 +584,8 @@ components:
           $ref: '#/components/schemas/TaxesExemption'
         interest_by_tiers:
           $ref: '#/components/schemas/InterestByTiers'
+        capitalization_frequency:
+          $ref: '#/components/schemas/CapitalizationFrequency'
     InterestAccrualSetupResponse:
       title: Accrual setup response
       type: object
@@ -573,9 +615,12 @@ components:
     InterestBaseModel:
       type: string
       description: >-
-        Interest calculation model. `CLOSING-BALANCE` uses the end-of-day
-        balance. `BALANCE-CHANGE` uses balance variation events. Defaults to
-        `CLOSING-BALANCE`.
+        Interest calculation model. `CLOSING-BALANCE` calculates interest on a
+        single end-of-day balance snapshot. `BALANCE-CHANGE` calculates interest
+        on each intraday balance movement (for example, credits and debits) as
+        it occurs, so interest accrues on the balance held during each interval
+        between consecutive movements rather than on one end-of-day figure.
+        Defaults to `CLOSING-BALANCE`.
       enum:
         - CLOSING-BALANCE
         - BALANCE-CHANGE
@@ -657,6 +702,8 @@ components:
           $ref: '#/components/schemas/Description'
         interest_type:
           $ref: '#/components/schemas/InterestType'
+        operation_type:
+          $ref: '#/components/schemas/OperationType'
         benchmark:
           $ref: '#/components/schemas/Benchmark'
         tax_withholding:
@@ -684,6 +731,7 @@ components:
         - currency_code
         - description
         - interest_type
+        - start_date
       example:
         accrual_basis: ACTUAL/365
         accrual_frequency: DAILY
@@ -979,8 +1027,8 @@ components:
         error: Invalid field in request
         message: >-
           Field 'foo' is not allowed. Only the following fields can be updated:
-          start_date, description, benchmark, fixed_interest_rate, margin_rate,
-          margin, interest_by_tiers, interest_thresholds
+          start_date, description, fixed_interest_rate, margin_rate, margin,
+          interest_by_tiers, interest_thresholds
         field: foo
         status: 400
   securitySchemes:
@@ -1020,9 +1068,8 @@ components:
                 error: Invalid field in request
                 message: >-
                   Field 'foo' is not allowed. Only the following fields can be
-                  updated: start_date, description, benchmark,
-                  fixed_interest_rate, margin_rate, margin, interest_by_tiers,
-                  interest_thresholds
+                  updated: start_date, description, fixed_interest_rate,
+                  margin_rate, margin, interest_by_tiers, interest_thresholds
                 field: foo
                 status: 400
             invalidJson:
@@ -1140,6 +1187,8 @@ paths:
         - Interest engine
       operationId: post-v1-interest-plan
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/ContentType'
       requestBody:
@@ -1171,6 +1220,8 @@ paths:
         - Interest engine
       operationId: get-v1-interest-plans
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/PageNumber'
         - $ref: '#/components/parameters/PerPage'
@@ -1205,6 +1256,8 @@ paths:
         - Interest engine
       operationId: get-v1-interest-plan
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/InterestPlanIdPath'
         - $ref: '#/components/parameters/VersionDate'
@@ -1255,6 +1308,8 @@ paths:
         - Interest engine
       operationId: patch-v1-interest-plan
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/InterestPlanIdPath'
@@ -1288,6 +1343,9 @@ paths:
         - Account interest
       operationId: get-v1-interest-account
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
+        - $ref: '#/components/parameters/XAccountId'
         - $ref: '#/components/parameters/AccountId'
         - $ref: '#/components/parameters/Authorization'
       responses:
@@ -1336,6 +1394,9 @@ paths:
         - Account interest
       operationId: put-v1-interest-account
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
+        - $ref: '#/components/parameters/XAccountId'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/AccountId'
@@ -1395,6 +1456,8 @@ paths:
         - Interest accrual
       operationId: post-v1-interest-accrual-setup
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/XProgramId'
         - $ref: '#/components/parameters/Authorization'
       requestBody:
@@ -1429,6 +1492,8 @@ paths:
         - Benchmark rate
       operationId: post-v1-benchmark-rate
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
       requestBody:
@@ -1460,6 +1525,8 @@ paths:
         - Benchmark rate
       operationId: get-v1-benchmark-rate-org
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
       responses:
@@ -1485,6 +1552,8 @@ paths:
         - Benchmark rate
       operationId: get-v1-benchmark-rate
       parameters:
+        - $ref: '#/components/parameters/XTenant'
+        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/Benchmark'
