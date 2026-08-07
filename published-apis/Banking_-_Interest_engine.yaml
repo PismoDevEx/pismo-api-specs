@@ -739,6 +739,7 @@ components:
         currency_code: '986'
         description: BANKING PLAN
         interest_type: COMPOUND
+        start_date: '2025-06-17'
         benchmark: FED
         tax_withholding:
           withholding_moment: ACCRUAL
