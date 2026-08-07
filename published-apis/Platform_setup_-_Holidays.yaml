@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Platform setup - Holidays
   description: Manage business and non-business days by organization
@@ -192,6 +192,13 @@ components:
         type: string
         maxLength: 80
         example: New Year's Day
+    includeParentHolidaysQuery:
+      name: include_parent_holidays
+      in: query
+      description: Should holidays from parent calendars be returned? Default is `false`
+      schema:
+        type: boolean
+        default: false
     OrderByQuery:
       name: orderBy
       in: query
@@ -2032,6 +2039,14 @@ paths:
         - Holiday calendar data
       parameters:
         - $ref: '#/components/parameters/HolidayCalendarIdPath2'
+        - $ref: '#/components/parameters/HolidayCalendarNameQuery'
+        - $ref: '#/components/parameters/BeginDateQuery'
+        - $ref: '#/components/parameters/EndDateQuery'
+        - $ref: '#/components/parameters/PageNumberQuery'
+        - $ref: '#/components/parameters/PerPageQuery'
+        - $ref: '#/components/parameters/OrderQuery'
+        - $ref: '#/components/parameters/OrderByQuery'
+        - $ref: '#/components/parameters/includeParentHolidaysQuery'
       responses:
         '200':
           description: OK
@@ -2129,6 +2144,8 @@ paths:
       summary: Add holiday
       description: |
         Add a new holiday to an existing holiday calendar. 
+
+        This endpoint generates a _______ event.
       operationId: post-add-holiday-to-calendar
       tags:
         - Holiday calendar
