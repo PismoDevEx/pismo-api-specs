@@ -597,6 +597,23 @@ components:
           type: string
           description: Error description
           example: Internal server error
+    ClickToPayRateLimitError:
+      type: object
+      description: Click to Pay rate limit error - Visa API throttling
+      properties:
+        code:
+          type: number
+          description: HTTP response code
+          example: 429
+        message:
+          type: string
+          description: Error description
+          example: Rate limit exceeded
+        details:
+          type: array
+          description: Error details from Visa
+          items:
+            type: string
     ClickToPayUpdateCustomerRequest:
       type: object
       required:
@@ -725,7 +742,7 @@ components:
     Locale:
       type: string
       description: >
-        Consumer preferred locale (language and country). 
+        Consumer preferred locale (language and country).
 
 
         **Format**: two-letter ISO-639-1 language in lowercase + underscore
@@ -800,12 +817,12 @@ components:
       type: boolean
       description: >
         If `true`,  cardholder address information exists on Pismo platform.  If
-        `false`, some fields inside `additional_info` are not returned. 
+        `false`, some fields inside `additional_info` are not returned.
     HasPhoneInfo:
       type: boolean
       description: >
         If `true`, cardholder phone information exists on Pismo platform. If
-        `false`, some fields inside `additional_info` are not returned. 
+        `false`, some fields inside `additional_info` are not returned.
     MediaContent:
       type: object
       required:
@@ -897,19 +914,19 @@ components:
     OperationType:
       type: string
       description: >
-        Operation type: 
+        Operation type:
 
 
-        * `DELETE` - Delete token 
+        * `DELETE` - Delete token
 
 
-        * `SUSPEND` - Suspend token 
+        * `SUSPEND` - Suspend token
 
 
-        * `RESUME` - Resume suspended token 
+        * `RESUME` - Resume suspended token
 
 
-        * `CALL_CENTER_ACTIVATION` - Call center verification 
+        * `CALL_CENTER_ACTIVATION` - Call center verification
 
 
         * `CARDHOLDER_STEPUP_APP_TO_APP` - App2App verification
@@ -982,17 +999,17 @@ components:
           type: string
           description: >
             Push account receipt to token requestor. Contains pushed account
-            details and expires after 15 minutes. 
+            details and expires after 15 minutes.
 
 
             A valid receipt =  3-character prefix identifying product associated
             with funding account + UUID.
 
 
-            Prefic values: 
-              * `MCC` - Mastercard credit 
-              * `DMC` - Mastercard debit 
-              * `MSI` - Maestro 
+            Prefic values:
+              * `MCC` - Mastercard credit
+              * `DMC` - Mastercard debit
+              * `MSI` - Maestro
               * `PVL` - Private label
           maxLength: 64
           example: MCC-C307FOAE-298E-48EB-AA43-A7C40B32DDDE
@@ -1144,7 +1161,7 @@ components:
           description: |
             Wallet identifier:
               Google Pay -  `216`
-              Apple Pay - `103` 
+              Apple Pay - `103`
               Samsung Pay - `217`
           enum:
             - '216'
@@ -1367,7 +1384,7 @@ components:
         image_asset_id:
           type: string
           description: >
-            Token requestor image (for instance a logo) asset ID. 
+            Token requestor image (for instance a logo) asset ID.
 
             Call the [Get asset](ref:token_connect_get_asset) endpoint to
             retrieve the image.
@@ -1396,18 +1413,18 @@ components:
           description: >
 
             Account holder data elements the token requestor expects to receive
-            from the issuer with a pushed card or account. 
+            from the issuer with a pushed card or account.
 
 
             Only returned if the token requestor participates in MDES Token
-            Connect. 
+            Connect.
 
 
             If the token requestor participates but doesn't accept account
             holder data, then an empty array is returned. To ensure
             forward-compatibility, all API client implementations must be
             resilient to new data element values being added to responses from
-            MDES. 
+            MDES.
 
 
             *  `NAME` - Account holder first and last name
@@ -1432,7 +1449,7 @@ components:
         supports_token_connect:
           type: boolean
           description: |
-            Does token requestor support Token Connect? 
+            Does token requestor support Token Connect?
         available_push_methods:
           type: array
           description: Available push methods
@@ -1445,12 +1462,12 @@ components:
     TokenRequestorId:
       type: string
       description: >
-        Token requestor ID (TRID), a numeric 11-digit value. 
+        Token requestor ID (TRID), a numeric 11-digit value.
 
 
         A token requestor is an entity that initiates the tokenization process.
         Wallets, merchants, payments service providers (PSPs) are collectively
-        referred to as **token requestors**. 
+        referred to as **token requestors**.
 
 
         Card networks use TRIDs to enforce usage boundaries at the network
@@ -1466,7 +1483,7 @@ components:
         accounts:
           type: array
           description: >
-            Account ranges to check for eligibility. 
+            Account ranges to check for eligibility.
 
 
             The starting numbers are numeric strings between 9 and 19 in length.
@@ -1493,11 +1510,11 @@ components:
 
 
         * `MERCHANT` - Merchant token requestor. For example - Netflix, Uber,
-        Amazon, and so on. 
+        Amazon, and so on.
 
 
         * `WALLET`- Wallet or commerce platform token requestor. For example -
-        Apple Pay, Google Wallet, Samsung Pay, and so on. 
+        Apple Pay, Google Wallet, Samsung Pay, and so on.
       enum:
         - MERCHANT
         - WALLET
@@ -1524,7 +1541,7 @@ components:
         data_valid_until_timestamp:
           type: string
           description: >
-            Data valid until timestamp. 
+            Data valid until timestamp.
 
             Format: ISO 8601 extended format as one of the following: *
             YYYY-MM-DDThh:mm:ss[.sss]Z * YYYY-MM-DDThh:mm:ss[.sss]±hh:mm where
@@ -1675,7 +1692,7 @@ paths:
         issuer, you need to configure network profiles with the card network.
 
 
-        **Notes**: 
+        **Notes**:
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
       operationId: post-v1-cards-card-id-network-tokens-profile
@@ -1706,7 +1723,7 @@ paths:
       description: |
         Gets the card's associated network card profile identifier.
 
-        **Notes**: 
+        **Notes**:
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
       tags:
@@ -1739,7 +1756,7 @@ paths:
         and creating another one).
 
 
-        **Notes**: 
+        **Notes**:
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
       tags:
@@ -1776,7 +1793,7 @@ paths:
         push-provisioning. Also returned is cardholder identifying information.
 
 
-        **Notes**: 
+        **Notes**:
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
           * This endpoint takes an account token - an access token encoded with a Pismo account ID.
       operationId: post-wallet-data
@@ -1846,7 +1863,7 @@ paths:
         push-provisioning. Also returned is cardholder identifying information.
 
 
-        **Notes**: 
+        **Notes**:
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
           * This endpoint takes an account token - an access token encoded with a Pismo account ID.
           * Currently only available for Visa
@@ -1897,7 +1914,7 @@ paths:
         and the Apple SDK. Also returned is cardholder identifying information.
 
 
-        **Notes:** 
+        **Notes:**
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
           * This endpoint takes an account token - an access token encoded with a Pismo account ID.
       operationId: post-encrypted-applepay-data
@@ -1934,7 +1951,7 @@ paths:
 
 
 
-        **Notes**: 
+        **Notes**:
           * This endpoint requires an account token - an access token encoded with a Pismo account ID.
 
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
@@ -1971,7 +1988,7 @@ paths:
       description: |
         Gets token information given a card ID in the path.
 
-        **Notes**: 
+        **Notes**:
 
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
           * This endpoint takes an account token - an access token encoded with a Pismo account ID.
@@ -2087,7 +2104,7 @@ paths:
                       - key:
                           token_ref: DSHRMC1BR0000000481138760dec4cf8a00000000
                           pan_ref: FSHRMC1BR0000000c790c134701d4ba48c9d00000000
-                        payment_network: mdes
+                          payment_network: mdes
                         token_id": 10117
                         card_id: 9024
                         wallet_id: '216'
@@ -2191,7 +2208,7 @@ paths:
       description: |
         Perform token operation.
 
-        **Notes**: 
+        **Notes**:
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
          * This endpoint takes an account token - an access token encoded with a Pismo account ID
       operationId: performtokenop
@@ -2215,7 +2232,7 @@ paths:
       description: |
         Gets token information given a card ID and token ID in the path.
 
-        **Notes**: 
+        **Notes**:
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
           * This endpoint takes an account token - an access token encoded with a Pismo account ID.
       operationId: gettokeninfo
@@ -2323,9 +2340,9 @@ paths:
     get:
       summary: Get card configuration
       description: |
-        Get card configuration. 
+        Get card configuration.
 
-        **Notes**: 
+        **Notes**:
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
          * This endpoint takes an account token - an access token encoded with a Pismo account ID
       operationId: get-card-config
@@ -2351,7 +2368,7 @@ paths:
       description: |
         Reset card and wallet CVV2 try counter to zero.
 
-        **Notes**: 
+        **Notes**:
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io/cards-tokenization environment.
          * This endpoint takes an account token - an access token encoded with a Pismo account ID
       operationId: patch-card-config-reset-cvv2-try-counter
@@ -2388,10 +2405,10 @@ paths:
         Enroll a customer and card in <a
         href="https://usa.visa.com/products/click-to-pay/consumers.html"
         target="_blank">Visa's Click to Pay</a> service. Click to Pay is a
-        secure, streamlined online checkout solution using tokenization. 
+        secure, streamlined online checkout solution using tokenization.
 
          For more information, refer to [Click to Pay](doc:click-to-pay).
-         
+
          This endpoint generates a [Click to Pay event generated](https://developers.pismo.io/events/docs/cards-tokenization-click-to-pay-1) event.
 
         **Notes**:
@@ -2457,6 +2474,19 @@ paths:
                   value:
                     code: 400
                     message: click to pay is not enabled to tenant
+        '429':
+          description: Too Many Requests - Visa rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClickToPayRateLimitError'
+              examples:
+                rate_limit_exceeded:
+                  value:
+                    code: 429
+                    message: Rate limit exceeded
+                    details:
+                      - rate limit exceeded
         '500':
           description: Internal Server Error
           content:
@@ -2482,7 +2512,7 @@ paths:
          **Notes**:
 
         - If `billing_address` is not passed,  it is looked for internally. If
-        not found, an error is returned. 
+        not found, an error is returned.
 
 
         - This endpoint takes an account token - an access token encoded with a
@@ -2542,6 +2572,19 @@ paths:
                   value:
                     code: 400
                     message: click to pay is not enabled to tenant
+        '429':
+          description: Too Many Requests - Visa rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClickToPayRateLimitError'
+              examples:
+                rate_limit_exceeded:
+                  value:
+                    code: 429
+                    message: Rate limit exceeded
+                    details:
+                      - rate limit exceeded
         '500':
           description: Internal Server Error
           content:
@@ -2623,6 +2666,19 @@ paths:
                   value:
                     code: 400
                     message: click to pay is not enabled to tenant
+        '429':
+          description: Too Many Requests - Visa rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClickToPayRateLimitError'
+              examples:
+                rate_limit_exceeded:
+                  value:
+                    code: 429
+                    message: Rate limit exceeded
+                    details:
+                      - rate limit exceeded
         '500':
           description: Internal Server Error
           content:
@@ -2708,6 +2764,19 @@ paths:
                   value:
                     code: 400
                     message: click to pay is not enabled to tenant
+        '429':
+          description: Too Many Requests - Visa rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClickToPayRateLimitError'
+              examples:
+                rate_limit_exceeded:
+                  value:
+                    code: 429
+                    message: Rate limit exceeded
+                    details:
+                      - rate limit exceeded
         '500':
           description: Internal Server Error
           content:
@@ -2798,6 +2867,19 @@ paths:
                   value:
                     code: 400
                     message: cards not found
+        '429':
+          description: Too Many Requests - Visa rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClickToPayRateLimitError'
+              examples:
+                rate_limit_exceeded:
+                  value:
+                    code: 429
+                    message: Rate limit exceeded
+                    details:
+                      - rate limit exceeded
         '500':
           description: Internal Server Error
           content:
@@ -2882,6 +2964,19 @@ paths:
                   value:
                     code: 400
                     message: click to pay is not enabled to tenant
+        '429':
+          description: Too Many Requests - Visa rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClickToPayRateLimitError'
+              examples:
+                rate_limit_exceeded:
+                  value:
+                    code: 429
+                    message: Rate limit exceeded
+                    details:
+                      - rate limit exceeded
         '500':
           description: Internal Server Error
           content:
@@ -2968,6 +3063,19 @@ paths:
                   value:
                     code: 400
                     message: cards not found
+        '429':
+          description: Too Many Requests - Visa rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClickToPayRateLimitError'
+              examples:
+                rate_limit_exceeded:
+                  value:
+                    code: 429
+                    message: Rate limit exceeded
+                    details:
+                      - rate limit exceeded
         '500':
           description: Internal Server Error
           content:
@@ -2983,12 +3091,12 @@ paths:
     post:
       summary: Push multiple accounts
       description: >
-        Push card and account(s) to a token requestor. 
+        Push card and account(s) to a token requestor.
 
 
         A token requestor is an entity that initiates the tokenization process.
         Wallets, merchants, payments service providers (PSPs) are collectively
-        referred to as **token requestors**. 
+        referred to as **token requestors**.
 
 
         **Notes:**
@@ -3073,7 +3181,7 @@ paths:
         target="_blank">Mastercard Token Connect API</a>.
 
 
-        Pismo acts as a proxy for the Mastercard Token Connect API. 
+        Pismo acts as a proxy for the Mastercard Token Connect API.
 
 
         For more information, refer to the [MDES Token
@@ -3103,7 +3211,7 @@ paths:
         Executes Visa device binding for a given token and device. Device
         binding establishes that a specific device belongs to a specific
         cardholder. Once bound, the device can be trusted more in future
-        transactions. 
+        transactions.
 
 
         An issuer can use this endpoint to update the status of a specific
