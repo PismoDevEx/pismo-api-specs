@@ -89,6 +89,23 @@ components:
       schema:
         type: integer
         example: 2
+    InterestRemovalEndDateQuery:
+      name: interestRemovalEndDate
+      in: query
+      description: >
+        Optional cutoff date for interest removal when `calculator` is set to
+        `PRESENT_VALUE`.
+
+        Installments with a due date on or before this date will have interest
+        recalculated using this date as the reference instead of the original
+        due date.
+
+        If omitted, the installment's original due date is used.
+      required: false
+      schema:
+        type: string
+        format: date
+        example: '2025-06-30'
     RemoveInterestFromCurrentQuery:
       name: removeInterestFromCurrent
       in: query
@@ -150,6 +167,11 @@ components:
       format: int64
       description: Authorization ID for the contract
       example: 12345
+    AuthorizationIdForFirstInstallment:
+      type: integer
+      format: int64
+      description: Authorization ID for the first installment
+      example: 200
     Calculator:
       type: string
       description: |
@@ -353,6 +375,8 @@ components:
           $ref: '#/components/schemas/Reschedule'
         remove_interest_from_current:
           $ref: '#/components/schemas/RemoveInterestFromCurrent'
+        interest_removal_end_date:
+          $ref: '#/components/schemas/InterestRemovalEndDate'
         contracts:
           type: array
           description: >-
@@ -473,66 +497,82 @@ components:
     InstallmentResponseDto:
       type: object
       properties:
+        id:
+          $ref: '#/components/schemas/TransactionIdOfInstallment'
         new_amount:
-          type: number
-          format: double
-          description: >
-            The full installment amount after applying any discount, including
-            principal and interest charges.
-          example: 99.9
+          $ref: '#/components/schemas/NewAmount'
         old_amount:
-          type: number
-          format: double
-          description: >
-            The full installment amount before applying any discount, including
-            principal and interest charges.
-          example: 102.9
+          $ref: '#/components/schemas/OldAmount'
         new_interest_amount:
-          type: number
-          format: double
-          description: >
-            The full interest amount of an installment after applying any
-            discount. This value is calculated as follows:
-
-            `new_interest_amount` = `new_amount` x interest rate
-
-            Since `new_amount` already includes both principal and interest,
-            this formula provides an estimate of the interest portion of the new
-            installment amount.
-          example: 9.9
+          $ref: '#/components/schemas/NewInterestAmount'
         old_interest_amount:
-          type: number
-          format: double
-          description: >
-            The full interest amount of an installment before applying any
-            discount.
-          example: 11.9
+          $ref: '#/components/schemas/OldInterestAmount'
         new_statement_id:
-          type: number
-          format: integer
-          description: |
-            ID of the current statement
-          example: 1
+          $ref: '#/components/schemas/NewStatementId'
         old_statement_id:
-          type: number
-          format: integer
-          description: >
-            ID of the old statement. This is the ID of the statement on which
-            the installment was scheduled to appear before it was advanced. For
-            installments that are not advanced, `old_statement_id` and
-            `new_statement_id` should contain the same values.
-          example: 10
+          $ref: '#/components/schemas/OldStatementId'
+    InterestRemovalEndDate:
+      type: string
+      format: date
+      description: >
+        Cutoff date used for interest recalculation when `calculator` is
+        `PRESENT_VALUE`.
+
+        Reflects the value provided in the request. `null` if not provided.
+        Format = yyyy-mm-dd.
+      example: '2021-04-14'
+    NewAmount:
+      type: number
+      format: double
+      description: >
+        Full installment amount after applying any discount, including principal
+        and interest charges
+      example: 99.9
+    NewInterestAmount:
+      type: number
+      format: double
+      description: |
+        Full interest amount of installment after applying any discount
+      example: 9.9
+    NewStatementId:
+      type: number
+      format: integer
+      description: |
+        ID of the current statement
+      example: 1
     NumberOfInstallmentsToAdvance:
       type: integer
       format: int32
       description: >
-        Number of installments to advance.
+        Number of installments to advance
 
 
         This field is **REQUIRED** if `contract_condition` is set to
         `SPECIFIC_NUMBER_OF_INSTALLMENTS`. If `contract_condition` is set to
         `ALL_CONTRACTS`, this field is ignored.
       example: 3
+    OldAmount:
+      type: number
+      format: double
+      description: >
+        Full installment amount before applying any discount, including
+        principal and interest charges
+      example: 102.9
+    OldInterestAmount:
+      type: number
+      format: double
+      description: |
+        The full interest amount of an installment before applying any discount.
+      example: 11.9
+    OldStatementId:
+      type: number
+      format: integer
+      description: >
+        ID of the old statement. This is the ID of the statement on which the
+        installment was scheduled to appear before it was advanced. For
+        installments that are not advanced, `old_statement_id` and
+        `new_statement_id` should contain the same values.
+      example: 10
     RemoveInterestFromCurrent:
       type: boolean
       description: Whether interest should be removed when an installment is advanced.
@@ -551,12 +591,16 @@ components:
       properties:
         account_id:
           $ref: '#/components/schemas/AccountID'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationIdForFirstInstallment'
         condition:
           $ref: '#/components/schemas/Condition'
         calculator:
           $ref: '#/components/schemas/Calculator'
         reschedule:
           $ref: '#/components/schemas/Reschedule'
+        interest_removal_end_date:
+          $ref: '#/components/schemas/InterestRemovalEndDate'
         installments:
           type: array
           items:
@@ -581,6 +625,11 @@ components:
       type: integer
       format: int64
       description: Transaction ID
+      example: 98457355
+    TransactionIdOfInstallment:
+      type: integer
+      format: int64
+      description: Transaction ID of the installment
       example: 98457355
     UpdatedAt:
       type: string
@@ -702,7 +751,7 @@ paths:
 
         This endpoint generates an <a
         href='https://developers.pismo.io/events/docs/balance-installment-advancement-1'>Installment
-        advanced</a> event.      
+        advanced</a> event.
       operationId: SimulateInstallmentAdvancement
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -712,6 +761,7 @@ paths:
         - $ref: '#/components/parameters/CalculatorQuery'
         - $ref: '#/components/parameters/RescheduleQuery'
         - $ref: '#/components/parameters/NumberOfInstallmentsToAdvance'
+        - $ref: '#/components/parameters/InterestRemovalEndDateQuery'
       responses:
         '200':
           description: OK
