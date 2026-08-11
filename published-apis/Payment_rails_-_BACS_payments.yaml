@@ -2564,7 +2564,7 @@ paths:
           * `version` is a Form3 optimistic-concurrency passthrough that must equal the stored version; a mismatch is rejected with a **409 Conflict** (`EBACS0104`). It is not incremented by this call.
 
           * This endpoint moves the mandate to `status` = `AMEND_PENDING` and generates a [BACS paper mandate status changed](https://developers.pismo.io/events/docs/bacs-paper-mandate-status-change-1) event. Subsequent status transitions generate further events (for example `AMENDED`, `FAILED`).
-      operationId: patch-amend-cancel-paper-mandate
+      operationId: patch-amend-paper-mandate
       tags:
         - BACS direct debit
       parameters:
