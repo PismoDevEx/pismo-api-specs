@@ -331,7 +331,7 @@ components:
             - LOCAL
             - SETTLEMENT
           description: |
-            Amount type 
+            Amount type
               - `PRINCIPAL`: Transaction amount in the customer’s account currency (already converted).
               - `LOCAL`: Transaction amount in the merchant’s local currency, where the purchase was made.
               - `SETTLEMENT`: Settlement amount that is typically defined by the issuer and usually matches the `PRINCIPAL` currency.
@@ -688,7 +688,7 @@ paths:
 
         This endpoint generates the [Transaction type
         created](https://developers.pismo.io/events/docs/transaction-types-creation-1)
-        event. 
+        event.
 
 
         For information on creating and managing processing codes and
@@ -784,13 +784,11 @@ paths:
             type: boolean
         - in: query
           name: pageSize
-          description: >-
-            Maximum number of transactions per page. Maximum allowed value is
-            `1000`. If not provided, defaults to `100`.
+          description: Maximum number of items per page. If not provided, defaults to 100.
           schema:
             type: integer
+            minimum: 1
             default: 100
-            maximum: 1000
         - in: query
           name: orderBy
           description: Transaction type sort parameter
@@ -808,6 +806,8 @@ paths:
             `0`, which returns the first page.
           schema:
             type: integer
+            minimum: 0
+            default: 0
       responses:
         '200':
           description: OK
@@ -1063,7 +1063,7 @@ paths:
       summary: Create transaction flow
       description: >
         Creates a configuration linking a transaction type with a processing
-        code. 
+        code.
 
 
         See [Processing codes and transaction
@@ -1265,6 +1265,8 @@ paths:
             results. Defaults to 0.
           schema:
             type: integer
+            minimum: 0
+            default: 0
       responses:
         '200':
           description: OK
@@ -1577,7 +1579,7 @@ paths:
       operationId: ListTransactions
       description: >
         List transactions without their metadata. If you provide at least one of
-        the following parameters, the `eventDateStart` parameter is optional. 
+        the following parameters, the `eventDateStart` parameter is optional.
 
         - `id`
 
@@ -1594,7 +1596,7 @@ paths:
 
         If you don't provide any of the above parameters, you must include the
         `eventDateStart` parameter, and the maximum allowed query range is 90
-        days. 
+        days.
       parameters:
         - $ref: '#/components/parameters/statementID'
         - $ref: '#/components/parameters/customerID'
@@ -1639,16 +1641,24 @@ paths:
             type: string
         - in: query
           name: pageSize
-          description: Maximum number of transactions per page.
+          description: >-
+            Maximum number of transactions per page. If not provided, defaults
+            to 100. Must be between 1 and 1000.
           schema:
             type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
         - in: query
           name: pageOffset
           description: >-
             Page offset of transactions. Indicates which page to start with when
-            returning the results. Defaults to 0.
+            returning the results. Defaults to 0. Must be between 0 and 5000.
           schema:
             type: integer
+            minimum: 0
+            maximum: 5000
+            default: 0
         - in: query
           name: ids
           description: Array of transaction IDs
@@ -1715,6 +1725,42 @@ paths:
                   value:
                     message: Invalid filter value
                     error: Invalid filter value
+                    code: WTRC00001
+                invalidPageSizeExceedsMax:
+                  summary: Page size exceeds maximum
+                  value:
+                    message: pageSize must not exceed 1000
+                    error: pageSize must not exceed 1000
+                    code: WTRC00001
+                invalidPageSizeNotPositive:
+                  summary: Page size must be positive
+                  value:
+                    message: pageSize must be greater than 0
+                    error: pageSize must be greater than 0
+                    code: WTRC00001
+                invalidPageSizeNotInteger:
+                  summary: Page size not an integer
+                  value:
+                    message: pageSize should be an integer value
+                    error: pageSize should be an integer value
+                    code: WTRC00001
+                invalidPageOffsetNegative:
+                  summary: Page offset must not be negative
+                  value:
+                    message: pageOffset must not be negative
+                    error: pageOffset must not be negative
+                    code: WTRC00001
+                invalidPageOffsetNotInteger:
+                  summary: Page offset not an integer
+                  value:
+                    message: pageOffset should be an integer value
+                    error: pageOffset should be an integer value
+                    code: WTRC00001
+                invalidPageOffsetExceedsMax:
+                  summary: Page offset exceeds maximum
+                  value:
+                    message: pageOffset must not exceed 5000
+                    error: pageOffset must not exceed 5000
                     code: WTRC00001
                 invalidNumberOfLatestTransactions:
                   summary: Number of latest transactions should not have another filter
