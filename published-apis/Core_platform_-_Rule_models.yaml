@@ -240,20 +240,20 @@ components:
       example: MERCHANT_NAME_LIST
       description: |
         List types and data formats allowed:
-            - `INSTALLMENT_NUMBER` - Integer values
-            - `PROCESSING_CODE` - Alphanumeric strings
-            - `ACCOUNT_TYPE` - Alphanumeric strings
-            - `ORIGIN`- Alphanumeric strings
-            - `DCC`-  Boolean values
-            - `DOMESTIC`-  Boolean values
-            - `MERCHANT_NAME_LIST` - Alphanumeric strings
-            - `INSTALLMENT_PLAN` - Alphanumeric strings
-            - `AMOUNT` - Numbers with or without decimal places
-            - `MERCHANT_CATEGORY_CODE` - Alphanumeric strings
-            - `REVERSAL_INDICATOR` - Boolean values
-            - `AUTHORIZATION_FLOW` - Either `PAYMENTS` or `NETWORK`
-            - `ORIGINAL_PROCESSING_CODE`- Original processing code or persisted authorization processing code
-            - `MTI` - Message Type Indicator (MTI) - a four-digit numeric field - ISO 8583 standard
+            - `INSTALLMENT_NUMBER` - Integer values<br />
+            - `PROCESSING_CODE` - Alphanumeric strings<br />
+            - `ACCOUNT_TYPE` - Alphanumeric strings<br />
+            - `ORIGIN`- Alphanumeric strings<br />
+            - `DCC`-  Boolean values<br />
+            - `DOMESTIC`-  Boolean values<br />
+            - `MERCHANT_NAME_LIST` - Alphanumeric strings<br />
+            - `INSTALLMENT_PLAN` - Alphanumeric strings<br />
+            - `AMOUNT` - Numbers with or without decimal places<br />
+            - `MERCHANT_CATEGORY_CODE` - Alphanumeric strings<br />
+            - `REVERSAL_INDICATOR` - Boolean values<br />
+            - `AUTHORIZATION_FLOW` - Either `PAYMENTS` or `NETWORK`<br />
+            - `ORIGINAL_PROCESSING_CODE`- Original processing code or persisted authorization processing code<br />
+            - `MTI` - Message Type Indicator (MTI) - a four-digit numeric field - ISO 8583 standard<br />
       enum:
         - INSTALLMENT_NUMBER
         - PROCESSING_CODE
