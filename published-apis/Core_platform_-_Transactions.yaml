@@ -784,9 +784,13 @@ paths:
             type: boolean
         - in: query
           name: pageSize
-          description: Maximum number of transactions per page.
+          description: >-
+            Maximum number of transactions per page. Maximum allowed value is
+            `1000`. If not provided, defaults to `100`.
           schema:
             type: integer
+            default: 100
+            maximum: 1000
         - in: query
           name: orderBy
           description: Transaction type sort parameter
