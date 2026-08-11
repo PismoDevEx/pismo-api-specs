@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Card issuing - Authorization configurations
   version: 1.0.0
-  description: Endpoints to allow the management of the authorization configurations.
+  description: Endpoints to allow the management of the Authorization configurations.
   contact:
     name: API Support
     url: https://developers.pismo.io/support
@@ -223,6 +223,8 @@ components:
           $ref: '#/components/schemas/DaysToCancelAuthorizationMigration'
         always_call_ledger_rules:
           $ref: '#/components/schemas/AlwaysCallLedgerRules'
+        use_local_amount_when_dcc:
+          $ref: '#/components/schemas/UseLocalAmountWhenDCC'
     ShouldUseAntiFraudDecision:
       type: boolean
       description: Flag indicates whether anti-fraud decisions should be used.
@@ -268,6 +270,20 @@ components:
         balance.
       example: http://zerobalanceurl
       default: ''
+    UseLocalAmountWhenDCC:
+      type: boolean
+      description: >-
+        Flag to control currency selection for rates lookup in DCC (Dynamic
+        Currency Conversion) scenarios. When enabled, the authorizer uses the
+        local currency amount instead of the settlement amount when calling the
+        rates service. The transaction classification remains international and
+        all existing international processing logic is unchanged - only the
+        currency used for rates calculation is affected. **Note:** This flag
+        must not be `true` when `disable_dcc` is `true`. The API will reject
+        this combination with error code `WNTC0031` (or `WNTC0032` for
+        override_bins).
+      example: true
+      default: false
   responses:
     400BadRequest:
       description: Bad request
