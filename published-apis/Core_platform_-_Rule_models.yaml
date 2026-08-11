@@ -239,7 +239,7 @@ components:
       type: string
       example: MERCHANT_NAME_LIST
       description: |
-        List types and data formats allowed:
+        List types and data formats allowed:<br />
             - `INSTALLMENT_NUMBER` - Integer values<br />
             - `PROCESSING_CODE` - Alphanumeric strings<br />
             - `ACCOUNT_TYPE` - Alphanumeric strings<br />
