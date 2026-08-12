@@ -96,6 +96,16 @@ components:
       schema:
         type: string
         maxLength: 36
+    mandateStatusQuery:
+      name: status
+      in: query
+      description: Mandate status filer.
+      required: false
+      schema:
+        type: string
+        enum:
+          - CREATED
+          - CANCELLED
     pageSizeQuery:
       name: pageSize
       in: query
@@ -510,9 +520,38 @@ components:
     mandateReference:
       type: string
       maxLength: 18
-      description: >-
+      description: >
         Mandate reference. Must be unique per organization and use the standard
         BACS reference character set.
+
+
+        The standard BACS reference character set is the restricted set of
+        characters BACS permits in the text fields of a Standard 18 record — the
+        format used for Direct Debit/Direct Credit instructions. It maps to the
+        reference field on the mandate 
+
+        schemas.
+
+
+        BACS Standard 18 (STD18) is a fixed-width, 80-to-106-character
+        line-based file format used to submit Direct Credit and Direct Debit
+        payment instructions in the UK. Files strictly follow a defined sequence
+        starting with volume and header labels, proceeding to transaction
+        records, and ending with trailer and total lines.
+
+
+        **Permitted characters**:
+          - Uppercase letters A-Z (lowercase is not allowed — it gets force-uppercased)
+          - Digits 0-9
+          - Space
+          - These four specials only: - (hyphen), . (full stop), & (ampersand), / (solidus)
+
+        **Reference-field rules on top of the character set**:
+          - 6–18 characters
+          - Must not begin with a space
+          - Must not be all the same character (e.g. all zeros)
+          - First 4 chars must not be DDIC (reserved for bank/indemnity-claim use)
+          - Should be unique per Direct Debit
       example: MANDATE-REF-001
     mandateVersion:
       type: integer
@@ -714,15 +753,6 @@ components:
           $ref: '#/components/schemas/sortCode'
     paper_mandate.status:
       type: string
-      enum:
-        - CREATED
-        - SUBMITTED
-        - CONFIRMED
-        - AMEND_PENDING
-        - AMENDED
-        - CANCEL_PENDING
-        - CANCELLED
-        - FAILED
       description: |
         Paper mandate lifecycle status.
           * `CREATED` - Mandate persisted and imported into Form3; pending submission
@@ -733,6 +763,15 @@ components:
           * `CANCEL_PENDING` - Cancel intent accepted; pending submission to Form3
           * `CANCELLED` - Mandate cancelled. Terminal state
           * `FAILED` - Mandate processing failed. Terminal state
+      enum:
+        - CREATED
+        - SUBMITTED
+        - CONFIRMED
+        - AMEND_PENDING
+        - AMENDED
+        - CANCEL_PENDING
+        - CANCELLED
+        - FAILED
       example: CREATED
     paymentScheme:
       type: string
@@ -750,8 +789,34 @@ components:
       example: Weekly money for Mom
     returnCode:
       type: string
-      description: Return code
-      example: ARUDD
+      description: |
+        ARUDD (Automated Return of Unpaid Direct Debit) return code: 
+          * `0` - Refer to payer
+          * `1` - Instruction cancelled
+          * `2` - Payer deceased
+          * `3` - Account transferred
+          * `4` - Advance notice disputed
+          * `5` - No account
+          * `6` - No instruction
+          * `7` - Amount differs
+          * `8` - Amount not due
+          * `9` - Presentation overdue
+          * `A` - Originator differs
+          * `B` - Account closed
+      enum:
+        - '0'
+        - '1'
+        - '2'
+        - '3'
+        - '4'
+        - '5'
+        - '6'
+        - '7'
+        - '8'
+        - '9'
+        - A
+        - B
+      example: A
     returnOrigin:
       type: string
       description: |
@@ -2483,15 +2548,7 @@ paths:
         - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/reqTrackingIdHeader'
         - $ref: '#/components/parameters/idQuery'
-        - name: status
-          in: query
-          description: Filter by mandate status.
-          required: false
-          schema:
-            type: string
-            enum:
-              - CREATED
-              - CANCELLED
+        - $ref: '#/components/parameters/mandateStatusQuery'
         - $ref: '#/components/parameters/beginDateQuery'
         - $ref: '#/components/parameters/endDateQuery'
         - $ref: '#/components/parameters/afterIdQuery'
