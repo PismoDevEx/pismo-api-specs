@@ -15,10 +15,10 @@ servers:
   - url: https://sandbox-cdn.pismolabs.io
     description: Ext API server for testing
   - url: https://sandbox-cdn.pismolabs.io/inst-pull-pay
-    description: Ext API server for testing Automatic Pix
+    description: Ext API server for testing Automatic Pix.
 tags:
   - name: Automatic Pix
-    description: Automatic Pix endpoints.
+    description: Automatic Pix endpoints
   - name: Automatic Pix data
 components:
   parameters:
@@ -222,7 +222,12 @@ components:
       maxLength: 105
     AllowAttemptsAfterExpiration:
       type: boolean
-      description: Will charge continue after due date?
+      description: >
+        Will charge continue after due date?
+
+
+        If `true` the recurence will receive a `recurrence_id` starting with
+        `RR`. Otherwise, it will start with `RN`.
     Amount:
       type: number
       description: Amount to be transferred.
@@ -860,6 +865,35 @@ components:
         Date time from a successful payment. Mandatory for the `AUT3` journey.
         RFC 3339 value. Format: YYYY-MM-DDThh:mm:ss.SSSZ.
       example: '2020-08-13T13:49:03.000Z'
+    PaymentOrderReason:
+      description: >
+        Payment order cancellation reason: 
+
+
+        * `ACCT` - Paying or receiving user's transactional account closed
+
+        * `BLCK` - Paying or receiving user's transactional account blocked
+
+        * `CCLD` - Recurring payments authorization cancelled
+
+        * `FAIL` - Settlement process failure or error
+
+        * `OTHR` - Paying or receiving user requested cancellation for other
+        reasons
+
+        * `SLBD` - Paying user request
+
+        * `SLCR` - Receiving user request
+      type: string
+      enum:
+        - ACCT
+        - BLCK
+        - CCLD
+        - FAIL
+        - OTHR
+        - SLBD
+        - SLCR
+      example: ACCT
     PaymentOrderReasonDescription:
       description: |
         Payment order cancellation reason desciption
@@ -907,39 +941,34 @@ components:
         - REJECTED
         - CONCLUDED
       example: PENDING
+    PaymentOrderType:
+      description: >
+        Payment order type:
+
+
+        * `SCHEDULE` - Standard scheduled payment order created from the
+        recurrence cycle.
+
+        * `RETRY_OVERDUE` - Retry generated when a payment order expired unpaid,
+        or when the payer PSP did not respond or responded FAIL before the due
+        date. A new payment order of the same type is created for retry,
+        respecting the recurrence retry policy.
+
+        * `RETRY_ERROR` - Intraday retry (only on the settlement date, until
+        21:00) created after a settlement failure that occurred after the
+        payment order was already sent to SPI (BCB "Guia Pix Automático" §5.2,
+        `finalidadeDoAgendamento = RIFL`). One payment order is created per
+        retry requested by the payer PSP.
+      type: string
+      enum:
+        - SCHEDULE
+        - RETRY_OVERDUE
+        - RETRY_ERROR
+      example: SCHEDULE
     PismoRecurrenceID:
       type: string
       description: Pismo recurrence ID.
       example: 49940-9995-u88
-    PaymentOrderReason:
-      description: >
-        Payment order cancellation reason: 
-
-
-        * `ACCT` - Paying or receiving user's transactional account closed
-
-        * `BLCK` - Paying or receiving user's transactional account blocked
-
-        * `CCLD` - Recurring payments authorization cancelled
-
-        * `FAIL` - Settlement process failure or error
-
-        * `OTHR` - Paying or receiving user requested cancellation for other
-        reasons
-
-        * `SLBD` - Paying user request
-
-        * `SLCR` - Receiving user request
-      type: string
-      enum:
-        - ACCT
-        - BLCK
-        - CCLD
-        - FAIL
-        - OTHR
-        - SLBD
-        - SLCR
-      example: ACCT
     PaymentOrderResponse:
       type: object
       properties:
@@ -951,6 +980,8 @@ components:
           $ref: '#/components/schemas/EndToEndID'
         status:
           $ref: '#/components/schemas/PaymentOrderStatus'
+        type:
+          $ref: '#/components/schemas/PaymentOrderType'
         transaction_identification:
           $ref: '#/components/schemas/TransactionIdentification'
         calendar:
@@ -1287,9 +1318,25 @@ components:
         calculating the IBS and CBS taxes associated with the transaction.
       example: IS0435879820240605bcdb1fhn43a
       maxLength: 50
+    TaxType:
+      type: string
+      description: >
+        Tax type:
+
+        * `IBS` = Goods and services tax. A state and municipal tax that unifies
+        and replaces the main subnational consumption taxes (state ICMS and
+        municipal ISS).
+
+        * `CBS` = Contribution on goods and services. A federal tax that
+        consolidates and replaces previous federal social contributions and
+        taxes (PIS, Cofins, and IPI)
+      enum:
+        - CBS
+        - IBS
+      example: IBS
     TaxesWithCategory:
       description: >-
-        Now only available on ext env and just for direct parciapants. Tax
+        Now only available on ext env and just for direct participants. Tax
         information related to the transaction.
       type: object
       properties:
@@ -1297,7 +1344,7 @@ components:
           $ref: '#/components/schemas/TaxIdentifier'
         records:
           type: array
-          description: >-
+          description: >
             Tax records. It is **REQUIRED** to pass a minimum of 2 objects and a
             maximum of 4 objects, at least one with `CBS` tax type and at least
             one with `IBS` tax type.
@@ -1318,22 +1365,6 @@ components:
             `CBS` tax type and at least one with `IBS` tax type
           items:
             $ref: '#/components/schemas/RecordsWithOutCategory'
-    TaxType:
-      type: string
-      description: >
-        Tax type:
-
-        * `IBS` = Goods and services tax. A state and municipal tax that unifies
-        and replaces the main subnational consumption taxes (state ICMS and
-        municipal ISS).
-
-        * `CBS` = Contribution on goods and services. A federal tax that
-        consolidates and replaces previous federal social contributions and
-        taxes (PIS, Cofins, and IPI)
-      enum:
-        - CBS
-        - IBS
-      example: IBS
     TransactionIdentification:
       type: string
       description: >-
@@ -1408,6 +1439,30 @@ paths:
 
         The Central Bank of Brazil (BACEN) created Pix Automatic - a feature
         that allows for scheduled and automatic recurring transfers.  
+
+
+        BACEN rules state that a recurrence must support retry attempts to allow
+        execution of additional charges in case the original payment is not
+        completed.
+
+
+        **Retries flow** 
+
+
+        * If the payment order is not paid by 22:00 on the due date, and the
+        recurrence allows retries, Pismo automatically generates a new payment
+        order for that unpaid cycle.
+
+
+        * The new payment order is created with type = `RETRY_OVERDUE`, and its
+        due date is set to D+2, in compliance with Central Bank requirements.
+        Retries can occur up to 3 times, within a maximum period of 7 days after
+        the original due date.
+
+
+        * After these 3 retry attempts, the payment order cycle can no longer be
+        processed via the automatic Pix flow. The payee must manage further
+        collection outside of this flow.
 
 
         For more information, refer to [Pix
@@ -1804,7 +1859,7 @@ paths:
 
         You can use this endpoint when: 
          1. The payer's PSP did not accept the payment order and the status is `REJECTED` or `EXPIRED`, 
-         2. When the payment order was accepted, but the Pix transaction was not found by the due date, with status `CANCELLING`. 
+         2. When the payment order was accepted, but the Pix transaction was not found by the due date, with status `CANCELLED`. 
          
          In these cases, the payment order can be resent to trigger a new attempt to process the payment.
       operationId: resend-automatic-pix-payment-order
