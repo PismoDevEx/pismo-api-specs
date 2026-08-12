@@ -11,6 +11,8 @@ info:
 servers:
   - url: https://sandbox.pismolabs.io/lending
     description: Sandbox API server for testing
+security:
+  - BearerAuth: []
 tags:
   - name: Loan products
     description: Creates and manages loan product features
@@ -247,7 +249,7 @@ components:
     PrepaymentSimulationIdPath:
       name: simulationId
       in: path
-      description: Prepayment simulation ID returned by the V2 simulate endpoint
+      description: Prepayment simulation ID returned by the simulate endpoint
       required: true
       schema:
         type: string
@@ -268,12 +270,54 @@ components:
       format: int64
       description: Account ID
       example: 514751581
+    AdjustmentAmount:
+      type: number
+      format: double
+      description: Amount of the adjustment
+      example: 1000
+    AdjustmentPostResponse:
+      required:
+        - idempotency_key
+        - authorization_id
+      type: object
+      properties:
+        idempotency_key:
+          $ref: '#/components/schemas/IdempotencyKey'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
     AmountPaid:
       minimum: 0
       type: number
       format: double
       example: 1000
       description: Prepayment amount
+    AnnualInterestRate:
+      type: number
+      format: double
+      description: Annual interest rate
+      example: 12
+    AuthorizationDenialCode:
+      type: string
+      description: Payment Methods - Denial Code
+      example: IAD
+      minLength: 3
+      maxLength: 5
+    AuthorizationId:
+      type: number
+      description: Authorization ID
+      format: int64
+      example: 123456789
+    AuthorizationResponseCode:
+      type: string
+      description: Payment Methods - Response Code
+      example: '62'
+      minLength: 2
+      maxLength: 2
+    AuthorizationTrackingId:
+      type: string
+      description: Authorization tracking ID
+      format: uuid
+      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
     Balance:
       description: Balance details for a loan
       properties:
@@ -291,702 +335,41 @@ components:
           $ref: '#/components/schemas/TaxAmount'
         total:
           $ref: '#/components/schemas/TotalAmount'
-    CalculationPenalty:
-      type: number
-      example: 100
-      format: double
-      description: Calculation penalty early settlement
-    ChargeAmount:
-      type: number
-      example: 5
-      format: double
-      description: Charge amount
-    IdempotencyKey:
-      type: string
-      description: Idempotency key
-      format: uuid
-      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
-    AuthorizationId:
-      type: number
-      description: Authorization ID
-      format: int64
-      example: 123456789
-    AuthorizationTrackingId:
-      type: string
-      description: Authorization tracking ID
-      format: uuid
-      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
-    RepayV2:
-      type: object
-      properties:
-        repayment_id:
-          $ref: '#/components/schemas/RepaymentID'
-        repayment_amount:
-          $ref: '#/components/schemas/RepaymentAmount'
-        repayment_date:
-          $ref: '#/components/schemas/RepaymentDate'
-        reference_date:
-          $ref: '#/components/schemas/ReferenceDate'
-        metadata:
-          $ref: '#/components/schemas/RepaymentMetadata'
-      required:
-        - repayment_id
-    RepaymentMetadata:
-      type: object
-      description: >
-        Additional repayment information
-
-
-        **Note**: This field must not be used to send Personally Identifiable
-        Information (PII), Payment Card Industry (PCI) data, or any
-        sensitive/regulated information. Metadata fields are intended for
-        operational, non-sensitive data only. For sensitive data, use the
-        specific parameters designed for that purpose. For more information,
-        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
-      additionalProperties:
-        type: string
-        description: Additional property
-    RepayV2Result:
-      type: object
-      properties:
-        authorization_id:
-          $ref: '#/components/schemas/AuthorizationId'
-        repaid_amount:
-          $ref: '#/components/schemas/RepaidAmount'
-        installment_amount:
-          $ref: '#/components/schemas/InstallmentAmount'
-        minimum_total_payment_delta:
-          $ref: '#/components/schemas/MinimumTotalPaymentDelta'
-    Collateral:
-      type: string
-      description: Collateral
-      example: SINGLE
-      enum:
-        - NONE
-        - SINGLE
-        - COLLATERAL_MULTIPLE
-    LoanProductLoanActivationMethod:
-      type: string
-      description: >-
-        Indicate when the system changes a loan to active status. Default is
-        `ON_DISBURSEMENT_OR_REPAYMENT`. If disbursement method type is `NONE`,
-        you cannot set to `ON_DISBURSEMENT`, and if set to
-        `ON_DISBURSEMENT_OR_REPAYMENT` the system changes the loan status on
-        repayment.
-      example: ON_BOOKING
-      enum:
-        - ON_BOOKING
-        - ON_DISBURSEMENT
-        - ON_DISBURSEMENT_OR_REPAYMENT
-        - ON_REPAYMENT
-    CreateLoanProductV2Request:
-      required:
-        - collateral
-        - currency
-        - disbursement_method
-        - product_name
-        - product_type
-        - processing_codes
-      type: object
-      properties:
-        product_type:
-          $ref: '#/components/schemas/ProductTypeV2'
-        collateral:
-          $ref: '#/components/schemas/Collateral'
-        loan_activation_method:
-          $ref: '#/components/schemas/LoanProductLoanActivationMethod'
-        currency:
-          $ref: '#/components/schemas/CurrencyCode'
-        disbursement_method:
-          $ref: '#/components/schemas/LoanProductV2DisbursementMethod'
-        product_name:
-          $ref: '#/components/schemas/ProductName'
-        product_id:
-          $ref: '#/components/schemas/LoanProductID'
-        processing_codes:
-          $ref: '#/components/schemas/ProcessingCodes'
-        repayment_calculation_method:
-          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
-        interest_plan_ids:
-          $ref: '#/components/schemas/InterestPlanIDs'
-        early_final_settlement:
-          $ref: '#/components/schemas/LoanProductEFS'
-        prepayment:
-          $ref: '#/components/schemas/LoanProductPrepayment'
-        repayment_hierarchy_code:
-          $ref: '#/components/schemas/RepaymentHierarchyCodeV2'
-        parameters:
-          $ref: '#/components/schemas/LoanProductV2Parameters'
-        grace_period_days:
-          $ref: '#/components/schemas/GracePeriodDays'
-        minimum_total_payment:
-          $ref: '#/components/schemas/MinimumTotalPayment'
-    CreateAdjustmentV2Request:
-      required:
-        - adjustment_amount
-        - loan_balance_impact
-        - processing_code
-        - repayment_id
-      type: object
-      properties:
-        adjustment_amount:
-          $ref: '#/components/schemas/AdjustmentAmount'
-        loan_balance_impact:
-          $ref: '#/components/schemas/LoanBalanceImpact'
-        processing_code:
-          type: string
-          description: Processing code for the adjustment
-        repayment_id:
-          $ref: '#/components/schemas/RepaymentID'
-    AdjustmentPostResponse:
-      required:
-        - idempotency_key
-        - authorization_id
-      type: object
-      properties:
-        idempotency_key:
-          $ref: '#/components/schemas/IdempotencyKey'
-        authorization_id:
-          $ref: '#/components/schemas/AuthorizationId'
-    ProcessingCode:
-      type: string
-      description: Processing code
-      example: '000011'
-      minLength: 2
-      maxLength: 6
-    ProcessingCodes:
-      type: object
-      description: Define processing codes for each operation during the loan lifecycle.
-      properties:
-        booking:
-          type: array
-          description: List of booking processing code
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        repayment:
-          type: array
-          description: List of repayment processing codes
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        present_value_discount:
-          type: array
-          description: List of present value discount processing codes
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        penalty_accruals:
-          type: array
-          description: List of penalty accruals processing codes
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        penalty_waiver:
-          type: array
-          description: List of penalty waiver processing codes
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        restructuring:
-          type: array
-          description: List of restructuring processing codes
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        insurance:
-          $ref: '#/components/schemas/InsurancePC'
-        disbursement:
-          $ref: '#/components/schemas/DisbursementPC'
-        prepayment:
-          $ref: '#/components/schemas/PrepaymentPC'
-        early_final_settlement:
-          $ref: '#/components/schemas/EfsPC'
-    InsurancePC:
-      type: object
-      description: Define processing codes for insurance operations.
-      properties:
-        booking:
-          type: array
-          description: List of booking processing codes
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        repayment:
-          type: array
-          description: List of repayment processing codes
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-    DisbursementPC:
-      type: object
-      description: Define processing codes for disbursement operations.
-      properties:
-        internal:
-          type: array
-          description: List of processing codes for internal account
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-        external:
-          type: array
-          description: List of processing codes for external account
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-    PrepaymentPC:
-      type: object
-      description: Define processing codes for prepayment operations.
-      properties:
-        fee:
-          type: array
-          description: List of fee processing codes for prepayment
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-    EfsPC:
-      type: object
-      description: Define processing codes for early final settlement (EFS) operations.
-      properties:
-        fee:
-          type: array
-          description: List of fee processing codes for early final settlement
-          items:
-            $ref: '#/components/schemas/ProcessingCode'
-    CurrencyCode:
-      type: integer
-      description: ISO 4217 currency code
-      format: int32
-      minimum: 0
-      maximum: 999
-      example: 999
-    DisbursementAmount:
-      type: number
-      format: double
-      description: Disbursement amount
-      example: 1000
-    AdjustmentAmount:
-      type: number
-      format: double
-      description: Amount of the adjustment
-      example: 1000
-    LoanBalanceImpact:
-      type: string
-      description: Loan balance impact
-      example: PRINCIPAL
-      enum:
-        - PRINCIPAL
-        - INTEREST
-        - TAX
-        - PENALTY
-        - FEE
-    DisbursementDate:
-      type: string
-      description: Disbursement date. Format = YYYY-MM-DD.
-      format: date
-      example: '2022-06-30'
-    DisbursementID:
-      type: string
-      description: >-
-        Disbursement ID. Required if the number of loan disbursements is greater
-        than 1.
-      format: uuid
-      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
     BookingAmount:
       type: number
       format: double
       description: Booking amount
       example: 1000
-    InstallmentPlanId:
-      type: string
-      description: ID of the installment plan
-      format: uuid
-      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
-    NumberOfInstallments:
-      type: number
-      format: int32
-      description: Number of installments
-    EarlyFinalSettlementV2Request:
-      type: object
-      description: Request body for early final settlement simulation V2
-      properties:
-        reference_date:
-          $ref: '#/components/schemas/ReferenceDate'
-        waive_penalty:
-          type: boolean
-          description: Waive penalty for early settlement
-          default: false
-          example: false
-    EarlyFinalSettlementV2Response:
-      type: object
-      required:
-        - early_settlement_id
-        - settlement_total
-        - outstanding
-      properties:
-        early_settlement_id:
-          type: string
-          format: uuid
-          description: Early settlement simulation ID
-          example: 72852338-5764-4c7e-b503-10dcee1cdb7e
-        settlement_total:
-          type: number
-          format: double
-          description: Total amount to settle the loan
-          example: 1584
-        outstanding:
-          $ref: '#/components/schemas/OutstandingResponse'
-    RegisterEarlyFinalSettlementV2Response:
-      type: object
-      required:
-        - early_settle_id
-        - total_settled
-        - outstanding
-      description: Response for V2 early final settlement registration
-      properties:
-        early_settle_id:
-          type: string
-          format: uuid
-          description: Early settlement ID
-          example: 72852338-5764-4c7e-b503-10dcee1cdb7e
-        total_settled:
-          type: number
-          format: double
-          description: Total amount settled for the loan
-          example: 1584
-        outstanding:
-          $ref: '#/components/schemas/OutstandingResponse'
-    LendingLoanRepaymentResponse:
+    BookingV2Request:
       type: object
       required:
         - account_id
-        - created_at
-        - loan_amount
-        - loan_id
-        - outstanding_balance
-        - product_id
-        - start_date
-        - status
-        - total_payable
-        - updated_at
+        - installment_plan_id
+        - loan_product_id
+        - number_of_installments
+      description: Request body for booking a loan
       properties:
-        loan_id:
-          $ref: '#/components/schemas/LoanID'
         account_id:
           $ref: '#/components/schemas/AccountID'
-        external_id:
-          $ref: '#/components/schemas/ExternalID'
-        authorization_tracking_id:
-          $ref: '#/components/schemas/AuthorizationTrackingId'
-        loan_amount:
-          $ref: '#/components/schemas/LoanAmount'
-        loan_principal_amount:
-          $ref: '#/components/schemas/LoanPrincipalAmount'
-        total_payable:
-          $ref: '#/components/schemas/TotalPayable'
-        total_expected_payment_amount:
-          $ref: '#/components/schemas/TotalExpectedPaymentAmount'
-        transactions_ids:
-          $ref: '#/components/schemas/TransactionsIDs'
-        prepayments:
-          description: >-
-            List of prepayments registered for this loan. Only populated when
-            the loan aggregate is fully expanded (single GET, or paginated GET
-            with `expand=true`). Only prepayments in `REGISTERED` status are
-            returned.
-          type: array
-          items:
-            $ref: '#/components/schemas/PrepaymentSummaryV2Response'
-        grace_period_days:
-          $ref: '#/components/schemas/GracePeriodDays'
-        days_past_due:
-          $ref: '#/components/schemas/DaysPastDue'
-        original_loan_id:
-          $ref: '#/components/schemas/OriginalLoanID'
-        restructure_loan_id:
-          $ref: '#/components/schemas/RestructureLoanID'
-        product_id:
+        installment_plan_id:
+          $ref: '#/components/schemas/InstallmentPlanId'
+        loan_product_id:
           $ref: '#/components/schemas/LoanProductID'
-        rates:
-          $ref: '#/components/schemas/LoansRates'
-        disbursement:
-          $ref: '#/components/schemas/LoanDisbursement'
-        repayment_schedule:
-          properties:
-            repayment_id:
-              $ref: '#/components/schemas/RepaymentID'
-            transactions_id:
-              $ref: '#/components/schemas/TransactionsID'
-            status:
-              $ref: '#/components/schemas/InstallmentStatus'
-            period:
-              $ref: '#/components/schemas/Period'
-            due_date:
-              $ref: '#/components/schemas/LoanPaymentDueDate'
-            real_due_date:
-              $ref: '#/components/schemas/RealDueDate'
-            present_value_amount:
-              description: Amount of calculated loan present value
-              $ref: '#/components/schemas/PresentValueAmount'
-            present_value_discount:
-              $ref: '#/components/schemas/PresentValueDiscount'
-            amount_due:
-              type: object
-              description: Amount due for the repayment
-              allOf:
-                - $ref: '#/components/schemas/Balance'
-                - type: object
-            amount_paid:
-              type: object
-              description: Amount paid for the repayment
-              allOf:
-                - $ref: '#/components/schemas/Balance'
-                - type: object
-            initial_amount:
-              type: object
-              description: Initial amount for the repayment
-              allOf:
-                - $ref: '#/components/schemas/Balance'
-                - type: object
-        start_date:
-          $ref: '#/components/schemas/FirstActiveStartDate'
-        status:
-          $ref: '#/components/schemas/LoanStatus'
-        created_at:
-          $ref: '#/components/schemas/LoanCreatedAt'
-        updated_at:
-          $ref: '#/components/schemas/LoanUpdatedAt'
-    PrepaymentSummaryV2Response:
-      type: object
-      description: Summary of a registered prepayment associated with a loan
-      properties:
-        prepayment_id:
-          type: string
-          format: uuid
-          description: Identifier of the prepayment
-          example: 73e45fd5-759f-4e04-a88a-7172fa948afa
-        status:
-          type: string
-          description: Lifecycle status of the prepayment
-          enum:
-            - CREATED
-            - PROCESSING
-            - REGISTERED
-          example: REGISTERED
-        settlement_date:
-          type: string
-          format: date-time
-          description: >-
-            Settlement date of the prepayment. Format =
-            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
-          example: '2026-06-15T10:00:00.000+00:00'
-        amount_paid:
-          type: number
-          description: Total prepayment amount paid by the customer
-          example: 1000
-        penalty_amount_paid:
-          type: number
-          description: Penalty amount charged on the prepayment, if any
-          example: 50
-        insurance_amount_paid:
-          type: number
-          description: Insurance portion settled with the prepayment, if any
-          example: 0
-        tax_amount_paid:
-          type: number
-          description: Tax amount applied to the prepayment
-          example: 0
-        reduce_option:
-          $ref: '#/components/schemas/ReduceOption'
-        new_remaining_total:
-          type: number
-          description: Outstanding total of the loan after this prepayment was applied
-          example: 4000
-        created_at:
-          type: string
-          format: date-time
-          description: >-
-            When the prepayment record was created. Format =
-            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
-          example: '2026-06-15T10:00:00.000+00:00'
-        updated_at:
-          type: string
-          format: date-time
-          description: >-
-            When the prepayment record was last updated (ISO 8601 with UTC
-            offset)
-          example: '2026-06-15T10:00:00.000+00:00'
-    ExternalAccountType:
-      type: string
-      description: External account type
-      example: EXTERNAL
-      enum:
-        - EXTERNAL
-    ExternalID:
-      type: string
-      description: External ID
-      example: my_external_id
-      maxLength: 50
-    FeeAmount:
-      type: number
-      example: 10
-      format: double
-      description: Fee amount
-    FirstActiveStartDate:
-      type: string
-      description: Date loan was first active. Format = YYYY-MM-DD.
-      format: date
-      example: '2022-06-28'
-    HasNext:
-      type: boolean
-      description: Does the query have additional items to return?
-      example: true
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallments'
+        amount:
+          $ref: '#/components/schemas/BookingAmount'
+        metadata:
+          $ref: '#/components/schemas/V2Metadata'
     BooleanValue:
       type: boolean
       description: Boolean value
       example: true
-    DateValue:
-      type: string
-      description: Date value in YYYY-MM-DD format
-      format: date
-      example: '2023-12-31'
-    InterestAmount:
+    CalculationPenalty:
       type: number
+      example: 100
       format: double
-      example: 20
-      description: Interest amount
-    InternalAccountType:
-      type: string
-      description: Account type
-      example: INTERNAL
-      enum:
-        - INTERNAL
-    DisbursementV2Request:
-      required:
-        - disbursement_account
-      type: object
-      properties:
-        disbursement_account:
-          anyOf:
-            - $ref: '#/components/schemas/InternalDisburseAccountV2'
-            - $ref: '#/components/schemas/ExternalDisburseAccountV2'
-        disbursement_id:
-          $ref: '#/components/schemas/DisbursementID'
-        disbursement_date:
-          $ref: '#/components/schemas/DisbursementDate'
-        disbursement_amount:
-          $ref: '#/components/schemas/DisbursementAmount'
-        metadata:
-          $ref: '#/components/schemas/DisbursementV2Metadata'
-    InternalDisburseAccountV2:
-      required:
-        - account_type
-        - account_id
-      type: object
-      description: >-
-        Describes disbursement data for internal accounts, where the lender and
-        beneficiary have accounts with the same entity
-      properties:
-        account_type:
-          $ref: '#/components/schemas/InternalAccountType'
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-    ExternalDisburseAccountV2:
-      required:
-        - account_type
-      type: object
-      description: >-
-        Describes disbursement data for external accounts, where the
-        disbursement will be made to an account at a different entity than the
-        lender
-      properties:
-        account_type:
-          $ref: '#/components/schemas/ExternalAccountType'
-    DisbursementV2Metadata:
-      type: object
-      description: >
-        Additional disbursement information
-
-
-        **Note**: This field must not be used to send Personally Identifiable
-        Information (PII), Payment Card Industry (PCI) data, or any
-        sensitive/regulated information. Metadata fields are intended for
-        operational, non-sensitive data only. For sensitive data, use the
-        specific parameters designed for that purpose. For more information,
-        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
-      additionalProperties:
-        type: string
-        description: Additional property
-    DisbursementV2Response:
-      required:
-        - authorization_id
-      type: object
-      properties:
-        loan_id:
-          $ref: '#/components/schemas/LoanID'
-        authorization_id:
-          $ref: '#/components/schemas/AuthorizationId'
-        authorization_tracking_id:
-          $ref: '#/components/schemas/AuthorizationTrackingId'
-        disbursement_id:
-          $ref: '#/components/schemas/DisbursementID'
-        disbursement_amount:
-          $ref: '#/components/schemas/DisbursementAmount'
-    LoanIdResponse:
-      required:
-        - loan_id
-      type: object
-      properties:
-        loan_id:
-          $ref: '#/components/schemas/LoanID'
-    CancelLoanV2Request:
-      required:
-        - tracking_id
-      type: object
-      properties:
-        tracking_id:
-          $ref: '#/components/schemas/TrackingID'
-        processing_code:
-          $ref: '#/components/schemas/LoanCancellationProcessingCodes'
-        refund_paid_repayments:
-          $ref: '#/components/schemas/RefundPaidRepayments'
-        metadata:
-          $ref: '#/components/schemas/CancelLoanV2Metadata'
-    CancelLoanV2Response:
-      required:
-        - cancelled_loan_id
-        - reversal_authorization_id
-        - reversal_tracking_id
-      type: object
-      properties:
-        cancelled_loan_id:
-          $ref: '#/components/schemas/LoanID'
-        reversal_authorization_id:
-          $ref: '#/components/schemas/AuthorizationId'
-        reversal_tracking_id:
-          $ref: '#/components/schemas/AuthorizationTrackingId'
-    LoanCancellationProcessingCodes:
-      type: object
-      description: Define processing codes for each operation during the loan cancellation.
-      properties:
-        booking:
-          description: Booking processing code
-          $ref: '#/components/schemas/ProcessingCode'
-        repayment:
-          description: Repayment processing code
-          $ref: '#/components/schemas/ProcessingCode'
-        penalty_waiver:
-          description: Penalty waiver processing code
-          $ref: '#/components/schemas/ProcessingCode'
-    CancelLoanV2Metadata:
-      type: object
-      description: >
-        Additional loan cancellation information
-
-
-        **Note**: This field must not be used to send Personally Identifiable
-        Information (PII), Payment Card Industry (PCI) data, or any
-        sensitive/regulated information. Metadata fields are intended for
-        operational, non-sensitive data only. For sensitive data, use the
-        specific parameters designed for that purpose. For more information,
-        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
-      additionalProperties:
-        type: string
-        description: Additional property
-    RefundPaidRepayments:
-      type: boolean
-      description: Refund paid repayments upon loan cancellation?
-      default: false
-      example: true
+      description: Calculation penalty early settlement
     CancelAllLoansV2Request:
       type: object
       description: Request body for cancelling all loans of an account
@@ -1033,31 +416,10 @@ components:
           type: string
           description: Loan status after cancellation
           example: CANCELED
-    BookingV2Request:
-      type: object
-      required:
-        - account_id
-        - installment_plan_id
-        - loan_product_id
-        - number_of_installments
-      description: Request body for booking a loan
-      properties:
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        installment_plan_id:
-          $ref: '#/components/schemas/InstallmentPlanId'
-        loan_product_id:
-          $ref: '#/components/schemas/LoanProductID'
-        number_of_installments:
-          $ref: '#/components/schemas/NumberOfInstallments'
-        amount:
-          $ref: '#/components/schemas/BookingAmount'
-        metadata:
-          $ref: '#/components/schemas/V2Metadata'
-    V2Metadata:
+    CancelLoanV2Metadata:
       type: object
       description: >
-        Additional information
+        Additional loan cancellation information
 
 
         **Note**: This field must not be used to send Personally Identifiable
@@ -1069,110 +431,392 @@ components:
       additionalProperties:
         type: string
         description: Additional property
-    Limit:
-      maximum: 50
-      type: integer
-      description: Maximum returned list size. Default = `10`.
-      format: int32
-      example: 10
-    LoanAmount:
-      type: number
-      format: double
-      description: Loan amount
-      example: 2000
-    LoanPrincipalAmount:
-      type: number
-      format: double
-      description: >-
-        Principal portion of the loan amount, excluding interest, fees, taxes,
-        and penalty
-      example: 1800
-    LoanID:
-      maxLength: 36
-      minLength: 0
-      type: string
-      description: >-
-        Custom ID for the loan. Must consist of uppercase alphanumeric
-        characters and underscores.
-      example: MY_CUSTOM_LOAN_ID
-    LoanPaymentDueDate:
-      type: string
-      description: Loan payment due date. Format = YYYY-MM-DD.
-      format: date
-      example: '2022-06-28'
-    RealDueDate:
-      type: string
-      description: Adjusted due date. Format = YYYY-MM-DD.
-      format: date
-      example: '2025-06-28'
-    LoanCreatedAt:
-      type: string
-      format: date-time
-      description: Loan created date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
-      example: '2024-03-15T13:00:00.000+00:00'
-    LoanUpdatedAt:
-      type: string
-      format: date-time
-      description: Loan last updated date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
-      example: '2024-03-15T13:00:00.000+00:00'
-    LoanProductV2DisbursementMethod:
+    CancelLoanV2Request:
       required:
-        - type
+        - tracking_id
       type: object
-      description: Disbursement method
       properties:
-        type:
-          $ref: '#/components/schemas/LoanProductV2DisbursementType'
-    LoanProductV2DisbursementType:
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        processing_code:
+          $ref: '#/components/schemas/LoanCancellationProcessingCodes'
+        refund_paid_repayments:
+          $ref: '#/components/schemas/RefundPaidRepayments'
+        metadata:
+          $ref: '#/components/schemas/CancelLoanV2Metadata'
+    CancelLoanV2Response:
+      required:
+        - cancelled_loan_id
+        - reversal_authorization_id
+        - reversal_tracking_id
+      type: object
+      properties:
+        cancelled_loan_id:
+          $ref: '#/components/schemas/LoanID'
+        reversal_authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        reversal_tracking_id:
+          $ref: '#/components/schemas/AuthorizationTrackingId'
+    ChargeAmount:
+      type: number
+      example: 5
+      format: double
+      description: Charge amount
+    Collateral:
       type: string
-      description: Disbursement method type or how the loan is delivered.
+      description: Collateral
       example: SINGLE
-      default: NONE
       enum:
         - NONE
         - SINGLE
-        - MULTIPLE
-    LoanProductEFS:
-      description: Define some early settlement requirements.
-      type: object
+        - COLLATERAL_MULTIPLE
+    CreateAdjustmentV2Request:
       required:
-        - penalty
-      properties:
-        penalty:
-          $ref: '#/components/schemas/PenaltyV2'
-        lock_in_period:
-          $ref: '#/components/schemas/LockInPeriod'
-    LoanProductID:
-      type: string
-      description: >-
-        Loan product ID. Accepts either a lowercase UUID (e.g.,
-        "2717a296-124a-47cc-b2a1-91e80dc723eb") or an uppercase alphanumeric
-        string with underscores (e.g., "MY_LOAN_PRODUCT_001"). If not provided
-        during creation, a UUID is auto-generated.
-      maxLength: 80
-      pattern: >-
-        ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z0-9_]{1,80})$
-      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
-    LoanProductPrepayment:
-      description: Defines some prepayment requirements.
-      type: object
-      required:
-        - penalty
-        - reduce_option
-      properties:
-        penalty:
-          $ref: '#/components/schemas/PenaltyV2'
-        lock_in_period:
-          $ref: '#/components/schemas/LockInPeriod'
-        reduce_option:
-          $ref: '#/components/schemas/ReduceOptionsArray'
-    LoanProductPostResponse:
-      required:
-        - product_id
+        - adjustment_amount
+        - loan_balance_impact
+        - processing_code
+        - repayment_id
       type: object
       properties:
+        adjustment_amount:
+          $ref: '#/components/schemas/AdjustmentAmount'
+        loan_balance_impact:
+          $ref: '#/components/schemas/LoanBalanceImpact'
+        processing_code:
+          type: string
+          description: Processing code for the adjustment
+        repayment_id:
+          $ref: '#/components/schemas/RepaymentID'
+    CreateLoanProductV2Request:
+      required:
+        - collateral
+        - currency
+        - disbursement_method
+        - product_name
+        - product_type
+        - processing_codes
+      type: object
+      properties:
+        product_type:
+          $ref: '#/components/schemas/ProductTypeV2'
+        collateral:
+          $ref: '#/components/schemas/Collateral'
+        loan_activation_method:
+          $ref: '#/components/schemas/LoanProductLoanActivationMethod'
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        disbursement_method:
+          $ref: '#/components/schemas/LoanProductV2DisbursementMethod'
+        product_name:
+          $ref: '#/components/schemas/ProductName'
         product_id:
           $ref: '#/components/schemas/LoanProductID'
+        processing_codes:
+          $ref: '#/components/schemas/ProcessingCodes'
+        repayment_calculation_method:
+          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
+        interest_plan_ids:
+          $ref: '#/components/schemas/InterestPlanIDs'
+        early_final_settlement:
+          $ref: '#/components/schemas/LoanProductEFS'
+        prepayment:
+          $ref: '#/components/schemas/LoanProductPrepayment'
+        repayment_hierarchy_code:
+          $ref: '#/components/schemas/RepaymentHierarchyCodeV2'
+        parameters:
+          $ref: '#/components/schemas/LoanProductV2Parameters'
+        grace_period_days:
+          $ref: '#/components/schemas/GracePeriodDays'
+        minimum_total_payment:
+          $ref: '#/components/schemas/MinimumTotalPayment'
+    CurrencyCode:
+      type: integer
+      description: ISO 4217 currency code
+      format: int32
+      minimum: 0
+      maximum: 999
+      example: 999
+    DateValue:
+      type: string
+      description: Date value in YYYY-MM-DD format
+      format: date
+      example: '2023-12-31'
+    DaysPastDue:
+      description: >-
+        Number of calendar days elapsed since the real due date of the loan's
+        most overdue repayment. Computed from repayments currently in a past due
+        or overdue status. A value of `0` indicates the loan has no past due or
+        overdue repayments.
+      type: integer
+      format: int32
+      minimum: 0
+      example: 12
+    DisbursementAmount:
+      type: number
+      format: double
+      description: Disbursement amount
+      example: 1000
+    DisbursementDate:
+      type: string
+      description: Disbursement date. Format = YYYY-MM-DD.
+      format: date
+      example: '2022-06-30'
+    DisbursementID:
+      type: string
+      description: >-
+        Disbursement ID. Required if the number of loan disbursements is greater
+        than 1.
+      format: uuid
+      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+    DisbursementPC:
+      type: object
+      description: Define processing codes for disbursement operations.
+      properties:
+        internal:
+          type: array
+          description: List of processing codes for internal account
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        external:
+          type: array
+          description: List of processing codes for external account
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    DisbursementScheduleItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/LoanDisbursementID'
+        amount:
+          $ref: '#/components/schemas/LoanDisbursementAmount'
+        date:
+          $ref: '#/components/schemas/LoanDisbursementDate'
+        disbursement_account:
+          $ref: '#/components/schemas/LoanDisbursementAccount'
+        authorization_id:
+          $ref: '#/components/schemas/LoanAuthorizationID'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        status:
+          $ref: '#/components/schemas/LoanDisbursementStatus'
+        transactions_ids:
+          $ref: '#/components/schemas/TransactionsIDs'
+    DisbursementV2Metadata:
+      type: object
+      description: >
+        Additional disbursement information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    DisbursementV2Request:
+      required:
+        - disbursement_account
+      type: object
+      properties:
+        disbursement_account:
+          anyOf:
+            - $ref: '#/components/schemas/InternalDisburseAccountV2'
+            - $ref: '#/components/schemas/ExternalDisburseAccountV2'
+        disbursement_id:
+          $ref: '#/components/schemas/DisbursementID'
+        disbursement_date:
+          $ref: '#/components/schemas/DisbursementDate'
+        disbursement_amount:
+          $ref: '#/components/schemas/DisbursementAmount'
+        metadata:
+          $ref: '#/components/schemas/DisbursementV2Metadata'
+    DisbursementV2Response:
+      required:
+        - authorization_id
+      type: object
+      properties:
+        loan_id:
+          $ref: '#/components/schemas/LoanID'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        authorization_tracking_id:
+          $ref: '#/components/schemas/AuthorizationTrackingId'
+        disbursement_id:
+          $ref: '#/components/schemas/DisbursementID'
+        disbursement_amount:
+          $ref: '#/components/schemas/DisbursementAmount'
+    EarlyFinalSettlementV2Request:
+      type: object
+      description: Request body for early final settlement simulation
+      properties:
+        reference_date:
+          $ref: '#/components/schemas/ReferenceDate'
+        waive_penalty:
+          type: boolean
+          description: Waive the penalty for early settlement?
+          default: false
+          example: false
+    EarlyFinalSettlementV2Response:
+      type: object
+      required:
+        - early_settlement_id
+        - settlement_total
+        - outstanding
+      properties:
+        early_settlement_id:
+          type: string
+          format: uuid
+          description: Early settlement simulation ID
+          example: 72852338-5764-4c7e-b503-10dcee1cdb7e
+        settlement_total:
+          type: number
+          format: double
+          description: Total amount to settle the loan
+          example: 1584
+        outstanding:
+          $ref: '#/components/schemas/OutstandingResponse'
+    EffectiveAnnualCost:
+      type: number
+      format: double
+      description: Effective annual cost of the loan in configured currency
+      example: 319.98
+    EffectiveMonthlyCost:
+      type: number
+      format: double
+      description: Effective monthly cost of the loan in configured currency
+      example: 12.7
+    EfsPC:
+      type: object
+      description: Define processing codes for early final settlement (EFS) operations.
+      properties:
+        fee:
+          type: array
+          description: List of fee processing codes for early final settlement
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    ErrorCode:
+      type: string
+      description: Lending error code
+      example: ELND0001
+    ErrorMessage:
+      type: string
+      example: Unexpected error
+      description: Lending error message
+    ExpirationDate:
+      type: string
+      description: Expiration date of the prepayment. Format = YYYY-MM-DD.
+      format: date
+      example: '2025-04-28'
+    ExternalAccountType:
+      type: string
+      description: External account type
+      example: EXTERNAL
+      enum:
+        - EXTERNAL
+    ExternalDisburseAccountV2:
+      required:
+        - account_type
+      type: object
+      description: >-
+        Describes disbursement data for external accounts, where the
+        disbursement will be made to an account at a different entity than the
+        lender
+      properties:
+        account_type:
+          $ref: '#/components/schemas/ExternalAccountType'
+    ExternalID:
+      type: string
+      description: External ID
+      example: my_external_id
+      maxLength: 50
+    FeeAmount:
+      type: number
+      example: 10
+      format: double
+      description: Fee amount
+    FirstActiveStartDate:
+      type: string
+      description: Date loan was first active. Format = YYYY-MM-DD.
+      format: date
+      example: '2022-06-28'
+    GetRepaymentHierarchyV2Response:
+      required:
+        - hierarchy_code
+        - hierarchy
+        - status
+      type: object
+      properties:
+        hierarchy_code:
+          $ref: '#/components/schemas/HierarchyCode'
+        hierarchy:
+          $ref: '#/components/schemas/HierarchyV2'
+        status:
+          $ref: '#/components/schemas/HierarchyStatus'
+    GracePeriodDays:
+      description: >-
+        Number of calendar days after the installment due date during which late
+        fees and delinquency are not applied. A value of `0` or omitted
+        indicates no grace period.
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 365
+      example: 7
+    HasNext:
+      type: boolean
+      description: Does the query have additional items to return?
+      example: true
+    HierarchyCode:
+      type: string
+      description: >-
+        Repayment hierarchy code. Must be unique and can contain alphanumeric
+        characters, hyphens, and underscores.
+      maxLength: 80
+      minLength: 1
+      example: CR008
+    HierarchyStatus:
+      type: string
+      description: Repayment hierarchy status
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+      example: ENABLED
+    HierarchyV2:
+      type: array
+      description: >-
+        List that defines the repayment priority order using the order items are
+        listed. Determines which loan components are paid first during repayment
+        processing. All seven items are required.
+      minItems: 7
+      maxItems: 7
+      uniqueItems: true
+      items:
+        type: string
+        enum:
+          - PRINCIPAL
+          - INTEREST
+          - TAX
+          - FEE
+          - CHARGE
+          - PENALTY
+          - INSURANCE
+      example:
+        - PRINCIPAL
+        - INTEREST
+        - TAX
+        - FEE
+        - CHARGE
+        - PENALTY
+        - INSURANCE
+    IdempotencyKey:
+      type: string
+      description: Idempotency key
+      format: uuid
+      example: 4df987e3-8179-11ed-8209-06c7b022d1ee
     InstallmentAmount:
       type: object
       description: Installment amount
@@ -1181,138 +825,11 @@ components:
           $ref: '#/components/schemas/MinValue'
         max:
           $ref: '#/components/schemas/MaxValue'
-    ListLoanProductV2Response:
-      required:
-        - has_next
-        - items
-      type: object
-      properties:
-        has_next:
-          $ref: '#/components/schemas/HasNext'
-        interest_plan_ids:
-          $ref: '#/components/schemas/InterestPlanIDs'
-        items:
-          type: array
-          description: List of loan products
-          items:
-            $ref: '#/components/schemas/LoanProductV2Response'
-        next_cursor:
-          $ref: '#/components/schemas/NextCursor'
-        repayment_calculation_method:
-          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
-    LoanProductV2Response:
-      required:
-        - collateral
-        - currency
-        - disbursement_method
-        - processing_codes
-        - product_id
-        - product_name
-        - status
-      type: object
-      properties:
-        collateral:
-          $ref: '#/components/schemas/Collateral'
-        currency:
-          $ref: '#/components/schemas/CurrencyCode'
-        disbursement_method:
-          $ref: '#/components/schemas/LoanProductV2DisbursementMethod'
-        processing_codes:
-          $ref: '#/components/schemas/ProcessingCodes'
-        product_id:
-          $ref: '#/components/schemas/LoanProductID'
-        product_name:
-          $ref: '#/components/schemas/ProductName'
-        status:
-          $ref: '#/components/schemas/ProductStatus'
-        created_at:
-          $ref: '#/components/schemas/LoanCreatedAt'
-        early_final_settlement:
-          $ref: '#/components/schemas/LoanProductEFS'
-        grace_period_days:
-          $ref: '#/components/schemas/GracePeriodDays'
-        interest_plan_ids:
-          $ref: '#/components/schemas/InterestPlanIDs'
-        loan_activation_method:
-          $ref: '#/components/schemas/LoanProductLoanActivationMethod'
-        minimum_total_payment:
-          $ref: '#/components/schemas/MinimumTotalPayment'
-        parameters:
-          $ref: '#/components/schemas/LoanProductV2Parameters'
-        penalty_plan_codes:
-          $ref: '#/components/schemas/ProductPenaltyPlanCodes'
-        prepayment:
-          $ref: '#/components/schemas/LoanProductPrepayment'
-        product_type:
-          $ref: '#/components/schemas/ProductTypeV2'
-        repayment_calculation_method:
-          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
-        repayment_hierarchy_code:
-          $ref: '#/components/schemas/RepaymentHierarchyCodeV2'
-        updated_at:
-          $ref: '#/components/schemas/LoanUpdatedAt'
-        version:
-          $ref: '#/components/schemas/ProductVersionV2'
-    LoanStatus:
+    InstallmentPlanId:
       type: string
-      description: >
-        Loan status
-
-
-        `PENDING`-The loan has been created but has not yet been booked. Terms
-        may still be under review or awaiting confirmation.
-
-        `BOOKED`-The loan has been approved and booked. The payment schedule is
-        confirmed and the loan is ready for disbursement.
-
-        `ACTIVE`-The loan is active and in progress. Funds have been disbursed
-        and the borrower is expected to make repayments according to the agreed
-        schedule.
-
-        `CANCELED`-A repayment is no longer expected to be paid.
-
-        `SETTLED`-The loan has been fully repaid and is closed. No further
-        repayments are expected.
-
-        `RENEGOTIATED`-The original loan terms have been modified after booking,
-        typically due to a change in repayment conditions or borrower
-        circumstances.
-
-        `SCHEDULED`-A repayment is expected to be paid on or before the due date
-        of the repayment.
-
-        `PROCESSING`-An intermediate state that happens whenever there are
-        asynchronous process that demand a state change. For example, BOOKING →
-        PROCESSING → ACTIVE. Common use case - A repayment registration has just
-        been requested using the Register repayment endpoint and is being
-        processed.
-
-        `PAID`-The expected repayment amount has been paid in full on or before
-        the due date of the repayment.
-
-        `PARTIALLY_PAID`-Only part of the expected payment amount has been paid.
-        However, the repayment due date has not passed, so the borrower could
-        still make the full payment on time.
-
-        `PAST_DUE`-The repayment due date has passed and the expected repayment
-        amount has not been paid in full.
-
-        `NOT_PAID`-An attempt to execute an auto repayment for this installment
-        was not successful.
-      example: ACTIVE
-      enum:
-        - PENDING
-        - BOOKED
-        - ACTIVE
-        - CANCELED
-        - SETTLED
-        - RENEGOTIATED
-        - SCHEDULED
-        - PROCESSING
-        - PAID
-        - PARTIALLY_PAID
-        - PAST_DUE
-        - NOT_PAID
+      description: ID of the installment plan
+      format: uuid
+      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
     InstallmentStatus:
       type: string
       description: >
@@ -1427,21 +944,25 @@ components:
         - PAST_DUE_PARTIALLY_PAID_PENDING_PAYMENT
         - OVERDUE_PARTIALLY_PAID_PENDING_PAYMENT
         - PARTIALLY_PAID_IN_GRACE_PERIOD_PENDING_PAYMENT
-    ProductTypeV2:
-      type: string
-      description: Loan product type
-      example: BNPL
-      default: BNPL
-      enum:
-        - BNPL
-        - PERSONAL
-    RepaymentCalculationMethodV2:
-      type: string
-      description: Method used to calculate the repayment amount
-      example: RATES
-      default: RATES
-      enum:
-        - RATES
+    InsurancePC:
+      type: object
+      description: Define processing codes for insurance operations.
+      properties:
+        booking:
+          type: array
+          description: List of booking processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        repayment:
+          type: array
+          description: List of repayment processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    InterestAmount:
+      type: number
+      format: double
+      example: 20
+      description: Interest amount
     InterestPlanIDs:
       type: array
       description: List of interest plan IDs
@@ -1449,6 +970,605 @@ components:
         type: string
         format: uuid
         example: 5a1b2c3d-4e5f-6789-abcd-1234567890ef
+    InternalAccountType:
+      type: string
+      description: Account type
+      example: INTERNAL
+      enum:
+        - INTERNAL
+    InternalDisburseAccountV2:
+      required:
+        - account_type
+        - account_id
+      type: object
+      description: >-
+        Describes disbursement data for internal accounts, where the lender and
+        beneficiary have accounts with the same entity
+      properties:
+        account_type:
+          $ref: '#/components/schemas/InternalAccountType'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+    LendingLoanRepaymentResponse:
+      type: object
+      required:
+        - account_id
+        - created_at
+        - loan_amount
+        - loan_id
+        - outstanding_balance
+        - product_id
+        - start_date
+        - status
+        - total_payable
+        - updated_at
+      properties:
+        loan_id:
+          $ref: '#/components/schemas/LoanID'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        external_id:
+          $ref: '#/components/schemas/ExternalID'
+        authorization_tracking_id:
+          $ref: '#/components/schemas/AuthorizationTrackingId'
+        loan_amount:
+          $ref: '#/components/schemas/LoanAmount'
+        loan_principal_amount:
+          $ref: '#/components/schemas/LoanPrincipalAmount'
+        total_payable:
+          $ref: '#/components/schemas/TotalPayable'
+        total_expected_payment_amount:
+          $ref: '#/components/schemas/TotalExpectedPaymentAmount'
+        transactions_ids:
+          $ref: '#/components/schemas/TransactionsIDs'
+        prepayments:
+          description: >-
+            List of prepayments registered for this loan. Only populated when
+            the loan aggregate is fully expanded (single GET, or paginated GET
+            with `expand=true`). Only prepayments in `REGISTERED` status are
+            returned.
+          type: array
+          items:
+            $ref: '#/components/schemas/PrepaymentSummaryV2Response'
+        grace_period_days:
+          $ref: '#/components/schemas/GracePeriodDays'
+        days_past_due:
+          $ref: '#/components/schemas/DaysPastDue'
+        original_loan_id:
+          $ref: '#/components/schemas/OriginalLoanID'
+        restructure_loan_id:
+          $ref: '#/components/schemas/RestructureLoanID'
+        product_id:
+          $ref: '#/components/schemas/LoanProductID'
+        rates:
+          $ref: '#/components/schemas/LoansRates'
+        disbursement:
+          $ref: '#/components/schemas/LoanDisbursement'
+        repayment_schedule:
+          properties:
+            repayment_id:
+              $ref: '#/components/schemas/RepaymentID'
+            transactions_id:
+              $ref: '#/components/schemas/TransactionsID'
+            status:
+              $ref: '#/components/schemas/InstallmentStatus'
+            period:
+              $ref: '#/components/schemas/Period'
+            due_date:
+              $ref: '#/components/schemas/LoanPaymentDueDate'
+            real_due_date:
+              $ref: '#/components/schemas/RealDueDate'
+            present_value_amount:
+              description: Amount of calculated loan present value
+              $ref: '#/components/schemas/PresentValueAmount'
+            present_value_discount:
+              $ref: '#/components/schemas/PresentValueDiscount'
+            amount_due:
+              type: object
+              description: Amount due for the repayment
+              allOf:
+                - $ref: '#/components/schemas/Balance'
+                - type: object
+            amount_paid:
+              type: object
+              description: Amount paid for the repayment
+              allOf:
+                - $ref: '#/components/schemas/Balance'
+                - type: object
+            initial_amount:
+              type: object
+              description: Initial amount for the repayment
+              allOf:
+                - $ref: '#/components/schemas/Balance'
+                - type: object
+        start_date:
+          $ref: '#/components/schemas/FirstActiveStartDate'
+        status:
+          $ref: '#/components/schemas/LoanStatus'
+        created_at:
+          $ref: '#/components/schemas/LoanCreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/LoanUpdatedAt'
+    Limit:
+      maximum: 50
+      type: integer
+      description: Maximum returned list size. Default = `10`.
+      format: int32
+      example: 10
+    ListLoanProductV2Response:
+      required:
+        - has_next
+        - items
+      type: object
+      properties:
+        has_next:
+          $ref: '#/components/schemas/HasNext'
+        interest_plan_ids:
+          $ref: '#/components/schemas/InterestPlanIDs'
+        items:
+          type: array
+          description: List of loan products
+          items:
+            $ref: '#/components/schemas/LoanProductV2Response'
+        next_cursor:
+          $ref: '#/components/schemas/NextCursor'
+        repayment_calculation_method:
+          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
+    LoanAllocationSummary:
+      type: object
+      description: Summary of a loan allocation within a group payment
+      properties:
+        loan_id:
+          type: string
+          description: Loan ID
+        loan_start_date:
+          type: string
+          format: date-time
+          description: Loan start date
+        installment_amount:
+          type: number
+          format: double
+          description: Installment amount allocated
+        minimum_total_payment_delta:
+          $ref: '#/components/schemas/MinimumTotalPaymentDelta'
+    LoanAmount:
+      type: number
+      format: double
+      description: Loan amount
+      example: 2000
+    LoanAuthorizationID:
+      type: integer
+      format: int64
+      description: Authorization ID
+      example: 2422410859
+    LoanBalanceImpact:
+      type: string
+      description: Loan balance impact
+      example: PRINCIPAL
+      enum:
+        - PRINCIPAL
+        - INTEREST
+        - TAX
+        - PENALTY
+        - FEE
+    LoanCancellationProcessingCodes:
+      type: object
+      description: Define processing codes for each operation during the loan cancellation.
+      properties:
+        booking:
+          description: Booking processing code
+          $ref: '#/components/schemas/ProcessingCode'
+        repayment:
+          description: Repayment processing code
+          $ref: '#/components/schemas/ProcessingCode'
+        penalty_waiver:
+          description: Penalty waiver processing code
+          $ref: '#/components/schemas/ProcessingCode'
+    LoanCreatedAt:
+      type: string
+      format: date-time
+      description: Loan created date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+      example: '2024-03-15T13:00:00.000+00:00'
+    LoanDisbursement:
+      type: object
+      description: Disbursement details for the loan
+      properties:
+        type:
+          $ref: '#/components/schemas/LoanDisbursementType'
+        schedule:
+          $ref: '#/components/schemas/LoanDisbursementSchedule'
+    LoanDisbursementAccount:
+      type: object
+      properties:
+        account_type:
+          type: string
+          description: Account type
+          example: INTERNAL
+          enum:
+            - INTERNAL
+            - EXTERNAL
+        account_id:
+          type: integer
+          format: int64
+          description: Account ID
+          example: 317890964
+    LoanDisbursementAmount:
+      type: number
+      format: double
+      description: Disbursement amount
+      example: 300
+    LoanDisbursementDate:
+      type: string
+      format: date
+      description: Disbursement date
+      example: '2025-11-13'
+    LoanDisbursementID:
+      type: string
+      format: uuid
+      description: Disbursement ID
+      example: 54efa995-66f1-4595-9934-5b92222faf37
+    LoanDisbursementSchedule:
+      type: array
+      description: List of disbursement schedules
+      items:
+        $ref: '#/components/schemas/DisbursementScheduleItem'
+    LoanDisbursementStatus:
+      type: string
+      description: Disbursement status
+      example: PAID
+      enum:
+        - SCHEDULED
+        - PROCESSING
+        - CANCELED
+        - EXPIRED
+        - PAID
+    LoanDisbursementType:
+      type: string
+      description: Disbursement type
+      example: SINGLE
+      enum:
+        - SINGLE
+        - MULTIPLE
+    LoanID:
+      maxLength: 36
+      minLength: 0
+      type: string
+      description: >-
+        Custom ID for the loan. Must consist of uppercase alphanumeric
+        characters and underscores.
+      example: MY_CUSTOM_LOAN_ID
+    LoanIdResponse:
+      required:
+        - loan_id
+      type: object
+      properties:
+        loan_id:
+          $ref: '#/components/schemas/LoanID'
+    LoanInterestRate:
+      type: number
+      format: double
+      description: Loan interest rate
+      example: 12
+    LoanPaymentDueDate:
+      type: string
+      description: Loan payment due date. Format = YYYY-MM-DD.
+      format: date
+      example: '2022-06-28'
+    LoanPrincipalAmount:
+      type: number
+      format: double
+      description: >-
+        Principal portion of the loan amount, excluding interest, fees, taxes,
+        and penalty
+      example: 1800
+    LoanProductEFS:
+      description: Define some early settlement requirements.
+      type: object
+      required:
+        - penalty
+      properties:
+        penalty:
+          $ref: '#/components/schemas/PenaltyV2'
+        lock_in_period:
+          $ref: '#/components/schemas/LockInPeriod'
+    LoanProductID:
+      type: string
+      description: >-
+        Loan product ID. Accepts either a lowercase UUID (e.g.,
+        "2717a296-124a-47cc-b2a1-91e80dc723eb") or an uppercase alphanumeric
+        string with underscores (e.g., "MY_LOAN_PRODUCT_001"). If not provided
+        during creation, a UUID is auto-generated.
+      maxLength: 80
+      pattern: >-
+        ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z0-9_]{1,80})$
+      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+    LoanProductLoanActivationMethod:
+      type: string
+      description: >-
+        Indicate when the system changes a loan to active status. Default is
+        `ON_DISBURSEMENT_OR_REPAYMENT`. If disbursement method type is `NONE`,
+        you cannot set to `ON_DISBURSEMENT`, and if set to
+        `ON_DISBURSEMENT_OR_REPAYMENT` the system changes the loan status on
+        repayment.
+      example: ON_BOOKING
+      enum:
+        - ON_BOOKING
+        - ON_DISBURSEMENT
+        - ON_DISBURSEMENT_OR_REPAYMENT
+        - ON_REPAYMENT
+    LoanProductPostResponse:
+      required:
+        - product_id
+      type: object
+      properties:
+        product_id:
+          $ref: '#/components/schemas/LoanProductID'
+    LoanProductPrepayment:
+      description: Defines some prepayment requirements.
+      type: object
+      required:
+        - penalty
+        - reduce_option
+      properties:
+        penalty:
+          $ref: '#/components/schemas/PenaltyV2'
+        lock_in_period:
+          $ref: '#/components/schemas/LockInPeriod'
+        reduce_option:
+          $ref: '#/components/schemas/ReduceOptionsArray'
+    LoanProductV2DisbursementMethod:
+      required:
+        - type
+      type: object
+      description: Disbursement method
+      properties:
+        type:
+          $ref: '#/components/schemas/LoanProductV2DisbursementType'
+    LoanProductV2DisbursementType:
+      type: string
+      description: Disbursement method type or how the loan is delivered.
+      example: SINGLE
+      default: NONE
+      enum:
+        - NONE
+        - SINGLE
+        - MULTIPLE
+    LoanProductV2Parameters:
+      type: object
+      description: Loan product parameters
+      properties:
+        stop_accrual_number_of_days:
+          description: >-
+            Maximum period during which delinquency-related charges accrue after
+            a payment is overdue, based on lender policy or local regulations.
+            Once this threshold is reached, new penalty charges stop posting, so
+            the outstanding debt no longer increases.
+          type: number
+          format: int32
+          minimum: 1
+          maximum: 365
+          example: 60
+        overdue_threshold_days:
+          description: Number of days before the account is considered overdue
+          type: number
+          format: int32
+          minimum: 1
+          maximum: 365
+          example: 30
+    LoanProductV2Response:
+      required:
+        - collateral
+        - currency
+        - disbursement_method
+        - processing_codes
+        - product_id
+        - product_name
+        - status
+      type: object
+      properties:
+        collateral:
+          $ref: '#/components/schemas/Collateral'
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        disbursement_method:
+          $ref: '#/components/schemas/LoanProductV2DisbursementMethod'
+        processing_codes:
+          $ref: '#/components/schemas/ProcessingCodes'
+        product_id:
+          $ref: '#/components/schemas/LoanProductID'
+        product_name:
+          $ref: '#/components/schemas/ProductName'
+        status:
+          $ref: '#/components/schemas/ProductStatus'
+        created_at:
+          $ref: '#/components/schemas/LoanCreatedAt'
+        early_final_settlement:
+          $ref: '#/components/schemas/LoanProductEFS'
+        grace_period_days:
+          $ref: '#/components/schemas/GracePeriodDays'
+        interest_plan_ids:
+          $ref: '#/components/schemas/InterestPlanIDs'
+        loan_activation_method:
+          $ref: '#/components/schemas/LoanProductLoanActivationMethod'
+        minimum_total_payment:
+          $ref: '#/components/schemas/MinimumTotalPayment'
+        parameters:
+          $ref: '#/components/schemas/LoanProductV2Parameters'
+        penalty_plan_codes:
+          $ref: '#/components/schemas/ProductPenaltyPlanCodes'
+        prepayment:
+          $ref: '#/components/schemas/LoanProductPrepayment'
+        product_type:
+          $ref: '#/components/schemas/ProductTypeV2'
+        repayment_calculation_method:
+          $ref: '#/components/schemas/RepaymentCalculationMethodV2'
+        repayment_hierarchy_code:
+          $ref: '#/components/schemas/RepaymentHierarchyCodeV2'
+        updated_at:
+          $ref: '#/components/schemas/LoanUpdatedAt'
+        version:
+          $ref: '#/components/schemas/ProductVersionV2'
+    LoansRates:
+      type: object
+      description: >-
+        Loan rates including annual interest rate and effective annual and
+        monthly costs
+      properties:
+        interest_rate:
+          $ref: '#/components/schemas/LoanInterestRate'
+        annual_interest_rate:
+          $ref: '#/components/schemas/AnnualInterestRate'
+        effective_monthly_cost:
+          $ref: '#/components/schemas/EffectiveMonthlyCost'
+        effective_annual_cost:
+          $ref: '#/components/schemas/EffectiveAnnualCost'
+    LoanStatus:
+      type: string
+      description: >
+        Loan status
+
+
+        `PENDING`-The loan has been created but has not yet been booked. Terms
+        may still be under review or awaiting confirmation.
+
+        `BOOKED`-The loan has been approved and booked. The payment schedule is
+        confirmed and the loan is ready for disbursement.
+
+        `ACTIVE`-The loan is active and in progress. Funds have been disbursed
+        and the borrower is expected to make repayments according to the agreed
+        schedule.
+
+        `CANCELED`-A repayment is no longer expected to be paid.
+
+        `SETTLED`-The loan has been fully repaid and is closed. No further
+        repayments are expected.
+
+        `RENEGOTIATED`-The original loan terms have been modified after booking,
+        typically due to a change in repayment conditions or borrower
+        circumstances.
+
+        `SCHEDULED`-A repayment is expected to be paid on or before the due date
+        of the repayment.
+
+        `PROCESSING`-An intermediate state that happens whenever there are
+        asynchronous process that demand a state change. For example, BOOKING →
+        PROCESSING → ACTIVE. Common use case - A repayment registration has just
+        been requested using the Register repayment endpoint and is being
+        processed.
+
+        `PAID`-The expected repayment amount has been paid in full on or before
+        the due date of the repayment.
+
+        `PARTIALLY_PAID`-Only part of the expected payment amount has been paid.
+        However, the repayment due date has not passed, so the borrower could
+        still make the full payment on time.
+
+        `PAST_DUE`-The repayment due date has passed and the expected repayment
+        amount has not been paid in full.
+
+        `NOT_PAID`-An attempt to execute an auto repayment for this installment
+        was not successful.
+      example: ACTIVE
+      enum:
+        - PENDING
+        - BOOKED
+        - ACTIVE
+        - CANCELED
+        - SETTLED
+        - RENEGOTIATED
+        - SCHEDULED
+        - PROCESSING
+        - PAID
+        - PARTIALLY_PAID
+        - PAST_DUE
+        - NOT_PAID
+    LoanSummary:
+      type: object
+      description: Aggregated loan data for the account matching the applied filters
+      required:
+        - loan_count_by_status
+        - loan_value_by_status
+        - total_loan_count
+        - total_loan_value
+        - total_outstanding
+        - total_paid
+        - total_principal
+      properties:
+        loan_count_by_status:
+          type: object
+          description: Number of loans per loan status for the account
+          example:
+            ACTIVE: 3
+            SETTLED: 2
+          additionalProperties:
+            type: integer
+            format: int32
+        loan_value_by_status:
+          type: object
+          description: >-
+            Sum of the original booked loan amount per loan status for the
+            account
+          example:
+            ACTIVE: 8000
+            SETTLED: 5000
+          additionalProperties:
+            type: number
+            format: double
+        total_loan_count:
+          type: integer
+          format: int32
+          description: Total number of loans for the account
+          example: 5
+        total_loan_value:
+          type: number
+          format: double
+          description: Sum of the original booked loan amount across all account loans
+          example: 13000
+        total_outstanding:
+          type: number
+          format: double
+          description: Sum of the amount due across all unpaid installments for the account
+          example: 8000
+        total_paid:
+          type: number
+          format: double
+          description: >-
+            Sum of the amount paid across all fully paid installments for the
+            account
+          example: 5000
+        total_principal:
+          type: number
+          format: double
+          description: >-
+            Sum of the principal component of the booked loan amount across all
+            account loans
+          example: 10000
+    LoansV2PaginatedResponse:
+      type: object
+      required:
+        - has_next
+        - items
+      properties:
+        has_next:
+          $ref: '#/components/schemas/HasNext'
+        next_cursor:
+          $ref: '#/components/schemas/NextCursor'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LendingLoanRepaymentResponse'
+    LoansV2SummaryResponse:
+      type: object
+      required:
+        - loan_summary
+      properties:
+        loan_summary:
+          $ref: '#/components/schemas/LoanSummary'
+    LoanUpdatedAt:
+      type: string
+      format: date-time
+      description: Loan last updated date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+      example: '2024-03-15T13:00:00.000+00:00'
     LockInPeriod:
       description: >-
         Minimum number of installments that must be made before early settlement
@@ -1463,6 +1583,21 @@ components:
       description: Maximum value
       format: int32
       example: 100
+    MinimumTotalPayment:
+      description: Minimum total payment for the loan product. Must be positive.
+      type: number
+      format: double
+      minimum: 0
+      exclusiveMinimum: 0
+      example: 50
+    MinimumTotalPaymentDelta:
+      description: >-
+        Additional amount added to the repayment to cover the minimum total
+        payment requirement
+      type: number
+      format: double
+      minimum: 0
+      example: 43.46
     MinValue:
       type: integer
       description: Minimum value
@@ -1475,6 +1610,17 @@ components:
         received to retrieve the next page; do not parse or modify it.
       example: >-
         NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
+    NumberOfInstallments:
+      type: number
+      format: int32
+      description: Number of installments
+    OriginalLoanID:
+      type: string
+      description: >-
+        Original loan ID. When a loan is created from a restructure, this field
+        contains the ID of the original loan that was restructured.
+      format: uuid
+      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
     OutstandingCharge:
       type: number
       format: double
@@ -1508,11 +1654,130 @@ components:
       format: double
       example: 27
       description: Penalty amount
+    PenaltyType:
+      description: Type of penalty calculation
+      type: string
+      example: PERCENTAGE
+      enum:
+        - PERCENTAGE
+        - FIXED_AMOUNT
+    PenaltyV2:
+      description: Penalty configuration for early settlement or prepayment
+      type: object
+      required:
+        - type
+        - value
+      properties:
+        type:
+          $ref: '#/components/schemas/PenaltyType'
+        value:
+          $ref: '#/components/schemas/PenaltyValue'
+    PenaltyValue:
+      description: >-
+        Penalty value. For `PERCENTAGE` penalty type, enter a value between 0
+        and 1 (such as 0.05 for 5%). For `FIXED_AMOUNT` penalty type, enter the
+        fixed amount value.
+      type: number
+      format: double
+      minimum: 0
+      example: 0.05
     Period:
       type: integer
       format: int32
       description: Period
       example: 1
+    PrepaymentBalanceBreakdownV2:
+      type: object
+      description: >-
+        Detailed description of the outstanding balance settled by this
+        prepayment, shown by component
+      properties:
+        principal:
+          type: number
+          format: double
+          example: 1800
+        interest:
+          type: number
+          format: double
+          example: 150
+        fee:
+          type: number
+          format: double
+          example: 0
+        tax:
+          type: number
+          format: double
+          example: 0
+        penalty:
+          type: number
+          format: double
+          example: 50
+    PrepaymentMetadata:
+      type: object
+      description: >
+        Additional prepayment information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    PrepaymentPC:
+      type: object
+      description: Define processing codes for prepayment operations.
+      properties:
+        fee:
+          type: array
+          description: List of fee processing codes for prepayment
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+    PrepaymentRepaymentDetails:
+      type: array
+      description: List of repayments to be paid in the current prepayment
+      items:
+        type: string
+        description: Repayments to be paid
+      example:
+        - c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
+        - jdu55ks2-7d9c-4099-aaf4-9ee002tkl554
+    PrepaymentRepaymentScheduleItemV2:
+      type: object
+      description: A single installment in the resulting repayment schedule
+      properties:
+        installment_number:
+          type: integer
+          description: Installment sequence number, starting at 1
+          example: 1
+        due_date:
+          type: string
+          format: date
+          description: Installment due date. Format = `YYYY-MM-DD`.
+          example: '2026-06-15'
+        principal_amount:
+          type: number
+          format: double
+          example: 200
+        interest_amount:
+          type: number
+          format: double
+          example: 15
+        fee_amount:
+          type: number
+          format: double
+          example: 0
+        tax_amount:
+          type: number
+          format: double
+          example: 0
+        total_amount:
+          type: number
+          format: double
+          example: 215
     PrepaymentSimulationID:
       type: string
       format: uuid
@@ -1539,8 +1804,8 @@ components:
         waive_fee:
           type: boolean
           description: >-
-            Waive the fees applied to this prepayment? When omitted, the Pismo
-            platform sets the value to `false`.
+            When omitted, the Pismo platform sets the value to `false`. Should
+            the fees applied to this prepayment be waived?
           example: false
         reduce_option:
           $ref: '#/components/schemas/ReduceOption'
@@ -1594,65 +1859,303 @@ components:
             Date and time the simulation was created. ISO 8601 with millisecond
             precision and offset. Format = `YYYY-MM-DDThh:mm:ss.SSS-XX:00`.
           example: '2026-05-15T10:15:30.123-03:00'
-    PrepaymentBalanceBreakdownV2:
+    PrepaymentSummaryV2Response:
       type: object
-      description: >-
-        Detailed description of the outstanding balance settled by this
-        prepayment, shown by component
+      description: Summary of a registered prepayment associated with a loan
       properties:
-        principal:
+        prepayment_id:
+          type: string
+          format: uuid
+          description: Identifier of the prepayment
+          example: 73e45fd5-759f-4e04-a88a-7172fa948afa
+        status:
+          type: string
+          description: Lifecycle status of the prepayment
+          enum:
+            - CREATED
+            - PROCESSING
+            - REGISTERED
+          example: REGISTERED
+        settlement_date:
+          type: string
+          format: date-time
+          description: >-
+            Settlement date of the prepayment. Format =
+            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+          example: '2026-06-15T10:00:00.000+00:00'
+        amount_paid:
           type: number
-          format: double
-          example: 1800
-        interest:
+          description: Total prepayment amount paid by the customer
+          example: 1000
+        penalty_amount_paid:
           type: number
-          format: double
-          example: 150
-        fee:
-          type: number
-          format: double
-          example: 0
-        tax:
-          type: number
-          format: double
-          example: 0
-        penalty:
-          type: number
-          format: double
+          description: Penalty amount charged on the prepayment, if any
           example: 50
-    PrepaymentRepaymentScheduleItemV2:
+        insurance_amount_paid:
+          type: number
+          description: Insurance portion settled with the prepayment, if any
+          example: 0
+        tax_amount_paid:
+          type: number
+          description: Tax amount applied to the prepayment
+          example: 0
+        reduce_option:
+          $ref: '#/components/schemas/ReduceOption'
+        new_remaining_total:
+          type: number
+          description: Outstanding total of the loan after this prepayment was applied
+          example: 4000
+        created_at:
+          type: string
+          format: date-time
+          description: >-
+            When the prepayment record was created. Format =
+            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+          example: '2026-06-15T10:00:00.000+00:00'
+        updated_at:
+          type: string
+          format: date-time
+          description: >-
+            When the prepayment record was last updated (ISO 8601 with UTC
+            offset)
+          example: '2026-06-15T10:00:00.000+00:00'
+    PrepaymentV2Request:
+      required:
+        - repayment_ids
       type: object
-      description: A single installment in the resulting repayment schedule
       properties:
-        installment_number:
-          type: integer
-          description: Installment sequence number, starting at 1
-          example: 1
-        due_date:
+        repayment_ids:
+          $ref: '#/components/schemas/PrepaymentRepaymentDetails'
+        expiration_date:
+          $ref: '#/components/schemas/ExpirationDate'
+        reference_date:
+          $ref: '#/components/schemas/ReferenceDate'
+        metadata:
+          $ref: '#/components/schemas/PrepaymentMetadata'
+    PrepaymentV2Response:
+      type: object
+      description: Prepayment response
+      properties:
+        prepayment_id:
+          type: string
+          format: uuid
+          example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
+          description: Prepayment ID
+        expected_amount:
+          type: number
+          format: double
+          example: 100
+          description: Expected amount to be paid
+        reference_date:
           type: string
           format: date
-          description: Installment due date. Format = `YYYY-MM-DD`.
-          example: '2026-06-15'
-        principal_amount:
+          example: '2026-08-01'
+          description: >-
+            Reference date applied to the prepayment (pricing base); null when
+            not provided in the request.
+        expiration_date:
+          type: string
+          format: date
+          example: '2026-08-31'
+          description: >-
+            Date after which the pending prepayment expires and its installments
+            revert to their base status. Defaults to reference_date (or today
+            when absent) plus 30 days.
+        insurance:
+          type: object
+          description: Insurance prepayment details (if applicable)
+          properties:
+            prepayment_id:
+              type: string
+              format: uuid
+              description: Insurance prepayment ID
+            expected_amount:
+              type: number
+              format: double
+              description: Expected insurance amount to be paid
+        allocation_summary:
+          type: array
+          description: >-
+            List of summarized loan allocations with minimum total payment
+            deltas, which represent the difference between the borrower's actual
+            payment and the scheduled installment amount, applied as a principal
+            reduction on the loan.
+          example:
+            - loan_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+              loan_start_date: '2025-01-15T00:00:00.000Z'
+              installment_amount: 156.54
+              minimum_total_payment_delta: 43.46
+            - loan_id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+              loan_start_date: '2025-03-01T00:00:00.000Z'
+              installment_amount: 200
+              minimum_total_payment_delta: 0
+          items:
+            $ref: '#/components/schemas/LoanAllocationSummary'
+    PresentValueAmount:
+      type: number
+      format: double
+      example: 100
+    PresentValueDiscount:
+      type: number
+      format: double
+      example: 100
+    PrincipalAmount:
+      type: number
+      format: double
+      example: 2000
+      description: Principal amount
+    ProcessingCode:
+      type: string
+      description: Processing code
+      example: '000011'
+      minLength: 2
+      maxLength: 6
+    ProcessingCodes:
+      type: object
+      description: Define processing codes for each operation during the loan lifecycle.
+      properties:
+        booking:
+          type: array
+          description: List of booking processing code
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        repayment:
+          type: array
+          description: List of repayment processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        present_value_discount:
+          type: array
+          description: List of present value discount processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        penalty_accruals:
+          type: array
+          description: List of penalty accruals processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        penalty_waiver:
+          type: array
+          description: List of penalty waiver processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        restructuring:
+          type: array
+          description: List of restructuring processing codes
+          items:
+            $ref: '#/components/schemas/ProcessingCode'
+        insurance:
+          $ref: '#/components/schemas/InsurancePC'
+        disbursement:
+          $ref: '#/components/schemas/DisbursementPC'
+        prepayment:
+          $ref: '#/components/schemas/PrepaymentPC'
+        early_final_settlement:
+          $ref: '#/components/schemas/EfsPC'
+    ProductName:
+      maxLength: 256
+      type: string
+      description: Open text that describes the product
+      example: Acme business loan
+    ProductPenaltyPlanCodes:
+      maxLength: 20
+      uniqueItems: true
+      type: array
+      description: List of charge plan codes in order
+      example:
+        - penalty-001
+        - penalty-002
+      items:
+        type: string
+        description: List of penalty plan codes in order
+        example: '["penalty-001","penalty-002"]'
+    ProductStatus:
+      type: string
+      description: Product status
+      example: ACTIVE
+      enum:
+        - ACTIVE
+        - INACTIVE
+    ProductType:
+      type: string
+      description: Product type
+      example: BNPL
+      enum:
+        - BNPL
+        - PERSONAL
+        - BUSINESS
+    ProductTypeV2:
+      type: string
+      description: Loan product type
+      example: BNPL
+      default: BNPL
+      enum:
+        - BNPL
+        - PERSONAL
+    ProductVersionV2:
+      type: integer
+      format: int64
+      description: Product version
+      example: 1762434786787
+    RealDueDate:
+      type: string
+      description: Adjusted due date. Format = YYYY-MM-DD.
+      format: date
+      example: '2025-06-28'
+    ReduceOption:
+      description: Defines the way that the outstanding loan amount is reduced.
+      type: string
+      example: INSTALLMENT
+      enum:
+        - INSTALLMENT
+        - TERM
+    ReduceOptionsArray:
+      description: >
+        List of options to define how to reduce an outstanding loan amount.
+        `INSTALLMENT` reduces the installment amounts over time but keeps the
+        same maturity date. `TERM` applies the prepayment amount to reduce the
+        loan term (duration), changing the loan maturity date. With either
+        option, if the amount paid is not enough to cover a full installment
+        amount, it partially pays the installment based on the prepayment
+        hierarchy settings.
+      type: array
+      minItems: 1
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/ReduceOption'
+      example:
+        - INSTALLMENT
+        - TERM
+    ReferenceDate:
+      type: string
+      description: Reference date of the installment. Format = YYYY-MM-DD.
+      format: date
+      example: '2025-04-14'
+    RefundPaidRepayments:
+      type: boolean
+      description: Refund paid repayments upon loan cancellation?
+      default: false
+      example: true
+    RegisterEarlyFinalSettlementV2Response:
+      type: object
+      required:
+        - early_settle_id
+        - total_settled
+        - outstanding
+      description: Response for early final settlement registration
+      properties:
+        early_settle_id:
+          type: string
+          format: uuid
+          description: Early settlement ID
+          example: 72852338-5764-4c7e-b503-10dcee1cdb7e
+        total_settled:
           type: number
           format: double
-          example: 200
-        interest_amount:
-          type: number
-          format: double
-          example: 15
-        fee_amount:
-          type: number
-          format: double
-          example: 0
-        tax_amount:
-          type: number
-          format: double
-          example: 0
-        total_amount:
-          type: number
-          format: double
-          example: 215
+          description: Total amount settled for the loan
+          example: 1584
+        outstanding:
+          $ref: '#/components/schemas/OutstandingResponse'
     RegisterPrepaymentSimulationV2Request:
       type: object
       description: >-
@@ -1697,259 +2200,28 @@ components:
           type: string
           description: Current registration status of the simulation
           example: PROCESSING
-    PresentValueAmount:
-      type: number
-      format: double
-      example: 100
-    PresentValueDiscount:
-      type: number
-      format: double
-      example: 100
-    PrincipalAmount:
-      type: number
-      format: double
-      example: 2000
-      description: Principal amount
-    ProductName:
-      maxLength: 256
-      type: string
-      description: Open text that describes the product
-      example: Acme business loan
-    ProductPenaltyPlanCodes:
-      maxLength: 20
-      uniqueItems: true
-      type: array
-      description: List of charge plan codes in order
-      example:
-        - penalty-001
-        - penalty-002
-      items:
-        type: string
-        description: List of penalty plan codes in order
-        example: '["penalty-001","penalty-002"]'
-    ProductStatus:
-      type: string
-      description: Product status
-      example: ACTIVE
-      enum:
-        - ACTIVE
-        - INACTIVE
-    ProductType:
-      type: string
-      description: Product type
-      example: BNPL
-      enum:
-        - BNPL
-        - PERSONAL
-        - BUSINESS
-    ProductVersionV2:
-      type: integer
-      format: int64
-      description: Product version
-      example: 1762434786787
-    LoansRates:
-      type: object
-      description: >-
-        Loan rates including annual interest rate and effective annual and
-        monthly costs
-      properties:
-        interest_rate:
-          $ref: '#/components/schemas/LoanInterestRate'
-        annual_interest_rate:
-          $ref: '#/components/schemas/AnnualInterestRate'
-        effective_monthly_cost:
-          $ref: '#/components/schemas/EffectiveMonthlyCost'
-        effective_annual_cost:
-          $ref: '#/components/schemas/EffectiveAnnualCost'
-    LoanInterestRate:
-      type: number
-      format: double
-      description: Loan interest rate
-      example: 12
-    AnnualInterestRate:
-      type: number
-      format: double
-      description: Annual interest rate
-      example: 12
-    EffectiveMonthlyCost:
-      type: number
-      format: double
-      description: Effective monthly cost of the loan in configured currency
-      example: 12.7
-    EffectiveAnnualCost:
-      type: number
-      format: double
-      description: Effective annual cost of the loan in configured currency
-      example: 319.98
-    LoanDisbursement:
-      type: object
-      description: Disbursement details for the loan
-      properties:
-        type:
-          $ref: '#/components/schemas/LoanDisbursementType'
-        schedule:
-          $ref: '#/components/schemas/LoanDisbursementSchedule'
-    LoanDisbursementType:
-      type: string
-      description: Disbursement type
-      example: SINGLE
-      enum:
-        - SINGLE
-        - MULTIPLE
-    LoanDisbursementSchedule:
-      type: array
-      description: List of disbursement schedules
-      items:
-        $ref: '#/components/schemas/DisbursementScheduleItem'
-    DisbursementScheduleItem:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/LoanDisbursementID'
-        amount:
-          $ref: '#/components/schemas/LoanDisbursementAmount'
-        date:
-          $ref: '#/components/schemas/LoanDisbursementDate'
-        disbursement_account:
-          $ref: '#/components/schemas/LoanDisbursementAccount'
-        authorization_id:
-          $ref: '#/components/schemas/LoanAuthorizationID'
-        tracking_id:
-          $ref: '#/components/schemas/TrackingID'
-        status:
-          $ref: '#/components/schemas/LoanDisbursementStatus'
-        transactions_ids:
-          $ref: '#/components/schemas/TransactionsIDs'
-    LoanDisbursementID:
-      type: string
-      format: uuid
-      description: Disbursement ID
-      example: 54efa995-66f1-4595-9934-5b92222faf37
-    LoanDisbursementAmount:
-      type: number
-      format: double
-      description: Disbursement amount
-      example: 300
-    LoanDisbursementDate:
-      type: string
-      format: date
-      description: Disbursement date
-      example: '2025-11-13'
-    LoanDisbursementAccount:
-      type: object
-      properties:
-        account_type:
-          type: string
-          description: Account type
-          example: INTERNAL
-          enum:
-            - INTERNAL
-            - EXTERNAL
-        account_id:
-          type: integer
-          format: int64
-          description: Account ID
-          example: 317890964
-    LoanAuthorizationID:
-      type: integer
-      format: int64
-      description: Authorization ID
-      example: 2422410859
-    TrackingID:
-      type: string
-      format: uuid
-      description: Tracking ID
-      example: 003b3de8-c321-464c-a3dd-6009b8698325
-    LoanDisbursementStatus:
-      type: string
-      description: Disbursement status
-      example: PAID
-      enum:
-        - SCHEDULED
-        - PROCESSING
-        - CANCELED
-        - EXPIRED
-        - PAID
-    TransactionsIDs:
-      type: array
-      items:
-        type: integer
-        format: int64
-      description: List of transaction IDs
-      example:
-        - 6354273849
-        - 982393773
-    ReduceOption:
-      description: Defines the way that the outstanding loan amount is reduced.
-      type: string
-      example: INSTALLMENT
-      enum:
-        - INSTALLMENT
-        - TERM
-    ReduceOptionsArray:
-      description: >
-        List of options to define how to reduce an outstanding loan amount.
-        `INSTALLMENT` reduces the installment amounts over time but keeps the
-        same maturity date. `TERM` applies the prepayment amount to reduce the
-        loan term (duration), changing the loan maturity date. With either
-        option, if the amount paid is not enough to cover a full installment
-        amount, it partially pays the installment based on the prepayment
-        hierarchy settings.
-      type: array
-      minItems: 1
-      uniqueItems: true
-      items:
-        $ref: '#/components/schemas/ReduceOption'
-      example:
-        - INSTALLMENT
-        - TERM
-    PenaltyV2:
-      description: Penalty configuration for early settlement or prepayment
-      type: object
-      required:
-        - type
-        - value
-      properties:
-        type:
-          $ref: '#/components/schemas/PenaltyType'
-        value:
-          $ref: '#/components/schemas/PenaltyValue'
-    PenaltyType:
-      description: Type of penalty calculation
-      type: string
-      example: PERCENTAGE
-      enum:
-        - PERCENTAGE
-        - FIXED_AMOUNT
-    PenaltyValue:
-      description: >-
-        Penalty value. For `PERCENTAGE` penalty type, enter a value between 0
-        and 1 (such as 0.05 for 5%). For `FIXED_AMOUNT` penalty type, enter the
-        fixed amount value.
-      type: number
-      format: double
-      minimum: 0
-      example: 0.05
-    RepaymentAmount:
-      type: number
-      format: double
-      description: Repayment amount
-      example: 100
     RepaidAmount:
       type: number
       format: double
       description: Repaid amount
       example: 100
+    RepaymentAmount:
+      type: number
+      format: double
+      description: Repayment amount
+      example: 100
+    RepaymentCalculationMethodV2:
+      type: string
+      description: Method used to calculate the repayment amount
+      example: RATES
+      default: RATES
+      enum:
+        - RATES
     RepaymentDate:
       type: string
       description: Repayment date. Format = YYYY-MM-DD.
       format: date
       example: '2022-06-30'
-    RepaymentID:
-      type: string
-      description: Repayment ID
-      format: uuid
-      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
     RepaymentHierarchyCodeV2:
       maxLength: 80
       minLength: 1
@@ -1958,115 +2230,6 @@ components:
         Repayment hierarchy code. Must be normalized (Unicode NFC), and may
         contain a UUID, or uppercase letters, numbers, and underscore.
       example: RH001
-    GracePeriodDays:
-      description: >-
-        Number of calendar days after the installment due date during which late
-        fees and delinquency are not applied. A value of `0` or omitted
-        indicates no grace period.
-      type: integer
-      format: int32
-      minimum: 0
-      maximum: 365
-      example: 7
-    DaysPastDue:
-      description: >-
-        Number of calendar days elapsed since the real due date of the loan's
-        most overdue repayment. Computed from repayments currently in a past due
-        or overdue status. A value of `0` indicates the loan has no past due or
-        overdue repayments.
-      type: integer
-      format: int32
-      minimum: 0
-      example: 12
-    MinimumTotalPayment:
-      description: Minimum total payment for the loan product. Must be positive.
-      type: number
-      format: double
-      minimum: 0
-      exclusiveMinimum: 0
-      example: 50
-    MinimumTotalPaymentDelta:
-      description: >-
-        Additional amount added to the repayment to cover the minimum total
-        payment requirement
-      type: number
-      format: double
-      minimum: 0
-      example: 43.46
-    LoanAllocationSummary:
-      type: object
-      description: Summary of a loan allocation within a group payment
-      properties:
-        loan_id:
-          type: string
-          description: Loan ID
-        loan_start_date:
-          type: string
-          format: date-time
-          description: Loan start date
-        installment_amount:
-          type: number
-          format: double
-          description: Installment amount allocated
-        minimum_total_payment_delta:
-          $ref: '#/components/schemas/MinimumTotalPaymentDelta'
-    LoanProductV2Parameters:
-      type: object
-      description: Loan product V2 parameters
-      properties:
-        stop_accrual_number_of_days:
-          description: >-
-            Maximum period during which delinquency-related charges accrue after
-            a payment is overdue, based on lender policy or local regulations.
-            Once this threshold is reached, new penalty charges stop posting, so
-            the outstanding debt no longer increases.
-          type: number
-          format: int32
-          minimum: 1
-          maximum: 365
-          example: 60
-        overdue_threshold_days:
-          description: Number of days before the account is considered overdue
-          type: number
-          format: int32
-          minimum: 1
-          maximum: 365
-          example: 30
-    HierarchyCode:
-      type: string
-      description: >-
-        Repayment hierarchy code. Must be unique and can contain alphanumeric
-        characters, hyphens, and underscores.
-      maxLength: 80
-      minLength: 1
-      example: CR008
-    HierarchyV2:
-      type: array
-      description: >-
-        List that defines the repayment priority order using the order items are
-        listed. Determines which loan components are paid first during repayment
-        processing. All seven items are required.
-      minItems: 7
-      maxItems: 7
-      uniqueItems: true
-      items:
-        type: string
-        enum:
-          - PRINCIPAL
-          - INTEREST
-          - TAX
-          - FEE
-          - CHARGE
-          - PENALTY
-          - INSURANCE
-      example:
-        - PRINCIPAL
-        - INTEREST
-        - TAX
-        - FEE
-        - CHARGE
-        - PENALTY
-        - INSURANCE
     RepaymentHierarchyV2Request:
       required:
         - hierarchy_code
@@ -2086,34 +2249,52 @@ components:
           type: string
           description: Repayment hierarchy code
           example: CR008
-    GetRepaymentHierarchyV2Response:
-      required:
-        - hierarchy_code
-        - hierarchy
-        - status
+    RepaymentID:
+      type: string
+      description: Repayment ID
+      format: uuid
+      example: 5c075cc6-8dc2-4fe6-9ed7-cf5687d4e834
+    RepaymentMetadata:
+      type: object
+      description: >
+        Additional repayment information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
+    RepayV2:
       type: object
       properties:
-        hierarchy_code:
-          $ref: '#/components/schemas/HierarchyCode'
-        hierarchy:
-          $ref: '#/components/schemas/HierarchyV2'
-        status:
-          $ref: '#/components/schemas/HierarchyStatus'
-    HierarchyStatus:
-      type: string
-      description: Repayment hierarchy status
-      enum:
-        - ENABLED
-        - DISABLED
-        - DELETED
-      example: ENABLED
-    OriginalLoanID:
-      type: string
-      description: >-
-        Original loan ID. When a loan is created from a restructure, this field
-        contains the ID of the original loan that was restructured.
-      format: uuid
-      example: 2717a296-124a-47cc-b2a1-91e80dc723eb
+        repayment_id:
+          $ref: '#/components/schemas/RepaymentID'
+        repayment_amount:
+          $ref: '#/components/schemas/RepaymentAmount'
+        repayment_date:
+          $ref: '#/components/schemas/RepaymentDate'
+        reference_date:
+          $ref: '#/components/schemas/ReferenceDate'
+        metadata:
+          $ref: '#/components/schemas/RepaymentMetadata'
+      required:
+        - repayment_id
+    RepayV2Result:
+      type: object
+      properties:
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        repaid_amount:
+          $ref: '#/components/schemas/RepaidAmount'
+        installment_amount:
+          $ref: '#/components/schemas/InstallmentAmount'
+        minimum_total_payment_delta:
+          $ref: '#/components/schemas/MinimumTotalPaymentDelta'
     RestructureLoanID:
       type: string
       description: >-
@@ -2121,33 +2302,6 @@ components:
         contains the ID of the new loan created from the restructure.
       format: uuid
       example: 2717a296-124a-47cc-b2a1-91e80dc723eb
-    ErrorCode:
-      type: string
-      description: Lending error code
-      example: ELND0001
-    ErrorMessage:
-      type: string
-      example: Unexpected error
-      description: Lending error message
-    AuthorizationResponseCode:
-      type: string
-      description: Payment Methods - Response Code
-      example: '62'
-      minLength: 2
-      maxLength: 2
-    AuthorizationDenialCode:
-      type: string
-      description: Payment Methods - Denial Code
-      example: IAD
-      minLength: 3
-      maxLength: 5
-    StandardErrorResponse:
-      type: object
-      properties:
-        code:
-          $ref: '#/components/schemas/ErrorCode'
-        message:
-          $ref: '#/components/schemas/ErrorMessage'
     StandardAuthorizationErrorResponse:
       type: object
       properties:
@@ -2159,6 +2313,13 @@ components:
           $ref: '#/components/schemas/AuthorizationResponseCode'
         denial_code:
           $ref: '#/components/schemas/AuthorizationDenialCode'
+    StandardErrorResponse:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          $ref: '#/components/schemas/ErrorMessage'
     TaxAmount:
       type: number
       format: double
@@ -2227,6 +2388,11 @@ components:
               $ref: '#/components/schemas/PenaltyAmount'
             total:
               $ref: '#/components/schemas/TotalAmount'
+    TrackingID:
+      type: string
+      format: uuid
+      description: Tracking ID
+      example: 003b3de8-c321-464c-a3dd-6009b8698325
     TransactionsID:
       type: array
       description: List of transactions IDs
@@ -2234,112 +2400,15 @@ components:
         type: string
         description: Transaction ID
         example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
-    PrepaymentV2Request:
-      required:
-        - repayment_ids
-      type: object
-      properties:
-        repayment_ids:
-          $ref: '#/components/schemas/PrepaymentRepaymentDetails'
-        expiration_date:
-          $ref: '#/components/schemas/ExpirationDate'
-        reference_date:
-          $ref: '#/components/schemas/ReferenceDate'
-        metadata:
-          $ref: '#/components/schemas/PrepaymentMetadata'
-    PrepaymentMetadata:
-      type: object
-      description: >
-        Additional prepayment information
-
-
-        **Note**: This field must not be used to send Personally Identifiable
-        Information (PII), Payment Card Industry (PCI) data, or any
-        sensitive/regulated information. Metadata fields are intended for
-        operational, non-sensitive data only. For sensitive data, use the
-        specific parameters designed for that purpose. For more information,
-        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
-      additionalProperties:
-        type: string
-        description: Additional property
-    PrepaymentV2Response:
-      type: object
-      description: Prepayment response
-      properties:
-        prepayment_id:
-          type: string
-          format: uuid
-          example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
-          description: Prepayment ID
-        expected_amount:
-          type: number
-          format: double
-          example: 100
-          description: Expected amount to be paid
-        reference_date:
-          type: string
-          format: date
-          example: '2026-08-01'
-          description: >-
-            Reference date applied to the prepayment (pricing base); null when
-            not provided in the request.
-        expiration_date:
-          type: string
-          format: date
-          example: '2026-08-31'
-          description: >-
-            Date after which the pending prepayment expires and its installments
-            revert to their base status. Defaults to reference_date (or today
-            when absent) plus 30 days.
-        insurance:
-          type: object
-          description: Insurance prepayment details (if applicable)
-          properties:
-            prepayment_id:
-              type: string
-              format: uuid
-              description: Insurance prepayment ID
-            expected_amount:
-              type: number
-              format: double
-              description: Expected insurance amount to be paid
-        allocation_summary:
-          type: array
-          description: >-
-            List of summarized loan allocations with minimum total payment
-            deltas, which represent the difference between the borrower's actual
-            payment and the scheduled installment amount, applied as a principal
-            reduction on the loan.
-          example:
-            - loan_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-              loan_start_date: '2025-01-15T00:00:00.000Z'
-              installment_amount: 156.54
-              minimum_total_payment_delta: 43.46
-            - loan_id: b2c3d4e5-f6a7-8901-bcde-f12345678901
-              loan_start_date: '2025-03-01T00:00:00.000Z'
-              installment_amount: 200
-              minimum_total_payment_delta: 0
-          items:
-            $ref: '#/components/schemas/LoanAllocationSummary'
-    PrepaymentRepaymentDetails:
+    TransactionsIDs:
       type: array
-      description: List of repayments to be paid in the current prepayment
       items:
-        type: string
-        description: Repayments to be paid
+        type: integer
+        format: int64
+      description: List of transaction IDs
       example:
-        - c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
-        - jdu55ks2-7d9c-4099-aaf4-9ee002tkl554
-    ExpirationDate:
-      type: string
-      description: Expiration date of the prepayment. Format = YYYY-MM-DD.
-      format: date
-      example: '2025-04-28'
-    ReferenceDate:
-      type: string
-      description: Reference date of the installment. Format = YYYY-MM-DD.
-      format: date
-      example: '2025-04-14'
+        - 6354273849
+        - 982393773
     UpdateLoanProductV2Request:
       type: object
       description: >-
@@ -2408,94 +2477,25 @@ components:
           $ref: '#/components/schemas/PrepaymentPC'
         early_final_settlement:
           $ref: '#/components/schemas/EfsPC'
-    LoansV2PaginatedResponse:
+    V2Metadata:
       type: object
-      required:
-        - has_next
-        - items
-      properties:
-        has_next:
-          $ref: '#/components/schemas/HasNext'
-        next_cursor:
-          $ref: '#/components/schemas/NextCursor'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/LendingLoanRepaymentResponse'
-    LoansV2SummaryResponse:
-      type: object
-      required:
-        - loan_summary
-      properties:
-        loan_summary:
-          $ref: '#/components/schemas/LoanSummary'
-    LoanSummary:
-      type: object
-      description: Aggregated loan data for the account matching the applied filters
-      required:
-        - loan_count_by_status
-        - loan_value_by_status
-        - total_loan_count
-        - total_loan_value
-        - total_outstanding
-        - total_paid
-        - total_principal
-      properties:
-        loan_count_by_status:
-          type: object
-          description: Number of loans per loan status for the account
-          example:
-            ACTIVE: 3
-            SETTLED: 2
-          additionalProperties:
-            type: integer
-            format: int32
-        loan_value_by_status:
-          type: object
-          description: >-
-            Sum of the original booked loan amount per loan status for the
-            account
-          example:
-            ACTIVE: 8000
-            SETTLED: 5000
-          additionalProperties:
-            type: number
-            format: double
-        total_loan_count:
-          type: integer
-          format: int32
-          description: Total number of loans for the account
-          example: 5
-        total_loan_value:
-          type: number
-          format: double
-          description: Sum of the original booked loan amount across all account loans
-          example: 13000
-        total_outstanding:
-          type: number
-          format: double
-          description: Sum of the amount due across all unpaid installments for the account
-          example: 8000
-        total_paid:
-          type: number
-          format: double
-          description: >-
-            Sum of the amount paid across all fully paid installments for the
-            account
-          example: 5000
-        total_principal:
-          type: number
-          format: double
-          description: >-
-            Sum of the principal component of the booked loan amount across all
-            account loans
-          example: 10000
+      description: >
+        Additional information
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+      additionalProperties:
+        type: string
+        description: Additional property
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
-security:
-  - BearerAuth: []
 paths:
   /v2/accounts/{accountId}/loans:
     get:
@@ -2697,6 +2697,20 @@ paths:
                   value:
                     code: ELND1804
                     message: summarizeLoans must be a valid boolean value.
+                ELND1808:
+                  description: fromStartDate and toStartDate range exceeds 12 months.
+                  value:
+                    code: ELND1808
+                    message: >-
+                      Field fromStartDate and toStartDate date range must not
+                      exceed 12 months.
+                ELND1809:
+                  description: fromCreatedDate and toCreatedDate range exceeds 12 months.
+                  value:
+                    code: ELND1809
+                    message: >-
+                      Field fromCreatedDate and toCreatedDate date range must
+                      not exceed 12 months.
         '500':
           description: Internal Server Error
           content:
@@ -3122,7 +3136,7 @@ paths:
         Creates a loan product.
 
 
-        This endpoint generates a [Loan product V2
+        This endpoint generates a [Loan product
         created](https://developers.pismo.io/events/docs/lending-loan-product-creation-3)
         event.
       operationId: createLoanProductV2
@@ -4063,7 +4077,7 @@ paths:
         - Prepayment
       summary: Simulate prepayment
       description: >
-        Simulate a prepayment for a loan using the V2 prepayment engine.
+        Simulate a prepayment for a loan using the prepayment engine.
 
 
         The response includes the resulting balance breakdown, the new repayment
@@ -4074,8 +4088,8 @@ paths:
         /v2/loans/{loanId}/prepayment/{simulationId}/register`.
 
 
-        This endpoint generates a [Lending prepayment V2 creation
-        (beta)](https://developers.pismo.io/events/docs/lending-lending-prepayment-v2-creation-1)
+        This endpoint generates a [Lending prepayment
+        creation](https://developers.pismo.io/events/docs/lending-lending-prepayment-v2-creation-1)
         event.
       operationId: simulatePrepaymentV2
       parameters:
@@ -4166,8 +4180,7 @@ paths:
         - Prepayment
       summary: Register prepayment simulation
       description: >
-        Register a previously calculated V2 prepayment simulation, applying it
-        to
+        Register a previously calculated prepayment simulation, applying it to
 
         the loan. The request body is optional and is only used to override the
 
@@ -4264,7 +4277,7 @@ paths:
         Creates a prepayment record containing one or multiple repayments.
 
 
-        This endpoint generates a [Prepayment V2
+        This endpoint generates a [Prepayment
         created](https://developers.pismo.io/events/docs/lending-prepayment-creation-1)
         event.
 
