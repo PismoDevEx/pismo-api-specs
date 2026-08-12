@@ -12,7 +12,7 @@ servers:
   - url: https://sandbox-cdn.pismolabs.io
     description: Sandbox API server for testing
   - url: https://sandbox-cdn.pismolabs.io/inst-pull-pay
-    description: Sandbox API server for testing instant pull pay.
+    description: Sandbox API server for testing instant pull pay
 tags:
   - name: Pix
   - name: Scheduled transfers V2
@@ -285,18 +285,6 @@ components:
         type: string
         maxLength: 36
       example: '8675309'
-    SchedulerIntervalQuery:
-      in: query
-      name: interval
-      required: false
-      schema:
-        type: string
-        enum:
-          - DAY
-          - WEEK
-          - MONTH
-      description: Scheduler interval filter
-      example: DAY
     SchedulerStatusQuery:
       name: status
       in: query
@@ -310,17 +298,6 @@ components:
       description: Scheduler status filter
       required: false
       example: ACTIVE
-    SchedulerTypeQuery:
-      name: type
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - ONCE
-          - RECURRING
-      description: Scheduler type filter
-      example: ONCE
     ShowPreviewQuery:
       name: showPreview
       in: query
@@ -800,13 +777,6 @@ components:
         Was transaction made between a Pismo organization's accounts? In this
         case, the instant payment system is not called.
       example: false
-    Interval:
-      type: string
-      description: Scheduler interval
-      enum:
-        - DAY
-        - WEEK
-        - MONTH
     IsDeviceRegistered:
       type: boolean
       description: Is device registered to do a Pix-out transfer? Default is `true`.
@@ -2377,7 +2347,6 @@ components:
       required:
         - day_type
         - end_date
-        - interval
         - scheduler_id
         - start_date
         - status
@@ -2402,8 +2371,6 @@ components:
           type: string
           description: Start date, format = yyyy-mm-dd
           example: '2024-11-14'
-        interval:
-          $ref: '#/components/schemas/Interval'
         scheduler_id:
           $ref: '#/components/schemas/SchedulerID'
         status:
@@ -5191,8 +5158,6 @@ paths:
         - $ref: '#/components/parameters/BeginDateQuery'
         - $ref: '#/components/parameters/EndDateQuery'
         - $ref: '#/components/parameters/SchedulerStatusQuery'
-        - $ref: '#/components/parameters/SchedulerTypeQuery'
-        - $ref: '#/components/parameters/SchedulerIntervalQuery'
         - $ref: '#/components/parameters/PerPageQuery'
         - $ref: '#/components/parameters/AfterIdQuery'
       responses:
