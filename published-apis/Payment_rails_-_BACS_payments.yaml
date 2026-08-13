@@ -138,9 +138,8 @@ components:
       in: header
       schema:
         type: string
-      description: >
-        Request tracking identifier. If not provided, a random UUID is
-        generated.
+      description: |
+        Request tracking ID. If not provided, a random UUID is generated.
       required: false
     transactionStatusQuery:
       name: status
@@ -416,7 +415,7 @@ components:
     externalId:
       type: string
       description: |
-        Form3-assigned mandate identifier (omitted until submitted)
+        Form3-assigned mandate ID (omitted until submitted)
       example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     form3SubmissionId:
       type: string
@@ -638,9 +637,7 @@ components:
       example: AMEND_PENDING
     mandate.Beneficiary:
       type: object
-      description: >-
-        Beneficiary (creditor) details. Account number and sort code are
-        optional paying-bank details.
+      description: Beneficiary (creditor) details.
       required:
         - name
       properties:
@@ -2650,7 +2647,7 @@ paths:
 
           * Allowed only when the mandate is in `CREATED`, `SUBMITTED`, or `CONFIRMED`; any other state is rejected with a **409 Conflict** (`EBACS0103`).
 
-          * `version` is a Form3 optimistic-concurrency passthrough that must equal the stored version; a mismatch is rejected with a **409 Conflict** (`EBACS0104`). It is not incremented by this call.
+          * `version` is a Form3 optimistic-concurrency passthrough that must equal the stored version; a mismatch is rejected with a **409 Conflict** (`EBACS0104`). This call does not increment this field.
 
           * This endpoint moves the mandate to `status` = `AMEND_PENDING` and generates a [BACS mandate status changed](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event. Subsequent status transitions generate further events (for example `AMENDED`, `FAILED`).
       operationId: patch-amend-mandate
