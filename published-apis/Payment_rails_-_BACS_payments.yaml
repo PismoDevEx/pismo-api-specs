@@ -96,6 +96,21 @@ components:
       schema:
         type: string
         maxLength: 36
+    mandateSourceQuery:
+      name: source
+      in: query
+      description: |
+        Mandate source filter: 
+          — `auddis` - Electronic
+          - `non-electronic` - Paper(`auddis`) or paper (`non-electronic`). 
+        Default is all.
+      required: false
+      schema:
+        type: string
+        enum:
+          - auddis
+          - non-electronic
+      example: auddis
     mandateStatusQuery:
       name: status
       in: query
@@ -207,10 +222,7 @@ components:
         - scheme_name
       properties:
         name:
-          type: string
-          maxLength: 40
-          description: Creditor name.
-          example: Len Lease
+          $ref: '#/components/schemas/creditorName'
         scheme_name:
           $ref: '#/components/schemas/schemeName'
         identification:
@@ -312,11 +324,21 @@ components:
       description: |
         - `PROCESSING` - Reversal has been submitted and is awaiting settlement
       example: PROCESSING
+    beneficiaryName:
+      type: string
+      maxLength: 18
+      description: Beneficiary name.
+      example: Mac Donalds
     createdAtDateTime:
       type: string
       format: date-time
       description: Created at date-time. RFC 3339 format
       example: '2026-08-05T10:15:00Z'
+    creditorName:
+      type: string
+      maxLength: 40
+      description: Creditor name.
+      example: Len Lease
     currencyCode:
       type: integer
       description: ISO 4217 numeric currency code
@@ -583,10 +605,10 @@ components:
       properties:
         version:
           type: integer
-          description: >-
+          description: >
             Caller's expected current mandate version. A Form3
             optimistic-concurrency passthrough that must match the stored
-            version; it is not incremented by this call.
+            version. This call does not increment this field. 
           example: 0
         debtor:
           $ref: '#/components/schemas/mandate.Debtor'
@@ -594,7 +616,7 @@ components:
           $ref: '#/components/schemas/mandate.Beneficiary'
     mandate.AmendResponse:
       type: object
-      description: Returned by the amend endpoint after the pending intent is persisted.
+      description: The amend endpoint returns this after the pending intent is persisted.
       properties:
         id:
           $ref: '#/components/schemas/mandateId'
@@ -623,10 +645,7 @@ components:
         - name
       properties:
         name:
-          type: string
-          maxLength: 18
-          description: Beneficiary name.
-          example: Mac Donalds
+          $ref: '#/components/schemas/beneficiaryName'
         account_number:
           $ref: '#/components/schemas/accountNumber'
         sort_code:
@@ -665,7 +684,7 @@ components:
           description: >-
             Caller's expected current mandate version. A Form3
             optimistic-concurrency passthrough that must match the stored
-            version; it is not incremented by this call.
+            version. This call does not increment this.
           example: 0
         status_reason:
           $ref: '#/components/schemas/mandate.CancellationReason'
@@ -680,8 +699,8 @@ components:
         version:
           type: integer
           description: >-
-            The mandate version. Unchanged by this call (Form3 passthrough — not
-            incremented).
+            Mandate version. This call does not change it (Form3 passthrough —
+            not incremented).
           example: 0
     mandate.CancelStatus:
       type: string
@@ -2562,15 +2581,7 @@ paths:
         - $ref: '#/components/parameters/reqTrackingIdHeader'
         - $ref: '#/components/parameters/idQuery'
         - $ref: '#/components/parameters/mandateStatusQuery'
-        - name: source
-          in: query
-          description: >-
-            Filter by mandate source — electronic (`auddis`) or paper
-            (`non-electronic`). When omitted, mandates of every source are
-            returned.
-          required: false
-          schema:
-            $ref: '#/components/schemas/mandateSource'
+        - $ref: '#/components/parameters/mandateSourceQuery'
         - $ref: '#/components/parameters/beginDateQuery'
         - $ref: '#/components/parameters/endDateQuery'
         - $ref: '#/components/parameters/afterIdQuery'
