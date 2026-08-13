@@ -10,7 +10,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/bacs
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: BACS direct credit
   - name: BACS direct debit
@@ -83,7 +83,7 @@ components:
     mandateIdPath:
       name: id
       in: path
-      description: Paper mandate ID (the Form3-assigned ID returned at creation).
+      description: Mandate ID (the Form3-assigned ID returned at creation).
       required: true
       schema:
         type: string
@@ -99,7 +99,7 @@ components:
     mandateStatusQuery:
       name: status
       in: query
-      description: Mandate status filer.
+      description: Mandate status filter.
       required: false
       schema:
         type: string
@@ -424,8 +424,10 @@ components:
           $ref: '#/components/schemas/accountId'
         role:
           $ref: '#/components/schemas/role'
+        source:
+          $ref: '#/components/schemas/mandateSource'
         status:
-          $ref: '#/components/schemas/paper_mandate.status'
+          $ref: '#/components/schemas/mandate.status'
         reference:
           $ref: '#/components/schemas/reference'
         form3_submission_id:
@@ -511,11 +513,11 @@ components:
     mandateClearingId:
       type: string
       pattern: ^[0-9]{6}$
-      description: Six-digit clearing ID for the paper mandate
+      description: Six-digit clearing ID for the mandate
       example: '123456'
     mandateId:
       type: string
-      description: Form3-assigned paper mandate ID
+      description: Form3-assigned mandate ID
       example: b254bb5e-6f1a-4c2b-9c1e-2f0a6d3e8c11
     mandateReference:
       type: string
@@ -528,7 +530,7 @@ components:
         The standard BACS reference character set is the restricted set of
         characters BACS permits in the text fields of a Standard 18 record — the
         format used for Direct Debit/Direct Credit instructions. It maps to the
-        reference field on the mandate 
+        reference field on the mandate
 
         schemas.
 
@@ -556,8 +558,8 @@ components:
     mandateVersion:
       type: integer
       description: >
-        The mandate version. Unchanged by the amend paper mandate endpoint call
-        (Form3 passthrough — not incremented).
+        The mandate version. Unchanged by the amend mandate endpoint call (Form3
+        passthrough — not incremented).
       example: 2
     nextPage:
       type: boolean
@@ -571,10 +573,10 @@ components:
       type: string
       description: Original transaction ID
       example: 08ec4cf7-2d74-5453-80e0-e940ac8fc219
-    paper_mandate.AmendRequest:
+    mandate.AmendRequest:
       type: object
       description: >-
-        Payload to amend an existing paper mandate. `version` is required for
+        Payload to amend an existing mandate. `version` is required for
         optimistic concurrency.
       required:
         - version
@@ -587,23 +589,23 @@ components:
             version; it is not incremented by this call.
           example: 0
         debtor:
-          $ref: '#/components/schemas/paper_mandate.Debtor'
+          $ref: '#/components/schemas/mandate.Debtor'
         beneficiary:
-          $ref: '#/components/schemas/paper_mandate.Beneficiary'
-    paper_mandate.AmendResponse:
+          $ref: '#/components/schemas/mandate.Beneficiary'
+    mandate.AmendResponse:
       type: object
       description: Returned by the amend endpoint after the pending intent is persisted.
       properties:
         id:
           $ref: '#/components/schemas/mandateId'
         status:
-          $ref: '#/components/schemas/paper_mandate.AmendStatus'
+          $ref: '#/components/schemas/mandate.AmendStatus'
         version:
           $ref: '#/components/schemas/mandateVersion'
-    paper_mandate.AmendStatus:
+    mandate.AmendStatus:
       type: string
       description: |
-        Lifecycle status reachable when amending a paper mandate.
+        Lifecycle status reachable when amending a mandate.
           * `AMEND_PENDING` - Amend intent accepted; pending submission to Form3 via the PSP gateway
           * `AMENDED` - Amend confirmed
           * `FAILED` - Amend processing failed. Terminal state
@@ -612,7 +614,7 @@ components:
         - AMENDED
         - FAILED
       example: AMEND_PENDING
-    paper_mandate.Beneficiary:
+    mandate.Beneficiary:
       type: object
       description: >-
         Beneficiary (creditor) details. Account number and sort code are
@@ -629,12 +631,12 @@ components:
           $ref: '#/components/schemas/accountNumber'
         sort_code:
           $ref: '#/components/schemas/sortCode'
-    paper_mandate.CancellationReason:
+    mandate.CancellationReason:
       type: string
       description: >
-        Reason code for the cancellation (mirrors Form3's paper-mandate
-        cancellation reasons). The client sends only the code; the
-        human-readable description is derived server-side.
+        Reason code for the cancellation (mirrors Form3's mandate cancellation
+        reasons). The client sends only the code; the human-readable description
+        is derived server-side.
           * `account_closed` - Account closed
           * `account_transferred_to_new_psp` - Account transferred to a new PSP
           * `cancelled_by_originator` - Cancelled by originator
@@ -649,10 +651,10 @@ components:
         - payer_deceased
         - paying_bank_cancellation
       example: account_closed
-    paper_mandate.CancelRequest:
+    mandate.CancelRequest:
       type: object
       description: >-
-        Payload to cancel an existing paper mandate. `version` is required for
+        Payload to cancel an existing mandate. `version` is required for
         optimistic concurrency; `status_reason` optionally records why the
         mandate is being cancelled.
       required:
@@ -666,25 +668,25 @@ components:
             version; it is not incremented by this call.
           example: 0
         status_reason:
-          $ref: '#/components/schemas/paper_mandate.CancellationReason'
-    paper_mandate.CancelResponse:
+          $ref: '#/components/schemas/mandate.CancellationReason'
+    mandate.CancelResponse:
       type: object
       description: Returned by the cancel endpoint after the pending intent is persisted.
       properties:
         id:
           $ref: '#/components/schemas/mandateId'
         status:
-          $ref: '#/components/schemas/paper_mandate.CancelStatus'
+          $ref: '#/components/schemas/mandate.CancelStatus'
         version:
           type: integer
           description: >-
             The mandate version. Unchanged by this call (Form3 passthrough — not
             incremented).
           example: 0
-    paper_mandate.CancelStatus:
+    mandate.CancelStatus:
       type: string
       description: |
-        Lifecycle status reachable when cancelling a paper mandate.
+        Lifecycle status reachable when cancelling a mandate.
           * `CANCEL_PENDING` - Cancel intent accepted; pending submission to Form3 via the PSP gateway
           * `CANCELLED` - Mandate cancelled. Terminal state
           * `FAILED` - Cancel processing failed. Terminal state
@@ -693,9 +695,9 @@ components:
         - CANCELLED
         - FAILED
       example: CANCEL_PENDING
-    paper_mandate.CreateRequest:
+    mandate.CreateRequest:
       type: object
-      description: Payload to create a paper mandate
+      description: Payload to create a mandate
       required:
         - debtor
         - beneficiary
@@ -704,26 +706,26 @@ components:
         - processing_date
       properties:
         debtor:
-          $ref: '#/components/schemas/paper_mandate.Debtor'
+          $ref: '#/components/schemas/mandate.Debtor'
         beneficiary:
-          $ref: '#/components/schemas/paper_mandate.Beneficiary'
+          $ref: '#/components/schemas/mandate.Beneficiary'
         clearing_id:
           $ref: '#/components/schemas/mandateClearingId'
         reference:
           $ref: '#/components/schemas/mandateReference'
         processing_date:
           $ref: '#/components/schemas/processingDate'
-    paper_mandate.CreateResponse:
+    mandate.CreateResponse:
       type: object
       properties:
         id:
           $ref: '#/components/schemas/mandateId'
         status:
-          $ref: '#/components/schemas/paper_mandate.CreateStatus'
-    paper_mandate.CreateStatus:
+          $ref: '#/components/schemas/mandate.CreateStatus'
+    mandate.CreateStatus:
       type: string
       description: |
-        Lifecycle status reachable for a created paper mandate.
+        Lifecycle status reachable for a created mandate.
           * `CREATED` - Mandate persisted; pending submission to Form3 via the PSP gateway
           * `SUBMITTED` - Mandate submitted to the scheme
           * `CONFIRMED` - Mandate confirmed and active
@@ -734,9 +736,9 @@ components:
         - CONFIRMED
         - FAILED
       example: CREATED
-    paper_mandate.Debtor:
+    mandate.Debtor:
       type: object
-      description: Debtor (payer) bank details captured from the signed paper mandate form.
+      description: Debtor (payer) bank details captured from the signed mandate form.
       required:
         - name
         - account_number
@@ -751,10 +753,10 @@ components:
           $ref: '#/components/schemas/accountNumber'
         sort_code:
           $ref: '#/components/schemas/sortCode'
-    paper_mandate.status:
+    mandate.status:
       type: string
       description: |
-        Paper mandate lifecycle status.
+        Mandate lifecycle status.
           * `CREATED` - Mandate persisted and imported into Form3; pending submission
           * `SUBMITTED` - Mandate submitted to the scheme
           * `CONFIRMED` - Mandate confirmed and active
@@ -790,7 +792,7 @@ components:
     returnCode:
       type: string
       description: |
-        ARUDD (Automated Return of Unpaid Direct Debit) return code: 
+        ARUDD (Automated Return of Unpaid Direct Debit) return code:
           * `0` - Refer to payer
           * `1` - Instruction cancelled
           * `2` - Payer deceased
@@ -863,6 +865,17 @@ components:
         - PAYER
         - PAYEE
       example: PAYER
+    mandateSource:
+      type: string
+      description: >
+        Distinguishes electronic (AUDDIS) from paper mandates, per Form3's
+        mandate `source` field.
+          * `auddis` - electronic mandate
+          * `non-electronic` - paper mandate
+      enum:
+        - auddis
+        - non-electronic
+      example: auddis
     schemeID:
       maxLength: 22
       type: string
@@ -2428,42 +2441,42 @@ paths:
                     message: PSPGateway API Bad Gateway
   /v1/payments/bacs/directdebit/paper-mandates:
     post:
-      summary: Create BACS paper mandate [beta]
+      summary: Create BACS mandate [beta]
       description: >
 
-        Create a BACS Direct Debit paper mandate.
+        Create a BACS Direct Debit mandate.
 
 
-        A BACS direct debit paper mandate captures a payer's authorisation,
-        taken from a signed paper form, for a business to collect direct debit
-        payments from their UK bank account through the BACS scheme.
+        A BACS direct debit mandate captures a payer's authorisation, taken from
+        a signed paper form, for a business to collect direct debit payments
+        from their UK bank account through the BACS scheme.
 
 
         **Notes:**
 
           * The operation is idempotent via the `Idempotency-key` header. Repeating the same key replays the original mandate; reusing the same `reference` with a different key is rejected with a **409 Conflict**.
 
-          * Creation does not emit an event. Subsequent status transitions generate a [BACS paper mandate status change](https://developers.pismo.io/events/docs/bacs-paper-mandate-status-change-1) event (for example `SUBMITTED`, `CONFIRMED`, `FAILED`).
-      operationId: post-create-paper-mandate
+          * Creation does not emit an event. Subsequent status transitions generate a [BACS mandate status change](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event (for example `SUBMITTED`, `CONFIRMED`, `FAILED`).
+      operationId: post-create-mandate
       tags:
         - BACS direct debit
       parameters:
         - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/idempotencyKeyHeader'
       requestBody:
-        description: Create paper mandate request body
+        description: Create mandate request body
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/paper_mandate.CreateRequest'
+              $ref: '#/components/schemas/mandate.CreateRequest'
         required: true
       responses:
         '201':
-          description: Paper mandate created
+          description: Mandate created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/paper_mandate.CreateResponse'
+                $ref: '#/components/schemas/mandate.CreateResponse'
         '400':
           description: Bad Request
           content:
@@ -2549,6 +2562,15 @@ paths:
         - $ref: '#/components/parameters/reqTrackingIdHeader'
         - $ref: '#/components/parameters/idQuery'
         - $ref: '#/components/parameters/mandateStatusQuery'
+        - name: source
+          in: query
+          description: >-
+            Filter by mandate source — electronic (`auddis`) or paper
+            (`non-electronic`). When omitted, mandates of every source are
+            returned.
+          required: false
+          schema:
+            $ref: '#/components/schemas/mandateSource'
         - $ref: '#/components/parameters/beginDateQuery'
         - $ref: '#/components/parameters/endDateQuery'
         - $ref: '#/components/parameters/afterIdQuery'
@@ -2601,15 +2623,15 @@ paths:
                   value:
                     code: EBACS0023
                     message: Transaction database error
-  /v1/payments/bacs/directdebit/paper-mandates/{id}:
+  /v1/payments/bacs/directdebit/mandates/{id}:
     patch:
-      summary: Amend BACS paper mandate [beta]
+      summary: Amend BACS mandate [beta]
       description: >
-        Amend a BACS direct debit paper mandate.
+        Amend a BACS direct debit mandate.
 
 
-        Registers a change to a paper mandate's debtor and/or beneficiary
-        details, applied asynchronously through the BACS scheme.
+        Registers a change to a mandate's debtor and/or beneficiary details,
+        applied asynchronously through the BACS scheme.
 
 
         **Notes:**
@@ -2620,19 +2642,19 @@ paths:
 
           * `version` is a Form3 optimistic-concurrency passthrough that must equal the stored version; a mismatch is rejected with a **409 Conflict** (`EBACS0104`). It is not incremented by this call.
 
-          * This endpoint moves the mandate to `status` = `AMEND_PENDING` and generates a [BACS paper mandate status changed](https://developers.pismo.io/events/docs/bacs-paper-mandate-status-change-1) event. Subsequent status transitions generate further events (for example `AMENDED`, `FAILED`).
-      operationId: patch-amend-paper-mandate
+          * This endpoint moves the mandate to `status` = `AMEND_PENDING` and generates a [BACS mandate status changed](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event. Subsequent status transitions generate further events (for example `AMENDED`, `FAILED`).
+      operationId: patch-amend-mandate
       tags:
         - BACS direct debit
       parameters:
         - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/mandateIdPath'
       requestBody:
-        description: Amend paper mandate request body
+        description: Amend mandate request body
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/paper_mandate.AmendRequest'
+              $ref: '#/components/schemas/mandate.AmendRequest'
         required: true
       responses:
         '202':
@@ -2640,7 +2662,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/paper_mandate.AmendResponse'
+                $ref: '#/components/schemas/mandate.AmendResponse'
         '400':
           description: Bad Request
           content:
@@ -2855,15 +2877,15 @@ paths:
                   value:
                     code: EBACS0023
                     message: Transaction database error
-  /v1/payments/bacs/directdebit/paper-mandates/{id}/cancel:
+  /v1/payments/bacs/directdebit/mandates/{id}/cancel:
     post:
-      summary: Cancel BACS paper mandate [beta]
+      summary: Cancel BACS mandate [beta]
       description: >
-        Cancel a BACS direct debit paper mandate.
+        Cancel a BACS direct debit mandate.
 
 
-        Cancel of an existing paper mandate, applied asynchronously through the
-        BACS scheme.
+        Cancel of an existing mandate, applied asynchronously through the BACS
+        scheme.
 
 
         **Notes:**
@@ -2876,19 +2898,19 @@ paths:
 
           * The optional `status_reason` records why the mandate is being cancelled; it is persisted on the mandate and forwarded on the generated event.
 
-          * This endpoint moves the mandate to `status` = `CANCEL_PENDING` and generates a [BACS paper mandate status changed](https://developers.pismo.io/events/docs/bacs-paper-mandate-status-change-1) event. Subsequent status transitions generate further events (for example `CANCELLED`, `FAILED`).
-      operationId: post-cancel-paper-mandate
+          * This endpoint moves the mandate to `status` = `CANCEL_PENDING` and generates a [BACS mandate status changed](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event. Subsequent status transitions generate further events (for example `CANCELLED`, `FAILED`).
+      operationId: post-cancel-mandate
       tags:
         - BACS direct debit
       parameters:
         - $ref: '#/components/parameters/authHeader'
         - $ref: '#/components/parameters/mandateIdPath'
       requestBody:
-        description: Cancel paper mandate request body
+        description: Cancel mandate request body
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/paper_mandate.CancelRequest'
+              $ref: '#/components/schemas/mandate.CancelRequest'
         required: true
       responses:
         '202':
@@ -2896,7 +2918,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/paper_mandate.CancelResponse'
+                $ref: '#/components/schemas/mandate.CancelResponse'
         '400':
           description: Bad Request
           content:
