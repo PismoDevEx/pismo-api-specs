@@ -1315,6 +1315,114 @@ paths:
                   value:
                     code: EBACS0014
                     message: PSPGateway API Bad Gateway
+  /v1/payments/bacs/directdebit/paper-mandates:
+    post:
+      summary: Create BACS mandate [beta]
+      description: >
+
+        Create a BACS direct debit mandate.
+
+
+        A BACS direct debit mandate captures a payer's authorisation, taken from
+        a signed paper form, for a business to collect direct debit payments
+        from their UK bank account through the BACS scheme.
+
+
+        **Notes:**
+
+          * The operation is idempotent via the `Idempotency-key` header. Repeating the same key replays the original mandate; reusing the same `reference` with a different key is rejected with a **409 Conflict**.
+
+          * Creation does not emit an event. Subsequent status transitions generate a [BACS mandate status change](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event (for example `SUBMITTED`, `CONFIRMED`, `FAILED`).
+      operationId: post-create-mandate
+      tags:
+        - BACS direct debit
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+        - $ref: '#/components/parameters/idempotencyKeyHeader'
+      requestBody:
+        description: Create mandate request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mandate.CreateRequest'
+        required: true
+      responses:
+        '201':
+          description: Mandate created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mandate.CreateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0004:
+                  summary: Validation Error
+                  value:
+                    code: EBACS0004
+                    message: Validation error
+                EBACS0016:
+                  summary: Unmarshal Error
+                  value:
+                    code: EBACS0016
+                    message: Unmarshal error
+                EBACS0047:
+                  summary: PSP Gateway API Bad Request
+                  value:
+                    code: EBACS0047
+                    message: >-
+                      Invalid BACS Request. Check error details for more
+                      information.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0002:
+                  summary: Missing Tenant Header
+                  value:
+                    code: EBACS0002
+                    message: 'Missing required header: ''x-tenant'''
+                EBACS0085:
+                  summary: Missing Account Id
+                  value:
+                    code: EBACS0085
+                    message: Missing required account-id
+                EBACS0034:
+                  summary: Invalid Idempotency Key
+                  value:
+                    code: EBACS0034
+                    message: 'Missing required header: ''x-idempotency-key'''
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0058:
+                  summary: Record Already Exists
+                  value:
+                    code: EBACS0058
+                    message: Record already exists
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EBACS0023:
+                  summary: Transaction Database Error
+                  value:
+                    code: EBACS0023
+                    message: Transaction database error
   /v1/payments/bacs/directcredit/{id}:
     get:
       summary: Get BACS transaction [beta]
@@ -2458,114 +2566,6 @@ paths:
                   value:
                     code: EBACS0014
                     message: PSPGateway API Bad Gateway
-  /v1/payments/bacs/directdebit/paper-mandates:
-    post:
-      summary: Create BACS mandate [beta]
-      description: >
-
-        Create a BACS Direct Debit mandate.
-
-
-        A BACS direct debit mandate captures a payer's authorisation, taken from
-        a signed paper form, for a business to collect direct debit payments
-        from their UK bank account through the BACS scheme.
-
-
-        **Notes:**
-
-          * The operation is idempotent via the `Idempotency-key` header. Repeating the same key replays the original mandate; reusing the same `reference` with a different key is rejected with a **409 Conflict**.
-
-          * Creation does not emit an event. Subsequent status transitions generate a [BACS mandate status change](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event (for example `SUBMITTED`, `CONFIRMED`, `FAILED`).
-      operationId: post-create-mandate
-      tags:
-        - BACS direct debit
-      parameters:
-        - $ref: '#/components/parameters/authHeader'
-        - $ref: '#/components/parameters/idempotencyKeyHeader'
-      requestBody:
-        description: Create mandate request body
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/mandate.CreateRequest'
-        required: true
-      responses:
-        '201':
-          description: Mandate created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/mandate.CreateResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customer.Error'
-              examples:
-                EBACS0004:
-                  summary: Validation Error
-                  value:
-                    code: EBACS0004
-                    message: Validation error
-                EBACS0016:
-                  summary: Unmarshal Error
-                  value:
-                    code: EBACS0016
-                    message: Unmarshal error
-                EBACS0047:
-                  summary: PSP Gateway API Bad Request
-                  value:
-                    code: EBACS0047
-                    message: >-
-                      Invalid BACS Request. Check error details for more
-                      information.
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customer.Error'
-              examples:
-                EBACS0002:
-                  summary: Missing Tenant Header
-                  value:
-                    code: EBACS0002
-                    message: 'Missing required header: ''x-tenant'''
-                EBACS0085:
-                  summary: Missing Account Id
-                  value:
-                    code: EBACS0085
-                    message: Missing required account-id
-                EBACS0034:
-                  summary: Invalid Idempotency Key
-                  value:
-                    code: EBACS0034
-                    message: 'Missing required header: ''x-idempotency-key'''
-        '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customer.Error'
-              examples:
-                EBACS0058:
-                  summary: Record Already Exists
-                  value:
-                    code: EBACS0058
-                    message: Record already exists
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customer.Error'
-              examples:
-                EBACS0023:
-                  summary: Transaction Database Error
-                  value:
-                    code: EBACS0023
-                    message: Transaction database error
   /v1/payments/bacs/directdebit/mandates:
     get:
       summary: List BACS direct debit mandates [beta]
