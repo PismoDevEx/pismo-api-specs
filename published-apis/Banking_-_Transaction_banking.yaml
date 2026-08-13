@@ -643,14 +643,6 @@ components:
         maxLength: 43
       required: true
       example: 0a50c88a-ade8-4bcc-a639-9a0b0f11e245
-    TrackingIdPath2:
-      name: trackingId
-      in: path
-      description: Original tracking ID provided when the float payment is created.
-      schema:
-        type: string
-      required: true
-      example: 0a50c88a-ade8-4bcc-a639-9a0b0f11e245
     TransacationIDPath:
       name: transactionId
       in: path
@@ -2040,13 +2032,6 @@ components:
       maxLength: 3
       minLength: 3
       example: USD
-    Currency2:
-      type: string
-      description: >-
-        3-letter, ISO-4217 standard alphabetic code for the currency used in the
-        total and float amounts.
-      maxLength: 3
-      example: USD
     CurrencyAlphabeticCode:
       type: string
       minLength: 3
@@ -2344,16 +2329,6 @@ components:
         endpoint.
       maxLength: 6
       example: '220037'
-    DeferredPaymentStatus:
-      type: string
-      description: |
-        Status of the deferred payment
-      enum:
-        - CREATED
-        - UNSETTLED
-        - SETTLED
-        - FAILED
-      example: CREATED
     DenyForcedTransactionReactivation:
       type: boolean
       description: >-
@@ -2810,53 +2785,6 @@ components:
         identifier. To set `external_id` as the primary identifier, contact a
         Pismo representative to enable the parameter `EXTERNAL ID AS MAIN KEY`.
       example: 83bcde27-e049-4244-9dab-cfb4c88d70f8
-    FloatAmount:
-      type: number
-      format: float
-      description: >
-        Part of the total amount that is deferred to settle on the
-        `settlement_date`. If it is equal to or greater than `total_amount`, a
-        bad request error is returned.
-      maximum: 100000000000000000
-      example: 300.52
-      minimum: 0.01
-    FloatPaymentRequest:
-      title: FloatPaymentRequest
-      type: object
-      required:
-        - external_account_id
-        - currency
-        - total_amount
-        - float_amount
-        - settlement_date
-        - tracking_id
-      properties:
-        external_account_id:
-          $ref: '#/components/schemas/ExternalAccountId2'
-        currency:
-          $ref: '#/components/schemas/Currency2'
-        total_amount:
-          $ref: '#/components/schemas/TransactionAmount'
-        float_amount:
-          $ref: '#/components/schemas/FloatAmount'
-        tracking_id:
-          $ref: '#/components/schemas/TrackingID'
-        settlement_date:
-          $ref: '#/components/schemas/SettlementDate'
-        processing_code:
-          $ref: '#/components/schemas/CreditProcessingCode'
-        description:
-          $ref: '#/components/schemas/TransactionDescription'
-        metadata:
-          $ref: '#/components/schemas/FloatMetadata'
-    FloatPaymentResponse:
-      title: FloatPaymentResponse
-      type: object
-      properties:
-        tracking_id:
-          $ref: '#/components/schemas/TrackingID'
-        status:
-          $ref: '#/components/schemas/DeferredPaymentStatus'
     Force:
       type: boolean
       description: >
@@ -3866,22 +3794,6 @@ components:
         operational, non-sensitive data only. For sensitive data, use the
         specific parameters designed for that purpose. For more information,
         refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
-    FloatMetadata:
-      type: object
-      description: >
-        Key-value pairs containing data intended for storage in the Pismo
-        system.<br>
-
-        <b>NOTES</b>:
-          - The `metadata` includes a `corporate_metadata` object with the following subfields:
-            - `credit_external_account_id`
-            - `authorization_type`
-            - `business_date`
-            - `float_amount`
-            - `settlement_date`
-          - The `corporate_metadata` field must be an object. A type mismatch results in an error as mapped in the responses section.<br>
-
-          **Note**: This field must not be used to send Personally Identifiable Information (PII), Payment Card Industry (PCI) data, or any sensitive/regulated information. Metadata fields are intended for operational, non-sensitive data only. For sensitive data, use the specific parameters designed for that purpose. For more information, refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
     MultiLegItemStatus:
       title: MultiLegLegStatus
       type: object
@@ -4203,9 +4115,8 @@ components:
         call fails.
       enum:
         - future-dated
-        - float-payment
         - check-release
-      example: float-payment
+      example: check-release
     OperationsBlockV2:
       type: object
       description: Operations block
@@ -5582,13 +5493,6 @@ components:
       format: date-time
       description: Transaction creation date in format ISO 8601
       example: '2023-04-27T12:01:24Z'
-    TransactionDescription:
-      type: string
-      description: >-
-        A brief description that appears on the bank statement to help identify
-        a particular transaction.
-      example: ACME Inc. - Invoice 2938
-      maxLength: 100
     TransactionID:
       type: integer
       format: int64
@@ -5762,12 +5666,6 @@ components:
           $ref: '#/components/schemas/EarmarkForcePost'
       required:
         - internal_operation
-    UpdatePaymentResponse:
-      title: UpdatePaymentResponse
-      type: object
-      properties:
-        tracking_id:
-          $ref: '#/components/schemas/TrackingID'
     UploadPublicKeyRequest:
       description: Create public key payload request
       type: object
@@ -12451,397 +12349,6 @@ paths:
                   value:
                     code: WMLP0007
                     message: multi leg not found
-  /corporate/v1/corporate-float-cashin:
-    post:
-      summary: Post float cash-in (Pismo account ID)
-      description: >-
-        Enable users to submit float cash-in payments to the Pismo platform. It
-        supports posting credits to an account, as well as facilitating fund
-        transfers between accounts.
-
-
-        To post a credit, you must provide a valid `processing_code` for the
-        credit operation and the recipient's `external_account_id`.
-
-
-        See the <b>Examples</b> drop-down menu for a sample payload.
-
-
-        For more information about payments operations, see [Corporate Banking
-        Launch Reference](doc:corporate-banking-launch-reference).
-
-
-        <b>NOTES</b>:
-          - This endpoint requires an account-specific access token. Getting an account token requires you to call the [Get OpenID access token endpoint](https://developers.pismo.io/pismo-docs/reference/post-passport-v1-oauth2-token-1) with an external account ID. Tokens can expire quickly, which can result in an Unauthorized message.
-
-        Each payment created generates the following events:
-
-        - [Float payment status
-        change](https://developers.pismo.io/events/docs/corporate-float-payment-status-change-1)
-
-        - [Authorization
-        created](https://developers.pismo.io/events/docs/authorization-authorization-event-1)
-
-        - [Account balance
-        changed](https://developers.pismo.io/events/docs/account-balances-balance-change-1).
-
-        - [Account balance changed
-        (Availables)](https://developers.pismo.io/events/docs/availables-change-available-1)
-
-        - [Transaction
-        created](https://developers.pismo.io/events/docs/transaction-creation-1).
-
-        - [Accounting entry
-        created](https://developers.pismo.io/events/docs/accounting-entry-creation-1)
-
-        - If flex controls are configured, the event is triggered:
-          - [Flex control evaluated](https://developers.pismo.io/events/docs/rules-evaluation-requested-1)
-
-        See [Data and reporting](doc:data-reporting-overview) for more
-        information about events and setting up event notifications.
-      parameters: []
-      operationId: post-corporate-float-cash-in
-      tags:
-        - Payments (Pismo account ID)
-      requestBody:
-        description: Request body
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FloatPaymentRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FloatPaymentResponse'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                Invalid JSON payload:
-                  value:
-                    code: WCFC0001
-                    message: 'Invalid JSON payload received: Error unmarshalling request'
-                Processing code exceed size:
-                  value:
-                    code: WCFC0002
-                    message: >-
-                      processing_code must be a maximum of 6 characters in
-                      length
-                External Account ID exceed size:
-                  value:
-                    code: WCFC0002
-                    message: >-
-                      external_account_id must be a maximum of 60 characters in
-                      length
-                External Account ID required:
-                  value:
-                    code: WCFC0002
-                    message: external_account_id is a required field
-                Float Amount value zero:
-                  value:
-                    code: WCFC0002
-                    message: value must be greater than 0
-                Float Amount value exceed:
-                  value:
-                    code: WCFC0002
-                    message: value must be 999,999,999,999.99 or less
-                Float Amount value required:
-                  value:
-                    code: WCFC0002
-                    message: value is a required field
-                Total Amount value zero:
-                  value:
-                    code: WCFC0002
-                    message: value must be greater than 0
-                Total Amount value exceed:
-                  value:
-                    code: WCFC0002
-                    message: value must be 999,999,999,999.99 or less
-                Total Amount value required:
-                  value:
-                    code: WCFC0002
-                    message: value is a required field
-                Tracking ID exceed size:
-                  value:
-                    code: WCFC0002
-                    message: tracking_id must be a maximum of 36 characters in length
-                External account ID contains characters not permitted:
-                  value:
-                    code: WCFC0002
-                    message: >-
-                      external_account_id contains characters not permitted:
-                      [characters]
-                Tracking ID required:
-                  value:
-                    code: WCFC0002
-                    message: tracking_id is a required field
-                Currency required:
-                  value:
-                    code: WCFC0002
-                    message: currency is a required field
-                Amount has invalid decimal places for currency:
-                  value:
-                    code: WCFC0002
-                    message: >-
-                      The number of decimal places is not compatible with the
-                      specified currency
-                Invalid amount values:
-                  value:
-                    code: WCFC0003
-                    message: Invalid values for float_amount and total_amount
-                Currency mismatch:
-                  description: >-
-                    At the moment, the platform can only accept the currency
-                    that is configured for the account
-                  value:
-                    code: WCFC0005
-                    message: >-
-                      Cannot perform conversion between account currency and
-                      provided currency
-                Holiday error:
-                  value:
-                    code: WCFC0006
-                    message: Cannot post transaction on holidays
-                Weekend error:
-                  value:
-                    code: WCFC0007
-                    message: Cannot post transaction on weekends
-                Invalid credit processing code:
-                  value:
-                    code: WCFC0008
-                    message: Invalid credit processing code
-                Invalid account status:
-                  description: >-
-                    This error occurs when the account is in an invalid state,
-                    an example is when the account cannot be credited or debited
-                  value:
-                    code: WCFC0009
-                    message: Invalid account status
-                Insufficient funds:
-                  value:
-                    code: WCFC0010
-                    message: Insufficient funds
-                Account closed error:
-                  description: >-
-                    This error occurs when the client sends a force post payment
-                    and the account has been closed
-                  value:
-                    code: WCFC0011
-                    message: Action not permitted on a closed account
-                Orgs operation not found or parameterized:
-                  value:
-                    code: WCFC0012
-                    message: >-
-                      Orgs operations not found or parameters are incorrect or
-                      invalid
-                Invalid account program type:
-                  value:
-                    code: WCFC0013
-                    message: The account's program type is invalid
-                Invalid settlement date:
-                  value:
-                    code: WCFC0014
-                    message: settlement_date must be after the current business date
-                Invalid currency:
-                  description: The currency must be specified in the ISO 4217 3-letter code
-                  value:
-                    code: WCFC0016
-                    message: Invalid currency
-                Corporate Metadata must be an object:
-                  value:
-                    code: WCMN0002
-                    message: corporate_metadata is reserved and must be an object
-                Unrecognized account ID type:
-                  value:
-                    code: WCAC0010
-                    message: Token contains an unrecognized account ID type
-                Transaction using this tracking ID in progress:
-                  description: >-
-                    This error occurs when multiple payment requests with the
-                    same `tracking_id` are made simultaneously.
-                  value:
-                    code: WCFC0022
-                    message: >-
-                      transaction using this tracking_id is in progress, please
-                      try again later
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                Unauthorized account:
-                  value:
-                    code: WCAC0001
-                    message: Account not authorized
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                Tracking ID already in use:
-                  description: >-
-                    This error occurs when the client sends a duplicate tracking
-                    ID for the payment
-                  value:
-                    code: WCFC0004
-                    message: tracking_id is already in use
-                Invalid time zone:
-                  value:
-                    code: WCFC0015
-                    message: Division {id} is set with an invalid timezone ({timezone})
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-  /corporate/v1/corporate-float-cashin/{trackingId}:
-    patch:
-      summary: Settle float payment
-      description: >-
-        Enables users to manually settle a float payment and credit the pending
-        float amount.
-
-
-        To settle a float payment, you must provide a valid `tracking_id`.
-
-
-        See the <b>Examples</b> dropdown menu for a sample payload.
-
-
-        For more information about payments operations, see [Corporate Banking
-        Launch Reference](doc:corporate-banking-launch-reference).
-
-
-        The payment created generates the following events:
-
-        - [Float payment status
-        change](https://developers.pismo.io/events/docs/corporate-float-payment-status-change-1)
-
-        - [Authorization
-        created](https://developers.pismo.io/events/docs/authorization-authorization-event-1)
-
-        - [Account balance
-        changed](https://developers.pismo.io/events/docs/account-balances-balance-change-1).
-
-        - [Account balance changed
-        (Availables)](https://developers.pismo.io/events/docs/availables-change-available-1)
-
-        - [Transaction
-        created](https://developers.pismo.io/events/docs/transaction-creation-1).
-
-        - [Accounting entry
-        created](https://developers.pismo.io/events/docs/accounting-entry-creation-1)
-
-        - If flex controls are configured, a [Flex control
-        evaluated](https://developers.pismo.io/events/docs/rules-evaluation-requested-1)
-        event is triggered.
-
-
-        For more information about events and setting up event notifications,
-        refer to [Data and reporting](doc:data-reporting-overview).
-      parameters:
-        - $ref: '#/components/parameters/TrackingIdPath2'
-      operationId: patch-corporate-float-cash-in
-      tags:
-        - Payments
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdatePaymentResponse'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                Missing HTTP parameters:
-                  value:
-                    code: WCMN0003
-                    message: Missing HTTP parameters
-                Holiday error:
-                  value:
-                    code: WCFC0006
-                    message: Cannot post transaction on holidays
-                Weekend error:
-                  value:
-                    code: WCFC0007
-                    message: Cannot post transaction on weekends
-                Invalid account status:
-                  description: >-
-                    This error occurs when the account is in an invalid state,
-                    an example is when the account cannot be credited or debited
-                  value:
-                    code: WCFC0009
-                    message: Invalid account status
-                Account closed error:
-                  description: >-
-                    This error occurs when the client sends a force post payment
-                    and the account has been closed
-                  value:
-                    code: WCFC0011
-                    message: Action not permitted on a closed account
-                Orgs operation not found or parameterized:
-                  value:
-                    code: WCFC0012
-                    message: >-
-                      Orgs operations not found or parameters are incorrect or
-                      invalid
-                Invalid account program type:
-                  value:
-                    code: WCFC0013
-                    message: The account's program type is invalid
-                Invalid header account:
-                  value:
-                    code: WCAC0002
-                    message: Invalid header account
-                Float payment record not found:
-                  value:
-                    code: WCFC0017
-                    message: Float payment record not found
-                Float payment is already settled:
-                  value:
-                    code: WCFC0018
-                    message: >-
-                      Float payment with trackingID (tracking_id) is already
-                      settled
-                Corporate account not found:
-                  value:
-                    code: WCFC0019
-                    message: Corporate account not found
-                Tracking ID locked:
-                  description: >-
-                    This error occurs when a transaction with this tracking ID
-                    is already in progress
-                  value:
-                    code: WCFC0022
-                    message: >-
-                      Transaction using this tracking_id is in progress, please
-                      try again later
-                Operations blocked:
-                  description: >-
-                    This error occurs when there's an operations block for this
-                    account
-                  value:
-                    code: WCFC0023
-                    message: Operations blocked for account
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
   /corporate/v2/scheduled-payments:
     post:
       summary: Schedule payment
@@ -13593,7 +13100,7 @@ paths:
             examples:
               Request bulk settlement:
                 value:
-                  operation_type: float-payment
+                  operation_type: check-release
                   settlement_date: '2024-07-03'
                   bulk_id: 74f8e8df
                   division_code: 74f8e8df-2c2b-412f-8d35-abdf17d896ec
@@ -13630,7 +13137,7 @@ paths:
                 operation type invalid:
                   value:
                     code: WSTM0002
-                    message: operation_type must be one of [future-dated float-payment]
+                    message: operation_type must be one of [future-dated check-release]
                 settlement date required:
                   value:
                     code: WSTM0002
