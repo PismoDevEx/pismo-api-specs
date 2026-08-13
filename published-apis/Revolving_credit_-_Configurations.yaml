@@ -536,6 +536,14 @@ components:
         the account <i>is</i> overdue. If you want the platform to calculate the
         interest in both cases, you must provide values for both fields.
       example: 2
+    DeleteAccrualTypesConfigurations:
+      description: Array of additional accrual type configurations for deletion
+      type: array
+      items:
+        type: string
+        enum:
+          - ONCE_AFTER_TRANSACTION_DUE_DATE
+          - GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY
     DeletedAt:
       type: string
       description: Date deleted. Format = yyyy-mm-ddThh:mm:ssZ.
@@ -728,7 +736,7 @@ components:
       type: object
       properties:
         configurations:
-          $ref: '#/components/schemas/AccrualTypesConfigurations'
+          $ref: '#/components/schemas/DeleteAccrualTypesConfigurations'
       required:
         - configurations
     PostAccrualTypeConfigurationsResponse:
@@ -778,9 +786,7 @@ components:
         period_to_calculate:
           $ref: '#/components/schemas/PeriodToCalculate'
         configuration:
-          type: string
-          description: The accrual type configuration name that was enabled
-          example: ONCE_AFTER_TRANSACTION_DUE_DATE
+          $ref: '#/components/schemas/AccrualTypeConfiguration'
         value:
           $ref: '#/components/schemas/AccrualTypeConfigurationValue'
         created_at:
@@ -1139,9 +1145,9 @@ paths:
         grace days strategy for accruals calculated up to the due date. You must
         set `period_to_calculate` to `UNTIL_DUE_DATE`. The `value` field is
         required. Accepted values are 1 or 2 (meaning Strategy 1 or Strategy 2).
-        The strategies are defined as follows:
+        The strategies are defined as follows.
 
-          - **Strategy 1**: One good cycle restores grace. If the customer misses one cycle, interest is charged for that missed cycle. If the next cycle is fully paid by due date, grace returns for the following cycle.
+          - **Strategy 1**: One good cycle restores grace. If the customer misses one cycle, interest is charged for that missed cycle. If the next cycle is fully paid by the due date, grace returns for the following cycle.
 
           - **Strategy 2**: Two consecutive good cycles are required to restore grace. If the customer misses one cycle, they normally pay interest for the missed cycle and for the next two recovery cycles before grace returns.
 
@@ -1262,43 +1268,6 @@ paths:
                     message: >-
                       Validation Error: The periodToCalculate (XXXXXXXX) not
                       found
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-  /v1/programs/{programId}/configurations:
-    get:
-      summary: List additional accrual type configurations
-      description: >
-        Retrieves a list of additional accrual type configurations for a
-        program, filtered by transaction category, accrual type, and period to
-        calculate.
-
-
-        Optionally, you can filter by a specific configuration name to retrieve
-        only that configuration.
-
-
-        The response includes both active and deleted configurations. Deleted
-        configurations have a non-null `deleted_at` field.
-      operationId: findConfigurationByFilter
-      tags:
-        - Additional accrual type configurations
-      parameters:
-        - $ref: '#/components/parameters/ProgramIdPath'
-        - $ref: '#/components/parameters/TransactionCategoryIdQueryRequired'
-        - $ref: '#/components/parameters/AccrualTypeQuery'
-        - $ref: '#/components/parameters/PeriodToCalculateQueryRequired'
-        - $ref: '#/components/parameters/AccrualTypeConfigurationQuery'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccrualTypeConfigurationGetResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/programs/{programId}/transaction-category-id/{transactionCategoryId}/accrual-type/{accrualType}/period-to-calculate/{periodToCalculate}/configurations:
@@ -1429,7 +1398,7 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/PostAccrualTypeConfigurationsRequest'
+                - $ref: '#/components/schemas/DeleteAccrualTypesConfigurations'
       responses:
         '204':
           description: No Content
@@ -1497,6 +1466,43 @@ paths:
                       found
         '409':
           $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /v1/programs/{programId}/configurations:
+    get:
+      summary: List additional accrual type configurations
+      description: >
+        Retrieves a list of additional accrual type configurations for a
+        program, filtered by transaction category, accrual type, and period to
+        calculate.
+
+
+        Optionally, you can filter by a specific configuration name to retrieve
+        only that configuration.
+
+
+        The response includes both active and deleted configurations. Deleted
+        configurations have a non-null `deleted_at` field.
+      operationId: findConfigurationByFilter
+      tags:
+        - Additional accrual type configurations
+      parameters:
+        - $ref: '#/components/parameters/ProgramIdPath'
+        - $ref: '#/components/parameters/TransactionCategoryIdQueryRequired'
+        - $ref: '#/components/parameters/AccrualTypeQuery'
+        - $ref: '#/components/parameters/PeriodToCalculateQueryRequired'
+        - $ref: '#/components/parameters/AccrualTypeConfigurationQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccrualTypeConfigurationGetResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/accounts/{accountId}/accrual-type-rates:
