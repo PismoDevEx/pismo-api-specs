@@ -1384,7 +1384,7 @@ paths:
 
         - `ONCE_AFTER_TRANSACTION_DUE_DATE`
 
-        - `GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY`
+        - `GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY`<br><br>
 
         For information about these strategies, refer to the [Create additional
         accrual type
