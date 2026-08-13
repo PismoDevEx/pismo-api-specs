@@ -101,8 +101,8 @@ components:
       in: query
       description: |
         Mandate source filter: 
-          — `auddis` - Electronic
-          - `non-electronic` - Paper(`auddis`) or paper (`non-electronic`). 
+          * `auddis` - Electronic
+          * `non-electronic` - Paper
         Default is all.
       required: false
       schema:
