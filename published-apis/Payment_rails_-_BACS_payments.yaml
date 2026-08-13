@@ -1332,7 +1332,7 @@ paths:
 
           * The operation is idempotent via the `Idempotency-key` header. Repeating the same key replays the original mandate; reusing the same `reference` with a different key is rejected with a **409 Conflict**.
 
-          * Creation does not emit an event. Subsequent status transitions generate a [BACS mandate status change](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event (for example `SUBMITTED`, `CONFIRMED`, `FAILED`).
+          * Creation does not generate an event. Subsequent status transitions generate a [BACS mandate status changed](https://developers.pismo.io/events/docs/bacs-mandate-status-change-1) event (for example `SUBMITTED`, `CONFIRMED`, `FAILED`).
       operationId: post-create-mandate
       tags:
         - BACS direct debit
@@ -2569,10 +2569,9 @@ paths:
   /v1/payments/bacs/directdebit/mandates:
     get:
       summary: List BACS direct debit mandates [beta]
-      description: |
-        List BACS direct debit mandates for an account.
-
-        This endpoint does not generate an event.
+      description: >
+        List BACS direct debit mandates for an account. The account is parsed
+        from the account token. 
       operationId: get-bacs-mandate-list
       tags:
         - BACS direct debit
@@ -2754,10 +2753,9 @@ paths:
   /v1/payments/bacs/directcredit:
     get:
       summary: List BACS direct credit transactions [beta]
-      description: |
-        List BACS direct credit transactions for an account.
-
-        This endpoint does not generate an event.
+      description: >
+        List BACS direct credit transactions for an account. The account is
+        parsed from the account token.
       operationId: get-bacs-directcredit-list
       tags:
         - BACS direct credit
@@ -2823,9 +2821,7 @@ paths:
     get:
       summary: List BACS direct debit transactions [beta]
       description: |
-        List BACS direct debit transactions.
-
-        This endpoint does not generate an event.
+        List BACS direct debit transactions. 
       operationId: get-bacs-directdebit-list
       tags:
         - BACS direct debit
