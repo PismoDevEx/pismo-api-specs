@@ -70,7 +70,9 @@ components:
         $ref: '#/components/schemas/CurrencyCode'
     IdempotencyKeyHeader:
       name: Idempotency-Key
-      description: Idempotency key
+      description: >-
+        Optional UUID that makes the request idempotent, enabling you to retry
+        it multiple times while the system processes it only once.
       in: header
       required: false
       schema:
@@ -79,7 +81,9 @@ components:
       example: 4df987e3-8179-11ed-8209-06c7b022d1ee
     RequiredIdempotencyKeyHeader:
       name: Idempotency-Key
-      description: Idempotency key
+      description: >-
+        Required UUID that makes the request idempotent, enabling you to retry
+        it multiple times while the system processes it only once.
       in: header
       required: true
       schema:
@@ -88,7 +92,7 @@ components:
       example: 4df987e3-8179-11ed-8209-06c7b022d1ee
     LoanIdPath:
       name: loanId
-      description: Loan ID
+      description: ID of the loan the operation applies to
       in: path
       required: true
       schema:
@@ -107,7 +111,7 @@ components:
       name: accountId
       in: path
       required: true
-      description: Account ID
+      description: ID of the account the loan belongs to
       example: '514751581'
       schema:
         type: string
@@ -115,7 +119,7 @@ components:
       name: accountId
       in: query
       required: false
-      description: Account ID
+      description: Restricts results to loans belonging to this Pismo account
       example: '514751581'
       schema:
         type: string
@@ -814,7 +818,9 @@ components:
         - INSURANCE
     IdempotencyKey:
       type: string
-      description: Idempotency key
+      description: >-
+        UUID that makes the request idempotent, enabling you to retry it
+        multiple times while the system processes it only once.
       format: uuid
       example: 4df987e3-8179-11ed-8209-06c7b022d1ee
     InstallmentAmount:
@@ -1120,11 +1126,11 @@ components:
       properties:
         loan_id:
           type: string
-          description: Loan ID
+          description: ID of the loan included in this allocation
         loan_start_date:
           type: string
           format: date-time
-          description: Loan start date
+          description: Date the loan started
         installment_amount:
           type: number
           format: double
@@ -1182,7 +1188,9 @@ components:
       properties:
         account_type:
           type: string
-          description: Account type
+          description: >-
+            Whether funds are disbursed to an account inside Pismo (`INTERNAL`)
+            or an external account (`EXTERNAL`)
           example: INTERNAL
           enum:
             - INTERNAL
@@ -1190,7 +1198,7 @@ components:
         account_id:
           type: integer
           format: int64
-          description: Account ID
+          description: ID of the account receiving the disbursed funds
           example: 317890964
     LoanDisbursementAmount:
       type: number
@@ -1817,7 +1825,7 @@ components:
         loan_id:
           type: string
           format: uuid
-          description: Loan ID
+          description: ID of the loan the simulation was run against
           example: 2717a296-124a-47cc-b2a1-91e80dc723eb
         amount_paid:
           $ref: '#/components/schemas/AmountPaid'
@@ -1940,7 +1948,7 @@ components:
           type: string
           format: uuid
           example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
-          description: Prepayment ID
+          description: Pismo-generated UUID identifying the prepayment
         expected_amount:
           type: number
           format: double
@@ -2194,7 +2202,7 @@ components:
         loan_id:
           type: string
           format: uuid
-          description: Loan ID
+          description: ID of the loan the registered simulation applies to
           example: 2717a296-124a-47cc-b2a1-91e80dc723eb
         status:
           type: string
@@ -3322,10 +3330,11 @@ paths:
             default: CREATION_DATE
         - in: query
           name: sortOrder
-          description: Sort order
+          description: >-
+            Sort direction applied to the `sortField` value. Use `ASC` for
+            ascending or `DESC` for descending
           schema:
             type: string
-            description: Sort order
             enum:
               - ASC
               - DESC
