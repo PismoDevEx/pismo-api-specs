@@ -2570,9 +2570,9 @@ paths:
     get:
       summary: List BACS direct debit mandates [beta]
       description: |
-        List BACS direct debit mandates for an account
+        List BACS direct debit mandates for an account.
 
-        This is a read-only endpoint and does not generate any event.
+        This endpoint does not generate an event.
       operationId: get-bacs-mandate-list
       tags:
         - BACS direct debit
@@ -2757,7 +2757,7 @@ paths:
       description: |
         List BACS direct credit transactions for an account.
 
-        This is a read-only endpoint and does not generate any event.
+        This endpoint does not generate an event.
       operationId: get-bacs-directcredit-list
       tags:
         - BACS direct credit
@@ -2825,7 +2825,7 @@ paths:
       description: |
         List BACS direct debit transactions.
 
-        This is a read-only endpoint and does not generate any events.
+        This endpoint does not generate an event.
       operationId: get-bacs-directdebit-list
       tags:
         - BACS direct debit
