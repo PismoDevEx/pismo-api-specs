@@ -1382,9 +1382,13 @@ paths:
         `configurations` body parameter. The following configurations are
         available.
 
-        - `ONCE_AFTER_TRANSACTION_DUE_DATE`: If this additional configuration is
-        disabled, accruals on transactions with this transaction category occur
-        on a daily basis.
+        - `ONCE_AFTER_TRANSACTION_DUE_DATE`
+
+        - `GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY`
+
+        For information about these strategies, refer to the [Create additional
+        accrual type
+        configuration](ref:post-additional-accrual-type-configuration) API.
       operationId: deleteAccrualTypesConfigurations
       tags:
         - Additional accrual type configurations
