@@ -10,7 +10,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/bacs
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
 tags:
   - name: BACS direct credit
   - name: BACS direct debit
@@ -1396,6 +1396,16 @@ paths:
                   value:
                     code: EBACS0034
                     message: 'Missing required header: ''x-idempotency-key'''
+                EBACS0105:
+                  summary: BACS Mandates Not Enabled For Account
+                  value:
+                    code: EBACS0105
+                    message: BACS mandates are not enabled for the account
+                EBACS0021:
+                  summary: Account Blocked Or Cancelled
+                  value:
+                    code: EBACS0021
+                    message: Account blocked or cancelled
         '409':
           description: Conflict
           content:
