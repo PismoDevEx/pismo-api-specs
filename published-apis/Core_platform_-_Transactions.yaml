@@ -1843,8 +1843,14 @@ paths:
     get:
       tags:
         - Transactions
-      summary: Get transaction count
+      summary: Get transaction count (deprecated)
+      deprecated: true
       description: >
+        This endpoint is **deprecated**. There is no replacement endpoint as
+        this functionality is no longer supported due to its lack of
+        scalability.
+
+
         Returns the number of transactions that match the given search
         parameters.
       operationId: SearchTranscationMetaDataCount
