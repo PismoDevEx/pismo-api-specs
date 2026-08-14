@@ -544,6 +544,13 @@ components:
         enum:
           - ONCE_AFTER_TRANSACTION_DUE_DATE
           - GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY
+    DeleteAccrualTypeConfigurationsRequest:
+      type: object
+      properties:
+        configurations:
+          $ref: '#/components/schemas/DeleteAccrualTypesConfigurations'
+      required:
+        - configurations
     DeletedAt:
       type: string
       description: Date deleted. Format = yyyy-mm-ddThh:mm:ssZ.
@@ -1403,7 +1410,7 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/DeleteAccrualTypesConfigurations'
+                - $ref: '#/components/schemas/DeleteAccrualTypeConfigurationsRequest'
       responses:
         '204':
           description: No Content
