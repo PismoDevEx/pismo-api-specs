@@ -15,10 +15,10 @@ servers:
   - url: https://sandbox-cdn.pismolabs.io
     description: Ext API server for testing
   - url: https://sandbox-cdn.pismolabs.io/inst-pull-pay
-    description: Ext API server for testing Automatic Pix.
+    description: Ext API server for testing Automatic Pix
 tags:
   - name: Automatic Pix
-    description: Automatic Pix endpoints
+    description: Automatic Pix endpoints.
   - name: Automatic Pix data
 components:
   parameters:
@@ -29,7 +29,7 @@ components:
         type: integer
       description: Pismo account ID.
       required: true
-      example: 5869300
+      example: 0
     AfterIdQuery:
       in: query
       name: afterId
