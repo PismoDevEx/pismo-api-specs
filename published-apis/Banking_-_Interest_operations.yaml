@@ -32,30 +32,6 @@ components:
       example: application/json
       schema:
         type: string
-    XProgramId:
-      name: x-program-id
-      in: header
-      description: Program ID
-      required: true
-      example: '1233'
-      schema:
-        type: string
-    XTenant:
-      name: x-tenant
-      in: header
-      description: Tenant (organization) ID
-      required: true
-      example: '1'
-      schema:
-        type: string
-    XCid:
-      name: x-cid
-      in: header
-      description: Correlation ID
-      required: true
-      example: 8f3a1...e5f60
-      schema:
-        type: string
   schemas:
     AccountId:
       type: string
@@ -411,9 +387,6 @@ paths:
         - Interest engine
       operationId: post-v1-interest-balance
       parameters:
-        - $ref: '#/components/parameters/XProgramId'
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
       requestBody:
@@ -476,9 +449,6 @@ paths:
         - Interest engine
       operationId: post-v1-interest-deposit
       parameters:
-        - $ref: '#/components/parameters/XProgramId'
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
       requestBody:
@@ -527,9 +497,6 @@ paths:
         - Interest engine
       operationId: post-v1-interest-withdrawal
       parameters:
-        - $ref: '#/components/parameters/XProgramId'
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
       requestBody:
@@ -579,8 +546,6 @@ paths:
         - Interest engine
       operationId: post-v1-interest-account-cancellation
       parameters:
-        - $ref: '#/components/parameters/XProgramId'
-        - $ref: '#/components/parameters/XTenant'
         - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/Authorization'
       requestBody:
