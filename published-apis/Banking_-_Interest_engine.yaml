@@ -33,28 +33,12 @@ components:
       example: '8080'
       schema:
         type: string
-    Authorization:
-      name: authorization
-      in: header
-      description: Authorization
-      required: true
-      example: Bearer YOUR_BEARER_TOKEN
-      schema:
-        type: string
     Benchmark:
       name: benchmark
       in: path
       description: Market index used to measure the interest a value has over time
       example: FED
       required: true
-      schema:
-        type: string
-    ContentType:
-      name: content-type
-      in: header
-      description: Content type
-      required: true
-      example: application/json
       schema:
         type: string
     InterestPlanIdPath:
@@ -85,40 +69,6 @@ components:
       schema:
         type: integer
         format: int32
-    XProgramId:
-      name: x-program-id
-      in: header
-      description: Program ID
-      required: true
-      example: '1233'
-      schema:
-        type: string
-    XTenant:
-      name: x-tenant
-      in: header
-      description: Organization ID
-      required: true
-      example: TN-cc8f8b89-233a-4582-9f36-63ee85278d6d
-      schema:
-        type: string
-    XAccountId:
-      name: x-account-id
-      in: header
-      description: Account ID
-      required: true
-      example: '8080'
-      schema:
-        type: string
-    XCid:
-      name: x-cid
-      in: header
-      description: >-
-        Optional correlation ID used to trace the request across services. When
-        omitted, one is generated automatically.
-      required: false
-      example: b3f1c2d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d
-      schema:
-        type: string
     VersionDate:
       name: version_date
       in: query
@@ -1187,11 +1137,7 @@ paths:
       tags:
         - Interest engine
       operationId: post-v1-interest-plan
-      parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/Authorization'
-        - $ref: '#/components/parameters/ContentType'
+      parameters: []
       requestBody:
         description: Request body
         required: true
@@ -1221,9 +1167,6 @@ paths:
         - Interest engine
       operationId: get-v1-interest-plans
       parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/PageNumber'
         - $ref: '#/components/parameters/PerPage'
       responses:
@@ -1257,9 +1200,6 @@ paths:
         - Interest engine
       operationId: get-v1-interest-plan
       parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/InterestPlanIdPath'
         - $ref: '#/components/parameters/VersionDate'
       responses:
@@ -1309,10 +1249,6 @@ paths:
         - Interest engine
       operationId: patch-v1-interest-plan
       parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/Authorization'
-        - $ref: '#/components/parameters/ContentType'
         - $ref: '#/components/parameters/InterestPlanIdPath'
       requestBody:
         description: Request body
@@ -1344,11 +1280,7 @@ paths:
         - Account interest
       operationId: get-v1-interest-account
       parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/XAccountId'
         - $ref: '#/components/parameters/AccountId'
-        - $ref: '#/components/parameters/Authorization'
       responses:
         '200':
           description: OK
@@ -1395,11 +1327,6 @@ paths:
         - Account interest
       operationId: put-v1-interest-account
       parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/XAccountId'
-        - $ref: '#/components/parameters/ContentType'
-        - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/AccountId'
       requestBody:
         description: >
@@ -1456,11 +1383,7 @@ paths:
       tags:
         - Interest accrual
       operationId: post-v1-interest-accrual-setup
-      parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/XProgramId'
-        - $ref: '#/components/parameters/Authorization'
+      parameters: []
       requestBody:
         description: Request body
         required: true
@@ -1492,11 +1415,7 @@ paths:
       tags:
         - Benchmark rate
       operationId: post-v1-benchmark-rate
-      parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/ContentType'
-        - $ref: '#/components/parameters/Authorization'
+      parameters: []
       requestBody:
         description: Request body
         required: true
@@ -1525,11 +1444,7 @@ paths:
       tags:
         - Benchmark rate
       operationId: get-v1-benchmark-rate-org
-      parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/ContentType'
-        - $ref: '#/components/parameters/Authorization'
+      parameters: []
       responses:
         '200':
           description: OK
@@ -1553,10 +1468,6 @@ paths:
         - Benchmark rate
       operationId: get-v1-benchmark-rate
       parameters:
-        - $ref: '#/components/parameters/XTenant'
-        - $ref: '#/components/parameters/XCid'
-        - $ref: '#/components/parameters/ContentType'
-        - $ref: '#/components/parameters/Authorization'
         - $ref: '#/components/parameters/Benchmark'
       responses:
         '200':
