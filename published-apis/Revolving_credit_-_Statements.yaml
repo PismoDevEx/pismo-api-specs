@@ -1320,7 +1320,16 @@ components:
       example: 300
     AmountType:
       type: string
-      description: Amount type
+      description: >
+        Amount type
+
+        - If you set `amount_type` to `FIXED_AMOUNT`, then the value you enter
+        for `minimum_amount_due` should represent that fixed amount.<br>
+
+        - If you set `amount_type` to `PERCENTAGE`, then `minimum_amount_due`
+        should represent a percentage of the current balance. For example, if
+        you set `minimum_amount_due` to 0.1, then the Pismo platform calculates
+        the MAD as 10% of the current balance.
       enum:
         - FIXED_AMOUNT
         - PERCENTAGE
@@ -3309,7 +3318,15 @@ components:
     MinimumAmountDue:
       type: number
       format: float
-      description: Minimum amount due for the current statement cycle
+      description: >
+        Minimum amount due for the current statement cycle
+
+        - If `amount_type` is set to `FIXED_AMOUNT`, then `minimum_amount_due`
+        represents that fixed amount.<br>
+
+        - If `amount_type` is set to `PERCENTAGE`, then `minimum_amount_due`
+        represents a percentage of the current balance. For example, 0.1
+        represents 10% of the current balance.
       example: 100.07
     MinimumAmountDueEnabled:
       type: boolean
@@ -7088,6 +7105,13 @@ paths:
         **current** cycle. The configured strategy, if it exists, still applies
         to future statements.
 
+        - The following example demonstrates how the Pismo platform handles the
+        request when you run this endpoint.<br>
+          Suppose the due date for Cycle A is March 10. The next cycle after Cycle A is Cycle B.<br>
+          - If the Pismo platform receives the "Create or update statement minimum amount due request" on March 9, it updates the MAD for Cycle A.<br>
+          - If it receives the request on March 10, and the platform has not finished closing Cycle A, the endpoint returns an error.<br>**Note:** This happens even if the platform hasn't started the process of closing Cycle A. The platform doesn't update the MAD for Cycle A on it's cycle closing date.<br>
+          - If it receives the request on March 10, and the platform has finished closing Cycle A, it updates the MAD for Cycle B.<br>
+          - If it receives the request on March 11, it updates the MAD for the next cycle (Cycle B).<br>
         - To use this endpoint, the **Allow overriding the minimum amount due
         for the current statement** program parameter must be set to `true`.
         Otherwise, the endpoint generates an error.
