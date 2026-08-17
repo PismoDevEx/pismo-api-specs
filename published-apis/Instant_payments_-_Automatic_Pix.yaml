@@ -58,16 +58,11 @@ components:
         type: string
         enum:
           - CREATED
-          - PENDING
-          - EXPIRED
+          - RECEIVED
           - ACCEPTED
           - REJECTED
-          - IN_PROGRESS
-          - FINISHED
+          - EXPIRED
           - CANCELLED
-          - RECEIVED
-          - CONFIRMED
-          - WAITING_CUSTOMER
       description: Execution status filter
       example: CREATED
     AutomaticPixExecutionStatusOptionalQuery:
