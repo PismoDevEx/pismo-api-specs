@@ -1547,11 +1547,11 @@ components:
         printed_name:
           type: string
           description: >-
-            Applicant name to be printed on a card (2 characters minimum, 25
+            Applicant name to be printed on a card (2 characters minimum, 26
             characters max). Use only letters (a-z|A-Z) and space, as specified
             in the ISO EMV tag 5F20 for cardholder name. No letters with
             accents, numbers, or special characters.
-          maxLength: 25
+          maxLength: 26
           minLength: 2
           example: Joao S Silva
         program_id:
@@ -1889,9 +1889,6 @@ components:
         - event_date_hour_utc
         - local_amount
         - local_currency_code
-        - merchant_city
-        - merchant_name
-        - merchant_state_or_country
         - migration
         - mti
         - network
@@ -2009,24 +2006,6 @@ components:
           type: string
           description: Local ISO-4217 currency code (DE 49)
           example: '986'
-        merchant_city:
-          type: string
-          maxLength: 15
-          description: >-
-            Authorization merchant city (DE 43 city field, maximum 15
-            characters)
-          example: ANTA GORDA
-        merchant_name:
-          type: string
-          description: Authorization merchant name
-          example: Merchant XYZ
-        merchant_state_or_country:
-          type: string
-          description: >-
-            Authorization merchant state or country using ISO 3166-1 alpha-2
-            country code
-          maxLength: 2
-          example: RS
         migration:
           type: object
           description: Applicant additional migration information
@@ -2219,6 +2198,23 @@ components:
           format: float
           description: Authorization installment amount
           example: 171.42
+        merchant_city:
+          type: string
+          description: >-
+            Authorization merchant city (DE 43 city field, maximum 15
+            characters)
+          maxLength: 15
+          example: São Paulo
+        merchant_name:
+          type: string
+          description: Authorization merchant name
+          maxLength: 500
+          example: Merchant XYZ
+        merchant_state_or_country:
+          type: string
+          description: Merchant state or country using ISO 3166-1 alpha-2 country code
+          maxLength: 2
+          example: RS
         merchant_category_code:
           type: string
           description: >-
