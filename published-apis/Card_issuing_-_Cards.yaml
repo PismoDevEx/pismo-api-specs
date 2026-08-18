@@ -1153,7 +1153,6 @@ components:
         If `0` is passed, the CVV will **NOT** be rotated.
       minimum: 1
       maximum: 4320
-      example: 24
     CvvChangeRotationRequest:
       type: object
       description: Request to change the CVV rotation interval
@@ -1282,11 +1281,11 @@ components:
           embossing_time:
             $ref: '#/components/schemas/EmbossingTime'
         example:
-          card_id: 6060842
-          program_id: 5446
+          card_id: 0
+          program_id: 0
           address_id: 45789
-          customer_id: 6345789
-          account_id: 8675309
+          customer_id: 0
+          account_id: 0
           file_name: file.pgp
           embossing_group: myembossinggroup
           embosser: Idemia
@@ -1559,15 +1558,13 @@ components:
           program_id:
             type: integer
             description: First program ID
-            example: 88490
+            example: 0
           customer_id:
             type: integer
             description: Credit customer ID
-            example: 102377856
           account_id:
             type: integer
             description: Credit account ID
-            example: 102378693
           password_tries:
             $ref: '#/components/schemas/PasswordTries'
           transaction_limit:
@@ -1584,7 +1581,7 @@ components:
           card_owner:
             type: string
             description: Org ID from card's root
-            example: TN-f878e4a1-2879-48ba-be16-821e73ac98db
+            example: TN-f878e4a1-2879-48ba-be16-000000000
     GetEncryptedCardDataRequest:
       type: object
       required:
@@ -2024,7 +2021,6 @@ components:
         additional data needed to encrypt it for transmission. The PIN block is
         typically encrypted using a secure cryptographic algorithm to prevent
         unauthorized access or tampering during transmission. 
-      example: 4E49BF480C44A36C
     PinLength:
       type: integer
       description: PIN length - 4 or 6 digits. Default is `4`.
@@ -2058,7 +2054,6 @@ components:
       type: string
       minLength: 2
       maxLength: 26
-      example: Chester Fields
       description: >
         Printed/embossed card name.
 
@@ -2145,7 +2140,7 @@ components:
         stage: BLOCKED
         issuing_date: '2022-01-07T14:29:19Z'
         expiration_date: '2027-01-07T14:29:19Z'
-        printed_name: Mabel Syrup
+        printed_name: Some person
         card_type: PLASTIC
         name: PLASTIC
         mode: CREDIT
@@ -2459,13 +2454,12 @@ components:
         account_id:
           type: number
           description: Account ID
-          example: 838933
         customer_id:
           $ref: '#/components/schemas/CustomerID'
       example:
-        account_id: 102378693
-        card_id: 6743052
-        customer_id: 4596098
+        account_id: 0
+        card_id: 0
+        customer_id: 0
     SearchCardV2RequestBody:
       type: object
       description: Search for card with encrypted PAN object
@@ -2708,10 +2702,10 @@ components:
         id: 6741322
         status: NORMAL
         stage: UNBLOCKED
-        printed_name: Mabel Syrup
+        printed_name: Some person
         name: Vacation card 2
         type: VIRTUAL
-        issuing_date: '2022-01-04T17:20:15.000Z'
+        issuing_date: '2022-01-04T17:20:15Z'
         transaction_limit: '100'
         tracking: '586988'
         contactless_enabled: true
@@ -2841,7 +2835,7 @@ components:
         stage: UNBLOCKED
         issuing_date: '2022-01-04T17:20:15Z'
         expiration_date: '2027-01-04T00:00:00Z'
-        printed_name: Mabel Syrup
+        printed_name: Some person
         name: Vacation card 2
         tracking: 4859
         track_number: 1
@@ -2866,7 +2860,6 @@ components:
         pinblock:
           type: string
           description: PINBlock to update
-          example: 4E49BF480C44A36C
         key_id:
           type: string
           description: >
@@ -2935,7 +2928,6 @@ components:
           type: string
           minLength: 3
           maxLength: 3
-          example: '123'
     ValidityPeriodHours:
       type: integer
       description: >
@@ -3671,7 +3663,6 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
     get:
-      operationId: get-v1-pin-as-pinblock
       summary: Get PIN as PINblock
       description: >
         Get the card PIN (Personal Identification Number) as a PINblock.
@@ -3685,6 +3676,7 @@ paths:
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
         environment.
+      operationId: get-v1-pin-as-pinblock
       tags:
         - PCI
       parameters:
@@ -4837,8 +4829,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetNonameEmbossingInfoResponse'
               example:
-                program_id: 12
-                card_id: 123
+                program_id: 0
+                card_id: 0
                 embossing_group: embosser-1
         '400':
           description: Bad Request
@@ -5043,7 +5035,7 @@ paths:
                     file_id: 6dacfdde-64bd-4a17-bbdf-3be627b271e6
                     file_name: EMBOSSERFILE.pgp
                     config_id: 6dacfdde-64bd-4a17-bbdf-3be627b271e6
-                    program_id: 1226
+                    program_id: 0
                     generation_date: '2022-08-24T20:13:24Z'
                     total_embossed_cards: 1000
                     total_unembossed_cards: 20
@@ -5992,26 +5984,26 @@ paths:
                 $ref: '#/components/schemas/EncryptedCardContent'
               example:
                 org_id: TN-5aea4104-7994-46d5-83d6-a55cxxxxxxxx
-                card_id: 19509998
+                card_id: 0
                 correlation_id: 9f46663d-34dc-9e37-a89a-a1d6ef56039a
                 password_updated: true
-                account_id: 116871845
+                account_id: 0
                 card_number: 123456******7890
-                program_id: 11084
-                printed_name: Tupper Weir
+                program_id: 0
+                printed_name: Some person
                 expiration_date: '2805'
-                customer_id: 116906961
-                cvv: '468'
-                cvv2: '178'
-                icvv: '010'
+                customer_id: 0
+                cvv: '000'
+                cvv2: '000'
+                icvv: '000'
                 track1_magnetic_stripe: B65...^NOT/REAL...00000?
                 track1_chip: B650...NOT/REAL...0000000?
                 track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
-                pinblock: E6...90
-                service_code_cvv1: '201'
+                pinblock: '000000000000'
+                service_code_cvv1: '000'
                 service_code_cvv2: '000'
-                service_code_icvv: '999'
+                service_code_icvv: '000'
         '400':
           description: Bad Request
           content:
@@ -6114,26 +6106,26 @@ paths:
                 $ref: '#/components/schemas/EncryptedCardContent2'
               example:
                 org_id: TN-5aea4104-7994-46d5-83d6-a55cxxxxxxxx
-                card_id: 19509998
+                card_id: 0
                 correlation_id: 9f46663d-34dc-9e37-a89a-a1d6ef56039a
                 password_updated: true
-                account_id: 116871845
+                account_id: 0
                 card_number: 123456******7890
-                program_id: 11084
-                printed_name: Leah Tard
+                program_id: 0
+                printed_name: Some person
                 expiration_date: '2805'
-                customer_id: 116906961
-                cvv: '468'
-                cvv2: '178'
-                icvv: '010'
+                customer_id: 0
+                cvv: '000'
+                cvv2: '000'
+                icvv: '000'
                 track1_magnetic_stripe: B65...^NOT/REAL...00000?
                 track1_chip: B650...NOT/REAL...0000000?
                 track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
-                pinblock: E6...NOT/REAL...7D90
-                service_code_cvv1: '201'
+                pinblock: '000000000000000'
+                service_code_cvv1: '000'
                 service_code_cvv2: '000'
-                service_code_icvv: '999'
+                service_code_icvv: '000'
         '400':
           description: Bad Request
           content:
@@ -6218,26 +6210,26 @@ paths:
                 $ref: '#/components/schemas/EncryptedCardContent'
               example:
                 org_id: TN-5aea4104-7994-46d5-83d6-a55cxxxxxxxx
-                card_id: 19509998
+                card_id: 0
                 correlation_id: 9f46663d-34dc-9e37-a89a-a1d6ef56039a
                 password_updated: true
-                account_id: 116871845
+                account_id: 0
                 card_number: 123456******7890
-                program_id: 11084
-                printed_name: Leah Tard
+                program_id: 0
+                printed_name: Some person
                 expiration_date: '2805'
-                customer_id: 116906961
-                cvv: '468'
-                cvv2: '178'
-                icvv: '010'
+                customer_id: 0
+                cvv: '000'
+                cvv2: '000'
+                icvv: '000'
                 track1_magnetic_stripe: B65...^NOT/REAL...00000?
                 track1_chip: B650...NOT/REAL...0000000?
                 track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
-                pinblock: E62...NOT/REAL...D90
-                service_code_cvv1: '201'
+                pinblock: '000000000000000'
+                service_code_cvv1: '000'
                 service_code_cvv2: '000'
-                service_code_icvv: '999'
+                service_code_icvv: '000'
         '400':
           description: Bad Request
           content:
@@ -6334,26 +6326,26 @@ paths:
                 $ref: '#/components/schemas/EncryptedCardContent2'
               example:
                 org_id: TN-5aea4104-7994-46d5-83d6-a55cxxxxxxxx
-                card_id: 19509998
+                card_id: 0
                 correlation_id: 9f46663d-34dc-9e37-a89a-a1d6ef56039a
                 password_updated: true
-                account_id: 116871845
+                account_id: 0
                 card_number: 123456******7890
-                program_id: 11084
-                printed_name: Leah Tard
+                program_id: 0
+                printed_name: Some person
                 expiration_date: '2805'
-                customer_id: 116906961
-                cvv: '468'
-                cvv2: '178'
-                icvv: '010'
+                customer_id: 0
+                cvv: '000'
+                cvv2: '000'
+                icvv: '000'
                 track1_magnetic_stripe: B65....^NOT/REAL...00000?
                 track1_chip: B650...NOT/REAL...0000000?
                 track2_chip: B650...NOT/REAL...0000000?
                 track2_magnetic_stripe: B65...^NOT/REAL...00000?
-                pinblock: E62...NOT/REAL...D90
-                service_code_cvv1: '201'
+                pinblock: '000000000000000'
+                service_code_cvv1: '000'
                 service_code_cvv2: '000'
-                service_code_icvv: '999'
+                service_code_icvv: '000'
         '400':
           description: Bad Request
           content:
