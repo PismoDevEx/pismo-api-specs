@@ -5605,50 +5605,6 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalServer'
-  /wallet/v1/relationship:
-    post:
-      operationId: post-v1-combocard-relationship
-      summary: Create combo card (deprecated)
-      description: >-
-        Associates a customer's debit and credit accounts to create a
-        combination card with both debit and credit payment capabilities that
-        can be used as one embossed card.
-
-        It is recommended you create a combination card using card modes as this
-        endpoint will soon be deprecated. For more information, refer to the
-        [mode
-        documentation](doc:cards-overview-1#create-a-combination-card-with-card-modes)
-        in the Cards management guide.
-
-        **Note:** This endpoint takes an account token - an access token encoded
-        with a Pismo account ID.
-      deprecated: true
-      tags:
-        - Cards
-      parameters:
-        - $ref: '#/components/parameters/idempotencyHeader'
-      requestBody:
-        description: Request body
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RelationshipBody'
-      responses:
-        '201':
-          description: Cards relationship information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RelationshipResponse'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '409':
-          $ref: '#/components/responses/409ConflictCardsPost'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
   /pcicards/v1/pcicards/{cardId}/scripts:
     post:
       summary: Append issuer script
@@ -6401,7 +6357,7 @@ paths:
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
         environment. 
-      operationId: post-v2-card-search-by-pan-two
+      operationId: post-v3-card-search-by-pan
       tags:
         - PCI
       requestBody:
