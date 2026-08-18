@@ -3352,18 +3352,12 @@ components:
             `BILLED` or `TO_BE_BILLED` transactions, and the `INSTALLMENTS` type
             is not necessary.
 
-            - `INSTANT_PAYMENT`—The transaction is an instant payment, such as a
-            Pix payment in Brazil. This type requires an `instant_payment_data`
-            object with details of the transaction. Authorization type should be
-            `BANKING`.
-
             - `STORED`—The transaction gets allocated to a future statement.
           enum:
             - BILLED
             - TO_BE_BILLED
             - ADJUSTMENT
             - INSTALLMENTS
-            - INSTANT_PAYMENT
             - STORED
           example: BILLED
         authorization_type:
