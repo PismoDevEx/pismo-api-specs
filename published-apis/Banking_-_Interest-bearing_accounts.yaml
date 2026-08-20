@@ -2870,11 +2870,10 @@ paths:
         - Account attachment
       summary: Get account attachment
       description: |
-        Get an account's attached product.
+        Get an account's attached product
       operationId: interest-bearing-v1-get-account-attachment
       parameters:
         - $ref: '#/components/parameters/accountId'
-        - $ref: '#/components/parameters/authorizationTokenHeader'
       responses:
         '200':
           description: Success
