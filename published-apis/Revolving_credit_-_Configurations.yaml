@@ -53,30 +53,6 @@ components:
       schema:
         type: integer
         example: 18898
-    AccrualTypeConfigurationQuery:
-      name: configuration
-      description: Optional configuration name to filter by a specific configuration
-      in: query
-      required: false
-      schema:
-        type: string
-        example: ONCE_AFTER_TRANSACTION_DUE_DATE
-    AccrualTypeQuery:
-      name: accrualType
-      description: Accrual type to filter configurations
-      in: query
-      required: true
-      schema:
-        type: string
-        enum:
-          - WITHDRAWAL_INTEREST
-          - BILLPAYMENT_INTEREST
-          - OVERDRAFT_INTEREST
-          - FINANCIAL_TAX
-          - REFINANCING
-          - OVERDUE
-          - FINE
-        example: WITHDRAWAL_INTEREST
     IsDeletedQuery:
       name: isDeleted
       description: Filter by status
@@ -110,17 +86,6 @@ components:
       description: Period to calculate the accruals
       in: query
       required: false
-      schema:
-        type: string
-        enum:
-          - UNTIL_DUE_DATE
-          - AFTER_DUE_DATE
-        example: UNTIL_DUE_DATE
-    PeriodToCalculateQueryRequired:
-      name: periodToCalculate
-      description: Period to calculate the accruals
-      in: query
-      required: true
       schema:
         type: string
         enum:
@@ -201,15 +166,6 @@ components:
       schema:
         type: integer
         example: 2
-    TransactionCategoryIdQueryRequired:
-      name: transactionCategoryId
-      description: Transaction category ID to filter configurations
-      in: query
-      required: true
-      schema:
-        type: integer
-        format: int64
-        example: 12345
     ValidityToCalculateQuery:
       name: validityToCalculate
       description: >
@@ -237,117 +193,14 @@ components:
         - `OVERDRAFT_INTEREST`—Interest on an overdraft
         - `FINANCIAL_TAX`—Financial tax
       example: WITHDRAWAL_INTEREST
-    AccountAccrualTypesRatesRequest:
-      type: object
-      required:
-        - transaction_category_id
-        - accrual_type
-        - period_to_calculate
-        - validity_to_calculate
-      properties:
-        transaction_category_id:
-          $ref: '#/components/schemas/TransactionCategoryID'
-        accrual_type:
-          $ref: '#/components/schemas/AccountAccrualType'
-        period_to_calculate:
-          $ref: '#/components/schemas/PeriodToCalculate'
-        default_rate:
-          $ref: '#/components/schemas/DefaultAccrualRate'
-        rate_if_overdue:
-          $ref: '#/components/schemas/AccrualRateIfOverdue'
-        validity_to_calculate:
-          $ref: '#/components/schemas/ValidityToCalculate'
-        ranges:
-          $ref: '#/components/schemas/AccrualRateRanges'
-    AccountAccrualTypesRatesResponse:
-      type: object
-      required:
-        - transaction_category_id
-        - accrual_type
-        - period_to_calculate
-        - validity_to_calculate
-      properties:
-        transaction_category_id:
-          $ref: '#/components/schemas/TransactionCategoryID'
-        accrual_type:
-          $ref: '#/components/schemas/AccountAccrualType'
-        period_to_calculate:
-          $ref: '#/components/schemas/PeriodToCalculate'
-        default_rate:
-          $ref: '#/components/schemas/DefaultAccrualRate'
-        rate_if_overdue:
-          $ref: '#/components/schemas/AccrualRateIfOverdue'
-        ranges:
-          $ref: '#/components/schemas/AccrualRateRanges'
-        validity_to_calculate:
-          $ref: '#/components/schemas/ValidityToCalculate'
-        account_accrual_type_rate_id:
-          $ref: '#/components/schemas/AccrualTypeRateID'
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        deleted_at:
-          $ref: '#/components/schemas/DeletedAt'
-    AccountID:
-      type: integer
-      description: Account  ID
-      example: 1237456
-    AccountStatusItemResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Account status name
-          example: FULL_CANCELLATION
-        features:
-          type: object
-          description: Map of features and the corresponding enabled/disabled status
-          properties:
-            close-statements:
-              type: boolean
-            overlimit:
-              type: boolean
-            late-payment-fee:
-              type: boolean
-          example:
-            close-statements: false
-            overlimit: true
-      example:
-        value:
-          - name: DEFINITIVE_CANCELLATION
-            features:
-              close-statements: false
-          - name: BLOCKED
-            features:
-              close-statements: false
-              overlimit: false
-    AccountStatusPatchItemRequest:
-      type: object
-      properties:
-        remove_status:
-          type: boolean
-          description: Remove current status?
-          example: true
-        name:
-          type: string
-          description: Account status name
-          example: FULL_CANCELLATION
-        features:
-          type: object
-          additionalProperties:
-            type: boolean
-          description: Map of features and the corresponding enabled/disabled status
-          example:
-            close-statements: false
-            overlimit: true
-      example:
-        value:
-          - name: DEFINITIVE_CANCELLATION
-            features:
-              close-statements: false
-          - remove_status: true
-            name: BLOCKED
+    AmountDueLowerLimit:
+      type: number
+      format: double
+      description: >-
+        Lower limit for the range. Must be greater than zero. If the amount due
+        is greater than or equal to this amount, `default_rate` and
+        `rate_if_overdue` apply.
+      example: 4000
     AccrualRateIfOverdue:
       type: number
       format: double
@@ -434,39 +287,6 @@ components:
         in [Program parameters](doc:program-parameters-reference-table).
       items:
         $ref: '#/components/schemas/AccrualRateRange'
-    AccrualTypeConfiguration:
-      type: string
-      description: Accrual type configuration to enable
-      enum:
-        - ONCE_AFTER_TRANSACTION_DUE_DATE
-        - GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY
-      example: ONCE_AFTER_TRANSACTION_DUE_DATE
-    AccrualTypeConfigurationGetResponse:
-      type: object
-      required:
-        - id
-        - transaction_category_id
-        - accrual_type
-        - period_to_calculate_accrual
-        - configuration
-        - created_at
-      properties:
-        id:
-          $ref: '#/components/schemas/TransactionCategoryAccrualTypeConfigurationID'
-        transaction_category_id:
-          $ref: '#/components/schemas/TransactionCategoryID'
-        accrual_type:
-          $ref: '#/components/schemas/ProgramAccrualType'
-        period_to_calculate_accrual:
-          $ref: '#/components/schemas/PeriodToCalculateAccrual'
-        configuration:
-          $ref: '#/components/schemas/AccrualTypeConfiguration'
-        value:
-          $ref: '#/components/schemas/AccrualTypeConfigurationValue'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        deleted_at:
-          $ref: '#/components/schemas/DeletedAt'
     AccrualTypesConfigurations:
       description: Array of additional accrual type configurations
       type: array
@@ -474,49 +294,12 @@ components:
         type: string
         enum:
           - ONCE_AFTER_TRANSACTION_DUE_DATE
-    AccrualTypeConfigurationValue:
-      type: integer
-      format: int32
-      nullable: true
-      description: >
-        Value for the configuration, if applicable. `null` if the configuration
-        does not require a value. Allowed values are 1 or 2.
-      example: 1
-    AccrualTypeRateID:
-      type: integer
-      format: int32
-      description: Account accrual type rate ID
-      example: 1237456
-    AmountDueLowerLimit:
-      type: number
-      format: double
-      description: >-
-        Lower limit for the range. Must be greater than zero. If the amount due
-        is greater than or equal to this amount, `default_rate` and
-        `rate_if_overdue` apply.
-      example: 4000
-    ArrayOfInterestRateObjects:
-      type: array
-      description: Array of interest rate objects
-      items:
-        $ref: '#/components/schemas/AccountAccrualTypesRatesResponse'
     ChargeOrder:
       type: integer
-      format: int32
       description: >-
         Used to determine the priority order when discharging transaction
         balances. 1 is the highest priority.
       example: 2
-    CreatedAt:
-      type: string
-      description: Date created. Format = yyyy-mm-ddThh:mm:ssZ.
-      example: '2023-08-18T20:53:27.498Z'
-    CurrentPageNumber:
-      type: integer
-      format: int32
-      description: Current page number
-      default: 1
-      example: 1
     DefaultAccrualRate:
       type: number
       format: double
@@ -536,214 +319,11 @@ components:
         the account <i>is</i> overdue. If you want the platform to calculate the
         interest in both cases, you must provide values for both fields.
       example: 2
-    DeleteAccrualTypesConfigurations:
-      description: Array of additional accrual type configurations for deletion
-      type: array
-      items:
-        type: string
-        enum:
-          - ONCE_AFTER_TRANSACTION_DUE_DATE
-          - GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY
-    DeleteAccrualTypeConfigurationsRequest:
-      type: object
-      properties:
-        configurations:
-          $ref: '#/components/schemas/DeleteAccrualTypesConfigurations'
-      required:
-        - configurations
-    DeletedAt:
-      type: string
-      description: Date deleted. Format = yyyy-mm-ddThh:mm:ssZ.
-      example: '2023-10-10T10:50:18.212Z'
-    FeaturesByAccountStatusPatchRequest:
-      type: object
-      required:
-        - account_statuses
-      properties:
-        reset_configuration:
-          type: boolean
-          description: Reset configuration?
-          example: true
-        program_id:
-          type: number
-          description: Program ID
-          format: int64
-          example: 123
-        account_statuses:
-          type: array
-          description: >-
-            List of account statuses with the corresponding features marked to
-            be disabled/enabled
-          items:
-            $ref: '#/components/schemas/AccountStatusPatchItemRequest'
-    FeaturesByAccountStatusPostRequest:
-      type: object
-      required:
-        - account_statuses
-      properties:
-        program_id:
-          type: number
-          description: Program ID
-          format: int64
-          example: 123
-        account_statuses:
-          type: array
-          description: >-
-            List of account statuses with the corresponding features marked to
-            be disabled/enabled
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: Account status name
-                example: DEFINITIVE_CANCELLATION
-              features:
-                type: object
-                properties:
-                  close-statements:
-                    type: boolean
-                    description: Perform cycle closings?
-                    default: true
-                    example: false
-                  late-payment-fee:
-                    type: boolean
-                    description: Charge late payment fees?
-                    default: true
-                    example: false
-                  overlimit:
-                    type: boolean
-                    default: true
-                    description: Charge overlimit fees?
-                    example: false
-                  create-accruals:
-                    type: boolean
-                    description: |
-                      Calculate new accruals?
-                    default: true
-                    example: false
-          example:
-            - name: DEFINITIVE_CANCELLATION
-              features:
-                close-statements: false
-    FeaturesByAccountStatusResponse:
-      type: object
-      required:
-        - account_statuses
-      properties:
-        program_id:
-          type: number
-          description: Program ID
-          format: int64
-          example: 123
-        account_statuses:
-          type: array
-          description: >-
-            List of account statuses with the corresponding features marked to
-            be disabled/enabled
-          items:
-            $ref: '#/components/schemas/AccountStatusItemResponse'
-    GetAllAccountAccrualTypesRatesResponse:
-      type: object
-      required:
-        - current_page
-        - per_page
-        - total_items
-        - items_on_page
-        - pages
-      properties:
-        current_page:
-          $ref: '#/components/schemas/CurrentPageNumber'
-        per_page:
-          $ref: '#/components/schemas/ItemsPerPage'
-        total_items:
-          $ref: '#/components/schemas/NumberOfItems'
-        items_on_page:
-          $ref: '#/components/schemas/ItemsOnCurrentPage'
-        pages:
-          $ref: '#/components/schemas/NumberOfPages'
-        is_last_page:
-          $ref: '#/components/schemas/IsLastPage'
-        items:
-          $ref: '#/components/schemas/ArrayOfInterestRateObjects'
-    GetAllProgramAccrualTypesRatesResponse:
-      type: object
-      required:
-        - current_page
-        - per_page
-        - total_items
-        - items_on_page
-        - pages
-      properties:
-        current_page:
-          $ref: '#/components/schemas/CurrentPageNumber'
-        per_page:
-          $ref: '#/components/schemas/ItemsPerPage'
-        total_items:
-          $ref: '#/components/schemas/NumberOfItems'
-        items_on_page:
-          $ref: '#/components/schemas/ItemsOnCurrentPage'
-        pages:
-          $ref: '#/components/schemas/NumberOfPages'
-        is_last_page:
-          $ref: '#/components/schemas/IsLastPage'
-        items:
-          $ref: '#/components/schemas/ArrayOfInterestRateObjects'
-    IsLastPage:
-      type: boolean
-      description: Indicates if the current page is the last page
-      example: false
-    ItemsOnCurrentPage:
-      type: integer
-      format: int32
-      description: Number of items on the current page
-      example: 10
-    ItemsPerPage:
-      type: integer
-      format: int32
-      description: Number of items per page
-      minimum: 1
-      default: 1
-      example: 10
-    NumberOfItems:
-      type: integer
-      format: int32
-      description: Number of items
-      example: 50
-    NumberOfPages:
-      type: integer
-      format: int32
-      description: Number of pages
-      example: 5
-    PeriodToCalculate:
-      type: string
-      description: >
-        Period to calculate the accrual
-
-
-        `UNTIL_DUE_DATE`—The period extends from the transaction date plus one
-        day to the due date.
-
-        `AFTER_DUE_DATE`—The period extends from the due date plus one day to
-        the current date.
-
-
-        **Note:** If an accrual needs to start at the transaction date and
-        continue past the due date, then two accrual rates need to be
-        created—one with `UNTIL_DUE_DATE` and another with
-        `AFTER_DUE_DATE`.      
-    PeriodToCalculateAccrual:
-      type: string
-      description: Period to calculate the accrual
-      enum:
-        - UNTIL_DUE_DATE
-        - AFTER_DUE_DATE
-      example: UNTIL_DUE_DATE
     PostAccrualTypeConfigurationsRequest:
       type: object
       properties:
         configurations:
-          $ref: '#/components/schemas/DeleteAccrualTypesConfigurations'
+          $ref: '#/components/schemas/AccrualTypesConfigurations'
       required:
         - configurations
     PostAccrualTypeConfigurationsResponse:
@@ -753,51 +333,6 @@ components:
           $ref: '#/components/schemas/AccrualTypesConfigurations'
       required:
         - configurations
-    PostAccrualTypeConfigurationV2Request:
-      type: object
-      required:
-        - transaction_category_id
-        - accrual_type
-        - period_to_calculate
-        - configuration
-      properties:
-        transaction_category_id:
-          $ref: '#/components/schemas/TransactionCategoryID'
-        accrual_type:
-          $ref: '#/components/schemas/ProgramAccrualType'
-        period_to_calculate:
-          $ref: '#/components/schemas/PeriodToCalculate'
-        configuration:
-          $ref: '#/components/schemas/AccrualTypeConfiguration'
-        value:
-          $ref: '#/components/schemas/AccrualTypeConfigurationValue'
-    PostAccrualTypeConfigurationV2Response:
-      type: object
-      required:
-        - program_id
-        - transaction_category_id
-        - accrual_type
-        - period_to_calculate
-        - configuration
-        - created_at
-      properties:
-        program_id:
-          type: integer
-          format: int64
-          description: Program ID
-          example: 5689
-        transaction_category_id:
-          $ref: '#/components/schemas/TransactionCategoryID'
-        accrual_type:
-          $ref: '#/components/schemas/ProgramAccrualType'
-        period_to_calculate:
-          $ref: '#/components/schemas/PeriodToCalculate'
-        configuration:
-          $ref: '#/components/schemas/AccrualTypeConfiguration'
-        value:
-          $ref: '#/components/schemas/AccrualTypeConfigurationValue'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
     ProgramsTransactionsTypesRequest:
       type: object
       properties:
@@ -833,13 +368,13 @@ components:
       type: string
       description: |
         Accrual type. The possible values at the program level are:
-        - `WITHDRAWAL_INTEREST`—Withdrawal interest
-        - `BILLPAYMENT_INTEREST`—Bill payment interest
-        - `OVERDRAFT_INTEREST`—Overdraft interest
-        - `FINANCIAL_TAX`—Financial tax
-        - `REFINANCING`—Refinancing charge
-        - `OVERDUE`—Overdue charge
-        - `FINE`—Overdue fine
+        - `WITHDRAWAL_INTEREST` — Interest on a withdrawal
+        - `BILLPAYMENT_INTEREST` — Interest on a bill payment
+        - `OVERDRAFT_INTEREST` — Interest on an overdraft
+        - `FINANCIAL_TAX` — Financial tax
+        - `REFINANCING` — Refinancing charge
+        - `OVERDUE` — Overdue charge
+        - `FINE` — Overdue fine
       enum:
         - WITHDRAWAL_INTEREST
         - BILLPAYMENT_INTEREST
@@ -849,6 +384,113 @@ components:
         - OVERDUE
         - FINE
       example: WITHDRAWAL_INTEREST
+    PeriodToCalculate:
+      type: string
+      description: >
+        Period to calculate the accrual
+
+
+        `UNTIL_DUE_DATE`—The period extends from the transaction date plus one
+        day to the due date.
+
+        `AFTER_DUE_DATE`—The period extends from the due date plus one day to
+        the current date.
+
+
+        **Note:** If an accrual needs to start at the transaction date and
+        continue past the due date, then two accrual rates need to be
+        created—one with `UNTIL_DUE_DATE` and another with
+        `AFTER_DUE_DATE`.      
+    TransactionCategoryID:
+      type: integer
+      description: Transaction category ID
+      example: 1237456
+    TransactionTypeID:
+      description: Transaction type ID
+      type: integer
+      example: 101
+    ValidityToCalculate:
+      type: string
+      description: >
+        When the rate is used to calculate the accrual. The possible values are:
+
+        - `IMMEDIATE` — The rate is used to calculate the next generated
+        accruals.
+
+        - `DUEDATE` — The rate is used to calculate accruals only after the next
+        due date.
+      enum:
+        - IMMEDIATE
+        - DUEDATE
+      example: IMMEDIATE
+    AccountAccrualTypesRatesRequest:
+      type: object
+      required:
+        - transaction_category_id
+        - accrual_type
+        - period_to_calculate
+        - validity_to_calculate
+      properties:
+        transaction_category_id:
+          $ref: '#/components/schemas/TransactionCategoryID'
+        accrual_type:
+          $ref: '#/components/schemas/AccountAccrualType'
+        period_to_calculate:
+          $ref: '#/components/schemas/PeriodToCalculate'
+        default_rate:
+          $ref: '#/components/schemas/DefaultAccrualRate'
+        rate_if_overdue:
+          $ref: '#/components/schemas/AccrualRateIfOverdue'
+        validity_to_calculate:
+          $ref: '#/components/schemas/ValidityToCalculate'
+        ranges:
+          $ref: '#/components/schemas/AccrualRateRanges'
+    AccrualTypeRateID:
+      type: integer
+      description: Account accrual type rate ID
+      example: 1237456
+    AccountID:
+      type: integer
+      description: Account  ID
+      example: 1237456
+    CreatedAt:
+      type: string
+      description: Date created, format = yyyy-mm-ddThh:mm:ssZ
+      example: '2023-08-18T20:53:27.498Z'
+    DeletedAt:
+      type: string
+      description: Date deleted, format = yyyy-mm-ddThh:mm:ssZ
+      example: '2023-10-10T10:50:18.212Z'
+    AccountAccrualTypesRatesResponse:
+      type: object
+      required:
+        - transaction_category_id
+        - accrual_type
+        - period_to_calculate
+        - validity_to_calculate
+      properties:
+        transaction_category_id:
+          $ref: '#/components/schemas/TransactionCategoryID'
+        accrual_type:
+          $ref: '#/components/schemas/AccountAccrualType'
+        period_to_calculate:
+          $ref: '#/components/schemas/PeriodToCalculate'
+        default_rate:
+          $ref: '#/components/schemas/DefaultAccrualRate'
+        rate_if_overdue:
+          $ref: '#/components/schemas/AccrualRateIfOverdue'
+        ranges:
+          $ref: '#/components/schemas/AccrualRateRanges'
+        validity_to_calculate:
+          $ref: '#/components/schemas/ValidityToCalculate'
+        account_accrual_type_rate_id:
+          $ref: '#/components/schemas/AccrualTypeRateID'
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        deleted_at:
+          $ref: '#/components/schemas/DeletedAt'
     ProgramAccrualTypesRatesRequest:
       type: object
       required:
@@ -900,6 +542,84 @@ components:
           $ref: '#/components/schemas/DeletedAt'
         accrual_type_rate_id:
           $ref: '#/components/schemas/AccrualTypeRateID'
+    CurrentPageNumber:
+      type: integer
+      description: Current page number
+      default: 1
+      example: 1
+    ItemsPerPage:
+      type: integer
+      description: Number of items per page
+      minLength: 1
+      default: 1
+      example: 10
+    NumberOfItems:
+      type: integer
+      description: Number of items
+      example: 50
+    ItemsOnCurrentPage:
+      type: integer
+      description: Number of items on the current page
+      example: 10
+    NumberOfPages:
+      type: integer
+      description: Number of pages
+      example: 5
+    IsLastPage:
+      type: boolean
+      description: Indicates if the current page is the last page
+      example: false
+    ArrayOfInterestRateObjects:
+      type: array
+      description: Array of interest rate objects
+      items:
+        $ref: '#/components/schemas/AccountAccrualTypesRatesResponse'
+    GetAllAccountAccrualTypesRatesResponse:
+      type: object
+      properties:
+        current_page:
+          $ref: '#/components/schemas/CurrentPageNumber'
+        per_page:
+          $ref: '#/components/schemas/ItemsPerPage'
+        total_items:
+          $ref: '#/components/schemas/NumberOfItems'
+        items_on_page:
+          $ref: '#/components/schemas/ItemsOnCurrentPage'
+        pages:
+          $ref: '#/components/schemas/NumberOfPages'
+        is_last_page:
+          $ref: '#/components/schemas/IsLastPage'
+        items:
+          $ref: '#/components/schemas/ArrayOfInterestRateObjects'
+      required:
+        - current_page
+        - per_page
+        - total_items
+        - items_on_page
+        - pages
+    GetAllProgramAccrualTypesRatesResponse:
+      type: object
+      properties:
+        current_page:
+          $ref: '#/components/schemas/CurrentPageNumber'
+        per_page:
+          $ref: '#/components/schemas/ItemsPerPage'
+        total_items:
+          $ref: '#/components/schemas/NumberOfItems'
+        items_on_page:
+          $ref: '#/components/schemas/ItemsOnCurrentPage'
+        pages:
+          $ref: '#/components/schemas/NumberOfPages'
+        is_last_page:
+          $ref: '#/components/schemas/IsLastPage'
+        items:
+          $ref: '#/components/schemas/ArrayOfInterestRateObjects'
+      required:
+        - current_page
+        - per_page
+        - total_items
+        - items_on_page
+        - pages
     StandardErrorResponse:
       type: object
       properties:
@@ -911,33 +631,149 @@ components:
           type: string
           description: Error message
           example: An error occurred when attempting to execute request.
-    TransactionCategoryAccrualTypeConfigurationID:
-      type: integer
-      format: int64
-      description: Transaction category accrual type configuration ID
-      example: 789
-    TransactionCategoryID:
-      type: integer
-      format: int64
-      description: Transaction category ID
-      example: 12345
-    TransactionTypeID:
-      description: Transaction type ID
-      type: integer
-      example: 101
-    ValidityToCalculate:
-      type: string
-      description: >
-        When the rate is used to calculate the accrual. The possible values are:
-
-        - `IMMEDIATE`—The rate is used to calculate the next generated accruals.
-
-        - `DUEDATE`—The rate is used to calculate accruals only after the next
-        due date.
-      enum:
-        - IMMEDIATE
-        - DUEDATE
-      example: IMMEDIATE
+    FeaturesByAccountStatusResponse:
+      type: object
+      properties:
+        program_id:
+          type: number
+          description: Program ID
+          format: int64
+          example: 123
+        account_statuses:
+          type: array
+          description: >-
+            List of account statuses with the corresponding features marked to
+            be disabled/enabled
+          items:
+            $ref: '#/components/schemas/AccountStatusItemResponse'
+      required:
+        - account_statuses
+    FeaturesByAccountStatusPostRequest:
+      type: object
+      properties:
+        program_id:
+          type: number
+          description: Program ID
+          format: int64
+          example: 123
+        account_statuses:
+          type: array
+          description: >-
+            List of account statuses with the corresponding features marked to
+            be disabled/enabled
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Account status name
+                example: DEFINITIVE_CANCELLATION
+              features:
+                type: object
+                properties:
+                  close-statements:
+                    type: boolean
+                    description: Perform cycle closings?
+                    default: true
+                    example: false
+                  late-payment-fee:
+                    type: boolean
+                    description: Charge late payment fees?
+                    default: true
+                    example: false
+                  overlimit:
+                    type: boolean
+                    default: true
+                    description: Charge overlimit fees?
+                    example: false
+                  create-accruals:
+                    type: boolean
+                    description: |
+                      Calculate new accruals?
+                    default: true
+                    example: false
+          example:
+            - name: DEFINITIVE_CANCELLATION
+              features:
+                close-statements: false
+      required:
+        - account_statuses
+    FeaturesByAccountStatusPatchRequest:
+      type: object
+      properties:
+        reset_configuration:
+          type: boolean
+          description: Reset configuration?
+          example: true
+        program_id:
+          type: number
+          description: Program ID
+          format: int64
+          example: 123
+        account_statuses:
+          type: array
+          description: >-
+            List of account statuses with the corresponding features marked to
+            be disabled/enabled
+          items:
+            $ref: '#/components/schemas/AccountStatusPatchItemRequest'
+      required:
+        - account_statuses
+    AccountStatusItemResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Account status name
+          example: FULL_CANCELLATION
+        features:
+          type: object
+          description: Map of features and the corresponding enabled/disabled status
+          properties:
+            close-statements:
+              type: boolean
+            overlimit:
+              type: boolean
+            late-payment-fee:
+              type: boolean
+          example:
+            close-statements: false
+            overlimit: true
+      example:
+        value:
+          - name: DEFINITIVE_CANCELLATION
+            features:
+              close-statements: false
+          - name: BLOCKED
+            features:
+              close-statements: false
+              overlimit: false
+    AccountStatusPatchItemRequest:
+      type: object
+      properties:
+        remove_status:
+          type: boolean
+          description: Remove current status?
+          example: true
+        name:
+          type: string
+          description: Account status name
+          example: FULL_CANCELLATION
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Map of features and the corresponding enabled/disabled status
+          example:
+            close-statements: false
+            overlimit: true
+      example:
+        value:
+          - name: DEFINITIVE_CANCELLATION
+            features:
+              close-statements: false
+          - remove_status: true
+            name: BLOCKED
   responses:
     204NoContent:
       description: No Content
@@ -1108,175 +944,6 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'
-  /v2/programs/{programId}/configuration:
-    post:
-      summary: Create additional accrual type configuration
-      description: >
-        Enables an additional configuration on an accrual type for a specific
-        transaction category and period to calculate. Any additional
-        configuration that you enable modifies the default accrual behavior. 
-
-
-        **Note:** Pismo recommends you use this endpoint instead of [Enable
-        additional configurations on accrual
-        types](ref:postaccrualtypesconfigurations), which will eventually be
-        deprecated. The new endpoint accepts all parameters in the request body,
-        instead of in path parameters.
-
-
-        ### Available Configurations 
-
-
-        | Configuration | `value` Required | Allowed `values` | Allowed values
-        for `period_to_calculate`
-
-        |---|---|---|---| 
-
-        | `ONCE_AFTER_TRANSACTION_DUE_DATE` | No | N/A | `UNTIL_DUE_DATE`,
-        `AFTER_DUE_DATE`
-
-        | `GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY` | Yes | 1 or 2 | `UNTIL_DUE_DATE`
-
-
-        ### Configuration details 
-
-
-        - `ONCE_AFTER_TRANSACTION_DUE_DATE`: By default, accruals on
-        transactions with this transaction category occur on a daily basis. If
-        this additional configuration is enabled, then, for each transaction,
-        the accrual is calculated only once on the transaction due date. The
-        `value` field is not required for this configuration. 
-
-
-        - `GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY`: This configuration defines the
-        grace days strategy for accruals calculated up to the due date. You must
-        set `period_to_calculate` to `UNTIL_DUE_DATE`. The `value` field is
-        required. Accepted values are 1 or 2 (meaning Strategy 1 or Strategy 2).
-        The strategies are defined as follows.
-
-          - **Strategy 1**: One good cycle restores grace. If the customer misses one cycle, interest is charged for that missed cycle. If the next cycle is fully paid by the due date, grace returns for the following cycle.
-
-          - **Strategy 2**: Two consecutive good cycles are required to restore grace. If the customer misses one cycle, they normally pay interest for the missed cycle and for the next two recovery cycles before grace returns.
-
-        ### `value` behavior 
-
-
-        - The `value` field accepts an integer (1 or 2). 
-
-        - For configurations that do not require `value` (for example,
-        `ONCE_AFTER_TRANSACTION_DUE_DATE`), you can omit the `value` parameter. 
-
-        - For configurations that require `value` (for example,
-        `GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY`), you must provide a valid positive
-        integer. 
-
-        - If you need to make a new configuration mandatory with a value,
-        contact your Pismo representative for help with that—you can't configure
-        it using the API. 
-
-
-        **Note:** Unlike other rates that you define using transaction
-        categories or accrual type rates, when you enable the
-        `ONCE_AFTER_TRANSACTION_DUE_DATE` configuration on an accrual type, the
-        rate you define for that type is *not* divided by the interest rate
-        period before it's applied. 
-      operationId: post-additional-accrual-type-configuration
-      tags:
-        - Additional accrual type configurations
-      parameters:
-        - $ref: '#/components/parameters/ProgramIdPath'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PostAccrualTypeConfigurationV2Request'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PostAccrualTypeConfigurationV2Response'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StandardErrorResponse'
-              examples:
-                Validation error:
-                  description: Request body validation failed
-                  value:
-                    code: EX0002
-                    message: >-
-                      Validation Error. Details: transaction_category_id must
-                      not be null
-                Invalid value for configuration:
-                  description: The value provided is not valid for the configuration
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: invalid value for configuration:
-                      ONCE_AFTER_TRANSACTION_DUE_DATE
-                Value required:
-                  description: The configuration requires a value but none was provided
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: value is required and must be a positive
-                      integer for configuration: GRACE_PERIOD_IN_DAYS
-                Program is not credit type:
-                  description: The program is not a credit type program
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: The provided program is not a credit
-                      type
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StandardErrorResponse'
-              examples:
-                Program not found:
-                  description: The program in the path was not found
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: The program ID XXXXXXXX in the path was
-                      not found
-                Accrual type configuration not found:
-                  description: The configuration name provided does not exist
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: The Accrual type configuration provided
-                      (XXXXXXXX) does not exist
-                Transaction category not found:
-                  description: The transaction category was not found for this program
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: The transaction category XXXXXXXX does
-                      not exist or does not belong to the provided program.
-                Accrual type not found:
-                  description: The accrual type does not exist
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: The accrual type XXXXXXXX does not exist
-                      or does not belong to the provided program.
-                Period to calculate not found:
-                  description: The period to calculate does not exist
-                  value:
-                    code: EX0004
-                    message: >-
-                      Validation Error: The periodToCalculate (XXXXXXXX) not
-                      found
-        '500':
-          $ref: '#/components/responses/500InternalServer'
   /v1/programs/{programId}/transaction-category-id/{transactionCategoryId}/accrual-type/{accrualType}/period-to-calculate/{periodToCalculate}/configurations:
     post:
       summary: Enable additional configurations on accrual types
@@ -1389,14 +1056,9 @@ paths:
         `configurations` body parameter. The following configurations are
         available.
 
-        - `ONCE_AFTER_TRANSACTION_DUE_DATE`
-
-        - `GRACE_DAYS_UNTIL_DUE_DATE_STRATEGY`<br>
-
-
-        For information about these strategies, refer to the [Create additional
-        accrual type
-        configuration](ref:post-additional-accrual-type-configuration) API.
+        - `ONCE_AFTER_TRANSACTION_DUE_DATE`: If this additional configuration is
+        disabled, accruals on transactions with this transaction category occur
+        on a daily basis.
       operationId: deleteAccrualTypesConfigurations
       tags:
         - Additional accrual type configurations
@@ -1410,7 +1072,7 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/DeleteAccrualTypeConfigurationsRequest'
+                - $ref: '#/components/schemas/PostAccrualTypeConfigurationsRequest'
       responses:
         '204':
           description: No Content
@@ -1478,43 +1140,6 @@ paths:
                       found
         '409':
           $ref: '#/components/responses/409Conflict'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-  /v1/programs/{programId}/configurations:
-    get:
-      summary: List additional accrual type configurations
-      description: >
-        Retrieves a list of additional accrual type configurations for a
-        program, filtered by transaction category, accrual type, and period to
-        calculate.
-
-
-        Optionally, you can filter by a specific configuration name to retrieve
-        only that configuration.
-
-
-        The response includes both active and deleted configurations. Deleted
-        configurations have a non-null `deleted_at` field.
-      operationId: findConfigurationByFilter
-      tags:
-        - Additional accrual type configurations
-      parameters:
-        - $ref: '#/components/parameters/ProgramIdPath'
-        - $ref: '#/components/parameters/TransactionCategoryIdQueryRequired'
-        - $ref: '#/components/parameters/AccrualTypeQuery'
-        - $ref: '#/components/parameters/PeriodToCalculateQueryRequired'
-        - $ref: '#/components/parameters/AccrualTypeConfigurationQuery'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccrualTypeConfigurationGetResponse'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/accounts/{accountId}/accrual-type-rates:
