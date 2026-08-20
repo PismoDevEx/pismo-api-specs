@@ -10,7 +10,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/fps
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: Faster payments
     description: Faster Payment Service (FPS) endpoints
@@ -347,6 +347,40 @@ components:
           $ref: '#/components/schemas/cop.ReasonCode'
         reason:
           $ref: '#/components/schemas/cop.Reason'
+        sort_code_validation:
+          type: object
+          description: Sort code and account number validation result.
+          properties:
+            status:
+              type: string
+              description: Validation status.
+              enum:
+                - VALID
+                - INVALID
+              example: VALID
+            bank_code:
+              type: string
+              description: Bank code identifier.
+              example: '1234'
+            bank_name:
+              type: string
+              description: Bank name.
+              example: NATIONAL WESTMINSTER BANK PLC
+            bank_office_title:
+              type: string
+              description: Bank branch office title.
+              example: LONDON OFFICE
+            fps_supported:
+              type: boolean
+              description: Does the bank support Faster Payments?
+              example: true
+            messages:
+              type: array
+              description: Validation error messages when status is `INVALID`.
+              items:
+                type: string
+              example:
+                - Some message
     cop.ID:
       type: string
       description: UUID identifier for this COP verification request.
@@ -457,19 +491,20 @@ components:
           type: string
           description: |
             Origin of the return request.
-              * `CLIENT`—Return was manually triggered by the client via this endpoint.
+              * `CLIENT` — The client manually triggered the return via this endpoint.
           example: CLIENT
     fps_return.ReturnReason:
       type: string
-      description: |
-        Form3 return reason code. Must be one of the following 14 codes:
+      description: >
+        <a href="https://www.form3.tech/" target="_blank">Form3</a> return
+        reason code. Must be one of the following 14 codes:
           * `00000001`—Beneficiary sort code/account number unknown
           * `00000002`—Beneficiary account closed
           * `00000003`—Beneficiary account stopped
           * `00000004`—Beneficiary deceased
           * `00000005`—Account cannot be identified without data in reference field
           * `00000006`—Beneficiary account name does not match beneficiary account number
-          * `00000007`—Return requested by sender of original payment
+          * `00000007`—Sender of original payment requested this return
           * `00000008`—Account is not in currency quoted
           * `00000009`—Beneficiary not expecting funds/instructed return
           * `00000010`—Terms and conditions of account do not permit crediting of these funds
@@ -883,6 +918,13 @@ paths:
                     answer: match
                     name_in_request:
                       - Penny Loafer
+                    sort_code_validation:
+                      status: VALID
+                      bank_code: '1234'
+                      bank_name: NATIONAL WESTMINSTER BANK PLC
+                      bank_office_title: LONDON OFFICE
+                      fps_supported: true
+                      messages: []
                 close_match:
                   summary: Name is a close match
                   value:
@@ -893,6 +935,13 @@ paths:
                       - Al Mnd
                     reason_code: MBAM
                     reason: String is a close match to the account
+                    sort_code_validation:
+                      status: VALID
+                      bank_code: '1234'
+                      bank_name: NATIONAL WESTMINSTER BANK PLC
+                      bank_office_title: LONDON OFFICE
+                      fps_supported: true
+                      messages: []
                 no_match:
                   summary: Name does not match
                   value:
@@ -903,6 +952,14 @@ paths:
                       - Al Mond
                     reason_code: ANNM
                     reason: Account name does not match
+                    sort_code_validation:
+                      status: INVALID
+                      bank_code: ''
+                      bank_name: ''
+                      bank_office_title: ''
+                      fps_supported: false
+                      messages:
+                        - MOD check failed
         '400':
           description: Bad Request
           content:
