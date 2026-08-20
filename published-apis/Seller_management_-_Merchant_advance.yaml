@@ -115,6 +115,112 @@ components:
           minLength: 10
 
           maxLength: 10
+    pageQuery:
+      description: 1-based page number. Defaults to 1 when omitted or set to 0.
+      in: query
+      name: page
+      required: false
+      example: 1
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        default: 1
+    perPageQuery:
+      description: Number of items per page. Defaults to 10 when omitted or set to 0.
+      in: query
+      name: perPage
+      required: false
+      example: 10
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 10
+    orderQuery:
+      description: >-
+        Sort order direction. Defaults to `desc` when omitted or set to empty
+        string.
+      in: query
+      name: order
+      required: false
+      example: desc
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+    orderByQuery:
+      description: >-
+        Column name to sort by. Unknown values fall back to the endpoint's
+        default at the repository layer (no error).
+      in: query
+      name: orderBy
+      required: false
+      example: request_date
+      schema:
+        type: string
+    advancementStatusQuery:
+      description: >-
+        Filter advancement requests by exact status. Strict — any other value
+        returns 400.
+      in: query
+      name: status
+      required: false
+      example: PROCESSED
+      schema:
+        type: string
+        enum:
+          - PENDING
+          - PROCESSED
+          - ERROR
+    beginDateFromQuery:
+      description: >
+        Filters advancements with `begin_date` on or after this date. Format =
+        `YYYY-MM-DD`.
+      in: query
+      name: beginDateFrom
+      required: false
+      example: '2026-04-20'
+      schema:
+        type: string
+        format: date
+    beginDateToQuery:
+      description: >
+        Filters advancements with `begin_date` on or before this date. Format =
+        `YYYY-MM-DD`. Must be greater than or equal to `beginDateFrom` when both
+        are provided.
+      in: query
+      name: beginDateTo
+      required: false
+      example: '2026-04-20'
+      schema:
+        type: string
+        format: date
+    requestDateFromQuery:
+      description: >
+        Filters advancements with `request_date` on or after this date. Format =
+        `YYYY-MM-DD`.
+      in: query
+      name: requestDateFrom
+      required: false
+      example: '2026-04-15'
+      schema:
+        type: string
+        format: date
+    requestDateToQuery:
+      description: >
+        Filters advancements with `request_date` on or before this date. Format
+        = `YYYY-MM-DD`. Must be greater than or equal to `requestDateFrom` when
+        both are provided.
+      in: query
+      name: requestDateTo
+      required: false
+      example: '2026-04-15'
+      schema:
+        type: string
+        format: date
   schemas:
     CurrencyCode:
       description: >
@@ -358,9 +464,10 @@ components:
           type: string
           format: date
           description: >-
-            Advancement payment date (YYYY-MM-DD). Must be greater than or equal
-            to today, where "today" is evaluated in the merchant program's
-            resolved timezone (org timezone is used as fallback).
+            Date for payment of the advancement (YYYY-MM-DD). Must be greater
+            than or equal to today, where "today" is evaluated in the merchant
+            program's resolved timezone. The organization's timezone is used as
+            fallback.
           minLength: 10
           maxLength: 10
         real_time_settlement:
@@ -642,6 +749,130 @@ components:
                 items:
                   type: integer
                   description: Transaction ID
+    AdvancementListItem:
+      type: object
+      description: Single item in the paginated advancement requests history.
+      required:
+        - advancement_request_id
+        - begin_date
+        - end_date
+        - request_date
+        - status
+        - real_time_settlement
+        - interest_method
+        - advancement_gross_amount
+        - advancement_net_amount
+        - advancement_discount_amount
+        - error_message
+      properties:
+        advancement_request_id:
+          type: integer
+          format: int64
+          description: Advancement request identifier.
+          example: 5531
+        begin_date:
+          type: string
+          format: date
+          description: >-
+            Start of the advancement period in ISO 8601 (UTC). Format =
+            `YYYY-MM-DD`.
+          example: '2026-04-20'
+        end_date:
+          anyOf:
+            - type: string
+              format: date
+            - type: 'null'
+          description: >-
+            End of the advancement period in ISO 8601 (UTC). Format =
+            `YYYY-MM-DD`. When not provided, set to `null`.
+          example: '2026-07-20'
+        request_date:
+          type: string
+          format: date
+          description: >-
+            Advancement request submission date in ISO 8601 (UTC). Format =
+            `YYYY-MM-DD`.
+          example: '2026-04-15'
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PROCESSED
+            - ERROR
+          description: Current advancement status.
+          example: PROCESSED
+        real_time_settlement:
+          type: boolean
+          description: Is the advancement settled in real time?
+          example: false
+        interest_method:
+          type: string
+          enum:
+            - SIMPLE
+            - COMPOUND
+            - SIMPLIFIED
+          description: Interest calculation method applied to the advancement.
+          example: COMPOUND
+        advancement_gross_amount:
+          anyOf:
+            - type: number
+            - type: 'null'
+          description: >-
+            Gross amount of the advancement; `null` while the advancement is not
+            yet processed.
+          example: 9876.5
+        advancement_net_amount:
+          anyOf:
+            - type: number
+            - type: 'null'
+          description: >-
+            Net amount of the advancement; `null` while the advancement is not
+            yet processed.
+          example: 9756.05
+        advancement_discount_amount:
+          anyOf:
+            - type: number
+            - type: 'null'
+          description: >-
+            Total discount applied to the advancement; `null` while the
+            advancement is not yet processed.
+          example: 120.45
+        error_message:
+          anyOf:
+            - type: string
+            - type: 'null'
+          description: Error message; `null` when status is `PENDING` or `PROCESSED`.
+          example: null
+        currency_code:
+          $ref: '#/components/schemas/OptionalCurrencyCode'
+    AdvancementListResponse:
+      type: object
+      description: Paginated list of advancement requests for a merchant.
+      required:
+        - page
+        - per_page
+        - has_next
+        - items
+      properties:
+        page:
+          type: integer
+          format: int32
+          description: 1-based page number of the current response.
+          example: 1
+        per_page:
+          type: integer
+          format: int32
+          description: Items per page applied to the current response.
+          example: 10
+        has_next:
+          type: boolean
+          description: True when at least one more page exists after this one.
+          example: false
+        items:
+          type: array
+          description: Advancement request items in the current page. May be empty.
+          items:
+            $ref: '#/components/schemas/AdvancementListItem'
   examples:
     DefaultErrorResponse:
       summary: Default Error Response
@@ -755,7 +986,103 @@ components:
             transaction_ids:
               - 12312323
               - 12312312312
+    AdvancementListResponseSuccess:
+      summary: List Advancement Requests Success
+      value:
+        page: 1
+        per_page: 10
+        has_next: false
+        items:
+          - advancement_request_id: 5531
+            begin_date: '2026-04-20'
+            end_date: '2026-07-20'
+            request_date: '2026-04-15'
+            status: PROCESSED
+            real_time_settlement: false
+            interest_method: COMPOUND
+            advancement_gross_amount: 9876.5
+            advancement_net_amount: 9756.05
+            advancement_discount_amount: 120.45
+            error_message: null
+            currency_code: BRL
+          - advancement_request_id: 5520
+            begin_date: '2026-04-10'
+            end_date: null
+            request_date: '2026-04-09'
+            status: PENDING
+            real_time_settlement: false
+            interest_method: SIMPLIFIED
+            advancement_gross_amount: null
+            advancement_net_amount: null
+            advancement_discount_amount: null
+            error_message: null
+            currency_code: null
 paths:
+  /v2/merchants/{merchantId}/advancements:
+    get:
+      summary: List merchant advancement requests
+      operationId: list-merchants-advancements
+      tags:
+        - Merchant advancement
+      description: >
+        List advancement requests for a merchant, with optional filters by
+        status and date ranges, plus pagination and sorting.
+
+
+        **Date filters.** `beginDateFrom`, `beginDateTo`, `requestDateFrom`,
+        `requestDateTo` accept `YYYY-MM-DD`. The `*From` filters match
+        advancements on or after the given date; the `*To` filters match
+        advancements on or before it.
+
+
+        **Pagination and sorting.** `page` defaults to 1 and `perPage` defaults
+        to 10; `0` is treated as the default for both. `perPage` accepts up to
+        100. `order` accepts `asc` or `desc`. `orderBy` accepts `request_date`,
+        `begin_date`, `end_date`, `status`, or `advancement_request_id`; any
+        other value is treated as `request_date`. The default sort is
+        `request_date DESC`.
+      parameters:
+        - $ref: '#/components/parameters/merchantIdPath'
+        - $ref: '#/components/parameters/advancementStatusQuery'
+        - $ref: '#/components/parameters/beginDateFromQuery'
+        - $ref: '#/components/parameters/beginDateToQuery'
+        - $ref: '#/components/parameters/requestDateFromQuery'
+        - $ref: '#/components/parameters/requestDateToQuery'
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/perPageQuery'
+        - $ref: '#/components/parameters/orderQuery'
+        - $ref: '#/components/parameters/orderByQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvancementListResponse'
+              examples:
+                advancement-list-response-success:
+                  $ref: '#/components/examples/AdvancementListResponseSuccess'
+        '400':
+          description: >-
+            BAD REQUEST — invalid `status`; invalid date filter (must be
+            `YYYY-MM-DD`); inverted date range; `perPage > 100`; negative
+            `page`/`perPage`; `order` outside `asc/desc`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+              examples:
+                advancement-list-bad-request:
+                  $ref: '#/components/examples/DefaultErrorResponse'
+        '404':
+          description: Merchant does not belong to the tenant.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+              examples:
+                advancement-list-not-found:
+                  $ref: '#/components/examples/DefaultErrorResponse'
   /v1/marketplaces/{marketplaceId}/merchants/{merchantId}/advancements:
     post:
       summary: Simulate merchant advancement
