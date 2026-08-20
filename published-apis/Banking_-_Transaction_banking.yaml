@@ -515,10 +515,11 @@ components:
     RestrictedFundsIDPath:
       name: restrictedFundsId
       in: path
-      description: Restricted Funds ID
+      description: Restricted funds ID
       schema:
         type: string
-        format: uuid
+        pattern: ^[A-Za-z0-9._-]+$
+        maxLength: 60
       example: e4adf199-c925-4d11-b002-c5bfd5679030
       required: true
     ScheduledPaymentIdPath:
@@ -3536,6 +3537,10 @@ components:
                 $ref: '#/components/schemas/RestrictedFundsCreatedAt'
               soft_descriptor:
                 $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
+              type:
+                $ref: '#/components/schemas/RestrictedFundsType'
+              increase_datetime_limit:
+                $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
             required:
               - restricted_funds_id
               - hold_method
@@ -3720,26 +3725,28 @@ components:
     Metadata:
       type: object
       description: >
-        Key-value pairs containing data intended for storage in the Pismo
-        system.<br>
+        Key-value pairs that contain data intended for storage on the Pismo
+        platform.<br>
 
-        <b>NOTES</b>:
 
-        - The `metadata` field includes a `corporate_metadata` object with the
-        following fields:
-            - `credit_external_account_id`: Included in the `corporate_metadata` field when it's provided in the credit leg.
-            - `debit_external_account_id`: Included in the `corporate_metadata` field when it's provided in the debit leg.
-            - `earmark_id`: Included in the `corporate_metadata` field when it's provided in the debit leg.
-        - The `corporate_metadata` attribute must be an object. A type mismatch
-        results in an error as mapped in the responses section.<br>
+        **Note**: The `metadata` field includes a `corporate_metadata` object
+        with the following attributes:
 
+          * `credit_external_account_id`: present when supplied in the credit leg.
+
+          * `debit_external_account_id`: present when supplied in the debit leg.
+
+          * `earmark_id`: present when supplied in the debit leg.
+
+          The `corporate_metadata` attribute must be an object. A type mismatch results in an error as described in the responses section.<br>
 
         **Note**: This field must not be used to send Personally Identifiable
         Information (PII), Payment Card Industry (PCI) data, or any
         sensitive/regulated information. Metadata fields are intended for
         operational, non-sensitive data only. For sensitive data, use the
         specific parameters designed for that purpose. For more information,
-        refer to [Get started with Pismo APIs](ref:get-started-with-pismo-apis).
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
       example:
         my-id: 2932
     MetadataPayment:
@@ -4987,20 +4994,21 @@ components:
       type: number
       format: float
       description: >
-        Amount actually executed by the operation at the time it was applied.
+        Amount actually executed by the operation at the time it was applied
 
 
-        Depending on the `hold_method`, this value may be different from the
-        requested_amount.
+        Depending on the `hold_method`, this value might be different from
+        `requested_amount`.
 
 
-        Hold Method:
-          - STRICT holds either apply the full requested amount or fail
-          - FLEXIBLE may apply only the available portion
+        Hold method:
+          * `STRICT` holds require the full requested amount. If that amount cannot be held, the operation fails.
+          * `FLEXIBLE` might apply only the available portion
 
         Type:
-          - For RESTRICT_FUNDS, it is the portion of the requested amount that was successfully held.
-          - For RELEASE_FUNDS, it is the portion that was actually released back to the available balance.
+          - For `RESTRICT_FUNDS`, it is the portion of the requested amount that was successfully held.
+          - For `RELEASE_FUNDS`, it is the portion that was actually released back to the available balance.
+          - For `EXECUTE_FUNDS`, it is the portion of the held funds that was actually debited from the restricted amount.
       minimum: 0
       multipleOf: 0.0001
       maximum: 100000000000000000
@@ -5009,20 +5017,21 @@ components:
       type: number
       format: float
       description: >
-        Amount requested by the operation.
+        Amount requested by the operation
 
 
-        The final applied amount may differ (see applied_amount) depending on
-        execution rules and available balance at execution time.
+        The final applied amount might vary (refer to `applied_amount`) based on
+        execution rules and the available balance at the time of execution.<br>
 
 
-        Notes:
-          - For `RESTRICT_FUNDS`, this is the amount to be held.
-          - For `RELEASE_FUNDS`, this is the amount to be released.
-          - Precision depends on the currency's minor units. For example:
-            - 2 decimals (USD, EUR) → multiples of 0.01
-            - 3 decimals (BHD, JOD, KWD, OMR, TND) → multiples of 0.001
-            - 4 decimals (CLF) → multiples of 0.0001
+        **Note**:
+          * For `RESTRICT_FUNDS`, this is the amount to be held.
+          * For `RELEASE_FUNDS`, this is the amount to be released.
+          * For `EXECUTE_FUNDS`, this is the amount to be debited from the held funds.
+          * Precision follows the currency's minor units. For example:
+            * Two decimals (USD, EUR): values use increments of 0.01
+            * Three decimals (BHD, JOD, KWD, OMR, TND): values use increments of 0.001
+            * Four‑decimal (CLF): values use increments of 0.0001
       minimum: 0.0001
       maximum: 100000000000000000
     RestrictedFundsRequestedAmount:
@@ -5036,27 +5045,61 @@ components:
     RestrictedFundsHoldMethod:
       type: string
       description: >-
-        Determines how the system processes the restriction request in relation
-        to the available balance at the time of execution.
+        Determines how the Pismo platform processes the restriction request in
+        relation to the available balance at the time of execution.
 
 
         Notes:
-          - `STRICT`: Applies to the full requested amount or fails (no partial holds).
-          - `FLEXIBLE`: Can apply only to the available portion, resulting in a partial hold.
+          - `STRICT` applies the full requested amount or fails (no partial holds).
+          - `FLEXIBLE` can apply only the available portion, resulting in a partial hold.
+          - `RECURRENT` behaves like `FLEXIBLE` at creation time. After creation, the restriction automatically applies to each incoming credit, re-restricting funds whenever a credit is posted, until the restriction reaches its target amount or `increase_datetime_limit` is reached.
       enum:
         - STRICT
         - FLEXIBLE
+        - RECURRENT
+      default: STRICT
       example: STRICT
     RestrictedFundsHeldAmount:
+      description: Amount held by restriction
       type: number
       format: float
       minimum: 0
       maximum: 100000000000000000
     RestrictedFundsID:
       type: string
-      format: uuid
-      maxLength: 36
+      description: >-
+        Restricted funds ID. Only accepts letters, digits, periods, underscores
+        and hyphens.
+
+        `maxLength: 60`
+      pattern: ^[A-Za-z0-9._-]+$
+      maxLength: 60
       example: e4adf199-c925-4d11-b002-c5bfd5679030
+    RestrictedFundsType:
+      type: string
+      description: |-
+        The type/nature of the restriction.
+
+        Notes:
+          - `REGULATORY`: Restriction created for regulatory or operational reasons
+          - `JUDICIAL`: Restriction created to comply with a judicial order
+      enum:
+        - REGULATORY
+        - JUDICIAL
+      default: REGULATORY
+      example: REGULATORY
+    RestrictedFundsIncreaseDatetimeLimit:
+      type: string
+      format: date-time
+      description: >-
+        The date and time limit, in RFC 3339 format, up to which a `RECURRENT`
+        restriction continues applying to incoming credits on the account.
+
+
+        Notes:
+          - Only accepted on creation when `hold_method` is `RECURRENT`
+          - Must not be in the past
+      example: '2026-12-31T23:59:59Z'
     RestrictedFundsRequest:
       description: Create funds restriction request body
       type: object
@@ -5071,6 +5114,10 @@ components:
           $ref: '#/components/schemas/RestrictedFundsID'
         soft_descriptor:
           $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
+        type:
+          $ref: '#/components/schemas/RestrictedFundsType'
+        increase_datetime_limit:
+          $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
       required:
         - hold_method
         - amount
@@ -5083,6 +5130,53 @@ components:
           $ref: '#/components/schemas/RestrictedFundsAmount'
         operation:
           $ref: '#/components/schemas/RestrictedFundsRequestOperation'
+        soft_descriptor:
+          $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
+      required:
+        - amount
+        - operation
+    RestrictedFundsV2OperationType:
+      type: string
+      description: |
+        Type of operation applied to an existing restriction
+
+        **Note**:
+          * `RESTRICT_FUNDS`: increases the held amount of the existing restriction.
+          * `RELEASE_FUNDS`: releases all or part of the held funds back to the available balance.
+          * `EXECUTE_FUNDS`: debits all or part of the held funds against the restriction.
+      enum:
+        - RESTRICT_FUNDS
+        - RELEASE_FUNDS
+        - EXECUTE_FUNDS
+      example: EXECUTE_FUNDS
+    RestrictedFundsV2RequestOperation:
+      description: >-
+        Represents the type and data of the operation to apply to the
+        restriction
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/RestrictedFundsV2OperationType'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        soft_descriptor:
+          $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+        - type
+        - tracking_id
+    RestrictedFundsPatchV2Request:
+      description: >-
+        Restricted funds v2 request body. A single typed operation that
+        increases, releases, or executes the held funds of an existing
+        restriction.
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/RestrictedFundsAmount'
+        operation:
+          $ref: '#/components/schemas/RestrictedFundsV2RequestOperation'
         soft_descriptor:
           $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
       required:
@@ -5105,6 +5199,10 @@ components:
           $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
         operations:
           $ref: '#/components/schemas/RestrictedFundsOperations'
+        type:
+          $ref: '#/components/schemas/RestrictedFundsType'
+        increase_datetime_limit:
+          $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
       required:
         - restricted_funds_id
         - hold_method
@@ -5117,8 +5215,8 @@ components:
       minLength: 1
       maxLength: 30
       description: >
-        Date and time when the restriction or operation was created, shown in
-        [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.<br>
+        Date and time when the restriction was created, displayed in ISO 8601
+        format.<br>
 
         `minLength: 1`
 
@@ -5130,8 +5228,8 @@ components:
       minLength: 1
       maxLength: 30
       description: >
-        Date and time when the financial operation was actually executed, shown
-        in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.<br>
+        Date and time when the financial operation was actually executed,
+        displayed in ISO 8601 format.<br>
 
         `minLength: 1`
 
@@ -5142,11 +5240,12 @@ components:
       description: >
         Represents the kind of financial operation being performed.
 
-        Indicates whether the operation is creating a funds restriction or
-        releasing funds.
+        Indicates whether the operation increased a funds restriction, released
+        funds, or executed (debited) held funds.
       enum:
         - RESTRICT_FUNDS
         - RELEASE_FUNDS
+        - EXECUTE_FUNDS
       example: RELEASE_FUNDS
     RestrictedFundsOperation:
       type: object
@@ -5181,7 +5280,7 @@ components:
         - created_at
     RestrictedFundsOperations:
       type: array
-      description: List of operations performed to restrict or release funds.
+      description: List of operations performed to restrict or release funds
       items:
         $ref: '#/components/schemas/RestrictedFundsOperation'
     RestrictedFundsProcessingCode:
@@ -5210,16 +5309,14 @@ components:
         - tracking_id
     RestrictedFundsSoftDescriptor:
       type: string
-      description: >-
-        Brief description that helps to identify a particular restriction or
-        operation.
+      description: Brief description that helps identify a restriction
       example: FDIC 12 C.F.R. § 360.9
       maxLength: 100
       minLength: 0
     RestrictedFundsOperationStatus:
       type: string
       description: |
-        Indicates the current execution state of the operation.
+        Indicates the operation’s current execution state
       enum:
         - PROCESSING
         - SUCCEEDED
@@ -5414,14 +5511,14 @@ components:
       type: string
       description: >
         A unique payment tracking number provided by the client. If an existing
-        `tracking_id` already exists in the system, the API returns a `409`
+        `tracking_id` is found on the Pismo platform, the API returns a `409`
         error.
 
 
         This field is:
-          - Unique within the Organization.
-          - Immutable — It can't be updated.
-          - Not recyclable — You can't reuse a `tracking_id`.
+          * Unique within the organization
+          * Immutable: It can't be updated
+          * Not recyclable: You can't reuse a `tracking_id`
       minLength: 1
       maxLength: 43
       example: 0a50c88a-ade8-4bcc-a639-9a0b0f11e244
@@ -13043,6 +13140,14 @@ paths:
                   value:
                     code: WBUP0008
                     message: Invalid operation_type in Bulk Header
+                invalid bulkId format:
+                  value:
+                    code: WBUP0009
+                    message: Invalid bulkId format
+                bulk header line too long:
+                  value:
+                    code: WBUP0010
+                    message: Bulk header line exceeds maximum allowed length
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -16314,6 +16419,11 @@ paths:
                   value:
                     code: WCPT0004
                     message: Corporate account not found
+                Account Onboarding Not Finished:
+                  summary: Account has not finished onboarding
+                  value:
+                    code: WCPT0018
+                    message: Account has not finished onboarding
                 Account Closed:
                   summary: Account is closed
                   value:
@@ -16538,6 +16648,11 @@ paths:
                   value:
                     code: WCPT0004
                     message: Corporate account not found
+                Account Onboarding Not Finished:
+                  summary: Account has not finished onboarding
+                  value:
+                    code: WCPT0018
+                    message: Account has not finished onboarding
                 operations blocked:
                   summary: Operations blocked
                   value:
@@ -16641,6 +16756,11 @@ paths:
                   value:
                     code: WCPT0004
                     message: Corporate account not found
+                Account Onboarding Not Finished:
+                  summary: Account has not finished onboarding
+                  value:
+                    code: WCPT0018
+                    message: Account has not finished onboarding
                 Operations Blocked:
                   summary: Operations blocked
                   value:
@@ -16892,6 +17012,22 @@ paths:
                   value:
                     code: WRFO0014
                     message: Invalid restricted funds processing code
+                Increase datetime limit not allowed:
+                  description: >-
+                    This error occurs when `increase_datetime_limit` is provided
+                    but `hold_method` is not `RECURRENT`.
+                  value:
+                    code: WRFO0015
+                    message: >-
+                      increase_datetime_limit is only allowed when hold_method
+                      is RECURRENT
+                Increase datetime limit in the past:
+                  description: >-
+                    This error occurs when `increase_datetime_limit` is in the
+                    past
+                  value:
+                    code: WRFO0016
+                    message: increase_datetime_limit cannot be in the past
         '401':
           description: Unauthorized
           content:
@@ -17149,6 +17285,213 @@ paths:
                   value:
                     code: WRFO0005
                     message: tracking_id is already in use
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Account locked:
+                  value:
+                    code: WRFO0003
+                    message: Account is locked
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+      security:
+        - BearerAuth: []
+  /corporate/v2/restricted-funds/{restrictedFundsId}:
+    patch:
+      summary: Update restriction
+      description: >
+        This endpoint combines the increase, release, and execution flows into a
+        single typed operation.<br>
+
+
+        It applies one operation to an existing fund restriction identified by
+        `restricted_funds_id`. The operation type in `operation.type` determines
+        how the held funds change:
+
+          * `RESTRICT_FUNDS`: increases the held amount of the restriction. A restriction with a zero held amount cannot be increased.
+
+          * `RELEASE_FUNDS`: releases all or part of the held funds back to the available_balance.
+
+          * `EXECUTE_FUNDS`: debits all or part of the held funds from the restriction.
+
+        **NOTE**: This endpoint requires an account token, which is an access
+        token encoded with an external account ID. Tokens expire quickly and can
+        result in a `401 Unauthorized` message.
+
+
+        This endpoint generates the following events:
+
+        * [Platform authorization
+        created](https://developers.pismo.io/events/docs/platform-authorization-platform-authorization-1)
+
+        * [Account ledger balance
+        changed](https://developers.pismo.io/events/docs/availables-change-available-1)
+
+        * [Restricted funds created, released, or
+        executed](https://developers.pismo.io/events/docs/corporate-restricted-funds-1)
+
+        * [Account balance
+        changed](https://developers.pismo.io/events/docs/account-balances-balance-change-1)
+
+
+        See [Data and reporting](doc:data-reporting-overview) for more
+        information on events and setting up event notifications.
+      operationId: patch-corporate-v2-restricted-funds
+      tags:
+        - Restricted funds
+      parameters:
+        - $ref: '#/components/parameters/RestrictedFundsIDPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestrictedFundsPatchV2Request'
+            examples:
+              Increase restriction:
+                value:
+                  amount: 50
+                  operation:
+                    type: RESTRICT_FUNDS
+                    tracking_id: 1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d
+                    soft_descriptor: Additional hold requested by FDIC 12 C.F.R. 360.9
+                    metadata:
+                      key: value
+              Release restriction:
+                value:
+                  amount: 100.21
+                  operation:
+                    type: RELEASE_FUNDS
+                    tracking_id: 9d15bfd1-5db9-4e96-b846-8d8707454430
+                    soft_descriptor: Funds release requested by FDIC 12 C.F.R. 360.9
+                    metadata:
+                      key: value
+              Execute restriction:
+                value:
+                  amount: 100.21
+                  operation:
+                    type: EXECUTE_FUNDS
+                    tracking_id: 4c9b7b9f-7959-40dc-9cf4-0019c1f12c7f
+                    soft_descriptor: Judicial execution of restricted funds
+                    metadata:
+                      key: value
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedFunds'
+              example:
+                restricted_funds_id: 4a4060d5-3649-46e8-8d64-93949b212918
+                hold_method: FLEXIBLE
+                requested_amount: 100.21
+                held_amount: 0
+                created_at: '2025-05-29T11:33:22Z'
+                operations:
+                  - tracking_id: 9d15bfd1-5db9-4e96-b846-8d8707454430
+                    type: RESTRICT_FUNDS
+                    status: SUCCEEDED
+                    processing_code: PSM045
+                    soft_descriptor: Funds restriction requested by FDIC 12 C.F.R. 360.9
+                    requested_amount: 100.21
+                    applied_amount: 99.9
+                    created_at: '2025-05-29T11:33:22Z'
+                    applied_at: '2025-05-29T11:33:52Z'
+                    metadata:
+                      key: value
+                  - tracking_id: 4c9b7b9f-7959-40dc-9cf4-0019c1f12c7f
+                    type: EXECUTE_FUNDS
+                    status: SUCCEEDED
+                    processing_code: PSM164
+                    soft_descriptor: Judicial execution of restricted funds
+                    requested_amount: 99.9
+                    applied_amount: 99.9
+                    created_at: '2025-05-29T12:14:12Z'
+                    applied_at: '2025-05-29T12:14:22Z'
+                    metadata:
+                      key: value
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Invalid JSON:
+                  value:
+                    code: WRFO0001
+                    message: 'Invalid JSON payload received: Error unmarshalling request'
+                Insufficient funds:
+                  value:
+                    code: WRFO0006
+                    message: Insufficient funds
+                Amount exceeds the held amount:
+                  value:
+                    code: WRFO0008
+                    message: Requested amount exceeds the currently held amount
+                Invalid decimal places:
+                  value:
+                    code: WRFO0009
+                    message: >-
+                      The number of decimal places is not compatible with the
+                      specified currency
+                Operation Blocked:
+                  value:
+                    code: WOBK0007
+                    message: Operations blocked for account
+                Invalid account status:
+                  value:
+                    code: WRFO0011
+                    message: Invalid account status
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Account not authorized:
+                  value:
+                    code: WRFO0010
+                    message: Account not authorized
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Not found:
+                  value:
+                    code: WRFO0007
+                    message: Restricted funds not found
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Tracking ID already exist:
+                  value:
+                    code: WRFO0005
+                    message: tracking_id is already in use
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Cannot increase restriction with zero held amount:
+                  value:
+                    code: WRFO0017
+                    message: Cannot increase a restriction with zero held amount
         '429':
           description: Too many requests
           content:
