@@ -250,6 +250,26 @@ components:
         type: boolean
         default: false
       example: true
+    IncludeInsuranceHistoryQuery:
+      name: includeInsuranceHistory
+      in: query
+      required: false
+      description: >
+        Indicate `true` to get a response with the insurance history for loans
+        in any state (`ACTIVE`, `CANCELED`, or `SETTLED`). When you use `true`
+        for the query, each insured installment in `repayment_schedule` includes
+        an `insurance_premium_state` field, and the response includes loan-level
+        `insurance_summary` for loans that have an insurance policy. (The field
+        is omitted entirely for uninsured loans). Also the response includes
+        cancelled insurance and its installments. When absent or `false`, the
+        response does not include these insurance-related fields. An invalid
+        boolean value returns 400 with error code `ELND1807`. On the list
+        endpoint, `summarizeLoans=true` takes precedence and this flag is
+        ignored when `summarizeLoans=true`.
+      schema:
+        type: boolean
+        default: false
+      example: true
     PrepaymentSimulationIdPath:
       name: simulationId
       in: path
@@ -1087,6 +1107,8 @@ components:
               allOf:
                 - $ref: '#/components/schemas/Balance'
                 - type: object
+            insurance_premium_state:
+              $ref: '#/components/schemas/InsurancePremiumState'
         start_date:
           $ref: '#/components/schemas/FirstActiveStartDate'
         status:
@@ -1095,6 +1117,8 @@ components:
           $ref: '#/components/schemas/LoanCreatedAt'
         updated_at:
           $ref: '#/components/schemas/LoanUpdatedAt'
+        insurance_summary:
+          $ref: '#/components/schemas/LoanInsuranceSummary'
     Limit:
       maximum: 50
       type: integer
@@ -2500,6 +2524,91 @@ components:
       additionalProperties:
         type: string
         description: Additional property
+    InsurancePremiumState:
+      type: string
+      description: >
+        Derived state of an installment's insurance premium. Present only when
+        `includeInsuranceHistory=true` and the installment belongs to an insured
+        loan. The platform reads the information from the current installment
+        status (it is not persisted). For uninsured loans and for installments
+        with no linked insurance record you do not see this state.
+
+
+        `PAID` - The insurance premium was collected. The installment status is
+        settled (`PAID` or `PAID_WITHIN_GRACE`).
+
+        `CANCELED` - The insurance was cancelled and the premium was never
+        collected (installment status `CANCELED`). Covers both cancellation
+        before the first premium and mid-plan cancellation of later
+        installments.
+
+        `PENDING` - The premium is still awaiting collection (includes the
+        `*_PENDING_PAYMENT` statuses).
+      example: PAID
+      enum:
+        - PAID
+        - CANCELED
+        - PENDING
+    LoanInsuranceSummary:
+      type: object
+      description: >
+        Loan-level insurance history summary. Returned only when
+        `includeInsuranceHistory=true` and the loan has an insurance policy. It
+        is omitted entirely for loans that were never insured. Per-installment
+        `insurance_premium_state` values remain the source of truth.
+      required:
+        - insurance_ever_active
+        - installment_counts
+      properties:
+        insurance_ever_active:
+          type: boolean
+          description: >-
+            Was insurance ever collected in the history of the loan? Set to
+            `true` when at least one insurance premium has been collected (at
+            least one installment has `insurance_premium_state = PAID`); `false`
+            when the loan has an insurance policy but no premium was ever
+            collected.
+          example: true
+        last_covered_date:
+          description: >
+            End of the insurance coverage period. For an active or settled
+            policy it is the latest installment real/due date (the enrolled
+            coverage term end, independent of how many premiums were collected).
+            For a cancelled policy it is the insurance cancellation date.
+            Omitted when the system cannot determine the last covered date.
+          $ref: '#/components/schemas/DateValue'
+        installment_counts:
+          type: object
+          description: >-
+            Count of insured installments grouped by derived premium state. Paid
+            + cancelled + pending installments equals the total number of
+            insured installments.
+          required:
+            - canceled
+            - paid
+            - pending
+          properties:
+            canceled:
+              type: integer
+              format: int32
+              description: >-
+                Number of installments whose premium was canceled and never
+                collected (`insurance_premium_state = CANCELED`)
+              example: 3
+            paid:
+              type: integer
+              format: int32
+              description: >-
+                Number of installments whose premium was collected
+                (`insurance_premium_state = PAID`)
+              example: 3
+            pending:
+              type: integer
+              format: int32
+              description: >-
+                Number of installments still awaiting premium collection
+                (`insurance_premium_state = PENDING`)
+              example: 0
   securitySchemes:
     BearerAuth:
       type: http
@@ -2530,6 +2639,7 @@ paths:
         - $ref: '#/components/parameters/FromStartDateQuery'
         - $ref: '#/components/parameters/ToStartDateQuery'
         - $ref: '#/components/parameters/SummarizeLoansQuery'
+        - $ref: '#/components/parameters/IncludeInsuranceHistoryQuery'
       responses:
         '200':
           description: Loans retrieved
@@ -2705,6 +2815,11 @@ paths:
                   value:
                     code: ELND1804
                     message: summarizeLoans must be a valid boolean value.
+                ELND1807:
+                  description: includeInsuranceHistory is not a valid boolean value.
+                  value:
+                    code: ELND1807
+                    message: includeInsuranceHistory must be a valid boolean value.
                 ELND1808:
                   description: fromStartDate and toStartDate range exceeds 12 months.
                   value:
@@ -3507,6 +3622,7 @@ paths:
         - $ref: '#/components/parameters/LoanIdPath'
         - $ref: '#/components/parameters/PresentValueQuery'
         - $ref: '#/components/parameters/ReferenceDateQuery'
+        - $ref: '#/components/parameters/IncludeInsuranceHistoryQuery'
       responses:
         '200':
           description: Loan retrieved.
@@ -3514,6 +3630,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LendingLoanRepaymentResponse'
+              example:
+                loan_id: a1b2c3d4-0004-0004-0004-000000000004
+                account_id: 514751584
+                product_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                status: CANCELED
+                repayment_schedule:
+                  - repayment_id: 49e5c088-8dc6-41d3-98a4-6930e066d41e
+                    period: 1
+                    status: PAID
+                    due_date: '2025-01-10'
+                    insurance_premium_state: PAID
+                  - repayment_id: 92887f97-f3d6-488d-8d86-d4e201d25697
+                    period: 2
+                    status: PAID
+                    due_date: '2025-02-10'
+                    insurance_premium_state: PAID
+                  - repayment_id: 7c8d6ceb-a678-4800-97bc-8977776ad942
+                    period: 3
+                    status: CANCELED
+                    due_date: '2025-03-10'
+                    insurance_premium_state: CANCELED
+                  - repayment_id: 3a4ebacd-5481-422e-81aa-a9b0aaded866
+                    period: 4
+                    status: CANCELED
+                    due_date: '2025-04-10'
+                    insurance_premium_state: CANCELED
+                insurance_summary:
+                  insurance_ever_active: true
+                  last_covered_date: '2025-03-20'
+                  installment_counts:
+                    paid: 2
+                    canceled: 2
+                    pending: 0
         '400':
           description: A validation error occurred.
           content:
@@ -3546,6 +3695,11 @@ paths:
                   value:
                     code: ELND0003
                     message: '{body field} not valid'
+                ELND1807:
+                  description: includeInsuranceHistory is not a valid boolean value.
+                  value:
+                    code: ELND1807
+                    message: includeInsuranceHistory must be a valid boolean value
         '404':
           description: Not Found
           content:
