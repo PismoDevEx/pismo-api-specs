@@ -2652,8 +2652,8 @@ paths:
               examples:
                 Paginated response:
                   summary: >-
-                    Paginated list of loans (default, when summarizeLoans is
-                    omitted or false)
+                    Paginated list of loans (default, when `summarizeLoans` is
+                    omitted or `false`)
                   value:
                     next_cursor: >-
                       NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
@@ -2775,7 +2775,7 @@ paths:
                               transactions_ids:
                                 - 6354273849
                 Summary response:
-                  summary: Aggregated loan summary (when summarizeLoans is true)
+                  summary: Aggregated loan summary (when `summarizeLoans=true`)
                   value:
                     loan_summary:
                       loan_count_by_status:
