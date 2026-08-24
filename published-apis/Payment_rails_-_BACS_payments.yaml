@@ -1713,7 +1713,7 @@ paths:
 
           * Pismo places the transaction amount into additional fund (unavailable balance) so the beneficiary cannot use the funds until a final decision is made.
 
-          * The client later calls Pismo's [release](ref:post-release-bacs-1) or cancel endpoints to finalize the transaction.
+          * The client later calls Pismo's [release](ref:post-release-bacs) or cancel endpoints to finalize the transaction.
 
         This endpoint generates a [BACS direct credit inbound payment
         processed](https://developers.pismo.io/events/docs/bacs-direct-credit-in-status-change-1)
