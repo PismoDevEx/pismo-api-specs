@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io
-    description: API server for testing
+    description: API server for testing.
 tags:
   - name: Accounts
     description: Endpoints to manage accounts
@@ -88,7 +88,7 @@ components:
         Account status name filter. Pre-defined account statuses include
         `DEBIT_ONLY`, `NORMAL`, `BLOCKED` and `CANCELLED`. You can create your
         own account statuses with the [Create
-        status](ref:v4-post-account-status) endpoint. 
+        status](ref:v4-post-account-status) endpoint.
       required: false
       schema:
         type: string
@@ -100,7 +100,7 @@ components:
         Account status name filter.  Pre-defined account statuses include
         `DEBIT_ONLY`, `NORMAL`, `BLOCKED` and `CANCELLED`. You can create your
         own account statuses with the [Create
-        status](ref:v4-post-account-status) endpoint. 
+        status](ref:v4-post-account-status) endpoint.
       required: false
       schema:
         type: string
@@ -244,16 +244,16 @@ components:
       name: parameterId
       in: path
       description: >
-        Parameter ID. 
+        Parameter ID.
 
 
         For more information on program/account parameters, refer to the
         [program parameters reference
-        table](doc:program-parameters-reference-table). 
+        table](doc:program-parameters-reference-table).
 
 
         Call the [List program parameters](ref:programparameter) endpoint to get
-        the ID (`parameter_id`) to pass here. 
+        the ID (`parameter_id`) to pass here.
       required: true
       schema:
         type: integer
@@ -523,7 +523,7 @@ components:
       format: int64
       description: >
         Program due date ID. This field is **REQUIRED** only for Full balance
-        credit programs. 
+        credit programs.
 
 
         Program due dates and their IDs are set when you [create a
@@ -632,15 +632,15 @@ components:
       format: date-time
       example: '2017-07-21T17:32:28Z'
     AccountLimit:
-      type: integer
-      format: int64
+      type: number
+      format: float
       description: >
 
         Client-defined account limit. Must be between 0 and the `granted_limit`
         (aka `max_credit_limit`).
 
 
-        Defaults to zero (0) if not passed. 
+        Defaults to zero (0) if not passed.
 
          This field is called  `total_credit_limit` in the [Update account limits](https://developers.pismo.io/pismo-docs/reference/patch-v1-account-limit) endpoint and the [Account limits](https://developers.pismo.io/pismo-docs/docs/working-with-limits-objects) guide.
       example: 750
@@ -663,7 +663,12 @@ components:
         division_id:
           $ref: '#/components/schemas/DivisionID'
         account_name:
-          $ref: '#/components/schemas/AccountName'
+          allOf:
+            - $ref: '#/components/schemas/AccountName'
+            - minLength: 1
+              description: >-
+                If present, must not be blank — sending an empty value returns
+                400 and the field is never cleared.
         parent_account_id:
           $ref: '#/components/schemas/ParentAccountID2'
         external_id:
@@ -704,7 +709,7 @@ components:
       description: >
         Account status. The pre-defined account statuses are `DEBIT_ONLY`,
         `NORMAL`, `BLOCKED`, and `CANCELLED`. You can create your own account
-        statuses with the [Create status](ref:v4-post-account-status) endpoint. 
+        statuses with the [Create status](ref:v4-post-account-status) endpoint.
       maxLength: 200
       example: NORMAL
     AccountStatus3:
@@ -713,7 +718,7 @@ components:
       description: >
         Account status. The pre-defined account statuses are `DEBIT_ONLY`,
         `NORMAL`, `BLOCKED`, and `CANCELLED`. You can create your own account
-        statuses with the [Create status](ref:v4-post-account-status) endpoint. 
+        statuses with the [Create status](ref:v4-post-account-status) endpoint.
       maxLength: 200
       example: NORMAL
     AccountStatus4:
@@ -721,7 +726,7 @@ components:
       description: >
         Account status. The pre-defined account statuses are `DEBIT_ONLY`,
         `NORMAL`, `BLOCKED`, and `CANCELLED`. You can create your own account
-        statuses with the [Create status](ref:v4-post-account-status) endpoint. 
+        statuses with the [Create status](ref:v4-post-account-status) endpoint.
       pattern: ^[A-Z_]+$
       maxLength: 200
       example: BLOCKED
@@ -749,7 +754,7 @@ components:
       description: >
         Account status name. Pre-defined account statuses include `DEBIT_ONLY`,
         `NORMAL`, `BLOCKED` and `CANCELLED`. You can create your own account
-        statuses with the [Create status](ref:v4-post-account-status) endpoint. 
+        statuses with the [Create status](ref:v4-post-account-status) endpoint.
       maxLength: 200
       example: NORMAL
     AccountStatusName2:
@@ -757,7 +762,7 @@ components:
       description: >
         Account status name. Pre-defined account statuses include `DEBIT_ONLY`,
         `NORMAL`, `BLOCKED` and `CANCELLED`. You can create your own account
-        statuses with the [Create status](ref:v4-post-account-status) endpoint. 
+        statuses with the [Create status](ref:v4-post-account-status) endpoint.
       pattern: ^[A-Z_]+$
       maxLength: 200
       example: NORMAL
@@ -887,15 +892,15 @@ components:
 
 
         - `PHYSICAL`&mdash;Default. A parent account is always physical. A child
-        account can be physical or virtual. 
+        account can be physical or virtual.
 
-          A *physical* card is a plastic or metal embossed card. "Physical" here means an account that represents an actual client entity (person or company). A physical account supports full operations&mdash; transfers, payments, cards, interest, statements, and so on. 
+          A *physical* card is a plastic or metal embossed card. "Physical" here means an account that represents an actual client entity (person or company). A physical account supports full operations&mdash; transfers, payments, cards, interest, statements, and so on.
 
-        - `VIRTUAL`&mdash;Always a child account. 
+        - `VIRTUAL`&mdash;Always a child account.
 
-          `parent_account_id` and `external_id` are **REQUIRED** for virtual accounts. 
+          `parent_account_id` and `external_id` are **REQUIRED** for virtual accounts.
 
-          Virtual accounts can have a many to one mapping to a physical account where the balance lives at the parent account. 
+          Virtual accounts can have a many to one mapping to a physical account where the balance lives at the parent account.
 
         While a `document_number` is **REQUIRED** for a virtual account, it is
         ignored since it shares a parent account's entity and `document_number`.
@@ -923,7 +928,7 @@ components:
         Inherited/indirect         |
 
         | Primary use                    | Real account       | Segmentation &
-        routing     | 
+        routing     |
       enum:
         - PHYSICAL
         - VIRTUAL
@@ -1261,7 +1266,7 @@ components:
       type: string
       maxLength: 9
       description: >
-        Address number as string or integer. 
+        Address number as string or integer.
 
 
         If you enter numeric characters, they are saved in the `number` address
@@ -1269,7 +1274,7 @@ components:
 
 
         If you enter any non-numeric characters, all characters are saved in the
-        `extended_number` address object field. 
+        `extended_number` address object field.
 
 
         For example, if you enter "12 A", it gets saved as follows:
@@ -2473,6 +2478,8 @@ components:
               $ref: '#/components/schemas/EntityType'
             company_constitution_date:
               $ref: '#/components/schemas/CompanyConstitutionDate'
+            external_id:
+              $ref: '#/components/schemas/AccountExternalId'
     CompanyType:
       type: string
       description: Company type
@@ -2735,6 +2742,8 @@ components:
       properties:
         account_id:
           $ref: '#/components/schemas/AccountID'
+        external_id:
+          $ref: '#/components/schemas/AccountExternalId'
         customer_id:
           $ref: '#/components/schemas/CustomerID'
         entityd:
@@ -2827,7 +2836,7 @@ components:
     DocumentNumberSetOnce:
       type: string
       description: >
-        Applicant's document number (such as a government tax ID). 
+        Applicant's document number (such as a government tax ID).
 
 
         For a company, this can be something like its tax or business
@@ -2927,7 +2936,7 @@ components:
 
 
         For individuals, this is the legal registered name, such as birth or
-        married name, that appears in a government-issued ID document. 
+        married name, that appears in a government-issued ID document.
 
         For companies, this is the company's legal registered name.
 
@@ -2942,7 +2951,7 @@ components:
 
 
         For individuals, this is the legal registered name, such as birth or
-        married name, that appears in a government-issued ID document. 
+        married name, that appears in a government-issued ID document.
 
 
         For companies, this is the legal registered name of the company.
@@ -3004,7 +3013,7 @@ components:
     ExchangeMode:
       type: string
       description: |
-        When a foreign transaction is charged the exchange rate: 
+        When a foreign transaction is charged the exchange rate:
 
         * `SAME_DAY` - Day the transaction occurred
         * `CLOSING` - Statement's closing date
@@ -3107,13 +3116,13 @@ components:
         application_status_name:
           $ref: '#/components/schemas/ApplicationMigrationStatus'
     GrantedLimit:
-      type: integer
-      format: int64
+      type: number
+      format: float
       description: >
-        Account's credit limit. 
+        Account's credit limit.
 
 
-        **REQUIRED** for credit programs. 
+        **REQUIRED** for credit programs.
 
 
         This field is called  `max_credit_limit` in the [Update account
@@ -3141,7 +3150,7 @@ components:
           $ref: '#/components/schemas/ApplicatantIdentificationType'
     IndividualsName:
       type: string
-      description: Name - person or company name.
+      description: Name - person or company name
       example: Hyman Roth
     IndividualsName2:
       type: string
@@ -3386,8 +3395,8 @@ components:
       description: Another ID number
       example: '29000000'
     OverdraftLimit:
-      type: integer
-      format: int64
+      type: number
+      format: float
       example: 750
       description: Maximum issuer-granted limit for overdraft spending on debit accounts
     Ownership:
@@ -3674,6 +3683,8 @@ components:
               $ref: '#/components/schemas/BirthDate2'
             document_issued_date:
               $ref: '#/components/schemas/DocumentIssuedDate'
+            external_id:
+              $ref: '#/components/schemas/AccountExternalId'
     PhaseID:
       type: string
       description: Customer-defined phase ID for the migration
@@ -3860,14 +3871,14 @@ components:
       type: string
       description: >
 
-        This field is **DEPRECATED**. 
+        This field is **DEPRECATED**.
 
 
-        Name to be printed on the card. 
+        Name to be printed on the card.
 
 
         Punctuation, special characters, and connectors (da/das/de/do/dos/e) are
-        always removed. 
+        always removed.
 
 
         This field's maximum length is 25, but you can set it to a lower value
@@ -3898,7 +3909,7 @@ components:
 
 
         Punctuation, special characters, and connectors (da/das/de/do/dos/e) are
-        always removed. 
+        always removed.
 
 
         This field's maximum length is 25, but you can set it to a lower value
@@ -3919,7 +3930,7 @@ components:
 
 
         Punctuation, special characters, and connectors (da/das/de/do/dos/e) are
-        always removed. 
+        always removed.
 
 
         This field's maximum lengh of this field is 25, but you can set it to a
@@ -3931,7 +3942,7 @@ components:
     ProgramCalendarStrategyID:
       type: number
       description: >
-        Program calendar strategy ID. 
+        Program calendar strategy ID.
 
 
         The program calendar strategy determines how program calendars are
@@ -3940,7 +3951,7 @@ components:
 
         For more information, refer to the [Create program calendar
         strategy](ref:createprogramcalendarstrategy) endpoint. This endpoint
-        returns an ID you can pass here. 
+        returns an ID you can pass here.
       example: 8675309
     ProgramDueDateID:
       type: integer
@@ -3964,7 +3975,7 @@ components:
     ProgramType:
       type: string
       description: >
-        Program type: 
+        Program type:
           * `CREDITO` — Full balance credit accounts
           * `PRE-PAGO` — Full balance prepaid accounts
           * `DEBITO` — Full balance debit accounts
@@ -4077,7 +4088,7 @@ components:
             Status to update. Pre-defined account statuses include `DEBIT_ONLY`,
             `NORMAL`, `BLOCKED`, and `CANCELLED`. You can create your own
             account statuses with the [Create
-            status](ref:v4-post-account-status) endpoint. 
+            status](ref:v4-post-account-status) endpoint.
           example: NORMAL
         reason_id:
           $ref: '#/components/schemas/StatusReasonID'
@@ -4173,7 +4184,7 @@ components:
       description: >
         ID of the reason why the account is in its current status. You can
         create reasons with the [Create status
-        reason](ref:v4-post-account-reason) endpoint. 
+        reason](ref:v4-post-account-reason) endpoint.
     StatusReasonDescription:
       type: string
       description: Description of why the account is in its current status
@@ -4363,6 +4374,8 @@ components:
           $ref: '#/components/schemas/ProgramID'
         division_id:
           $ref: '#/components/schemas/DivisionID'
+        external_account_id:
+          $ref: '#/components/schemas/AccountExternalId'
   securitySchemes:
     BearerAuth:
       type: http
@@ -4380,7 +4393,7 @@ paths:
       operationId: post-acquisitions-v3-s2s-applications
       summary: Create account application
       description: >
-        Create a new account application. 
+        Create a new account application.
 
 
         If `submit` is set to `false`:
@@ -4388,7 +4401,7 @@ paths:
 
         - The application is not sent for processing and can be further
         modified  with incremental changes via [Update account
-        application](ref:patch-acquisitions-v2-s2s-applications). 
+        application](ref:patch-acquisitions-v2-s2s-applications).
 
 
         - This endpoint generates an [Account application prospect
@@ -4411,10 +4424,10 @@ paths:
 
         **Warning**&mdash;Some of the account's elements are created
         asynchronously and you should refrain from accessing the account via
-        other endpoints until the events this endpoint generates are received. 
+        other endpoints until the events this endpoint generates are received.
 
 
-        **Notes:** 
+        **Notes:**
           * Either the `personal` object or `company` object is **REQUIRED**. Pass one or the other but not both.
           * This endpoint creates a default `entity` object for the account owner based on document ID.
 
@@ -4559,7 +4572,7 @@ paths:
       summary: Update account application
       description: >
         Update a previously-created account application, only if the account
-        application's `submit` field is `false`. 
+        application's `submit` field is `false`.
 
 
         If `submit` is set to `false`:
@@ -4583,7 +4596,7 @@ paths:
 
         **Warning**&mdash;Some of the account's elements are created
         asynchronously and you should refrain from accessing the account via
-        other endpoints until the events this endpoint generates are received. 
+        other endpoints until the events this endpoint generates are received.
 
 
         **Notes:**
@@ -4678,7 +4691,7 @@ paths:
 
 
         When a new account status is created, its initial `state` (see response)
-        is `ACTIVE`. 
+        is `ACTIVE`.
 
 
         This endpoint generates an [Account status
@@ -4779,7 +4792,7 @@ paths:
       summary: List statuses
       description: >
         List account statuses registered for the organization. The org ID is
-        parsed from the access token. 
+        parsed from the access token.
       tags:
         - Statuses and reasons
       parameters:
@@ -4891,7 +4904,7 @@ paths:
       operationId: patch-accounts-v2-accounts-accountId-status
       summary: Update status
       description: >
-        Update account status. 
+        Update account status.
 
 
         This endpoint generates an [Account status
@@ -5000,7 +5013,7 @@ paths:
       operationId: get-acquisitions-v2-programs-programId-channels
       summary: List acquisition channels
       description: >
-        List acquisition channels registered for a specific program. 
+        List acquisition channels registered for a specific program.
 
 
         The acquisition channel is the unique ID of the original source of your
@@ -5179,8 +5192,8 @@ paths:
         `entity_type` (`INDIVIDUAL`, `COMPANY`) identifies this.
 
 
-        * The fields `name`, `email_address`, `customer_id` and
-        `document_number` are either person or company-related. 
+        * The fields `name`, `email_address`, `customer_id`, and
+        `document_number` are either person- or company-related.
 
 
         * The field  `social_name` is only specific to a person.
@@ -5547,7 +5560,7 @@ paths:
 
         For each customer, the shorter `customer` object is returned. This
         object does not contain the additional informational fields provided for
-        person or company customers. 
+        person or company customers.
       operationId: customersV2Get
       tags:
         - Customers
@@ -5615,7 +5628,7 @@ paths:
     get:
       summary: Get customer
       description: >
-        Use the customer ID to get customer and associated entity details. 
+        Use the customer ID to get customer and associated entity details.
 
 
         To get a list of customer IDs, call [List account
@@ -5753,11 +5766,11 @@ paths:
 
 
         If the `customerId` parameter is not set, the server returns "Cannot get
-        property `customerId` on null object". 
+        property `customerId` on null object".
 
 
         **Note:** If `social_name` and `nickname` are not passed, their values
-        are overwritten as null. 
+        are overwritten as null.
 
 
         This endpoint generates a [Customer
@@ -5909,7 +5922,7 @@ paths:
       operationId: get-accounts-v1-accounts-accountId-addresses-addressId
       summary: Get address
       description: >
-        Get address information using an account ID and address ID. 
+        Get address information using an account ID and address ID.
 
 
         To get a list of address IDs, call [List
@@ -6494,13 +6507,13 @@ paths:
         application](ref:post-acquisitions-v3-s2s-applications) instead.
 
 
-        Create a new account application. 
+        Create a new account application.
 
 
         If the `submit` property is set to `false`:
 
         - The application is not sent for processing and can be further PATCH-ed
-        with incremental changes. 
+        with incremental changes.
 
         - This endpoint generates an [Account application prospect
         created](https://developers.pismo.io/events/docs/onboarding-prospect-1)
@@ -6646,7 +6659,7 @@ paths:
 
         * When an account is transferred successfully, you need to <a
         href="https://developers.pismo.io/pismo-docs/reference/post-v1-card-reissue">issue
-        a new card</a> that corresponds to the new program for your customers. 
+        a new card</a> that corresponds to the new program for your customers.
 
 
         This endpoint generates an [Account migrated to different
@@ -6666,6 +6679,8 @@ paths:
                 properties:
                   account_id:
                     $ref: '#/components/schemas/AccountID'
+                  external_account_id:
+                    $ref: '#/components/schemas/AccountExternalId'
                   program:
                     description: Program object
                     properties:
