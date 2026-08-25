@@ -5642,12 +5642,15 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /statements/v2/accounts/{accountId}/installment-advance:
     post:
-      summary: Create installment advancement (no cancellation event)
+      summary: Create installment advancement (no cancellation event) (deprecated)
       description: >
-        Create an installment advancement. An installment advancement is a
-        transfer of one or more installments from future cycles to the present
-        cycle. For more information, refer to [Manage installments on the
-        customer
+        Create an installment advancement. This is a DEPRECATED endpoint. Use
+        the non-deprecated [Create installment
+        advancement](ref:createinstallmentadvancementv2) endpoint instead.<br>
+
+        An installment advancement is a transfer of one or more installments
+        from future cycles to the present cycle. For more information, refer to
+        [Manage installments on the customer
         statement](doc:installments-payment#manage-installments-on-the-customer-statement).
 
 
@@ -5656,18 +5659,11 @@ paths:
         event.
 
 
-        **Notes:**  
-
-        - Cancelling an installment advancement created with this endpoint does
-        not generate a cancellation event. Pismo recommends that you use the
-        most advanced version of the installment advancement endpoints instead:
-          <br>[Create installment advancement](ref:createinstallmentadvancementv2)
-          <br>[Get installment advancement](ref:getinstallmentadvancementv2byid)
-          <br>[Cancel installment advancement](ref:cancelinstallmentadvancev2)
-        - This endpoint requires an account token - an access token encoded with
-        a Pismo account ID. Tokens can expire quickly, which can result in a
-        **401 Unauthorized** message.        
+        **Note:** This endpoint requires an account token - an access token
+        encoded with a Pismo account ID. Tokens can expire quickly, which can
+        result in a **401 Unauthorized** message.        
       operationId: InstallmentAdvancedV2
+      deprecated: true
       tags:
         - Advancements
       parameters:
@@ -5708,10 +5704,13 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     get:
-      summary: Get simulation installment advancement
-      description: |
-        Get a simulation installment advancement with filtering options.
+      summary: Get simulation installment advancement (deprecated)
+      description: >
+        Get a simulation installment advancement with filtering options. This is
+        a DEPRECATED endpoint. Use the non-deprecated [Simulate installment
+        advancement](ref:simulateinstallmentadvancement) endpoint instead.<br>
       operationId: GetInstallmentAdvancedSimulationV2
+      deprecated: true
       tags:
         - Advancements
       parameters:
@@ -5752,10 +5751,12 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /statements/v2/accounts/{accountId}/installment-advance/{id}:
     get:
-      summary: Get installment advancement (no cancellation event)
+      summary: Get installment advancement (no cancellation event) (deprecated)
       description: >
         Get an installments advancement by account ID and installments
-        advancement ID.
+        advancement ID. This is a DEPRECATED endpoint. Use the non-deprecated
+        [Get installment advancement](ref:getinstallmentadvancementv2byid)
+        endpoint instead.<br>
 
 
         This endpont generates an [Installment
@@ -5775,6 +5776,7 @@ paths:
         a Pismo account ID. Tokens can expire quickly, which can result in a
         **401 Unauthorized** message.        
       operationId: GetInstallmentsAdvanceV2
+      deprecated: true
       tags:
         - Advancements
       parameters:
@@ -5816,9 +5818,11 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     delete:
-      summary: Cancel installments advancement (no cancellation event)
+      summary: Cancel installments advancement (no cancellation event) (deprecated)
       description: >
-        Cancel an installment advancement by account ID and advancement ID.
+        Cancel an installment advancement by account ID and advancement ID. This
+        is a DEPRECATED endpoint. Use the non-deprecated [Get installment
+        advancement](ref:getinstallmentadvancementv2byid) endpoint instead.<br>
 
 
         This endpont generates an [Installment
@@ -5826,14 +5830,10 @@ paths:
         event.        
 
 
-        <b>Notes:</b> Cancelling an installment advancement created with this
-        endpoint does not generate a cancellation event. Pismo recommends that
-        you use the most advanced version of the installment advancement
-        endpoints instead:
-          <br>[Create installment advancement](ref:createinstallmentadvancementv2)
-          <br>[Get installment advancement](ref:getinstallmentadvancementv2byid)
-          <br>[Cancel installment advancement](ref:cancelinstallmentadvancev2)
+        **Note:** Cancelling an installment advancement created with this
+        endpoint does not generate a cancellation event.
       operationId: CancelInstallmentsAdvanceV2
+      deprecated: true
       tags:
         - Advancements
       parameters:
