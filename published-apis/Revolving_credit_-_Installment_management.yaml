@@ -1046,10 +1046,14 @@ paths:
     post:
       tags:
         - Installment advancements
-      summary: Create installment advancement (outdated)
+      summary: Create installment advancement (deprecated)
       description: >
-        Creates an installment advancement for an account. An installment
-        advancement moves one or more future installments to the current cycle.
+        Creates an installment advancement for an account. This is a DEPRECATED
+        endpoint. Use the non-deprecated [Create installment
+        advancement](ref:createinstallmentadvancementv2) endpoint instead.<br>
+
+        An installment advancement moves one or more future installments to the
+        current cycle.
 
 
         To advance installments for a specific installment agreement (contract),
@@ -1094,11 +1098,8 @@ paths:
         This endpoint generates an <a
         href='https://developers.pismo.io/events/docs/balance-installment-advancement-1'>Installment
         advanced</a> event.
-
-
-        (<b>Outdated:</b> For an updated version of this endpoint, refer to
-        [Create installment advancement](ref:createinstallmentadvancementv2)).
       operationId: CreateInstallmentAdvancement
+      deprecated: true
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
         - $ref: '#/components/parameters/CorrelationIdHeader'
@@ -1125,14 +1126,13 @@ paths:
     get:
       tags:
         - Installment advancements
-      summary: Get installment advancement (outdated)
+      summary: Get installment advancement (deprecated)
       description: >
-        Retrieves an installment advancement by its ID.
-
-
-        (<b>Outdated:</b> For an updated version of this endpoint, refer to [Get
-        installment advancement](ref:getinstallmentadvancementv2byid)).
+        Retrieves an installment advancement by its ID. This is a DEPRECATED
+        endpoint. Use the non-deprecated [Get installment
+        advancement](ref:getinstallmentadvancementv2byid) endpoint instead.
       operationId: GetIntallmentAdvancementById
+      deprecated: true
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
         - $ref: '#/components/parameters/CorrelationIdHeader'
@@ -1151,21 +1151,22 @@ paths:
     delete:
       tags:
         - Installment advancements
-      summary: Cancel installment advancement (outdated)
+      summary: Cancel installment advancement (deprecated)
       description: >
         Cancel the installment advancement for an account, and return the
         installments to their original cycles. If necessary, reinstate original
-        interest on the installments.
+        interest on the installments.<br>
+
+        This is a DEPRECATED endpoint. Use the non-deprecated [Cancel
+        installment advancement](ref:cancelinstallmentadvancev2) endpoint
+        instead.
 
 
         This endpoint generates an <a
         href='https://developers.pismo.io/events/docs/balance-installment-advancement-cancelled-1'>Installment
         advanced cancelled</a> event.
-
-
-        (<b>Outdated:</b> For an updated version of this endpoint, refer to
-        [Cancel installment advancement](ref:cancelinstallmentadvancev2)).
       operationId: CancelInstallmentAdvancement
+      deprecated: true
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
         - $ref: '#/components/parameters/CorrelationIdHeader'
