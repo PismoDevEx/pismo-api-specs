@@ -4019,15 +4019,21 @@ paths:
                   description: Number of installments
       responses:
         '200':
-          description: Loan successfully restructured.
+          description: >-
+            Restructure request accepted. Processing is asynchronous, so the new
+            loan is not returned. The original loan transitions to
+            `RENEGOTIATED`; retrieve it and read its `restructure_loan_id` to
+            obtain the new loan ID.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  loan_id:
+                  tracking_id:
                     type: string
-                    description: The ID of the new loan.
+                    description: >-
+                      Tracking ID for the asynchronous restructure processing.
+                      Matches the idempotency key sent in the request.
         '400':
           description: Invalid request.
         '500':
