@@ -12,7 +12,7 @@ servers:
   - url: https://sandbox-cdn.pismolabs.io
     description: Sandbox API server for testing
   - url: https://sandbox-cdn.pismolabs.io/inst-pull-pay
-    description: Sandbox API server for testing instant pull pay
+    description: Sandbox API server for testing instant pull pay.
 tags:
   - name: Pix
   - name: Scheduled transfers V2
@@ -328,11 +328,11 @@ components:
       schema:
         type: string
         enum:
-          - PIX_IN
-          - PIX_OUT
-          - PIX_IN_REVERSAL
-          - PIX_OUT_REVERSAL
-      example: PIX_IN
+          - PIX-IN
+          - PIX-OUT
+          - PIX-IN-REVERSAL
+          - PIX-OUT-REVERSAL
+      example: PIX-IN
   schemas:
     AccountID:
       type: integer
