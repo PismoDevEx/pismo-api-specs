@@ -1189,7 +1189,7 @@ paths:
                   value:
                     code: EBLC9999
                     message: Internal server error
-  /v1/balances-configs/filter-templates:
+  /v1/balances-config/filter-templates:
     post:
       operationId: post-v1-filter-templates
       summary: Create filter template
@@ -1292,7 +1292,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /v1/balances-configs/filter-templates/{id}:
+  /v1/balances-config/filter-templates/{id}:
     get:
       operationId: get-v1-filter-template-by-id
       summary: Get filter template
@@ -1359,8 +1359,12 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateFilterTemplate'
       responses:
-        '204':
-          description: No Content - Successfully updated
+        '200':
+          description: OK - Returns the updated filter template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterTemplate'
         '400':
           description: Bad request
           content:
