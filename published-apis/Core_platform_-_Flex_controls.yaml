@@ -85,17 +85,7 @@ components:
         reset_period:
           $ref: '#/components/schemas/ResetPeriod'
         reset_datetime:
-          type: string
-          format: date-time
-          description: >
-            Reset datetime (RFC-3339 format) for the control rule.
-
-            If `reset_datetime` is not set, a default is calculated based on
-            `limit_duration` period and the current time.
-
-            This field should only be specified when `type` is either
-            `spending_limit` or `usage_limit`.
-          example: '2022-03-08T21:19:55Z'
+          $ref: '#/components/schemas/ResetDatetime'
         active:
           $ref: '#/components/schemas/Active'
         customized:
@@ -165,16 +155,26 @@ components:
       type: integer
       format: int64
       description: >
-        Total available limit to spend, calculated by: max_limit -
-        current_spend_limit. The `current_spend_limit`, an internal field, is
+        Represents the remaining limit for the flex control. Its meaning depends
+        on the flex control `type`.
+          * For `spending_limit` controls, `available_limit` is the remaining spending amount.
+          * For `usage_limit` controls, `available_limit` is the remaining number of transactions allowed.
+
+        The `available_limit` is calculated by: `max_limit` -
+        `current_spend_limit`. The `current_spend_limit`, an internal field, is
         the total amount of all approved transactions in the `limit_duration`
         period. It is reset by the evaluation flow when a new transaction is
-        evaluated in the new period according to the `reset_datetime`.
+        evaluated in the new period according to the `reset_period`.
 
 
-        When `available_limit` is set in a PATCH request, it resets
+        When `available_limit` is set in a PATCH request via [Update account
+        flex control](ref:patch-v1-accounts-flex-control) or [Update customer
+        flex control](ref:patch-v1-customers-flex-control), it resets
         `current_spend_limit`. In this case, `available_limit` cannot be greater
-        than `max_limit`. Note that `available_limit` is an integer. Since
+        than `max_limit`.
+
+
+        For spending limits, note that `available_limit` is an integer. Since
         global currencies vary in the number of digits that are allowed after
         the decimal point, you must convert the actual maximum spending limit
         into an integer value to use in this field. To do this, use the
@@ -195,6 +195,24 @@ components:
         set 4999 = 4999.0 * 10^0 = 4999.0 * 1. (In other words, the value
         doesn't change.)
       example: 300
+    AvailableAmount:
+      type: integer
+      format: int64
+      description: >
+        The remaining amount allowed for authorizations under the current flex
+        control. This value decreases with each successful authorization and
+        resets based on the defined reset strategy. Valid only for flex controls
+        with the `type` of `cumulative_limit`.
+      example: 100000
+    AvailableTransactions:
+      type: integer
+      format: int64
+      description: >
+        The remaining number of transactions allowed for authorizations under
+        the current flex control. This value decreases with each successful
+        authorization and resets based on the defined reset strategy. Valid only
+        for flex controls with the `type` of `cumulative_limit`.
+      example: 10
     BeneficiaryId:
       type: string
       example: 8497225d-2096-4b92-990e-f73bd21bc48c
@@ -218,10 +236,7 @@ components:
         attribute:
           type: string
           description: >
-            Attribute to evaluate in condition. For `entry_mode`,
-            `merchant_category_code`, and `merchant_id`, these parameters are
-            valid for card network operations. For a control to be valid, you
-            must enter a code specified by the Mastercard/Visa card network.
+            Attribute to evaluate in the condition.
 
             * `amount`: Numeric value that indicates the amount of the operation
             performed by the user
@@ -247,19 +262,24 @@ components:
             used for the operation is registered according to the financial
             institution's security policies.
 
-            * `is_password_present`: Boolean that indicates whether the password
-            is present in the evaluation request.
+            * `is_password_present`: Boolean that indicates whether a valid
+            password is present in the evaluation request. Valid only for card
+            network operations.
 
             * `is_pin_validated_offline`: Boolean that indicates whether the pin
             was validated offline in the evaluation request. This is commonly
-            used for offline PIN verification scenarios.
+            used for offline PIN verification scenarios. Valid only for card
+            network operations.
 
             * `is_physical_card_present`: Boolean that indicates whether a
-            physical card is present in the evaluation request.
+            physical card is present in the evaluation request. Valid only for
+            card network operations. Digital wallet transactions are treated as
+            physical card transactions. To exclude digital wallet transactions,
+            combine this condition with `is_token_present` as `true`.
 
             * `is_tra_exemption_requested`: Boolean that indicates whether a TRA
             (Transaction Risk Assessment) exemption is requested for the
-            transaction.
+            transaction. Valid only for card network operations.
 
             * `merchant_category_code`: Merchant Category Code (MCC) is a
             four-digit number used to describe a merchant's primary business
@@ -289,21 +309,26 @@ components:
             * `authentication_method`:  Enable authorization rules aligned with
             PSD2 principles. Determine whether restrictions should be applied
             for specific authentication methods. Valid values are "password",
-            "email", and "sms".
+            "email", and "sms". Valid only for card network operations. For a
+            control to be valid, it must be a code defined by the Field
+            60.8/Positions 9-10 for Visa operations or as specified by each card
+            network.
 
             * `is_token_present`: Boolean that indicates whether a token card is
-            present in the evaluation request.
+            present in the evaluation request. Valid only for card network
+            operations.
 
-            * `initiation_mode`: Payment initiation mode.
+            * `initiation_mode`: Payment initiation mode. Valid only for card
+            network operations.
                - `moto`: Payments made through mail order or telephone.
                - `mit`: Merchant-initiated transactions.
             * `acquirer_country_code`: Three-letter country code (ISO 3166-1)
             representing the location of the acquiring bank or financial
-            institution.
+            institution. Valid only for card network operations.
 
             * `is_cavv_present`: Boolean indicating that the CAVV field is
             present. CAVV stands for cardholder authentication verification
-            value.
+            value. Valid only for card network operations.
 
             * `avr`: String indicating that the transaction is a card network
             Account Verification Request (AVR) transaction. AVR transactions
@@ -397,15 +422,7 @@ components:
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
         reset_datetime:
-          type: string
-          format: date-time
-          deprecated: true
-          description: >
-            *Note: This field has been deprecated. The field `reset_period` has
-            replaced `reset_datetime`.*
-
-            The reset datetime (RFC-3339 format) of the flex control.
-          example: '2022-03-08T21:19:55Z'
+          $ref: '#/components/schemas/ResetDatetime'
         reset_period:
           $ref: '#/components/schemas/ResetPeriod'
         conditions:
@@ -480,13 +497,7 @@ components:
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
         reset_datetime:
-          type: string
-          format: date-time
-          deprecated: true
-          description: |
-            *Note: This field has been deprecated, use `reset_period` instead.*
-            The reset datetime (RFC-3339 format) of the control rule.
-          example: '2022-03-08T21:19:55Z'
+          $ref: '#/components/schemas/ResetDatetime'
         time_zone:
           $ref: '#/components/schemas/TimeZone'
         reset_period:
@@ -522,7 +533,10 @@ components:
     CurrencyCode:
       type: string
       example: BRL
-      description: Flex control currency code (ISO 4217)
+      description: >
+        Flex control currency code (ISO 4217). Defines the precision used for
+        monetary values such as `max_limit`, `available_limit`, and
+        `condition.value`.
     CustomCode:
       type: string
       description: >
@@ -582,17 +596,14 @@ components:
           $ref: '#/components/schemas/MaxTransactions'
         max_amount:
           $ref: '#/components/schemas/MaxAmount'
+        available_amount:
+          $ref: '#/components/schemas/AvailableAmount'
+        available_transactions:
+          $ref: '#/components/schemas/AvailableTransactions'
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
         reset_datetime:
-          type: string
-          format: date-time
-          description: >
-            Reset datetime (RFC-3339 format).
-
-            If `reset_datetime` is not set, by default it will calculated based
-            on `limit_duration` period and the current time.
-          example: '2022-03-08T21:19:55Z'
+          $ref: '#/components/schemas/ResetDatetime'
         time_zone:
           $ref: '#/components/schemas/TimeZone'
         reset_period:
@@ -631,14 +642,14 @@ components:
       type: boolean
       example: true
       description: >
-        Indicates whether the flex control is managed by the user. If
-        `customized` is `false`, the flex control is managed by the card's
-        program. Generally speaking, users shouldn't change flex controls
-        created by the program, however it is possible to do so. You can reverse
-        indivdually managing a flex control with a call to [Update account flex
-        control](ref:patch-v1-accounts-flex-control) or [Update customer flex
-        control](ref:patch-v1-customers-flex-control) and setting `customized`
-        as `false`.
+        Indicates whether the flex control is updated at the account level or
+        customer level (`true`) or managed at the program level (`false`).
+
+
+        To revert a customized flex control back to program-level management,
+        call [Update account flex control](ref:patch-v1-accounts-flex-control)
+        or [Update customer flex control](ref:patch-v1-customers-flex-control)
+        and set `customized` as `false`.
     DenyCode:
       type: string
       description: |
@@ -731,9 +742,6 @@ components:
         For example, if a flex control sets a spending limit of $500, and
         `limit_duration` is set to one month (`P1M`), then the user cannot spend
         more than $500 from the account in any one month period.
-
-        If `limit_duration` is not set, then the flex control does not
-        accumulate.
       example: P1M
     MaxAmount:
       type: integer
@@ -741,7 +749,8 @@ components:
       format: int64
       description: >
         Maximum accumulated amount allowed. Once met or exceeded, subsequent
-        transactions are declined by the evaluation control flow.
+        transactions are declined by the evaluation control flow. Valid only for
+        flex controls with the `type` of `cumulative_limit`.
 
         Note that the value must be calculated as follows.
 
@@ -764,13 +773,23 @@ components:
       minimum: 1
       format: int64
       description: >
-        Maximum spending limit. Once met or exceeded, any subsequent
-        transactions are declined by evaluation control flow.
+        Maximum spending limit.
 
-        Note that this value is an integer. Since global currencies vary in the
-        number of digits that are allowed after the decimal point, you must
-        convert the actual maximum spending limit into an integer value to use
-        in this field. To do this, use the following formula.
+
+        Defines the maximum limit for the control. Its meaning depends on the
+        flex control `type`.
+          * For `spending_limit` controls, `max_limit` represents the maximum spending amount allowed.
+          * For `usage_limit` controls, `max_limit` represents the maximum number of transactions allowed.
+
+        Once met or exceeded, any subsequent transactions are declined by
+        evaluation control flow.
+
+
+        For spending limits, note that this value is an integer. Since global
+        currencies vary in the number of digits that are allowed after the
+        decimal point, you must convert the actual maximum spending limit into
+        an integer value to use in this field. To do this, use the following
+        formula.
 
 
         value = floatNumber × 10^X, where X is the number of digits after the
@@ -787,7 +806,9 @@ components:
         10^0 = 4999.0 × 1 - in other words, the value doesn't change.)
 
 
-        This field is **REQUIRED** for cumulative controls.
+        This field is **REQUIRED** for flex controls with the `type` of
+        `spending_limit` and `usage_limit`, and it does not apply to flex
+        controls with the `type` of `restriction` and `cumulative_limit`.
       example: 1000
     MaxTransactions:
       type: integer
@@ -795,7 +816,8 @@ components:
       format: int64
       description: >
         Maximum number of transactions allowed. Once met or exceeded, subsequent
-        transactions are declined by the evaluation control flow.
+        transactions are declined by the evaluation control flow. Valid only for
+        flex controls with the `type` of `cumulative_limit`.
       example: 10
     Name:
       type: string
@@ -811,8 +833,8 @@ components:
       description: >
         List of existing flex control IDs to override.
 
-        The platform ignores these controls and only evaluates the new flex
-        control.
+        The platform ignores these controls for the beneficiary identified by
+        `beneficiary_id` and only evaluates the new flex control.
     PatchAccountFlexControlRequest:
       type: object
       description: Patch flex control request
@@ -834,15 +856,7 @@ components:
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
         reset_datetime:
-          type: string
-          format: date-time
-          deprecated: true
-          description: >
-            *Note: This field has been deprecated. The field `reset_period` has
-            replaced `reset_datetime`.*
-
-            The reset datetime (RFC-3339 format) of the flex control.
-          example: '2022-03-08T21:19:55Z'
+          $ref: '#/components/schemas/ResetDatetime'
         reset_period:
           $ref: '#/components/schemas/ResetPeriod'
         time_zone:
@@ -884,15 +898,7 @@ components:
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
         reset_datetime:
-          type: string
-          format: date-time
-          deprecated: true
-          description: >
-            *Note: This field has been deprecated. The field `reset_period` has
-            replaced `reset_datetime`.*
-
-            The reset datetime (RFC-3339 format) of the control rule.
-          example: '2022-03-08T21:19:55Z'
+          $ref: '#/components/schemas/ResetDatetime'
         reset_period:
           $ref: '#/components/schemas/ResetPeriod'
         reset_strategy:
@@ -933,6 +939,21 @@ components:
       example:
         - '07000'
         - '07001'
+    ResetDatetime:
+      type: string
+      format: date-time
+      deprecated: true
+      description: >
+        **Note:** This field is deprecated and replaced with `reset_period`.
+
+        Reset datetime (RFC-3339 format) for the control rule.
+
+        If `reset_period` is not set, a default is calculated based on the
+        `limit_duration` period and the current time.
+
+        This field should only be specified when `type` is either
+        `spending_limit` or `usage_limit`.
+      example: '2022-03-08T21:19:55Z'
     ResetPeriod:
       type: object
       description: >
@@ -945,7 +966,8 @@ components:
           type: number
           description: >-
             Month day to reset. Can only be used when `limit_duration` is
-            monthly.
+            monthly or yearly (in the yearly case, it must be combined with the
+            `month` parameter).
           minimum: 1
           maximum: 28
         month:
@@ -988,7 +1010,9 @@ components:
           example: 3:00AM
     ResetStrategy:
       type: object
-      description: The strategy to reset the accumulators.
+      description: >-
+        The strategy to reset the accumulators. Valid only for flex controls
+        with the `type` of `cumulative_limit`.
       properties:
         reset_trigger:
           type: object
@@ -996,7 +1020,14 @@ components:
           properties:
             is_password_present:
               type: boolean
-              description: Indicates whether the client entered a password
+              description: >
+                Indicates whether the client entered a password.
+
+
+                When the cardholder completes an authorization, the control
+                accumulators for transactions and/or amount are reset if the
+                transaction's `is_password_present` matches the configured
+                trigger value.
             is_pin_validated_offline:
               type: boolean
               description: >-
@@ -1042,13 +1073,12 @@ components:
         - spending_limit
         - usage_limit
         - restriction
-        - cumulative_limit
       description: |
         Flex control scope
           * `usage_limit`: Accumulator flex control that increases by one until `max_limit`
           * `spending_limit`: Accumulator flex control that increases by the current transaction's `amount` until `max_limit`
           * `restriction`: Restriction flex control that only validates specified conditions
-          * `cumulative_limit`: Accumulator flex control that increases by one until a condition is met, applies only to flex controls with associated `card_ids`, and requires a `reset_strategy`
+          * `cumulative_limit`: Accumulator flex control that increases by one transaction or by transaction amount until a condition is met, applies only to flex controls with associated `card_ids`, and requires a `reset_strategy`.
     ProgramFlexControlsResponse:
       type: object
       description: Paginated response containing flex controls grouped by program
@@ -1220,7 +1250,6 @@ components:
             value: contact
         max_limit: 49999
         limit_duration: P1M
-        reset_datetime: '2022-03-08T21:19:55Z'
         deny_code: MAX_VALUE_P1M_1060_CONTACT
         active: true
     accountFlexControlCreationResponse:
@@ -1233,7 +1262,6 @@ components:
           - '007000'
         max_limit: 49999
         limit_duration: P1M
-        reset_datetime: '2022-03-08T21:19:55Z'
         deny_code: MAX_VALUE_P1M
         active: true
     accountFlexControlRestrictionCreationResponse:
@@ -1257,7 +1285,6 @@ components:
         name: Purchase 1 Month credit card
         max_limit: 49999
         limit_duration: P1M
-        reset_datetime: '2022-03-08T21:19:55Z'
     createCustomerFlexControlWithCardIDCondition:
       description: Create spending_limit rule example for a card_id.
       value:
@@ -1268,7 +1295,6 @@ components:
         name: Purchase 1 Month credit card
         max_limit: 49999
         limit_duration: P1M
-        reset_datetime: '2022-03-08T21:19:55Z'
         card_ids:
           - 111111
         conditions:
@@ -1289,7 +1315,6 @@ components:
         name: Purchase 1 Month credit card
         max_limit: 49999
         limit_duration: P1M
-        reset_datetime: '2022-03-08T21:19:55Z'
         available_limit: 49999
         card_ids:
           - 111111
@@ -1458,7 +1483,6 @@ components:
         name: Purchase 1 Month credit card
         max_limit: 49999
         limit_duration: P1M
-        reset_datetime: '2022-03-08T21:19:55Z'
         available_limit: 5000
         conditions:
           - attribute: balance
@@ -1878,6 +1902,11 @@ paths:
         `reset_period` parameters are optional, but they are linked with the
         behavior of `max_limit`.
 
+        - `cumulative_limit` to increment by one transaction or by the
+        transaction amount until a specified condition is met. This type of
+        control applies only to flex controls linked to specific `card_ids` and
+        requires a defined `reset_strategy`.
+
 
         To create a restriction condition, set `type` as `restriction`.
 
@@ -2243,13 +2272,14 @@ paths:
         `reset_period` parameters are optional, but they are linked with the
         behavior of `max_limit`.
 
+        - `cumulative_limit` to increment by one transaction or by the
+        transaction amount until a specified condition is met. This type of
+        control applies only to flex controls linked to specific `card_ids` and
+        requires a defined `reset_strategy`.
+
 
         To create a restriction condition, set `type` as `restriction`.
 
-
-        To restrict an operation, the restriction control must specify:
-          - at least one condition in the `conditions` array.
-          - the required values for `attribute`, `operator`, and `value` in the condition.
 
         Once you create the control, you can't change its type.
 
