@@ -36,7 +36,7 @@ components:
     AccountId:
       type: string
       format: number
-      description: Account ID
+      description: Account ID. Must be between 1 and 64.
       example: '15001'
     BalanceAmount:
       type: number
@@ -94,8 +94,8 @@ components:
       example: 07d84f793027
     ExternalAccountId:
       type: string
-      maxLength: 64
-      description: External account ID managed by the requester.
+      maxLength: 60
+      description: External account ID managed by the requester
       example: '4141'
     InterestAccountCancellationRequest:
       title: InterestAccountCancellationRequest
@@ -105,6 +105,8 @@ components:
           $ref: '#/components/schemas/AccountId'
         external_account_cancellation_id:
           $ref: '#/components/schemas/ExternalAccountCancellationId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
         metadata:
           $ref: '#/components/schemas/Metadata'
       required:
@@ -116,6 +118,8 @@ components:
       properties:
         external_account_cancellation_id:
           $ref: '#/components/schemas/ExternalAccountCancellationId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
         metadata:
           $ref: '#/components/schemas/Metadata'
       required:
@@ -168,12 +172,15 @@ components:
           $ref: '#/components/schemas/ProgramId'
         balance_id:
           $ref: '#/components/schemas/BalanceId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
       required:
         - program_id
         - balance_id
       example:
         program_id: '0105'
         balance_id: uuid-generated-client-id
+        external_account_id: '4141'
     InterestDepositRequest:
       title: InterestDepositRequest
       type: object
@@ -189,6 +196,8 @@ components:
           $ref: '#/components/schemas/TrackingId'
         account_id:
           $ref: '#/components/schemas/AccountId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
         interest_plan_id:
           $ref: '#/components/schemas/InterestPlanId'
         amount:
@@ -202,9 +211,10 @@ components:
         metadata:
           $ref: '#/components/schemas/Metadata'
       example:
-        tracking_id: 41dee125-0876-4505-80cd-947cb6049789
+        tracking_id: 41dee***************************9789
         account_id: '123000'
-        interest_plan_id: 51dee125-0876-4505-80cd-947cb6049786
+        external_account_id: '4141'
+        interest_plan_id: 51dee***************************9786
         amount: 5365.5
         value_date: '2024-01-15'
         maturity_date: '2025-01-15'
@@ -215,8 +225,13 @@ components:
       properties:
         tracking_id:
           $ref: '#/components/schemas/TrackingId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
       required:
         - tracking_id
+      example:
+        tracking_id: 41dee***************************9789
+        external_account_id: '4141'
     InterestPlanId:
       type: string
       format: UUID
@@ -240,6 +255,8 @@ components:
           $ref: '#/components/schemas/WithdrawalDate'
         metadata:
           $ref: '#/components/schemas/Metadata'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
       required:
         - tracking_id
         - account_id
@@ -251,11 +268,13 @@ components:
         amount: 5365.5
         withdrawal_date: '2024-01-15'
     InterestWithdrawalResponse:
-      title: InterestWithdralResponse
+      title: InterestWithdrawalResponse
       type: object
       properties:
         tracking_id:
           $ref: '#/components/schemas/TrackingId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
       required:
         - tracking_id
     MaturityDate:
@@ -383,6 +402,10 @@ paths:
         `interest_plan_id`, `balance`, `start_cycle_date`, `value_date`, and
         `maturity_date`. Optional fields `division_id` and `external_account_id`
         are included in the event only when present in the request.
+
+
+        The optional field `external_account_id` is only returned in the
+        response when present in the request.
       tags:
         - Interest engine
       operationId: post-v1-interest-balance
@@ -441,6 +464,10 @@ paths:
         - [Interest registration
         failed](https://developers.pismo.io/events/docs/interest-engine-interest-registration-failure-1)
         when deposit operation fails
+
+
+        The optional field `external_account_id` is only returned in the
+        response and included in the events when present in the request.
 
 
         For more information, refer to the [Interest-bearing
