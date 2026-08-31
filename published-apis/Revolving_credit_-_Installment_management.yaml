@@ -1,0 +1,1199 @@
+openapi: 3.1.0
+info:
+  title: Revolving credit - Installment management
+  description: >-
+    Endpoints to handle moving transactions from future statements to the
+    current statement.
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://developers.pismo.io/support/
+  license:
+    name: Copyright Pismo
+servers:
+  - url: https://sandbox.pismolabs.io/installment-management
+    description: Sandbox API server for testing
+tags:
+  - name: Installment advancements
+    description: Endpoints to manage installment advancements
+  - name: Simulations
+    description: Endpoints to manage installment simulations
+components:
+  parameters:
+    AccountIdPath:
+      name: accountId
+      in: path
+      description: Account ID
+      required: true
+      style: simple
+      schema:
+        type: integer
+        format: int64
+        example: 6912345
+    AdvancementIdPath:
+      name: advancementId
+      in: path
+      description: Advancement ID
+      required: true
+      style: simple
+      schema:
+        type: integer
+        format: int64
+        example: 6912345
+    CalculatorQuery:
+      name: calculator
+      in: query
+      description: >-
+        Specifies the type of calculation to be applied for interest reduction
+        when an installment is advanced to the current cycle. To recalculate the
+        interest on advancements, set `calculator` to `PRESENT_VALUE`. Default
+        is `NONE`.
+      required: false
+      schema:
+        type: string
+        enum:
+          - PRESENT_VALUE
+          - NONE
+    ConditionQuery:
+      name: condition
+      in: query
+      description: >-
+        Indicates if all installments should be advanced (`ALL_CONTRACTS`) or
+        just a single installment (`SINGLE_CONTRACT`).
+      required: true
+      schema:
+        type: string
+        enum:
+          - ALL_CONTRACTS
+          - SINGLE_CONTRACT
+        example: ALL_CONTRACTS
+    CorrelationIdHeader:
+      in: header
+      name: x-cid
+      schema:
+        type: string
+      description: >-
+        The Correlation Identifier field is used to link related API requests
+        and events. The x-cid can help the Pismo engineering team track
+        everything related to a call. You can find the x-cid field in the
+        response header from an API endpoint call. If this field isn't passed,
+        one is automatically generated.
+      example: 5bb05174-4e80-11ea-b77f-2e728ce88125
+    NumberOfInstallmentsToAdvance:
+      name: numberOfInstallmentsToAdvance
+      in: query
+      description: >-
+        Define the number of installments to be brought to the current
+        statement.
+      required: false
+      schema:
+        type: integer
+        example: 2
+    InterestRemovalEndDateQuery:
+      name: interestRemovalEndDate
+      in: query
+      description: >
+        Optional cutoff date for interest removal when `calculator` is set to
+        `PRESENT_VALUE`.
+
+        Installments with a due date on or before this date will have interest
+        recalculated using this date as the reference instead of the original
+        due date.
+
+        If omitted, the installment's original due date is used.
+      required: false
+      schema:
+        type: string
+        format: date
+        example: '2025-06-30'
+    RemoveInterestFromCurrentQuery:
+      name: removeInterestFromCurrent
+      in: query
+      description: >-
+        Indicates whether interest should be removed when an installment is
+        advanced to the current statement. Default is `false`.
+      required: false
+      schema:
+        type: boolean
+        example: false
+        default: false
+    RescheduleQuery:
+      name: reschedule
+      in: query
+      description: >-
+        Indicates the type of rescheduling to apply. Must be set to
+        `ADVANCEMENT`.
+      required: true
+      schema:
+        type: string
+        enum:
+          - ADVANCEMENT
+    TransactionIdQuery:
+      name: transactionId
+      in: query
+      description: Transaction ID
+      required: false
+      schema:
+        type: integer
+        format: int64
+        example: 98457355
+  schemas:
+    AccountID:
+      type: integer
+      description: Account ID
+      format: int64
+      example: 67854328
+    AdvancementErrorMessage:
+      type: string
+      description: Error message if advancement failed
+      example: Operation error
+    AdvancementId:
+      type: integer
+      description: Advancement ID
+      format: int64
+      example: 67854328
+    AdvancementStatus:
+      type: string
+      description: Current status of the advancement
+      enum:
+        - CREATED
+        - PROCESSED
+        - CANCELLED
+        - ERROR
+        - CANCELLATION_ERROR
+      example: PROCESSED
+    AuthorizationID:
+      type: integer
+      format: int64
+      description: Authorization ID for the contract
+      example: 12345
+    AuthorizationIdForFirstInstallment:
+      type: integer
+      format: int64
+      description: Authorization ID for the first installment
+      example: 200
+    Calculator:
+      type: string
+      description: |
+        Type of calculation to apply. Default is `NONE`.
+      example: PRESENT_VALUE
+      enum:
+        - PRESENT_VALUE
+        - REMOVE_ALL_INTEREST
+        - NONE
+    CanceledAt:
+      type: string
+      format: date-time
+      description: Date/time advancement was canceled. Format = yyyy-mm-dd:hr:mm:ss.
+      example: '2021-04-14T12:00:00-03:00'
+    CancelInstallmentAdvancedResponseDto:
+      type: object
+      description: Represents the result of the cancellation of an advancement.
+      properties:
+        advancement_id:
+          $ref: '#/components/schemas/AdvancementId'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        cancelled_at:
+          $ref: '#/components/schemas/CanceledAt'
+        accountId:
+          $ref: '#/components/schemas/AccountID'
+        condition:
+          $ref: '#/components/schemas/Condition'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        installments:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstallmentResponseDto'
+    CancellationInstallmentAdvancedV2ResponseDto:
+      type: object
+      description: Response returned when an installment advancement (V2) is canceled.
+      properties:
+        id:
+          $ref: '#/components/schemas/AdvancementId'
+          description: Unique identifier for the installment advancement cancellation.
+        condition:
+          $ref: '#/components/schemas/ConditionV2'
+          description: The condition of the installment advancement
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+          description: Identifier used to track the cancellation request.
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+          description: Details about the calculation performed for the cancellation.
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+          description: Information about any rescheduling related to the cancellation.
+        remove_interest_from_current:
+          $ref: '#/components/schemas/RemoveInterestFromCurrent'
+          description: >-
+            Indicates whether interest should be removed from the current
+            statement as part of the cancellation.
+        contracts:
+          type: array
+          description: >-
+            List of contract details affected by the installment advancement
+            cancellation.
+          items:
+            $ref: '#/components/schemas/ContractAdvancementResponseDto'
+    Condition:
+      type: string
+      description: >
+        Installments should be advanced for all the contracts for an account
+        (`ALL_CONTRACTS`) or for a specific contract (`SINGLE_CONTRACT`).
+
+        If `condition` is set to `SINGLE_CONTRACT`, then the `transaction_id`
+        field must be set to the transaction ID of the specific contract.
+      example: SINGLE_CONTRACT
+      enum:
+        - SINGLE_CONTRACT
+        - ALL_CONTRACTS
+    ConditionV2:
+      type: string
+      description: >
+        Installments should be advanced for all the contracts for an account
+        (`ALL_CONTRACTS`) or for multiple specific contracts
+        (`MULTIPLE_CONTRACTS`).
+      example: MULTIPLE_CONTRACTS
+      enum:
+        - MULTIPLE_CONTRACTS
+        - ALL_CONTRACTS
+    ContractAdvancementDto:
+      type: object
+      description: Contract advancement configuration for multiple contracts mode
+      required:
+        - remove_interest_from_current
+        - authorization_id
+        - calculator
+        - reschedule
+      properties:
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationID'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        remove_interest_from_current:
+          $ref: '#/components/schemas/RemoveInterestFromCurrent'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        contract_condition:
+          $ref: '#/components/schemas/ContractCondition'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallmentsToAdvance'
+    ContractAdvancementResponseDto:
+      type: object
+      description: Contract advancement response
+      properties:
+        remove_interest_from_current:
+          $ref: '#/components/schemas/RemoveInterestFromCurrent'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationID'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallmentsToAdvance'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+    ContractCondition:
+      type: string
+      description: >
+        Should all the remaining installments for the contract be advanced
+        (`ALL_INSTALLMENTS`) or just a specific number of them
+        (`SPECIFIC_NUMBER_OF_INSTALLMENTS`)?
+
+
+        If this field is set to `SPECIFIC_NUMBER_OF_INSTALLMENTS`, the
+        `number_of_installments` field must be set. If this field is set to
+        `ALL_INSTALLMENTS`, the `number_of_installments` field is ignored.
+      example: ALL_INSTALLMENTS
+      enum:
+        - ALL_INSTALLMENTS
+        - SPECIFIC_NUMBER_OF_INSTALLMENTS
+    CreatedAt:
+      type: string
+      format: date-time
+      description: Date/time advancement was created. Format = yyyy-mm-dd:hr:mm:ss.
+      example: '2021-04-14T12:00:00-03:00'
+    CreateInstallmentAdvancedRequestDto:
+      type: object
+      description: Parameters for requesting an advancement
+      properties:
+        transaction_id:
+          $ref: '#/components/schemas/TransactionID'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingIdForPost'
+        condition:
+          $ref: '#/components/schemas/Condition'
+        remove_interest_from_current:
+          $ref: '#/components/schemas/RemoveInterestFromCurrent'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        number_of_installments_to_advance:
+          $ref: '#/components/schemas/NumberOfInstallmentsToAdvance'
+    CreateInstallmentAdvancedResponseDto:
+      type: object
+      description: Response returned by advancement creation request
+      properties:
+        advancement_id:
+          $ref: '#/components/schemas/AdvancementId'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        accountId:
+          $ref: '#/components/schemas/AccountID'
+        condition:
+          $ref: '#/components/schemas/Condition'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        installments:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstallmentResponseDto'
+    CreateInstallmentAdvancedV2RequestDto:
+      type: object
+      description: Parameters for requesting an advancement (V2)
+      required:
+        - condition
+        - tracking_id
+      properties:
+        condition:
+          $ref: '#/components/schemas/ConditionV2'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingIdForPost'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        remove_interest_from_current:
+          $ref: '#/components/schemas/RemoveInterestFromCurrent'
+        interest_removal_end_date:
+          $ref: '#/components/schemas/InterestRemovalEndDate'
+        contracts:
+          type: array
+          description: >-
+            Array of contract advancement configurations (required for
+            `MULTIPLE_CONTRACTS` condition)
+          items:
+            $ref: '#/components/schemas/ContractAdvancementDto'
+    CreateInstallmentAdvancedV2ResponseDto:
+      type: object
+      description: Response returned by advancement creation request (V2)
+      properties:
+        id:
+          $ref: '#/components/schemas/AdvancementId'
+        condition:
+          $ref: '#/components/schemas/ConditionV2'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        remove_interest_from_current:
+          $ref: '#/components/schemas/RemoveInterestFromCurrent'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallmentsToAdvance'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        cancelled_at:
+          $ref: '#/components/schemas/CanceledAt'
+        contracts:
+          type: array
+          description: >-
+            Array of contract advancement configurations (present for
+            `MULTIPLE_CONTRACTS` condition)
+          items:
+            $ref: '#/components/schemas/ContractAdvancementResponseDto'
+        installments:
+          type: array
+          description: Array of installment details
+          items:
+            $ref: '#/components/schemas/InstallmentResponseDto'
+        error_message:
+          $ref: '#/components/schemas/AdvancementErrorMessage'
+        status:
+          $ref: '#/components/schemas/AdvancementStatus'
+    ErrorCode:
+      type: string
+      description: Error code
+      example: EX0001
+    GetInstallmentAdvancedResponseDto:
+      type: object
+      description: Response returned by the creation of an advancement.
+      properties:
+        advancement_id:
+          $ref: '#/components/schemas/AdvancementId'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        cancelled_at:
+          $ref: '#/components/schemas/CanceledAt'
+        accountId:
+          $ref: '#/components/schemas/AccountID'
+        condition:
+          $ref: '#/components/schemas/Condition'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        number_of_installments_to_advance:
+          $ref: '#/components/schemas/NumberOfInstallmentsToAdvance'
+        installments:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstallmentResponseDto'
+    GetInstallmentAdvanceV2ResponseDto:
+      type: object
+      description: Response returned by the V2 get installment advancement endpoint
+      properties:
+        id:
+          $ref: '#/components/schemas/AdvancementId'
+        condition:
+          $ref: '#/components/schemas/ConditionV2'
+        tracking_id:
+          $ref: '#/components/schemas/TrackingID'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        remove_interest_from_current:
+          $ref: '#/components/schemas/RemoveInterestFromCurrent'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallmentsToAdvance'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        cancelled_at:
+          $ref: '#/components/schemas/CanceledAt'
+        contracts:
+          type: array
+          description: >-
+            Array of contract advancement configurations (present for
+            `MULTIPLE_CONTRACTS` condition)
+          items:
+            $ref: '#/components/schemas/ContractAdvancementResponseDto'
+        installments:
+          type: array
+          description: Array of installment details
+          items:
+            $ref: '#/components/schemas/InstallmentResponseDto'
+        error_message:
+          $ref: '#/components/schemas/AdvancementErrorMessage'
+        status:
+          $ref: '#/components/schemas/AdvancementStatus'
+    InstallmentResponseDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/TransactionIdOfInstallment'
+        new_amount:
+          $ref: '#/components/schemas/NewAmount'
+        old_amount:
+          $ref: '#/components/schemas/OldAmount'
+        new_interest_amount:
+          $ref: '#/components/schemas/NewInterestAmount'
+        old_interest_amount:
+          $ref: '#/components/schemas/OldInterestAmount'
+        new_statement_id:
+          $ref: '#/components/schemas/NewStatementId'
+        old_statement_id:
+          $ref: '#/components/schemas/OldStatementId'
+    InterestRemovalEndDate:
+      type: string
+      format: date
+      description: >
+        Cutoff date used for interest recalculation when `calculator` is
+        `PRESENT_VALUE`.
+
+        Reflects the value provided in the request. `null` if not provided.
+        Format = yyyy-mm-dd.
+      example: '2021-04-14'
+    NewAmount:
+      type: number
+      format: double
+      description: >
+        Full installment amount after applying any discount, including principal
+        and interest charges
+      example: 99.9
+    NewInterestAmount:
+      type: number
+      format: double
+      description: |
+        Full interest amount of installment after applying any discount
+      example: 9.9
+    NewStatementId:
+      type: number
+      format: integer
+      description: |
+        ID of the current statement
+      example: 1
+    NumberOfInstallmentsToAdvance:
+      type: integer
+      format: int32
+      description: >
+        Number of installments to advance
+
+
+        This field is **REQUIRED** if `contract_condition` is set to
+        `SPECIFIC_NUMBER_OF_INSTALLMENTS`. If `contract_condition` is set to
+        `ALL_CONTRACTS`, this field is ignored.
+      example: 3
+    OldAmount:
+      type: number
+      format: double
+      description: >
+        Full installment amount before applying any discount, including
+        principal and interest charges
+      example: 102.9
+    OldInterestAmount:
+      type: number
+      format: double
+      description: |
+        The full interest amount of an installment before applying any discount.
+      example: 11.9
+    OldStatementId:
+      type: number
+      format: integer
+      description: >
+        ID of the old statement. This is the ID of the statement on which the
+        installment was scheduled to appear before it was advanced. For
+        installments that are not advanced, `old_statement_id` and
+        `new_statement_id` should contain the same values.
+      example: 10
+    RemoveInterestFromCurrent:
+      type: boolean
+      description: Whether interest should be removed when an installment is advanced.
+      example: false
+      default: false
+    Reschedule:
+      type: string
+      description: |
+        Reschedule mode to apply. Must be `ADVANCEMENT`.
+      example: ADVANCEMENT
+      enum:
+        - ADVANCEMENT
+    SimulateInstallmentAdvancedResponseDto:
+      type: object
+      description: Response returned by the simulation of an advancement
+      properties:
+        account_id:
+          $ref: '#/components/schemas/AccountID'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationIdForFirstInstallment'
+        condition:
+          $ref: '#/components/schemas/Condition'
+        calculator:
+          $ref: '#/components/schemas/Calculator'
+        reschedule:
+          $ref: '#/components/schemas/Reschedule'
+        interest_removal_end_date:
+          $ref: '#/components/schemas/InterestRemovalEndDate'
+        installments:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstallmentResponseDto'
+    StandardErrorResponse:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: Error message
+          example: Internal error
+    TrackingID:
+      type: string
+      description: >-
+        Tracking ID. A client-supplied tracking ID that can be used to keep
+        track of an advancement. Must consist of the characters
+        [a-z,A-Z,0-9,-,:] with a range from 1 to 128.
+      example: 3ea22692-a209-11eb-89a2-f73e179dcbc2
+    TrackingIdForPost:
+      type: string
+      description: >
+        Tracking ID. A client-supplied tracking ID that can be used to keep
+        track of an advancement. Must consist of the characters
+        [a-z,A-Z,0-9,-,:] with a range from 1 to 128.
+
+
+        **Note:** For a given account ID, the tracking ID must be unique. You
+        cannot reuse the same tracking ID in another call to this endpoint, even
+        if the earlier call returned an error, unless you use a different
+        account ID.
+      example: 3ea22692-a209-11eb-89a2-f73e179dcbc2
+    TransactionID:
+      type: integer
+      format: int64
+      description: Transaction ID
+      example: 98457355
+    TransactionIdOfInstallment:
+      type: integer
+      format: int64
+      description: Transaction ID of the installment
+      example: 98457355
+    UpdatedAt:
+      type: string
+      format: date-time
+      description: Date/time advancement was last updated. Format = yyyy-mm-dd:hr:mm:ss.
+      example: '2025-09-01T10:05:00'
+  responses:
+    404NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardErrorResponse'
+          examples:
+            Installment advance not found:
+              description: Installment advancement not found
+              value:
+                code: EX307
+                message: >-
+                  Installment advancement AdvancementID for account accountID
+                  not found.
+    400BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardErrorResponse'
+          examples:
+            Missing request header:
+              description: Missing request header
+              value:
+                code: EX0002
+                message: Missing request header for method parameter of type String
+    409Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardErrorResponse'
+          examples:
+            Account conflict:
+              value:
+                message: >-
+                  Installment advance already exists with this Account_ID and
+                  Tracking_ID.
+    500InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardErrorResponse'
+          examples:
+            Internal Server Error:
+              description: Service is unavailable
+              value:
+                code: GN0001
+                message: Service is unavailable
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        Account access token. Tokens can expire quickly, which can result in an
+        "Unauthorized" error.
+      bearerFormat: JWT
+security:
+  - BearerAuth: []
+paths:
+  /v1/accounts/{accountId}/installment-advance/simulations:
+    get:
+      tags:
+        - Simulations
+      summary: Simulate installment advancement
+      description: >
+        Simulate an installment advancement for an account. That is, it
+        simulates advancing one or more installments from a future cycle to the
+        current cycle.
+
+
+        To simulate advancing installments for a specific installment agreement
+        (contract), set the `condition` query parameter to `SINGLE_CONTRACT`,
+        and set the `transaction_id` query parameter to the transaction ID of
+        any of the installments in the installment agreement. Specify the number
+        of installments to advance in the simulation in the
+        `number_of_installments_to_advance` query parameter. Installments are
+        advanced starting with the last scheduled installment in the agreement
+        and working backwards from there.
+
+
+        To simulate advancing <b>all</b> future installments for <b>all</b>
+        installment agreements in the account, set the `condition` field to
+        `ALL_CONTRACTS`. (In this case, the `number_of_installments_to_advance`
+        field is ignored.)
+
+
+        When you simulate advancing installments, you must specify what to do
+        with the interest. You have three options:
+
+        - To simulate removing 100% of the interest on the advanced
+        installment(s), set the `remove_interest_from_current` query parameter
+        to `true` and the `calculator` query parameter to `NONE`.
+
+        - To simulate advancing 100% of the interest on the advanced
+        installment(s), set `remove_interest_from_current` to `false` and set
+        `calculator` to `NONE`.
+
+        - To simulate recalculating the interest applied to the advanced
+        installments(s), set `calculator` to `PRESENT_VALUE`. The
+        `remove_interest_from_current` parameter can be set to either `true` or
+        `false`. If `true`, the interest on installments that were already in
+        the current cycle (and did not need to be advanced) is recalculated in
+        the simulation. Otherwise, interest on those installments is unchanged.
+
+
+        For more information, see <a
+        href='https://developers.pismo.io/pismo-docs/docs/installment-management#installment-advancements'>Installment
+        advancements</a>.
+
+
+        This endpoint generates an <a
+        href='https://developers.pismo.io/events/docs/balance-installment-advancement-1'>Installment
+        advanced</a> event.
+      operationId: SimulateInstallmentAdvancement
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/TransactionIdQuery'
+        - $ref: '#/components/parameters/ConditionQuery'
+        - $ref: '#/components/parameters/RemoveInterestFromCurrentQuery'
+        - $ref: '#/components/parameters/CalculatorQuery'
+        - $ref: '#/components/parameters/RescheduleQuery'
+        - $ref: '#/components/parameters/NumberOfInstallmentsToAdvance'
+        - $ref: '#/components/parameters/InterestRemovalEndDateQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulateInstallmentAdvancedResponseDto'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/accounts/{accountId}/installment-advance:
+    post:
+      tags:
+        - Installment advancements
+      summary: Create installment advancement
+      description: >
+        Creates an installment advancement for an account. An installment
+        advancement moves one or more future installments to the current cycle.
+
+
+        This version supports two advancement modes:
+
+
+        **ALL_CONTRACTS mode**: Advances all future installments for all
+        installment agreements in the account. When using this mode:
+
+        - Set `condition` to `ALL_CONTRACTS`.
+
+        - The `calculator`, `reschedule`, and `remove_interest_from_current`
+        fields are required at the root level.
+
+        - The `contracts` array should <i>not</i> be provided.
+
+
+        **MULTIPLE_CONTRACTS mode**: Advances installments for specific
+        contracts with individual configurations. When using this mode:
+
+        - Set `condition` to `MULTIPLE_CONTRACTS`.
+
+        - Provide a `contracts` array with individual contract configurations.
+
+        - Root-level `calculator`, `reschedule`, and
+        `remove_interest_from_current` fields must not be provided.
+
+
+        When you advance installments, you must specify what to do with the
+        interest. You have three options:
+
+        1. To remove 100% of the interest on the advanced installment(s), set
+        the `remove_interest_from_current` field to `true` and the `calculator`
+        field to `REMOVE_ALL_INTEREST`.
+
+        2. To advance 100% of the interest on the advanced installment(s), set
+        `remove_interest_from_current` to `false` and set `calculator` to
+        `NONE`.
+
+        3. To recalculate the interest applied to the advanced installment(s),
+        set `calculator` to `PRESENT_VALUE`. You can set the
+        `remove_interest_from_current` field  to either `true` or `false`. If
+        `true`, the system recalculates interest on installments that were
+        already in the current cycle (and did not need to be advanced).
+        Otherwise, interest on those installments remains unchanged.
+
+        For more information, refer to [Installment
+        advancements](doc:installment-management#installment-advancements) and
+        [Creating an installment
+        advancment](doc:installment-management#creating-an-installment-advancement).
+
+
+        This endpoint triggers an async process in which the transactions are
+        advanced as requested.
+      operationId: CreateInstallmentAdvancementV2
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInstallmentAdvancedV2RequestDto'
+            examples:
+              all_contracts:
+                summary: Advance all contracts
+                description: >-
+                  Example for advancing all future installments for all
+                  contracts
+                value:
+                  condition: ALL_CONTRACTS
+                  tracking_id: 3ea22692-a209-11eb-89a2-f73e179dcbc2
+                  calculator: PRESENT_VALUE
+                  reschedule: ADVANCEMENT
+                  remove_interest_from_current: false
+              multiple_contracts:
+                summary: Advance multiple specific contracts
+                description: >-
+                  Example for advancing specific contracts with individual
+                  configurations
+                value:
+                  condition: MULTIPLE_CONTRACTS
+                  tracking_id: 3ea22692-a209-11eb-89a2-f73e179dcbc2
+                  contracts:
+                    - remove_interest_from_current: false
+                      authorization_id: 12345
+                      number_of_installments: 3
+                      calculator: PRESENT_VALUE
+                      reschedule: ADVANCEMENT
+                    - remove_interest_from_current: true
+                      authorization_id: 67890
+                      number_of_installments: 2
+                      calculator: NONE
+                      reschedule: ADVANCEMENT
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInstallmentAdvancedV2ResponseDto'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/accounts/{accountId}/installment-advance/{advancementId}:
+    get:
+      tags:
+        - Installment advancements
+      summary: Get installment advancement
+      description: >
+        Retrieves an installment advancement by its ID. This endpoint provides
+        enhanced response data including:
+
+
+        - Detailed advancement information with status tracking
+
+        - Contract-specific configurations for MULTIPLE_CONTRACTS mode
+
+        - Enhanced metadata including creation, update, and cancellation
+        timestamps
+
+        - Error messages when applicable
+
+
+        The response format differs based on the advancement condition.
+
+        - **ALL_CONTRACTS**: Returns root-level calculator, reschedule settings,
+        and no contracts array.
+
+        - **MULTIPLE_CONTRACTS**: Returns individual contract configurations in
+        the contracts array.
+
+
+        This endpoint includes additional fields like `cancelled_at`,
+        `error_message`, `status`, and `contracts`.
+
+
+        <BetaComponent />
+      operationId: GetInstallmentAdvancementV2ById
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - $ref: '#/components/parameters/AdvancementIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInstallmentAdvanceV2ResponseDto'
+              examples:
+                all_contracts_processed:
+                  summary: ALL_CONTRACTS advancement (processed)
+                  description: Example of a successful ALL_CONTRACTS advancement
+                  value:
+                    id: 1
+                    condition: ALL_CONTRACTS
+                    tracking_id: 3ea22692-a209-11eb-89a2-f73e179dcbc2
+                    calculator: PRESENT_VALUE
+                    reschedule: ADVANCEMENT
+                    remove_interest_from_current: false
+                    number_of_installments: 5
+                    created_at: '2025-09-01T10:00:00'
+                    updated_at: '2025-09-01T10:05:00'
+                    status: PROCESSED
+                    installments:
+                      - id: 12345
+                        new_amount: 150
+                        old_amount: 155
+                        new_interest_amount: 15
+                        old_interest_amount: 17.5
+                        new_statement_id: 1
+                        old_statement_id: 3
+                multiple_contracts_processed:
+                  summary: MULTIPLE_CONTRACTS advancement (processed)
+                  description: Example of a successful MULTIPLE_CONTRACTS advancement
+                  value:
+                    id: 2
+                    condition: MULTIPLE_CONTRACTS
+                    tracking_id: 3ea22692-a209-11eb-89a2-f73e179dcbc2
+                    remove_interest_from_current: false
+                    created_at: '2025-09-01T11:00:00'
+                    updated_at: '2025-09-01T11:05:00'
+                    status: PROCESSED
+                    contracts:
+                      - remove_interest_from_current: false
+                        authorization_id: 12345
+                        number_of_installments: 3
+                        calculator: PRESENT_VALUE
+                        reschedule: ADVANCEMENT
+                      - remove_interest_from_current: true
+                        authorization_id: 67890
+                        number_of_installments: 2
+                        calculator: NONE
+                        reschedule: ADVANCEMENT
+                    installments:
+                      - id: 12346
+                        new_amount: 200
+                        old_amount: 210
+                        new_interest_amount: 20
+                        old_interest_amount: 25
+                        new_statement_id: 1
+                        old_statement_id: 4
+                      - id: 12347
+                        new_amount: 100
+                        old_amount: 100
+                        new_interest_amount: 0
+                        old_interest_amount: 10
+                        new_statement_id: 1
+                        old_statement_id: 5
+                cancelled_advancement:
+                  summary: Cancelled advancement
+                  description: Example of a canceled advancement with error message
+                  value:
+                    id: 3
+                    condition: ALL_CONTRACTS
+                    tracking_id: 3ea22692-a209-11eb-89a2-f73e179dcbc2
+                    calculator: PRESENT_VALUE
+                    reschedule: ADVANCEMENT
+                    remove_interest_from_current: false
+                    number_of_installments: 2
+                    created_at: '2025-09-01T12:00:00'
+                    updated_at: '2025-09-01T12:30:00'
+                    cancelled_at: '2025-09-01T12:30:00'
+                    status: CANCELLED
+                    error_message: Operation error
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    delete:
+      summary: Cancel installment advancement
+      description: |
+        Cancel an installment advancement.
+      operationId: cancelInstallmentAdvanceV2
+      tags:
+        - Installment advancements
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/AdvancementIdPath'
+      responses:
+        '200':
+          description: Installment advance canceled successfully
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/CancellationInstallmentAdvancedV2ResponseDto
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/accounts/{accountId}/installment-advance:
+    post:
+      tags:
+        - Installment advancements
+      summary: Create installment advancement (deprecated)
+      description: >
+        Create an installment advancement for an account. This is a DEPRECATED
+        endpoint. Use the non-deprecated [Create installment
+        advancement](ref:createinstallmentadvancementv2) endpoint instead.<br>
+
+        An installment advancement moves one or more future installments to the
+        current cycle.
+
+
+        To advance installments for a specific installment agreement (contract),
+        set the `condition` field to `SINGLE_CONTRACT`, and set the
+        `transaction_id` field to the transaction ID of any of the installments
+        in the installment agreement. Specify the number of installments to
+        advance in the `number_of_installments_to_advance` field. Installments
+        are advanced starting with the last scheduled installment in the
+        agreement and working backwards from there.
+
+
+        To advance <b>all</b> future installments for <b>all</b> installment
+        agreements in the account, set the `condition` field to `ALL_CONTRACTS`.
+        (In this case, the `number_of_installments_to_advance` field is
+        ignored.)
+
+
+        When you advance installments, you must specify what to do with the
+        interest. You have three options:
+
+        1. To remove 100% of the interest on the advanced installment(s), set
+        the `remove_interest_from_current` field to `true` and the `calculator`
+        field to `REMOVE_ALL_INTEREST`.
+
+        2. To advance 100% of the interest on the advanced installment(s), set
+        `remove_interest_from_current` to `false` and set `calculator` to
+        `NONE`.
+
+        3. To recalculate the interest applied to the advanced installment(s),
+        set `calculator` to `PRESENT_VALUE`. You can set the
+        `remove_interest_from_current` field  to either `true` or `false`. If
+        `true`, the system recalculates interest on installments that were
+        already in the current cycle (and did not need to be advanced).
+        Otherwise, interest on those installments remains unchanged.
+
+        For more information, refer to [Installment
+        advancements](doc:installment-management#installment-advancements) and
+        [Creating an installment
+        advancment](doc:installment-management#creating-an-installment-advancement).
+
+
+        This endpoint generates an <a
+        href='https://developers.pismo.io/events/docs/balance-installment-advancement-1'>Installment
+        advanced</a> event.
+      operationId: CreateInstallmentAdvancement
+      deprecated: true
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInstallmentAdvancedRequestDto'
+        required: true
+      responses:
+        '202':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInstallmentAdvancedResponseDto'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/accounts/{accountId}/installment-advance/{advancementId}:
+    get:
+      tags:
+        - Installment advancements
+      summary: Get installment advancement (deprecated)
+      description: >
+        Retrieves an installment advancement by its ID. This is a DEPRECATED
+        endpoint. Use the non-deprecated [Get installment
+        advancement](ref:getinstallmentadvancementv2byid) endpoint instead.
+      operationId: GetIntallmentAdvancementById
+      deprecated: true
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - $ref: '#/components/parameters/AdvancementIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInstallmentAdvancedResponseDto'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    delete:
+      tags:
+        - Installment advancements
+      summary: Cancel installment advancement (deprecated)
+      description: >
+        Cancel the installment advancement for an account, and return the
+        installments to their original cycles. If necessary, reinstate original
+        interest on the installments.<br>
+
+        This is a DEPRECATED endpoint. Use the non-deprecated [Cancel
+        installment advancement](ref:cancelinstallmentadvancev2) endpoint
+        instead.
+
+
+        This endpoint generates an <a
+        href='https://developers.pismo.io/events/docs/balance-installment-advancement-cancelled-1'>Installment
+        advanced cancelled</a> event.
+      operationId: CancelInstallmentAdvancement
+      deprecated: true
+      parameters:
+        - $ref: '#/components/parameters/AccountIdPath'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - $ref: '#/components/parameters/AdvancementIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelInstallmentAdvancedResponseDto'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
