@@ -9,7 +9,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/qrcps
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: BR Code
     description: Endpoint for encoding and decoding Brazilian BR Codes
@@ -199,51 +199,4 @@ components:
       properties:
         greetings:
           type: string
-paths:
-  /v1/emv/brcode/encode:
-    post:
-      summary: Encode BR Code
-      description: >
-        Encode a Brazilian BR Code (short for "Brazilian Barcode") - a standard
-        barcode format used in Brazil for electronic payments. It is part of the
-        Brazilian Payment System (SPB) and is regulated by the Central Bank of
-        Brazil. The BR Code contains information about the payee, transaction
-        details, and other data.
-
-
-        A BR Code is typically used with [Pix](doc:pix-instant-payments), a
-        Brazilian instant payments system. For more information about BR Codes,
-        see <a
-        href="https://www.bcb.gov.br/content/config/Documents/BR_Code_MANUAL_Version_2_May_2020.pdf"
-        target="_blank">BR Code Manual</a>
-      operationId: post-brcode-encode
-      tags:
-        - BR Code
-      parameters:
-        - $ref: '#/components/parameters/cidHeader'
-        - $ref: '#/components/parameters/orgIdHeader'
-      requestBody:
-        description: Encode Brcode request body
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/brcode.barCode'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/brcode.Marshaled'
-        '400':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httpserver.Error'
-        '500':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httpserver.Error'
+paths: {}
