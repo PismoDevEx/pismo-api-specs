@@ -2212,8 +2212,10 @@ components:
           example: Merchant XYZ
         merchant_state_or_country:
           type: string
-          description: Merchant state or country using ISO 3166-1 alpha-2 country code
-          maxLength: 2
+          description: >-
+            Merchant state or country using ISO 3166-1 alpha-2 or alpha-3
+            country code
+          maxLength: 3
           example: RS
         merchant_category_code:
           type: string
@@ -4401,6 +4403,13 @@ paths:
         error](https://developers.pismo.io/events/docs/migration-pre-go-live-outgoing-1)
         &#8211; when the Pre Go-live process runs but errors occur before
         dispatching the SUCCESS/FAIL event for each migrated account.
+
+
+        - [Statement organized
+        completed](https://developers.pismo.io/events/docs/migration-organize-statement-outgoing-1)
+        &#8211; emitted when the organize-statement process runs, indicating
+        whether the account's statements were organized successfully or the
+        processing failed. Emission is opt-in.
       summary: Migrate accounts pre go-live
       operationId: PostPreGoLiveV1
       tags:
@@ -4449,6 +4458,13 @@ paths:
 
         - [Accrual migration
         completed](https://developers.pismo.io/events/docs/migration-accrual-outgoing-1)
+
+
+        - [Statement organized
+        completed](https://developers.pismo.io/events/docs/migration-organize-statement-outgoing-1)
+        — emitted when the organize-statement process runs, indicating whether
+        the account's statements were organized successfully or the processing
+        failed. Emission is opt-in.
       tags:
         - Accrual migration
       operationId: PostAccrualsV1
@@ -4550,6 +4566,12 @@ paths:
 
         - [Balance control migration
         completed](https://developers.pismo.io/events/docs/migration-balance-control-outgoing-1)
+
+        - [Statement organized
+        completed](https://developers.pismo.io/events/docs/migration-organize-statement-outgoing-1)
+        — emitted when the organize-statement process runs, indicating whether
+        the account's statements were organized successfully or the processing
+        failed. Emission is opt-in.
       summary: Migrate balances
       operationId: PostBalanceControlV1
       tags:
@@ -5107,6 +5129,13 @@ paths:
         - [Instant payment transaction migration
         completed](https://developers.pismo.io/events/docs/migration-instant-payment-outgoing-1)
         (generated when migration.type is `INSTANT_PAYMENT`)
+
+        - [Statement organized
+        completed](https://developers.pismo.io/events/docs/migration-organize-statement-outgoing-1)
+        — emitted when migrating to-be-billed or installment transactions and
+        the organize-statement process runs, indicating whether the account's
+        statements were organized successfully or the processing failed.
+        Emission is opt-in.
       summary: Migrate transactions
       tags:
         - Transaction migration
