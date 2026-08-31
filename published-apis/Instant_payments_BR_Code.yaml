@@ -9,7 +9,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/qrcps
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
 tags:
   - name: BR Code
     description: Endpoint for encoding and decoding Brazilian BR Codes
