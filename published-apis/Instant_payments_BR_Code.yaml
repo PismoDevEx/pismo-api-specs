@@ -1,0 +1,284 @@
+openapi: 3.0.1
+info:
+  title: Instant payments - BR Code
+  contact:
+    name: Pismo
+  description: API for encoding and decoding Brazilian BR Codes
+  license:
+    name: Copyright Pismo
+  version: '1.0'
+servers:
+  - url: https://sandbox.pismolabs.io/qrcps
+    description: Sandbox API server for testing.
+tags:
+  - name: BR Code
+    description: Endpoint for encoding and decoding Brazilian BR Codes
+  - name: Health
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    cidHeader:
+      name: x-cid
+      in: header
+      schema:
+        type: string
+      description: >
+        The Correlation IDentifier UUID field links related API requests and
+        events. The `x-cid` can help the Pismo engineering team track everything
+        related to a call. If not passed, this field is automatically generated.
+      required: true
+    orgIdHeader:
+      name: x-tenant
+      schema:
+        type: string
+      in: header
+      description: Organization/tenant ID
+  schemas:
+    brcode.AdditionalDataFieldTemplate:
+      type: object
+      properties:
+        reference_label:
+          type: string
+          description: Reference label
+          maxLength: 25
+    brcode.barCode:
+      type: object
+      description: Brcode object
+      required:
+        - payload_format_indicator
+        - merchant_account_information
+        - merchant_category_code
+        - transaction_currency
+        - country_code
+        - merchant_name
+        - merchant_city
+        - additional_data_field_template
+      properties:
+        country_code:
+          type: string
+          description: |
+            Country code - ISO 3166-1 alpha 2. For example: "BR" = Brazil
+          maxLength: 2
+          example: BR
+        merchant_account_information:
+          type: array
+          description: Merchant account information
+          items:
+            $ref: '#/components/schemas/brcode.GenericSubBlock'
+        merchant_category_code:
+          type: string
+          description: ISO 18245 merchant category code.
+          maxLength: 4
+          example: '5446'
+        merchant_city:
+          type: string
+          description: Merchant's city
+          maxLength: 15
+          example: Brasilia
+        merchant_name:
+          type: string
+          description: Merchant name
+          example: Acme Widgets
+          maxLength: 25
+        additional_data_field_template:
+          $ref: '#/components/schemas/brcode.AdditionalDataFieldTemplate'
+        payload_format_indicator:
+          type: string
+          description: >
+            For Brazilian BR Codes associated with Pix transactions, this is
+            fixed at "01". This value indicates that the data following conforms
+            to the Brazilan Payment System's specifications for Pix
+            transactions.
+          maxLength: 2
+          example: '01'
+        transaction_currency:
+          type: integer
+          description: |
+            ISO 4217 transaction currency. For example: 986 = Brazilin Real
+          maximum: 999
+          example: 986
+        point_initiation_method:
+          type: string
+          description: >
+            Point initiation method. A value = "12" means that the BR Code can
+            only be used once.
+          maxLength: 2
+          example: '12'
+        postal_code:
+          type: string
+          description: >-
+            Código de Endereçamento Postal (CEP - Postal Addressing Code). 8
+            digits separated by a hyphen.
+          example: 86753-090
+        transaction_amount:
+          type: number
+          description: Transaction amount
+          maximum: 9999999999999
+          example: 86753.09
+        unreserved_templates:
+          type: array
+          description: Unreserved template
+          items:
+            $ref: '#/components/schemas/brcode.GenericSubBlock'
+    brcode.GenericSubBlock:
+      type: object
+      properties:
+        additional_information:
+          type: string
+          description: >
+            Additional information in the BR Code content.  Relies on ID 02 of
+            the BR Code standards. 
+        gui:
+          type: string
+          maxLength: 14
+          description: Globally unique identifier.
+          example: BR.COM.OTHER
+        items:
+          type: array
+          description: |
+            BR Code properties.
+
+            Example BR Code:
+
+             `00020126940014br.gov.bcb.pix2572qr-h.sandbox.pix.bcb.gov.br/rest/api/v1/dde3049e944b49818c82a55aa8312ea45204000053039865802BR5903Pix6008BRASILIA62070503***63040576`
+
+            All the chars inside a BR Code must respect the following rule: 
+             {ID-2chars}{SIZE-2chars}{VALUE-N}{ID-2chars}{SIZE-2chars}{VALUE-N}{ID-2chars}{SIZE-2chars}{VALUE-N}...
+
+            For the BR Code example, it will be parsed to:
+                {ID: "00", Size: 02, Value: "01"}
+                {ID: "26", Size: 94, Value: "0014br.gov.bcb.pix2572qr-h.sandbox.pix.bcb.gov.br/rest/api/v1/dde3049e944b49818c82a55aa8312ea4"}
+
+            The items list will look like this:   
+            <pre>
+            [ 
+              "01",
+              "0014br.gov.bcb.pix2572qr-h.sandbox.pix.bcb.gov.br/rest/api/v1/dde3049e944b49818c82a55aa8312ea4"  
+            ] </pre>
+          items:
+            type: string
+        key:
+          type: string
+          maxLength: 36
+          description: Pix key.
+          example: 123e4567-e12b-12d1-a456-426655440000
+        pss:
+          type: string
+          maxLength: 8
+          description: >
+            Prestador de Serviço de Saque (PSS) means the Bank Brazilian payment
+            system ID.  Also known as an ISPB (Identifcador do Sistema de
+            Pagamento Brazil) number, an 8-digit value.
+          example: '86753009'
+        url:
+          type: string
+          description: |
+            The URL location in the Pix DICT where the payment will be settled. 
+          example: >-
+            br.gov.bcb.pix2572qr-h.sandbox.pix.bcb.gov.br/rest/api/v1/dde3049e944b49
+    brcode.Marshaled:
+      type: object
+      properties:
+        brcode:
+          type: string
+          description: Encoded BR Code in EMV (Europay Mastercard and Visa) format.
+    httpserver.Error:
+      type: object
+      description: Server error
+      properties:
+        code: {}
+        message:
+          type: string
+          description: Error message
+    httpserver.HeartbeatResponse:
+      type: object
+      properties:
+        greetings:
+          type: string
+paths:
+  /v1/emv/brcode/encode:
+    post:
+      summary: Encode BR Code
+      description: >
+        Encode a Brazilian BR Code (short for "Brazilian Barcode") - a standard
+        barcode format used in Brazil for electronic payments. It is part of the
+        Brazilian Payment System (SPB) and is regulated by the Central Bank of
+        Brazil. The BR Code contains information about the payee, transaction
+        details, and other data.
+
+
+        A BR Code is typically used with [Pix](doc:pix-instant-payments), a
+        Brazilian instant payments system. For more information about BR Codes,
+        see <a
+        href="https://www.bcb.gov.br/content/config/Documents/BR_Code_MANUAL_Version_2_May_2020.pdf"
+        target="_blank">BR Code Manual</a>
+      operationId: post-brcode-encode
+      tags:
+        - BR Code
+      parameters:
+        - $ref: '#/components/parameters/cidHeader'
+        - $ref: '#/components/parameters/orgIdHeader'
+      requestBody:
+        description: Encode Brcode request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/brcode.barCode'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/brcode.Marshaled'
+        '400':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httpserver.Error'
+        '500':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httpserver.Error'
+  /v1/emv/brcode/decode:
+    post:
+      summary: Decode BR Code
+      description: Decode a Brazilian BR Code.
+      operationId: post-brcode-decode
+      tags:
+        - BR Code
+      parameters:
+        - $ref: '#/components/parameters/cidHeader'
+        - $ref: '#/components/parameters/orgIdHeader'
+      requestBody:
+        description: Decode Brcode request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/brcode.Marshaled'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/brcode.barCode'
+        '400':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httpserver.Error'
+        '500':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httpserver.Error'
