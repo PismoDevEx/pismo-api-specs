@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Platform setup - Programs
   description: Endpoints to handle Programs
@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: Programs
     description: Create and manage programs
@@ -349,7 +349,6 @@ components:
         - PRIVATE
         - CABAL
         - GOODCARD
-        - GPN
       example: VISA
     BrandData:
       type: object
@@ -424,10 +423,6 @@ components:
           $ref: '#/components/schemas/Bin'
         language:
           $ref: '#/components/schemas/ProgramLanguage'
-        cycle_closing:
-          $ref: '#/components/schemas/ProgramCycleClosing'
-        holiday_calendar_id:
-          $ref: '#/components/schemas/ProgramHolidayCalendarId'
     CountryCode:
       type: string
       description: >-
@@ -480,11 +475,6 @@ components:
       format: int32
       description: Day of the month (1 to 28) for the statement due date.
       example: 10
-    DueDateID:
-      type: integer
-      format: int64
-      description: Due date ID
-      example: 1234
     DueDates:
       type: array
       description: >
@@ -525,10 +515,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/ProgramDueDatePatch'
-    ExistsAccountBoolean:
-      type: boolean
-      description: Is there a related account?
-      example: true
     ExportCreatedAt:
       type: string
       description: Program export creation datetime. Format = yyyy-mm-ddThh:mm:ss.
@@ -746,10 +732,6 @@ components:
           $ref: '#/components/schemas/ProgramStatus'
         language:
           $ref: '#/components/schemas/ProgramLanguage'
-        cycle_closing:
-          $ref: '#/components/schemas/ProgramCycleClosing'
-        holiday_calendar_id:
-          $ref: '#/components/schemas/ProgramHolidayCalendarId'
     ProgramDetails:
       type: object
       properties:
@@ -789,10 +771,6 @@ components:
           $ref: '#/components/schemas/ProgramStatus'
         language:
           $ref: '#/components/schemas/ProgramLanguage'
-        cycle_closing:
-          $ref: '#/components/schemas/ProgramCycleClosing'
-        holiday_calendar_id:
-          $ref: '#/components/schemas/ProgramHolidayCalendarId'
     ProgramCopyV2Response:
       type: object
       properties:
@@ -954,10 +932,6 @@ components:
           $ref: '#/components/schemas/DueDates'
         language:
           $ref: '#/components/schemas/ProgramLanguage'
-        cycle_closing:
-          $ref: '#/components/schemas/ProgramCycleClosing'
-        holiday_calendar_id:
-          $ref: '#/components/schemas/ProgramHolidayCalendarId'
     ProgramID:
       type: integer
       format: int64
@@ -1057,23 +1031,6 @@ components:
         - pt-BR
         - en-US
       example: en-US
-    ProgramHolidayCalendarId:
-      type: string
-      description: Program holiday calendar ID
-      maxLength: 36
-      example: 0c78714f-3e88-40f3-9eda-debd356faabc
-    ProgramCycleClosing:
-      type: string
-      description: >
-        Program cicle closing. 
-
-
-        This field is used for things like accrual basis, interest calculation,
-        taxes, penalties, tiers, and more.  
-
-
-        Format = HH:MM:SS. Default is null.
-      example: '23:59:59'
     ProgramPage:
       type: object
       properties:
@@ -1315,10 +1272,6 @@ components:
           $ref: '#/components/schemas/DueDatesPatch'
         language:
           $ref: '#/components/schemas/ProgramLanguage'
-        cycle_closing:
-          $ref: '#/components/schemas/ProgramCycleClosing'
-        holiday_calendar_id:
-          $ref: '#/components/schemas/ProgramHolidayCalendarId'
     ProgramRelationshipID:
       type: integer
       format: int64
@@ -1386,10 +1339,6 @@ components:
           $ref: '#/components/schemas/UrlImage'
         language:
           $ref: '#/components/schemas/ProgramLanguage'
-        cycle_closing:
-          $ref: '#/components/schemas/ProgramCycleClosing'
-        holiday_calendar_id:
-          $ref: '#/components/schemas/ProgramHolidayCalendarId'
     ProgramIDs:
       type: array
       items:
