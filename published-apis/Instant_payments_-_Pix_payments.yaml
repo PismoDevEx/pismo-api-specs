@@ -5138,13 +5138,16 @@ paths:
         change. Reach out to Pismo before using it in production.
 
 
-        To create a preset payment, set `type` = `PRESET` and provide the full
-        list of executions in `scheduler_details.executions`. Each item has a
-        `due_date` (`yyyy-mm-dd`) and a pre-established `end_to_end_id`. From 1
-        to 60 executions are supported and are all created upfront in a single
-        operation, so `start_scheduler_date`, `end_scheduler_date` and `cycle`
-        must not be sent for this type — the schedule window is derived from the
-        executions' `due_date`.
+        To create a preset payment: 
+
+          * Set `type` = `PRESET` 
+          * Provide the full list of executions in `scheduler_details.executions` 
+
+        Each item has a `due_date` (`yyyy-mm-dd`) and a pre-established
+        `end_to_end_id`. From 1 to 60 executions are supported and are all
+        created upfront in a single operation. So, `start_scheduler_date`,
+        `end_scheduler_date` and `cycle` **MUST NOT BE** sent for this type. The
+        schedule window is derived from the executions' `due_date`.
 
 
         Once created, the executions can be listed through the [List Pix
