@@ -304,9 +304,11 @@ components:
       required: false
       schema:
         type: boolean
-      description: >-
+      description: >
         Should a preview of upcoming executions be presented? Default is `false`
-        (no execution previews returned).
+        (no execution previews returned). Has no effect for `PRESET` schedulers,
+        whose executions are all created upfront and available through the [List
+        Pix scheduler executions](ref:get-scheduler-executions) endpoint.
       example: true
     TransactionTypePath:
       name: type
@@ -2120,10 +2122,24 @@ components:
       example: '8675309'
     ProcessingType:
       type: string
-      description: Processing type
+      description: >
+        Scheduler processing type:
+
+
+        * `ONCE` - A single scheduled transfer executed on
+        `start_scheduler_date`.
+
+        * `RECURRING` - Transfers created over time according to `cycle`, from
+        `start_scheduler_date` until `end_scheduler_date`.
+
+        * `PRESET` - **(Beta)** The caller pre-establishes all executions in the
+        `scheduler_details.executions` list and created upfront.
+        `start_scheduler_date`/`end_scheduler_date` and `cycle` are not used;
+        the schedule window is derived from the executions' `due_date`.
       enum:
         - ONCE
         - RECURRING
+        - PRESET
       example: RECURRING
     PSPtransactionCreatedAt:
       type: string
@@ -2452,8 +2468,6 @@ components:
     scheduler.SchedulerDetails:
       type: object
       required:
-        - end_scheduler_date
-        - start_scheduler_date
         - type
       properties:
         type:
@@ -2465,19 +2479,48 @@ components:
           example: Pay at end of month
         start_scheduler_date:
           type: string
-          description: >-
+          description: >
             Datetime to start the scheduled payment. Format = yyyy-mm-dd.
             Transfers are made at midnight on this date, and if recurring, every
-            month until `end_scheduler_date`.
+            month until `end_scheduler_date`. **REQUIRED** for `type` = `ONCE`
+            or `RECURRING`. **MUST** be omitted for `type` = `PRESET` (the start
+            of the schedule is derived from the earliest execution `due_date`).
           example: '2024-06-10'
         end_scheduler_date:
           type: string
-          description: >-
+          description: >
             Datetime to stop the scheduled payment (maximum = 1 year). Format =
-            yyyy-mm-dd
+            yyyy-mm-dd. **REQUIRED** for `type` = `ONCE` or `RECURRING`.
+            **MUST** be omitted for `type` = `PRESET` (the end of the schedule
+            is derived from the latest execution `due_date`).
           example: '2024-06-10'
         cycle:
           $ref: '#/components/schemas/SchedulerCycle'
+        executions:
+          type: array
+          minItems: 1
+          maxItems: 60
+          description: >
+            List of pre-established executions. **REQUIRED** for `type` =
+            `PRESET` (1 to 60 items); **MUST** be omitted for `type` = `ONCE` or
+            `RECURRING`. Each execution is created upfront and can be retrieved
+            through the [List Pix scheduler
+            executions](ref:get-scheduler-executions) endpoint.
+          items:
+            $ref: '#/components/schemas/scheduler.PresetExecution'
+    scheduler.PresetExecution:
+      type: object
+      description: A single pre-established execution for a `PRESET` scheduler.
+      required:
+        - due_date
+        - end_to_end_id
+      properties:
+        due_date:
+          type: string
+          description: Date on which the execution runs. Format = yyyy-mm-dd.
+          example: '2026-10-15'
+        end_to_end_id:
+          $ref: '#/components/schemas/EndToEndID'
     scheduler.SchedulerRegisterRequest:
       type: object
       required:
@@ -2520,6 +2563,13 @@ components:
           $ref: '#/components/schemas/FlexControls'
         taxes:
           $ref: '#/components/schemas/Taxes'
+        processing_code:
+          type: string
+          description: >-
+            Optional processing code propagated to the resulting Pix-out
+            transfer. Up to 6 alphanumeric characters.
+          maxLength: 6
+          example: '500001'
     scheduler.SchedulerRegisterResponse:
       type: object
       properties:
@@ -2610,9 +2660,12 @@ components:
           $ref: '#/components/schemas/scheduler.ExecutionsPreview'
     scheduler.ExecutionsPreview:
       type: object
-      description: >-
+      description: >
         Preview of upcoming executions that will be created in the future.
-        Present only when `showPreview=true`.
+        Present only when `showPreview=true` and the scheduler `type` is `ONCE`
+        or `RECURRING`. Not returned for `PRESET` schedulers, whose executions
+        are all created upfront and available through the [List Pix scheduler
+        executions](ref:get-scheduler-executions) endpoint.
       properties:
         has_more:
           type: boolean
@@ -5078,6 +5131,33 @@ paths:
         `2024-01-30`, the next transaction is created on `2024-02-29`.
 
 
+        **Preset schedules (Beta)**
+
+
+        > ⚠️ The `PRESET` scheduler type is currently in **beta** and may
+        change. Reach out to Pismo before using it in production.
+
+
+        To create a preset payment, set `type` = `PRESET` and provide the full
+        list of executions in `scheduler_details.executions`. Each item has a
+        `due_date` (`yyyy-mm-dd`) and a pre-established `end_to_end_id`. From 1
+        to 60 executions are supported and are all created upfront in a single
+        operation, so `start_scheduler_date`, `end_scheduler_date` and `cycle`
+        must not be sent for this type — the schedule window is derived from the
+        executions' `due_date`.
+
+
+        Once created, the executions can be listed through the [List Pix
+        scheduler executions](ref:get-scheduler-executions) endpoint. Because
+        they already exist, the [Get scheduled
+        transfer](ref:get-scheduled-pix-payment) endpoint does not return
+        `executions_preview` for `PRESET` schedulers.
+
+
+        The optional `processing_code` (up to 6 alphanumeric characters) is
+        propagated to the resulting Pix-out transfer.
+
+
         **Events**
 
 
@@ -5223,6 +5303,14 @@ paths:
         Get a scheduled Pix payment.
 
 
+        For `ONCE` and `RECURRING` schedulers, set `showPreview=true` to include
+        `executions_preview` (a preview of upcoming executions that will be
+        created in the future). For `PRESET` schedulers, `executions_preview` is
+        never returned because all executions are created upfront — retrieve
+        them through the [List Pix scheduler
+        executions](ref:get-scheduler-executions) endpoint instead.
+
+
         **Note:** This endpoint takes an account token - an access token encoded
         with a Pismo accound ID.
       operationId: get-scheduled-pix-payment
@@ -5290,6 +5378,11 @@ paths:
         List Pix payment scheduler executions - scheduled Pix transfers that
         have run to completion. A scheduled transfer can have many executions
         if, for example, it is recurring.
+
+
+        For `PRESET` schedulers, all executions are created upfront when the
+        scheduler is registered, so this endpoint returns the complete set of
+        executions provided in `scheduler_details.executions`.
       tags:
         - Scheduled transfers V2
       operationId: get-scheduler-executions
