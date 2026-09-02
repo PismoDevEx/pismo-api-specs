@@ -72,6 +72,18 @@ components:
       schema:
         type: integer
       example: 123456
+    accountIdentifier:
+      description: >
+        Account ID. Accepts either the Pismo `account_id` or your
+        `external_account_id`. Send the same ID used to generate the access
+        token.
+      in: path
+      name: accountId
+      required: true
+      schema:
+        type: string
+        maxLength: 60
+      example: '123456'
     programIdPath:
       description: Program ID
       in: path
@@ -307,7 +319,8 @@ components:
         error.
 
 
-        The response returns exactly what was sent in the request:
+        In the **attach** endpoints, the response returns exactly what was sent
+        in the request:
 
         * Send `unit` + `value` returns `unit` + `value`
 
@@ -316,6 +329,14 @@ components:
         * Send nothing (default fallback applied) returns `unit=DAYS` and
         `value` equal to the product's configured
         `PRODUCT_DEFAULT_MATURITY_DATE_DAYS`
+
+
+        **NOTE**: this behavior applies only to attach. The `GET` attachment
+        endpoints and `PATCH /v1/deposits/accounts/{accountId}/attachment`
+        return the resolved term, with `unit`, `value`, and
+        `calendar_maturity_date` populated together. A `PATCH` sent in
+        explicit‑date form is returned normalized as `{unit: DAYS, value:
+        <days>, calendar_maturity_date: <date>}`.
       properties:
         unit:
           $ref: '#/components/schemas/MaturityPeriodUnit'
@@ -751,9 +772,62 @@ components:
         deposit_configs:
           type: object
           description: >
-            At least one of `overrides` or `interest_capitalization_mode` must
-            be provided.
+            At least one of `maturity_period`, `overrides` or
+            `interest_capitalization_mode` must be provided.
           properties:
+            maturity_period:
+              allOf:
+                - $ref: '#/components/schemas/MaturityPeriod'
+              nullable: true
+              description: >
+                Defines the term currently in force and recalculates the cycle’s
+                maturity date immediately. The update takes effect at once; it
+                does not wait for the next cycle or rollover.
+
+
+                Accepts the same mutually exclusive forms as the attach
+                endpoint:
+                  * **Relative period**: `unit` + `value` (for example, `MONTHS` + `18`)
+                  * **Explicit date**: `calendar_maturity_date` (for example, `2026‑12‑31`)
+
+                * **Anchor date**: the term is always recalculated from the
+                attachment’s `effective_date`, exactly as at attach time. The
+                `PATCH` execution date does not shift the cycle start date, it
+                only updates the cycle end date. Because of this anchor,
+                shortening a term on an attachment with an old `effective_date`
+                can produce a maturity date that is already in the past, which
+                is rejected.
+
+
+                * **Maturity‑date boundary**: the resolved maturity date must be
+                today or later. Any value that resolves to a past date returns
+                `400 EIBACC0306`, regardless of form.
+
+
+                * **Grace‑period behavior**: updates made during the
+                grace‑period window apply immediately to the cycle that began on
+                the first day of that window. They are never deferred to a later
+                rollover.
+
+
+                * **`null` and omission**: `maturity_period` represents the term
+                itself, not an override. `null`, an empty object, or omission
+                all leave the persisted term unchanged. Only an explicit value
+                recalculates the term, so an incomplete payload cannot revert
+                the term to the product default.
+
+
+                * **Response shape**: the response returns the resolved term
+                with unit, value, and `calendar_maturity_date` populated
+                together. Requests sent in explicit‑date form are normalized to
+                {`unit`: `DAYS`, `value`: `<days>`, `calendar_maturity_date`:
+                `<date>`}.
+
+
+                Do not confuse this field with `overrides.renewal_term`.
+                `renewal_term` applies only at rollover and never recalculates
+                the current cycle’s maturity date. Both fields are independent
+                and might appear in the same request.
             interest_capitalization_mode:
               type: string
               enum:
@@ -823,6 +897,12 @@ components:
           type: string
           description: Product ID
           example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        external_account_id:
+          type: string
+          description: >-
+            External account identifier of the account. Returned only when the
+            account has an external account identifier.
+          example: ext-acc-001
         effective_date:
           type: string
           format: date
@@ -1200,9 +1280,9 @@ components:
           description: >
             Interest bearing accounts feed the interest engine through two
             submission modes.<br>
-              * `DEPOSIT_BASIS` sends each deposit and withdrawal as a per‑movement entry, which is the default behavior. 
+              * `DEPOSIT_BASIS` sends each deposit and withdrawal as a per‑movement entry, which is the default behavior.
               * `BALANCE_BASIS` sends the daily closing balance instead.
-                       
+
               Each mode must align with the interest plan’s configured `interest_base_model`.
           enum:
             - DEPOSIT_BASIS
@@ -2281,6 +2361,12 @@ components:
     PenaltySimulationResponse:
       type: object
       properties:
+        external_account_id:
+          type: string
+          description: >-
+            External account identifier of the resolved account. Returned only
+            when the account has an external account identifier.
+          example: a4070788-bbe3-4127-8abc-12345
         withdrawal_amount:
           type: number
           description: >-
@@ -2860,11 +2946,24 @@ paths:
       tags:
         - Account attachment
       summary: Get account attachment
-      description: |
+      description: >
         Get an account's attached product
+
+
+        `accountId` accepts either the Pismo `account_id` or your
+        `external_account_id`.
+
+
+        Which ID you can use is determined by the access token, so send the same
+        ID the token was generated with. To address the account by
+        `external_account_id`, the token must be created with that external
+        account ID; a token generated with a Pismo account ID accepts only the
+        numeric `account_id`. Sending an ID that doesn’t match the token returns
+        `403`.
       operationId: interest-bearing-v1-get-account-attachment
       parameters:
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/authorizationTokenHeader'
+        - $ref: '#/components/parameters/accountIdentifier'
       responses:
         '200':
           description: Success
@@ -3914,13 +4013,14 @@ paths:
     patch:
       tags:
         - Account attachment
-      summary: Update deposit account attachment overrides
+      summary: Update deposit account attachment
       description: >
-        Partially updates `deposit_configs.overrides` and
+        Partially updates `deposit_configs.maturity_period`,
+        `deposit_configs.overrides` and
         `deposit_configs.interest_capitalization_mode` on an active deposit
-        account attachment. Each field is processed using three‑state `PATCH`
-        semantics, allowing values to be added, changed, or cleared as part of
-        the update.
+        account attachment. The `overrides` fields are processed using
+        three‑state `PATCH` semantics, allowing values to be added, changed, or
+        cleared as part of the update.
           * **Omitted**: Keeps the current value
           * `null`: Removes the override; falls back through the cascade (program → product)
           * **Value**: Replaces the current override with the supplied value
@@ -3928,8 +4028,10 @@ paths:
         **NOTES**:
 
 
-        * At least one of `deposit_configs.overrides` or
-        `deposit_configs.interest_capitalization_mode` must be provided.
+        * At least one of `deposit_configs.maturity_period`,
+        `deposit_configs.overrides` or
+        `deposit_configs.interest_capitalization_mode` must be provided. A
+        payload carrying only `maturity_period` is valid.
 
         * The `overrides` envelope, if provided, must contain at least one
         field. Sending an empty object returns `400 EIBACC0315`.
@@ -3938,10 +4040,28 @@ paths:
         `maturity_instructions` somewhere in the fallback sequence (`400
         EIBACC0310` otherwise).
 
+        * `maturity_period` changes the term **in force** and takes effect
+        immediately, recalculating the current cycle's maturity date from the
+        attachment's `effective_date`. It's accepted in both documented forms
+        (`unit`+`value` or `calendar_maturity_date`) and doesn't follow the
+        three-state semantics above: `null` is a no-op, not a removal.
+
+        * `maturity_period` and `overrides.renewal_term` are independent.
+        `renewal_term` keeps applying at rollover only and never recalculates
+        the current cycle's maturity date.
+
+        * When `maturity_period` changes, the schedules driven by the maturity
+        date (maturity instruction, maturity notices) are re-evaluated against
+        the new date.
+
+        * `product_id` and `payout_account` are immutable after attach and are
+        ignored if present in the body. To change the payout account, use `PATCH
+        /v1/deposits/accounts/{accountId}/payout-account`.
+
 
         This endpoint generates an [Account attachment
         updated](https://developers.pismo.io/events/docs/deposit-product-account-attachment-updated-1)
-        event.
+        event, carrying the term in force in `data.maturity_period`.
       operationId: interest-bearing-v1-deposit-update-account-attachment
       parameters:
         - $ref: '#/components/parameters/accountId'
@@ -3950,6 +4070,60 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateAccountAttachmentRequest'
+            examples:
+              maturityPeriodRelativeForm:
+                summary: maturity_period — relative period (unit + value)
+                description: >-
+                  Changes the term in force to 18 months counted from the
+                  attachment's `effective_date`. A payload carrying only
+                  `maturity_period` is valid.
+                value:
+                  deposit_configs:
+                    maturity_period:
+                      unit: MONTHS
+                      value: 18
+              maturityPeriodCalendarForm:
+                summary: maturity_period — explicit date (calendar_maturity_date)
+                description: >-
+                  Changes the term in force by setting the maturity date
+                  explicitly. Mutually exclusive with `unit`/`value`, sending
+                  both returns `400 EIBACC0307`.
+                value:
+                  deposit_configs:
+                    maturity_period:
+                      calendar_maturity_date: '2026-12-31'
+              maturityPeriodWithOverrides:
+                summary: maturity_period together with overrides
+                description: >-
+                  The term and the overrides are independent and can be updated
+                  in the same request.
+                value:
+                  deposit_configs:
+                    maturity_period:
+                      unit: MONTHS
+                      value: 18
+                    interest_capitalization_mode: REINVEST
+                    overrides:
+                      maturity_instructions:
+                        principal: ROLLOVER
+                        interest: PAY
+                        reason: Customer opted-in via self-service
+                      renewal_term:
+                        unit: MONTHS
+                        value: 12
+              overridesOnly:
+                summary: overrides only — term left untouched
+                description: >-
+                  Omitting `maturity_period` leaves the persisted term
+                  unchanged. `renewal_term` keeps applying at rollover only.
+                value:
+                  deposit_configs:
+                    overrides:
+                      penalties:
+                        reason: Q4 2026 regulatory adjustment
+                        grace_period:
+                          waived: true
+                        withdrawal_fee: null
       responses:
         '200':
           description: OK
@@ -3957,6 +4131,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountAttachment'
+              examples:
+                relativeForm:
+                  summary: Term updated with unit + value
+                  description: >-
+                    Request sent `{ unit: MONTHS, value: 18 }` on an attachment
+                    whose `effective_date` is `2024-05-29`.
+                  value:
+                    product_type: deposit
+                    product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+                    interest_plan_id: a3c73958-e2bd-4b8b-ab72-1ae6c0b5aade
+                    maturity_period:
+                      unit: MONTHS
+                      value: 18
+                      calendar_maturity_date: '2025-11-28'
+                    attached_at: '2024-05-29T14:00:00Z'
+                    effective_date: '2024-05-29'
+                    interest_capitalization_mode: REINVEST
+                calendarForm:
+                  summary: >-
+                    Term updated with calendar_maturity_date (normalized in the
+                    response)
+                  description: >-
+                    Request sent `{ calendar_maturity_date: "2026-12-31" }` on
+                    an attachment whose `effective_date` is `2026-01-01`. The
+                    explicit date is converted to a day count from the anchor,
+                    so `unit` and `value` come back populated alongside it.
+                  value:
+                    product_type: deposit
+                    product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+                    interest_plan_id: a3c73958-e2bd-4b8b-ab72-1ae6c0b5aade
+                    maturity_period:
+                      unit: DAYS
+                      value: 365
+                      calendar_maturity_date: '2026-12-31'
+                    attached_at: '2026-01-01T14:00:00Z'
+                    effective_date: '2026-01-01'
         '400':
           description: Bad Request
           content:
@@ -3985,6 +4195,63 @@ paths:
                       maturity_instructions.principal or
                       maturity_instructions.interest (account/program override
                       or product default).
+                maturityPeriodMutuallyExclusive:
+                  summary: >-
+                    maturity_period — calendar_maturity_date and unit/value are
+                    mutually exclusive
+                  value:
+                    code: EIBACC0307
+                    message: Validation error
+                    details: >-
+                      maturity_period accepts either calendar_maturity_date OR
+                      unit+value, not both. Choose one: send
+                      calendar_maturity_date for an explicit date, or unit+value
+                      for a relative period.
+                maturityPeriodResolvesToPastDate:
+                  summary: maturity_period resolves to a maturity date in the past
+                  value:
+                    code: EIBACC0306
+                    message: Validation error
+                    details: >-
+                      maturity_period resolves to a maturity date in the past.
+                      Measured from the attachment's effective_date, the
+                      resolved date must be the current date or later.
+                maturityPeriodInvalidFormat:
+                  summary: >-
+                    maturity_period — calendar_maturity_date is not in
+                    YYYY-MM-DD format
+                  value:
+                    code: EIBACC0305
+                    message: Validation error
+                    details: calendar_maturity_date must be in YYYY-MM-DD format
+                maturityPeriodInvalidValue:
+                  summary: maturity_period — value must be a positive integer
+                  value:
+                    code: EIBACC0299
+                    message: Validation error
+                    details: maturity_period value must be a positive integer (>= 1)
+                maturityPeriodInvalidUnit:
+                  summary: maturity_period — unit is not supported
+                  value:
+                    code: EIBACC0298
+                    message: Validation error
+                    details: >-
+                      Invalid maturity_period unit. Supported values: DAYS,
+                      WEEKS, MONTHS, YEARS
+                maturityPeriodBelowMinTerm:
+                  summary: maturity_period is below the product's configured min_term
+                  value:
+                    code: EIBACC0109
+                    message: >-
+                      Maturity period is below the configured MinTerm of the
+                      product
+                maturityPeriodAboveMaxTerm:
+                  summary: maturity_period is above the product's configured max_term
+                  value:
+                    code: EIBACC0110
+                    message: >-
+                      Maturity period is above the configured MaxTerm of the
+                      product
         '404':
           description: Not Found
           content:
