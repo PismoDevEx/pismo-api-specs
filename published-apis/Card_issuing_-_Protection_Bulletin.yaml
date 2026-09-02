@@ -437,11 +437,12 @@ components:
     Bid:
       type: string
       description: >
-        Business ID (BID) number - a six-digit account number through which Visa
-        bills their clients. **REQUIRED** for Visa.
+        Business ID (BID) number - a six to 11 digit account number through
+        which Visa bills their clients. **REQUIRED** for Visa.
 
 
         It **must** be padded with leading zeros.
+      maxLength: 11
       example: '012345'
     CardID:
       description: Pismo card ID.
