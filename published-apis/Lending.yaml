@@ -1017,7 +1017,6 @@ components:
         - created_at
         - loan_amount
         - loan_id
-        - outstanding_balance
         - product_id
         - start_date
         - status
@@ -1070,44 +1069,56 @@ components:
         rates:
           $ref: '#/components/schemas/LoansRates'
         repayment_schedule:
-          properties:
-            repayment_id:
-              $ref: '#/components/schemas/RepaymentID'
-            transactions_id:
-              $ref: '#/components/schemas/TransactionsID'
-            status:
-              $ref: '#/components/schemas/InstallmentStatus'
-            period:
-              $ref: '#/components/schemas/Period'
-            due_date:
-              $ref: '#/components/schemas/LoanPaymentDueDate'
-            real_due_date:
-              $ref: '#/components/schemas/RealDueDate'
-            present_value_amount:
-              description: Amount of calculated loan present value
-              $ref: '#/components/schemas/PresentValueAmount'
-            present_value_discount:
-              $ref: '#/components/schemas/PresentValueDiscount'
-            amount_due:
-              type: object
-              description: Amount due for the repayment
-              allOf:
-                - $ref: '#/components/schemas/Balance'
-                - type: object
-            amount_paid:
-              type: object
-              description: Amount paid for the repayment
-              allOf:
-                - $ref: '#/components/schemas/Balance'
-                - type: object
-            initial_amount:
-              type: object
-              description: Initial amount for the repayment
-              allOf:
-                - $ref: '#/components/schemas/Balance'
-                - type: object
-            insurance_premium_state:
-              $ref: '#/components/schemas/InsurancePremiumState'
+          type: array
+          description: Repayment schedule installments for this loan
+          items:
+            type: object
+            properties:
+              repayment_id:
+                $ref: '#/components/schemas/RepaymentID'
+              transactions_ids:
+                $ref: '#/components/schemas/TransactionsIDs'
+              status:
+                $ref: '#/components/schemas/InstallmentStatus'
+              period:
+                $ref: '#/components/schemas/Period'
+              due_date:
+                $ref: '#/components/schemas/LoanPaymentDueDate'
+              real_due_date:
+                $ref: '#/components/schemas/RealDueDate'
+              present_value_amount:
+                description: Amount of calculated loan present value
+                $ref: '#/components/schemas/PresentValueAmount'
+              present_value_discount:
+                $ref: '#/components/schemas/PresentValueDiscount'
+              amount_due:
+                type: object
+                description: Amount due for the repayment
+                allOf:
+                  - $ref: '#/components/schemas/Balance'
+                  - type: object
+              amount_paid:
+                type: object
+                description: Amount paid for the repayment
+                allOf:
+                  - $ref: '#/components/schemas/Balance'
+                  - type: object
+              initial_amount:
+                type: object
+                description: Initial amount for the repayment
+                allOf:
+                  - $ref: '#/components/schemas/Balance'
+                  - type: object
+              insurance:
+                type: object
+                description: >-
+                  Insurance premium amount for the repayment. Present only for
+                  insured installments.
+                allOf:
+                  - $ref: '#/components/schemas/Balance'
+                  - type: object
+              insurance_premium_state:
+                $ref: '#/components/schemas/InsurancePremiumState'
         restructure_loan_id:
           $ref: '#/components/schemas/RestructureLoanID'
         total_expected_payment_amount:
@@ -1509,24 +1520,31 @@ components:
         `PENDING`-The loan has been created but has not yet been booked. Terms
         may still be under review or awaiting confirmation.
 
+
         `BOOKED`-The loan has been approved and booked. The payment schedule is
         confirmed and the loan is ready for disbursement.
+
 
         `ACTIVE`-The loan is active and in progress. Funds have been disbursed
         and the borrower is expected to make repayments according to the agreed
         schedule.
 
+
         `CANCELED`-A repayment is no longer expected to be paid.
+
 
         `SETTLED`-The loan has been fully repaid and is closed. No further
         repayments are expected.
+
 
         `RENEGOTIATED`-The original loan terms have been modified after booking,
         typically due to a change in repayment conditions or borrower
         circumstances.
 
+
         `SCHEDULED`-A repayment is expected to be paid on or before the due date
         of the repayment.
+
 
         `PROCESSING`-An intermediate state that happens whenever there are
         asynchronous process that demand a state change. For example, BOOKING →
@@ -1534,15 +1552,19 @@ components:
         been requested using the Register repayment endpoint and is being
         processed.
 
+
         `PAID`-The expected repayment amount has been paid in full on or before
         the due date of the repayment.
+
 
         `PARTIALLY_PAID`-Only part of the expected payment amount has been paid.
         However, the repayment due date has not passed, so the borrower could
         still make the full payment on time.
 
+
         `PAST_DUE`-The repayment due date has passed and the expected repayment
         amount has not been paid in full.
+
 
         `NOT_PAID`-An attempt to execute an auto repayment for this installment
         was not successful.
@@ -2471,13 +2493,6 @@ components:
       format: uuid
       description: Tracking ID
       example: 003b3de8-c321-464c-a3dd-6009b8698325
-    TransactionsID:
-      type: array
-      description: List of transactions IDs
-      items:
-        type: string
-        description: Transaction ID
-        example: c04fd22b-7d9c-4099-aaf4-9ee002b5a6a7
     TransactionsIDs:
       type: array
       items:
@@ -3684,29 +3699,219 @@ paths:
                 $ref: '#/components/schemas/LendingLoanRepaymentResponse'
               example:
                 loan_id: a1b2c3d4-0004-0004-0004-000000000004
-                account_id: 514751584
-                product_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                external_id: my_external_id
+                authorization_tracking_id: 4df987e3-8179-11ed-8209-06c7b022d1ee
                 status: CANCELED
+                product_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
+                account_id: 514751584
+                created_at: '2024-12-20T13:00:00.000+00:00'
+                updated_at: '2025-03-20T13:00:00.000+00:00'
+                start_date: '2024-12-20'
+                loan_amount: 2000
+                loan_principal_amount: 1800
+                total_expected_payment_amount: 2000
+                grace_period_days: 7
+                days_past_due: 0
+                rates:
+                  interest_rate: 12
+                  annual_interest_rate: 12
+                  effective_monthly_cost: 12.7
+                  effective_annual_cost: 319.98
+                total_payable:
+                  principal: 0
+                  interest: 0
+                  charge: 0
+                  tax: 0
+                  fee: 0
+                  penalty: 0
+                  total: 0
+                  amount_due:
+                    principal: 0
+                    interest: 0
+                    charge: 0
+                    tax: 0
+                    fee: 0
+                    penalty: 0
+                    total: 0
+                  arrears:
+                    principal: 0
+                    interest: 0
+                    charge: 0
+                    tax: 0
+                    fee: 0
+                    penalty: 0
+                    total: 0
+                transactions_ids:
+                  - 6354273849
+                  - 6354273905
                 repayment_schedule:
                   - repayment_id: 49e5c088-8dc6-41d3-98a4-6930e066d41e
                     period: 1
                     status: PAID
                     due_date: '2025-01-10'
+                    transactions_ids:
+                      - 6354273850
+                    real_due_date: '2025-01-10'
+                    present_value_amount: 500
+                    present_value_discount: 0
+                    amount_due:
+                      principal: 0
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 0
+                    amount_paid:
+                      principal: 450
+                      interest: 50
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 500
+                    initial_amount:
+                      principal: 450
+                      interest: 50
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 500
+                    insurance:
+                      principal: 5
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 5
                     insurance_premium_state: PAID
                   - repayment_id: 92887f97-f3d6-488d-8d86-d4e201d25697
                     period: 2
                     status: PAID
                     due_date: '2025-02-10'
+                    transactions_ids:
+                      - 6354273851
+                    real_due_date: '2025-02-10'
+                    present_value_amount: 500
+                    present_value_discount: 0
+                    amount_due:
+                      principal: 0
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 0
+                    amount_paid:
+                      principal: 450
+                      interest: 50
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 500
+                    initial_amount:
+                      principal: 450
+                      interest: 50
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 500
+                    insurance:
+                      principal: 5
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 5
                     insurance_premium_state: PAID
                   - repayment_id: 7c8d6ceb-a678-4800-97bc-8977776ad942
                     period: 3
                     status: CANCELED
                     due_date: '2025-03-10'
+                    transactions_ids:
+                      - 6354273906
+                    real_due_date: '2025-03-10'
+                    present_value_amount: 500
+                    present_value_discount: 0
+                    amount_due:
+                      principal: 0
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 0
+                    amount_paid:
+                      principal: 0
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 0
+                    initial_amount:
+                      principal: 450
+                      interest: 50
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 500
+                    insurance:
+                      principal: 5
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 5
                     insurance_premium_state: CANCELED
                   - repayment_id: 3a4ebacd-5481-422e-81aa-a9b0aaded866
                     period: 4
                     status: CANCELED
                     due_date: '2025-04-10'
+                    transactions_ids:
+                      - 6354273907
+                    real_due_date: '2025-04-10'
+                    present_value_amount: 500
+                    present_value_discount: 0
+                    amount_due:
+                      principal: 0
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 0
+                    amount_paid:
+                      principal: 0
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 0
+                    initial_amount:
+                      principal: 450
+                      interest: 50
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 500
+                    insurance:
+                      principal: 5
+                      interest: 0
+                      charge: 0
+                      tax: 0
+                      fee: 0
+                      penalty: 0
+                      total: 5
                     insurance_premium_state: CANCELED
                 insurance_summary:
                   insurance_ever_active: true
