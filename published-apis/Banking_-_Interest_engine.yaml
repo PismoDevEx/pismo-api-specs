@@ -909,9 +909,10 @@ components:
       type: string
       description: >-
         Time when accrual calculation is performed, specified in hours and
-        minutes. `05:05`, `06:05`, `07:05`, `08:05`, `09:05`, `10:05` and
-        `19:15` are the only values accepted.
+        minutes. `04:05`, `05:05`, `06:05`, `07:05`, `08:05`, `09:05`, `10:05`
+        and `19:15` are the only values accepted.
       enum:
+        - '04:05'
         - '05:05'
         - '06:05'
         - '07:05'
