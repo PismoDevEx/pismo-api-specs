@@ -2459,6 +2459,11 @@ components:
               $ref: '#/components/schemas/TotalAmount'
         arrears:
           type: object
+          description: >-
+            Outstanding amount owed across all installments currently in
+            `PAST_DUE` or `OVERDUE` status, broken down by component. Offers the
+            total in arrears at loan level
+              without summing individual installments. Zero when no installment is `PAST_DUE` or `OVERDUE` status.
           properties:
             charge:
               $ref: '#/components/schemas/ChargeAmount'
