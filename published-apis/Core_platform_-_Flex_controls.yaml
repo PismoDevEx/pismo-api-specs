@@ -53,7 +53,7 @@ components:
         name:
           $ref: '#/components/schemas/Name'
         type:
-          $ref: '#/components/schemas/Type'
+          $ref: '#/components/schemas/AccountType'
         rule_reference_id:
           type: string
           description: Flex control template ID
@@ -190,7 +190,7 @@ components:
         transactions, you must set 49999 = 499.99 * 10^2.
 
 
-        On the other hand, the Japanese money system does't use fractions of a
+        On the other hand, the Japanese money system doesn't use fractions of a
         yen (the Japanese currency). So, to set the value at 4999 yen, you must
         set 4999 = 4999.0 * 10^0 = 4999.0 * 1. (In other words, the value
         doesn't change.)
@@ -306,13 +306,11 @@ components:
             full lowercase weekday name. Valid values: sunday, monday, tuesday,
             wednesday, thursday, friday, saturday.
 
-            * `authentication_method`:  Enable authorization rules aligned with
-            PSD2 principles. Determine whether restrictions should be applied
-            for specific authentication methods. Valid values are "password",
-            "email", and "sms". Valid only for card network operations. For a
-            control to be valid, it must be a code defined by the Field
-            60.8/Positions 9-10 for Visa operations or as specified by each card
-            network.
+            * `authentication_method`:  Determine whether restrictions should be
+            applied for specific authentication methods. For a control to be
+            valid, it must be a code defined by the Field 60.8/Positions 9-10
+            for Visa operations or as specified by each card network. Valid only
+            for card network operations.
 
             * `is_token_present`: Boolean that indicates whether a token card is
             present in the evaluation request. Valid only for card network
@@ -404,7 +402,7 @@ components:
       description: Creates new flex control for account.
       properties:
         type:
-          $ref: '#/components/schemas/Type'
+          $ref: '#/components/schemas/AccountType'
         processing_codes:
           $ref: '#/components/schemas/ProcessingCodes'
         name:
@@ -470,7 +468,7 @@ components:
         more information.
       properties:
         type:
-          $ref: '#/components/schemas/Type'
+          $ref: '#/components/schemas/CustomerType'
         processing_codes:
           $ref: '#/components/schemas/ProcessingCodes'
         rule_reference_id:
@@ -496,8 +494,6 @@ components:
           $ref: '#/components/schemas/MaxAmount'
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
-        reset_datetime:
-          $ref: '#/components/schemas/ResetDatetime'
         time_zone:
           $ref: '#/components/schemas/TimeZone'
         reset_period:
@@ -558,7 +554,7 @@ components:
           format: uuid
           example: 89cbdadc-860b-4275-a5cd-d9d892fd3869
         type:
-          $ref: '#/components/schemas/Type'
+          $ref: '#/components/schemas/CustomerType'
         processing_codes:
           $ref: '#/components/schemas/ProcessingCodes'
         rule_reference_id:
@@ -773,9 +769,6 @@ components:
       minimum: 1
       format: int64
       description: >
-        Maximum spending limit.
-
-
         Defines the maximum limit for the control. Its meaning depends on the
         flex control `type`.
           * For `spending_limit` controls, `max_limit` represents the maximum spending amount allowed.
@@ -942,16 +935,24 @@ components:
     ResetDatetime:
       type: string
       format: date-time
-      deprecated: true
       description: >
-        **Note:** This field is deprecated and replaced with `reset_period`.
+        The exact date and time of the next reset for the flex control's
+        spending window, in RFC-3339 format. This value is response-only: it is
+        calculated by the platform and is never accepted in requests.
 
-        Reset datetime (RFC-3339 format) for the control rule.
 
-        If `reset_period` is not set, a default is calculated based on the
-        `limit_duration` period and the current time.
+        When `reset_period` is defined, the reset follows the configured
+        schedule (for example, `month_day: 10` resets on the 10th day of every
+        month). When `reset_period` is omitted, the reset occurs at the
+        control's creation date and time plus `limit_duration`.
 
-        This field should only be specified when `type` is either
+
+        This value is recalculated whenever an authorization is evaluated. If no
+        authorizations have been processed since the last reset, it may still
+        point to a reset datetime that has already passed.
+
+
+        This field is returned only for flex controls with the `type` of
         `spending_limit` or `usage_limit`.
       example: '2022-03-08T21:19:55Z'
     ResetPeriod:
@@ -1042,9 +1043,7 @@ components:
                 type: string
                 format: text
               example:
-                - password
-                - sms
-                - email
+                - '05'
     ResponseCode:
       type: string
       description: >
@@ -1067,7 +1066,7 @@ components:
         If `time_zone` is empty, the control is evaluated using the UTC time
         zone.
       example: America/Sao_Paulo
-    Type:
+    AccountType:
       type: string
       enum:
         - spending_limit
@@ -1075,10 +1074,22 @@ components:
         - restriction
       description: |
         Flex control scope
-          * `usage_limit`: Accumulator flex control that increases by one until `max_limit`
-          * `spending_limit`: Accumulator flex control that increases by the current transaction's `amount` until `max_limit`
+          * `usage_limit`: Cumulative flex control that increases by one until `max_limit`
+          * `spending_limit`: Cumulative flex control that increases by the current transaction's `amount` until `max_limit`
           * `restriction`: Restriction flex control that only validates specified conditions
-          * `cumulative_limit`: Accumulator flex control that increases by one transaction or by transaction amount until a condition is met, applies only to flex controls with associated `card_ids`, and requires a `reset_strategy`.
+    CustomerType:
+      type: string
+      enum:
+        - spending_limit
+        - usage_limit
+        - restriction
+        - cumulative_limit
+      description: |
+        Flex control scope
+          * `usage_limit`: Cumulative flex control that increases by one until `max_limit`
+          * `spending_limit`: Cumulative flex control that increases by the current transaction's `amount` until `max_limit`
+          * `cumulative_limit`: Cumulative flex control that increases by one transaction or by transaction amount until a condition is met, applies only to flex controls with associated `card_ids`, and requires a `reset_strategy`
+          * `restriction`: Restriction flex control that only validates specified conditions
     ProgramFlexControlsResponse:
       type: object
       description: Paginated response containing flex controls grouped by program
@@ -1891,29 +1902,23 @@ paths:
         more information.
 
 
-        To create a cumulative condition, the `type` can be:
+        To create a cumulative condition, set `type` to:
 
 
-        - `spending_limit` to restrict the maximum total amount that can be
-        transacted during an specific period.
+        * `usage_limit`: Cumulative flex control that increases by one until
+        `max_limit`
 
-        - `usage_limit` to evaluate the quantity of transactions. The cumulative
-        control type must also specify the `max_limit`. The `limit_duration` and
-        `reset_period` parameters are optional, but they are linked with the
-        behavior of `max_limit`.
+        * `spending_limit`: Cumulative flex control that increases by the
+        current transaction's `amount` until `max_limit`
 
-        - `cumulative_limit` to increment by one transaction or by the
-        transaction amount until a specified condition is met. This type of
-        control applies only to flex controls linked to specific `card_ids` and
-        requires a defined `reset_strategy`.
+        * `cumulative_limit`: Cumulative flex control that increases by one
+        transaction or by transaction amount until a condition is met, applies
+        only to flex controls with associated `card_ids`, and requires a
+        `reset_strategy`
 
 
         To create a restriction condition, set `type` as `restriction`.
 
-
-        To restrict an operation, the restriction control must specify:
-          - at least one condition in the `conditions` array.
-          - the required values for `attribute`, `operator`, and `value` in the condition.
 
         Once you create the control, you can't change its type.
 
@@ -2261,27 +2266,12 @@ paths:
         controls](doc:flex-controls).
 
 
-        To create a cumulative condition, the `type` can be:
+        To create a cumulative condition, set `type` as:
 
-
-        - `spending_limit` to restrict the maximum total amount that can be
-        transacted during an specific period.
-
-        - `usage_limit` to evaluate the quantity of transactions. The cumulative
-        control type must also specify the `max_limit`. The `limit_duration` and
-        `reset_period` parameters are optional, but they are linked with the
-        behavior of `max_limit`.
-
-        - `cumulative_limit` to increment by one transaction or by the
-        transaction amount until a specified condition is met. This type of
-        control applies only to flex controls linked to specific `card_ids` and
-        requires a defined `reset_strategy`.
-
+          * `usage_limit`: Cumulative flex control that increases by one until `max_limit`
+          * `spending_limit`: Cumulative flex control that increases by the current transaction's `amount` until `max_limit`
 
         To create a restriction condition, set `type` as `restriction`.
-
-
-        Once you create the control, you can't change its type.
 
 
         This endpoint generates an [Account flex control
