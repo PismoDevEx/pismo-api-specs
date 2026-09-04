@@ -723,7 +723,6 @@ components:
           $ref: '#/components/schemas/jwsRec'
     qrcode.CancelRecurrenceQrCodeRequest:
       type: object
-      description: Cancel a Recurrence Qrcode request
       required:
         - id
         - status
@@ -742,7 +741,6 @@ components:
           example: REMOVED_BY_PAYEE
     qrcode.CancelRecurrenceQrCodeResponse:
       type: object
-      description: Cancel a Recurrence Qrcode response
       required:
         - id
         - external_id
