@@ -11279,12 +11279,11 @@ paths:
       summary: Update on-us dispute
       description: >
 
-        Update on-us dispute. Dispute on-us allows issuers to update a dispute
-        for a non-branded authorization or transaction performed with a
-        Pismo-issued card. Disputes are initially created with a `PENDING`
-        status. Once ready, the issuer must call [Update on-us
-        dispute](ref:post-update-on-us-dispute) with the `OPEN` event to submit
-        the dispute and move the dispute status to `OPENED`. 
+        Update on-us dispute. This endpoint updates a dispute for a non-branded
+        authorization or transaction performed with a Pismo-issued card.
+        Disputes are initially created with a `PENDING` status. Once ready, the
+        issuer must call this endpoint with the `OPEN` event to submit the
+        dispute and move the dispute status to `OPENED`. 
 
          For more information about on-us disputes and its state machine, refer to the [On-us disputes](https://developers.pismo.io/pismo-docs/docs/on-us-disputes) guide.
 
