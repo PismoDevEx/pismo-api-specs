@@ -1870,7 +1870,7 @@ paths:
 
         **Notes:** 
           * This endpoint takes an account token - an access token encoded with a Pismo account ID.
-          * This endpoint is beta, use in the dev-ext environment only
+          * This endpoint is **beta**, use in the dev-ext environment only.
       operationId: post-cancel-recurrence
       tags:
         - Recurring payment
