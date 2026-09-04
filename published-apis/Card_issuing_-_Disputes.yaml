@@ -502,7 +502,6 @@ components:
           $ref: '#/components/schemas/DisputeInstallmentId'
     CreateOnUsDisputeRequest:
       type: object
-      description: Create On-Us dispute request body
       required:
         - source_identifier
         - modality
@@ -583,7 +582,6 @@ components:
       example: Customer provided additional documentation
     UpdateOnUsDisputeRequest:
       type: object
-      description: Update On-Us dispute request body
       required:
         - event
       properties:
