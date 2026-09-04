@@ -784,10 +784,13 @@ paths:
             type: boolean
         - in: query
           name: pageSize
-          description: Maximum number of items per page. If not provided, defaults to 100.
+          description: >-
+            Maximum number of items per page. If not provided, defaults to 100.
+            Must be between 1 and 1000.
           schema:
             type: integer
             minimum: 1
+            maximum: 1000
             default: 100
         - in: query
           name: orderBy
@@ -803,10 +806,11 @@ paths:
           description: >-
             Page offset. Indicates which page to start with when returning the
             results. For example, value `2` returns the third page. Defaults to
-            `0`, which returns the first page.
+            `0`, which returns the first page. Must be between 0 and 5000.
           schema:
             type: integer
             minimum: 0
+            maximum: 5000
             default: 0
       responses:
         '200':
@@ -838,6 +842,42 @@ paths:
                   value:
                     message: Invalid filter value
                     error: Invalid filter value
+                    code: WTRC00001
+                invalidPageSizeExceedsMax:
+                  summary: Page size exceeds maximum
+                  value:
+                    message: pageSize must not exceed 1000
+                    error: pageSize must not exceed 1000
+                    code: WTRC00001
+                invalidPageSizeNotPositive:
+                  summary: Page size must be positive
+                  value:
+                    message: pageSize must be greater than 0
+                    error: pageSize must be greater than 0
+                    code: WTRC00001
+                invalidPageSizeNotInteger:
+                  summary: Page size not an integer
+                  value:
+                    message: pageSize should be an integer value
+                    error: pageSize should be an integer value
+                    code: WTRC00001
+                invalidPageOffsetNegative:
+                  summary: Page offset must not be negative
+                  value:
+                    message: pageOffset must not be negative
+                    error: pageOffset must not be negative
+                    code: WTRC00001
+                invalidPageOffsetNotInteger:
+                  summary: Page offset not an integer
+                  value:
+                    message: pageOffset should be an integer value
+                    error: pageOffset should be an integer value
+                    code: WTRC00001
+                invalidPageOffsetExceedsMax:
+                  summary: Page offset exceeds maximum
+                  value:
+                    message: pageOffset must not exceed 5000
+                    error: pageOffset must not exceed 5000
                     code: WTRC00001
         '500':
           description: Internal error
@@ -1259,13 +1299,24 @@ paths:
             type: string
         - $ref: '#/components/parameters/transactionTypeIdQuery'
         - in: query
+          name: pageSize
+          description: >-
+            Maximum number of items per page. If not provided, defaults to 100.
+            Must be between 1 and 1000.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - in: query
           name: pageOffset
           description: >-
             Page offset. Indicates which page to start with when returning the
-            results. Defaults to 0.
+            results. Defaults to 0. Must be between 0 and 5000.
           schema:
             type: integer
             minimum: 0
+            maximum: 5000
             default: 0
       responses:
         '200':
@@ -1297,6 +1348,42 @@ paths:
                   value:
                     message: Invalid filter value
                     error: Invalid filter value
+                    code: WTRC00001
+                invalidPageSizeExceedsMax:
+                  summary: Page size exceeds maximum
+                  value:
+                    message: pageSize must not exceed 1000
+                    error: pageSize must not exceed 1000
+                    code: WTRC00001
+                invalidPageSizeNotPositive:
+                  summary: Page size must be positive
+                  value:
+                    message: pageSize must be greater than 0
+                    error: pageSize must be greater than 0
+                    code: WTRC00001
+                invalidPageSizeNotInteger:
+                  summary: Page size not an integer
+                  value:
+                    message: pageSize should be an integer value
+                    error: pageSize should be an integer value
+                    code: WTRC00001
+                invalidPageOffsetNegative:
+                  summary: Page offset must not be negative
+                  value:
+                    message: pageOffset must not be negative
+                    error: pageOffset must not be negative
+                    code: WTRC00001
+                invalidPageOffsetNotInteger:
+                  summary: Page offset not an integer
+                  value:
+                    message: pageOffset should be an integer value
+                    error: pageOffset should be an integer value
+                    code: WTRC00001
+                invalidPageOffsetExceedsMax:
+                  summary: Page offset exceeds maximum
+                  value:
+                    message: pageOffset must not exceed 5000
+                    error: pageOffset must not exceed 5000
                     code: WTRC00001
         '500':
           description: Internal error
