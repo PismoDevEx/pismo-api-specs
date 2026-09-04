@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io/disputes
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
 security:
   - BearerAuth: []
 tags:
@@ -32,20 +32,47 @@ tags:
     description: Endpoints to create and check status for fees V2
   - name: Migration
     description: Endpoints to manage dispute migration
+  - name: On-Us
 components:
   parameters:
-    Authorization:
+    accountIdQuery:
+      name: accountId
+      in: query
+      description: Account ID filter
+      schema:
+        type: integer
+        example: 123
+        minimum: 1
+      required: false
+    AuthHeader:
+      in: header
       name: Authorization
+      required: true
+      description: >-
+        Account token - an access token encoded with a Pismo account ID. Tokens
+        can expire quickly, which can result in a <b>401 Unauthorized</b>
+        message.
+      schema:
+        type: string
+        example: Bearer eyJhbGci...IUzUx
+    beginDateQuery:
+      name: beginDate
+      in: query
+      description: Beginning date filter, format= yyyy-mm-dd
+      schema:
+        type: string
+        example: '2020-01-31'
+      required: false
+    cidHeader:
+      name: x-cid
       in: header
       required: true
-      description: >
-        Account token - an access token encoded with a Pismo account ID.  Tokens
-        can expire quickly, which can result in a "** 401 Unauthorized**"
-        error. 
+      description: Correlation ID used for tracking
       schema:
         type: string
     disputeFeeID:
       name: disputeFeeId
+      description: Dispute fee ID
       in: path
       required: true
       schema:
@@ -71,6 +98,84 @@ components:
       required: true
       schema:
         type: number
+    disputeStatusHeader:
+      in: header
+      name: source
+      description: Dispute status enums
+      required: true
+      schema:
+        type: string
+        example: OPENED
+        enum:
+          - OPENED
+          - PENDING
+          - CANCELED
+          - FAILED
+          - CHARGEBACK_REJECTED
+          - CHARGEBACK_CREATED
+          - CHARGEBACK_ACCEPTED
+          - CHARGEBACK_CLOSED
+          - SECOND_PRESENTMENT
+          - PRE_ARBITRATION_OPENED
+          - PRE_ARBITRATION_ACCEPTED
+          - PRE_ARBITRATION_DECLINED
+          - PRE_ARBITRATION_RECALL
+          - PRE_ARB_ALLOCATION_OPENED
+          - FAILED_PRE_ARBITRATION
+          - PRE_ARB_ALLOCATION_ACCEPTED
+          - PRE_ARB_ALLOCATION_DECLINED
+          - PRE_ARB_ALLOCATION_RECALLED
+          - FAILED_DECLINE_PRE_ARB
+          - FAILED_ACCEPT_PRE_ARB
+          - FAILED_ON_CLOSE
+          - EXPIRED
+          - ISSUER_LOSS
+          - MIGRATION
+          - FAILED_MIGRATION
+      example: OPENED
+    disputeStatusQuery:
+      in: query
+      name: status
+      description: Dispute status filter
+      required: false
+      schema:
+        type: string
+        example: OPENED
+        enum:
+          - OPENED
+          - PENDING
+          - CANCELED
+          - FAILED
+          - CHARGEBACK_REJECTED
+          - CHARGEBACK_CREATED
+          - CHARGEBACK_ACCEPTED
+          - CHARGEBACK_CLOSED
+          - SECOND_PRESENTMENT
+          - PRE_ARBITRATION_OPENED
+          - PRE_ARBITRATION_ACCEPTED
+          - PRE_ARBITRATION_DECLINED
+          - PRE_ARBITRATION_RECALL
+          - PRE_ARB_ALLOCATION_OPENED
+          - FAILED_PRE_ARBITRATION
+          - PRE_ARB_ALLOCATION_ACCEPTED
+          - PRE_ARB_ALLOCATION_DECLINED
+          - PRE_ARB_ALLOCATION_RECALLED
+          - FAILED_DECLINE_PRE_ARB
+          - FAILED_ACCEPT_PRE_ARB
+          - FAILED_ON_CLOSE
+          - EXPIRED
+          - ISSUER_LOSS
+          - MIGRATION
+          - FAILED_MIGRATION
+      example: OPENED
+    endDateQuery:
+      name: endDate
+      in: query
+      description: End date filter, format= yyyy-mm-dd
+      schema:
+        type: string
+        example: '2020-01-31'
+      required: false
     FeeId:
       name: fee_id
       in: path
@@ -92,17 +197,99 @@ components:
       required: true
       schema:
         type: number
-    AuthHeader:
-      in: header
-      name: Authorization
-      required: true
-      description: >-
-        Account token - an access token encoded with a Pismo account ID. Tokens
-        can expire quickly, which can result in a <b>401 Unauthorized</b>
-        message.
+    groupQuery:
+      in: query
+      name: group
+      description: Status group filter, i.e., `OPEN`.
       schema:
         type: string
-        example: Bearer eyJhbGci...IUzUx
+        example: CARDNETWORK_CHARGEBACK
+        enum:
+          - OPEN
+          - APPROVED
+          - DENIED
+          - CARDNETWORK_CHARGEBACK
+          - ANALYSING
+          - CARDNETWORK_SECOND_PRESENTMENT
+          - FAILED
+          - CARDNETWORK_PREARBITRATION
+          - RESEND
+          - LOSS
+          - WON
+          - REJECTED
+          - FAILED_PROCESSED
+      required: false
+      example: WON
+    isDisputeInvalidTransactionQuery:
+      in: query
+      name: isDisputeInvalidTransaction
+      description: Return only disputes with invalid transaction? Default is `false`.
+      schema:
+        type: boolean
+        default: false
+        example: true
+      required: false
+    isDisputeMigratedQuery:
+      in: query
+      name: isDisputeMigrated
+      description: Return only migrated disputes? Default is `false`.
+      schema:
+        type: boolean
+        default: false
+        example: true
+      required: false
+    isNetworkQuery:
+      in: query
+      name: isNetwork
+      description: Return only network disputes? Default is `false`.
+      schema:
+        type: boolean
+        example: true
+      required: false
+    orgIdHeader:
+      name: x-tenant
+      description: Organization/tenant ID
+      in: header
+      required: true
+      schema:
+        type: string
+    pageQuery:
+      name: page
+      in: query
+      description: Page to return.
+      schema:
+        type: integer
+        default: 1
+        example: 2
+        minimum: 1
+      required: false
+    perPageQuery:
+      name: perPage
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        default: 30
+        example: 20
+        minimum: 1
+      required: false
+    stateMachineIdPath:
+      name: statemachineId
+      description: State machine ID
+      in: path
+      required: true
+      schema:
+        type: string
+    stateMachineTypeHeader:
+      name: type
+      description: State machine type
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - PRIMITIVE
+          - PRIMITIVE_ON_US
   schemas:
     AccountID:
       type: number
@@ -135,6 +322,10 @@ components:
       type: number
       description: Dispute ID
       example: 48670
+    DisputeStatusID:
+      type: number
+      description: Dispute status ID
+      example: 88999
     InstallmentNumber:
       type: integer
       description: Installment number.
@@ -321,7 +512,7 @@ components:
         source_identifier:
           $ref: '#/components/schemas/SourceIdentifier'
         modality:
-          $ref: '#/components/schemas/reasonCode2'
+          $ref: '#/components/schemas/OnUsDisputeModality'
         is_partial:
           $ref: '#/components/schemas/IsPartial'
         disputed_amount:
@@ -332,6 +523,87 @@ components:
           $ref: '#/components/schemas/Protocol'
         metadata:
           $ref: '#/components/schemas/Metadata'
+    OnUsDisputeStatuses:
+      type: string
+      description: On-us dispute statuses
+      enum:
+        - OPENED
+        - CANCELED
+        - REJECTED
+        - PENDING
+        - PENDING_DOCUMENTATION
+        - ISSUER_LOSS
+        - STORE_OWNER_LOSS
+        - CARDHOLDER_LOSS
+        - EXPIRED
+      example: OPENED
+    OnUsEvents:
+      type: string
+      description: On-us dispute events
+      enum:
+        - OPEN
+        - CANCEL
+        - EXPIRE
+        - REJECTS
+        - REOPEN
+        - PENDING_DOCUMENTATION
+        - RESEND
+        - ISSUER_LOSS
+        - STORE_OWNER_LOSS
+        - CARDHOLDER_LOSS
+      example: REOPEN
+    OnUsMemo:
+      type: string
+      description: Additional notes about on-us dispute endpoint
+    OnUsDisputeModality:
+      type: integer
+      description: |
+        On-us issuer reason code:
+          * `1` - Services not provided or product not received<br />
+          * `2` - Defective product or not as described<br />
+          * `3` - Nonexistent card number / Closed or nonexistent account<br />
+          * `4` - Authorization denied / No authorization<br />
+          * `5` - Fraud - Card present<br />
+          * `6` - Fraud - Card not present<br />
+          * `7` - Duplicate processing<br />
+          * `8` - Processing error
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+      example: 2
+    OnUsReason:
+      type: string
+      description: Reason for updating the on-us dispute
+      example: Customer provided additional documentation
+    UpdateOnUsDisputeRequest:
+      type: object
+      description: Update On-Us dispute request body
+      required:
+        - event
+      properties:
+        event:
+          $ref: '#/components/schemas/OnUsEvents'
+        reason:
+          $ref: '#/components/schemas/OnUsReason'
+        memo:
+          $ref: '#/components/schemas/OnUsMemo'
+    UpdateOnUsDisputeResponse:
+      type: object
+      description: Update On-Us dispute response body
+      required:
+        - dispute_id
+        - dispute_status
+      properties:
+        dispute_id:
+          $ref: '#/components/schemas/DisputeID'
+        dispute_status:
+          $ref: '#/components/schemas/OnUsDisputeStatuses'
     CreateOnUsDisputeResponse:
       type: object
       description: Create On-Us dispute request body
@@ -339,7 +611,7 @@ components:
         dispute_id:
           $ref: '#/components/schemas/DisputeID'
         dispute_status:
-          $ref: '#/components/schemas/DisputeStatusObject'
+          $ref: '#/components/schemas/OnUsDisputeStatusObject'
         dispute_reason:
           $ref: '#/components/schemas/DisputeReasonObject'
         source:
@@ -638,20 +910,6 @@ components:
         For example - `4853` (Mastercard - cardholder dispute), `12` (Visa -
         processing error) or `72` (ELO - denied authorization)
       example: 4853
-    reasonCode2:
-      type: number
-      description: On-us issuer reason code (1-9)
-      enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-      example: 2
     DisputeFeeResponse:
       type: object
       description: Dispute fee response object
@@ -816,13 +1074,23 @@ components:
         - FAILED_PROCESSED
     DisputeFileCategory:
       type: string
-      description: File category
-      example: PRE_ARBITRATION
+      description: |
+        File category: 
+          `OTHERS` - Use to upload file on chargeback creation
+          `PRE_ARBITRATION` - Use to upload files for pre-arbitration
       enum:
-        - PERSONAL
+        - OTHERS
+        - PRE_ARBITRATION
+      example: PRE_ARBITRATION
+    DisputeFileCategory2:
+      type: string
+      description: |
+        File category
+      enum:
         - CARD
         - OTHERS
         - PRE_ARBITRATION
+      example: PRE_ARBITRATION
     DisputeFormStatus:
       type: string
       example: PENDING
@@ -876,21 +1144,17 @@ components:
           description: Dispute reason description
           example: Services not provided or product not received
         reason_code:
-          $ref: '#/components/schemas/reasonCode2'
+          $ref: '#/components/schemas/OnUsDisputeModality'
         type:
           type: string
           description: Dispute reason type
           enum:
             - ON_US
           example: ON_US
-    DisputeStatusObject:
+    OnUsDisputeStatusObject:
       type: object
-      description: Dispute status informations.
+      description: On-Us dispute status information
       properties:
-        id:
-          type: number
-          description: Dispute status ID.
-          example: 316
         description:
           type: string
           description: >
@@ -903,6 +1167,24 @@ components:
           enum:
             - PRIMITIVE_ON_US
           example: PRIMITIVE_ON_US
+        group:
+          $ref: '#/components/schemas/DisputeGroupStatus'
+    DisputeStatusObject:
+      type: object
+      description: Dispute status information
+      properties:
+        id:
+          $ref: '#/components/schemas/DisputeStatusID'
+        description:
+          type: string
+          description: Status description
+        type:
+          type: string
+          description: State machine type
+          enum:
+            - PRIMITIVE
+            - PRIMITIVE_ON_US
+          example: PRIMITIVE
         group:
           $ref: '#/components/schemas/DisputeGroupStatus'
     DisputeResponse:
@@ -1172,7 +1454,7 @@ components:
         id:
           type: number
           example: 1
-          description: Dispute file ID.
+          description: Dispute file ID
         org_id:
           $ref: '#/components/schemas/OrgID'
         dispute_id:
@@ -1181,17 +1463,17 @@ components:
           $ref: '#/components/schemas/DisputeInstallmentId'
         installment:
           type: number
-          description: Installment number.
+          description: Installment number
         path:
           type: string
           example: /path/of/directory/
-          description: Organization file path.
+          description: Organization file path
         file_name:
           type: string
+          description: File name
           example: doc.pdf
-          description: File name.
         category:
-          $ref: '#/components/schemas/DisputeFileCategory'
+          $ref: '#/components/schemas/DisputeFileCategory2'
     DisputeInstallmentId:
       type: integer
       description: Dispute installment ID.
@@ -1552,7 +1834,7 @@ components:
           dispute_status:
             id: 5
             description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT
-            type: MASTERCARD_CARD
+            type: PRIMITIVE
             group: CARDNETWORK_CHARGEBACK
           network_response: null
           networkStatus: Authorization Dispute - Accepted by Acq
@@ -1562,7 +1844,7 @@ components:
               dispute_id: 42
               dispute_installment_id: 2
               status: FAILED
-              network: MASTERCARD_CARD
+              network: PRIMITIVE
               form:
                 ebdf:
                   fraudDrfDocument:
@@ -1622,7 +1904,7 @@ components:
           dispute_status:
             id: 5
             description: REJECTED_CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT
-            type: MASTERCARD_CARD
+            type: PRIMITIVE
             group: DENIED
           network_response: null
           networkStatus: Authorization Dispute - Accepted by Acq
@@ -2040,10 +2322,10 @@ components:
           $ref: '#/components/schemas/DisputeFormStatus'
         network:
           type: string
-          example: MASTERCARD_CARD
+          example: PRIMITIVE
           description: Network for dispute Form.
           enum:
-            - MASTERCARD_CARD
+            - PRIMITIVE_ON_US
             - PRIMITIVE
         form:
           type: object
@@ -4394,9 +4676,7 @@ components:
     DisputeId:
       type: number
       example: 12345
-      description: >-
-        Pismo dispute ID assigned when the fraud report is associated with a
-        dispute.
+      description: Pismo dispute ID.
     EloInternationalAction:
       type: string
       description: Elo international action
@@ -6222,6 +6502,144 @@ components:
             - AUTHORIZATION
             - TRANSACTION
           example: AUTHORIZATION
+    AutomatedInstallment:
+      type: boolean
+      description: Enable automated installment? Default is `false`
+      default: false
+      example: true
+    DefaultStatemachine:
+      type: boolean
+      description: Always `false`
+      default: false
+      example: true
+    IsFullBalance:
+      type: boolean
+      description: Create a Full balance dispute without a transaction? Default is `false`.
+      default: false
+      example: true
+    IssuerId:
+      type: string
+      description: |
+        Issuer identifier number, one of the following: 
+          * `ICA` - Interbank Card Association ID (Visa or Mastercard)
+          * `BID` - Business Identfication Number (Visa)
+      example: '000000'
+    ProgramId:
+      type: number
+      description: Pismo program ID
+    SendTimeLineEvents:
+      type: boolean
+      description: Should timeline events be sent? Default is `false`.'
+      default: false
+      example: true
+    StateMachineId:
+      type: number
+      description: State machine ID
+      example: 999
+    StateMachineType:
+      type: string
+      description: State machine type
+      enum:
+        - PRIMITIVE
+        - PRIMITIVE_ON_US
+      example: PRIMITIVE
+    CreateSetupRequest:
+      type: object
+      description: Request body for Create setup
+      required:
+        - program_id
+        - type
+      properties:
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        type:
+          $ref: '#/components/schemas/StateMachineType'
+        issuer_identifier:
+          $ref: '#/components/schemas/IssuerId'
+        send_time_line:
+          $ref: '#/components/schemas/SendTimeLineEvents'
+        is_full_balance:
+          $ref: '#/components/schemas/IsFullBalance'
+        automated_installment:
+          $ref: '#/components/schemas/AutomatedInstallment'
+    CreateSetupResponse:
+      type: object
+      description: Responsefor Create setup
+      properties:
+        state_machine_id:
+          $ref: '#/components/schemas/StateMachineId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        type:
+          $ref: '#/components/schemas/StateMachineType'
+        issuer_identifier:
+          $ref: '#/components/schemas/IssuerId'
+        send_time_line:
+          $ref: '#/components/schemas/SendTimeLineEvents'
+        is_full_balance:
+          $ref: '#/components/schemas/IsFullBalance'
+        automated_installment:
+          $ref: '#/components/schemas/AutomatedInstallment'
+    GetSetupsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/SetupObject'
+    SetupObject:
+      type: object
+      description: Setup object
+      properties:
+        state_machine_id:
+          $ref: '#/components/schemas/StateMachineId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        type:
+          $ref: '#/components/schemas/StateMachineType'
+        issuer_identifier:
+          $ref: '#/components/schemas/IssuerId'
+        send_time_line:
+          $ref: '#/components/schemas/SendTimeLineEvents'
+        is_full_balance:
+          $ref: '#/components/schemas/IsFullBalance'
+        automated_installment:
+          $ref: '#/components/schemas/AutomatedInstallment'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+    UpdateSetupRequest:
+      type: object
+      description: Request body for update setup
+      properties:
+        issuer_identifier:
+          $ref: '#/components/schemas/IssuerId'
+        send_time_line:
+          $ref: '#/components/schemas/SendTimeLineEvents'
+        is_full_balance:
+          $ref: '#/components/schemas/IsFullBalance'
+        automated_installment:
+          $ref: '#/components/schemas/AutomatedInstallment'
+    UpdateSetupResponse:
+      type: object
+      description: Response for update setup
+      properties:
+        state_machine_id:
+          $ref: '#/components/schemas/StateMachineId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        type:
+          $ref: '#/components/schemas/StateMachineType'
+        issuer_identifier:
+          $ref: '#/components/schemas/IssuerId'
+        send_time_line:
+          $ref: '#/components/schemas/SendTimeLineEvents'
+        is_full_balance:
+          $ref: '#/components/schemas/IsFullBalance'
+        automated_installment:
+          $ref: '#/components/schemas/AutomatedInstallment'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
   securitySchemes:
     BearerAuth:
       type: http
@@ -6397,124 +6815,16 @@ paths:
         - Disputes
       parameters:
         - $ref: '#/components/parameters/AuthHeader'
-        - in: query
-          name: beginDate
-          description: Beginning date filter, format= yyyy-mm-dd
-          schema:
-            type: string
-            example: '2020-01-31'
-          required: false
-        - in: query
-          name: endDate
-          schema:
-            type: string
-            example: '2020-02-15'
-          required: false
-          description: End date filter, format= yyyy-mm-dd.
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-            example: 2
-            minimum: 1
-          required: false
-          description: Page to return.
-        - in: query
-          name: perPage
-          schema:
-            type: integer
-            default: 30
-            example: 20
-            minimum: 1
-          required: false
-          description: Number of items per page
-        - in: query
-          name: accountId
-          schema:
-            type: integer
-            example: 123
-            minimum: 1
-          required: false
-          description: Account ID filter
-        - in: query
-          name: isNetwork
-          schema:
-            type: boolean
-            example: true
-          required: false
-          description: Return only network disputes? Default is `false`.
-        - in: query
-          name: isDisputeMigrated
-          schema:
-            type: boolean
-            default: false
-            example: true
-          required: false
-          description: Return only migrated disputes? Default is `false`.
-        - in: query
-          name: isDisputeInvalidTransaction
-          schema:
-            type: boolean
-            example: true
-          required: false
-          description: Return only disputes with invalid transaction? Default is `false`.
-        - schema:
-            type: string
-            example: CARDNETWORK_CHARGEBACK
-            enum:
-              - OPEN
-              - APPROVED
-              - DENIED
-              - CARDNETWORK_CHARGEBACK
-              - ANALYSING
-              - CARDNETWORK_SECOND_PRESENTMENT
-              - FAILED
-              - CARDNETWORK_PREARBITRATION
-              - RESEND
-              - LOSS
-              - WON
-              - REJECTED
-              - FAILED_PROCESSED
-          in: query
-          name: group
-          required: false
-          description: Status group filter, i.e., `OPEN`.
-          example: WON
-        - schema:
-            type: string
-            example: OPENED
-            enum:
-              - OPENED
-              - PENDING
-              - CANCELED
-              - FAILED
-              - CHARGEBACK_REJECTED
-              - CHARGEBACK_CREATED
-              - CHARGEBACK_ACCEPTED
-              - CHARGEBACK_CLOSED
-              - SECOND_PRESENTMENT
-              - PRE_ARBITRATION_OPENED
-              - PRE_ARBITRATION_ACCEPTED
-              - PRE_ARBITRATION_DECLINED
-              - PRE_ARBITRATION_RECALL
-              - PRE_ARB_ALLOCATION_OPENED
-              - FAILED_PRE_ARBITRATION
-              - PRE_ARB_ALLOCATION_ACCEPTED
-              - PRE_ARB_ALLOCATION_DECLINED
-              - PRE_ARB_ALLOCATION_RECALLED
-              - FAILED_DECLINE_PRE_ARB
-              - FAILED_ACCEPT_PRE_ARB
-              - FAILED_ON_CLOSE
-              - EXPIRED
-              - ISSUER_LOSS
-              - MIGRATION
-              - FAILED_MIGRATION
-          in: query
-          name: status
-          required: false
-          description: Status filter
-          example: OPENED
+        - $ref: '#/components/parameters/beginDateQuery'
+        - $ref: '#/components/parameters/endDateQuery'
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/perPageQuery'
+        - $ref: '#/components/parameters/accountIdQuery'
+        - $ref: '#/components/parameters/isNetworkQuery'
+        - $ref: '#/components/parameters/isDisputeMigratedQuery'
+        - $ref: '#/components/parameters/isDisputeInvalidTransactionQuery'
+        - $ref: '#/components/parameters/groupQuery'
+        - $ref: '#/components/parameters/disputeStatusQuery'
       responses:
         '200':
           description: OK
@@ -6673,8 +6983,8 @@ paths:
                         network_response_error: null
                         dispute_status:
                           id: 5
-                          description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT.
-                          type: MASTERCARD_CARD
+                          description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT
+                          type: PRIMITIVE
                           group: CARDNETWORK_CHARGEBACK
                         network_response: null
                         transaction_id: null
@@ -6732,7 +7042,7 @@ paths:
                         dispute_status:
                           id: 5
                           description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT.
-                          type: MASTERCARD_CARD
+                          type: PRIMITIVE
                           group: CARDNETWORK_CHARGEBACK
                         network_response: null
                         transaction_id: null
@@ -6808,7 +7118,7 @@ paths:
                         dispute_status:
                           id: 5
                           description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT.
-                          type: MASTERCARD_CARD
+                          type: PRIMITIVE
                           group: CARDNETWORK_CHARGEBACK
                         network_response: null
                         transaction_id: null
@@ -6957,7 +7267,7 @@ paths:
               Dispute file sample data fields:
                 value:
                   name: A personal file
-                  category: PERSONAL
+                  category: OTHERS
                   file: doc.pdf
                   dispute_installment_id: 1
               Pre arbitration allocation / collaboration Visa:
@@ -6977,11 +7287,11 @@ paths:
                 File Uploaded:
                   value:
                     id: 1
-                    org_id: '123456789'
+                    org_id: TN:123...456789
                     dispute_id: 1
                     path: /path/of/directory/
                     file_name: doc.pdf
-                    category: PERSONAL
+                    category: OTHERS
         '400':
           $ref: '#/components/responses/400BadRequest'
         '401':
@@ -7012,13 +7322,13 @@ paths:
                 List Files:
                   value:
                     - id: 1
-                      org_id: '123456789'
+                      org_id: TN:12...3456789
                       dispute_id: 1
                       dispute_installment_id: 1
                       installment: 1
                       path: /path/of/directory/
                       file_name: doc.pdf
-                      category: PERSONAL
+                      category: OTHERS
         '400':
           $ref: '#/components/responses/400BadRequest'
         '401':
@@ -7404,8 +7714,8 @@ paths:
                     installment_disputed_amount: 45.5
                     dispute_status:
                       id: 5
-                      description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT.
-                      type: MASTERCARD_CARD
+                      description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT
+                      type: PRIMITIVE
                       group: CARDNETWORK_CHARGEBACK
                     reason_code: 4853
                     network_return_reason_code: null
@@ -7452,7 +7762,7 @@ paths:
                     dispute_status:
                       id: 5
                       description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT.
-                      type: MASTERCARD_CARD
+                      type: PRIMITIVE
                       group: CARDNETWORK_CHARGEBACK
                     reason_code: 4853
                     network_return_reason_code: null
@@ -7472,7 +7782,7 @@ paths:
                       id: 5
                       description: >-
                         REJECTED_CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT.
-                      type: MASTERCARD_CARD
+                      type: PRIMITIVE
                       group: DENIED
                     reason_code: 4853
                     network_return_reason_code: '2844'
@@ -7536,50 +7846,8 @@ paths:
       tags:
         - State check
       parameters:
-        - schema:
-            type: string
-            enum:
-              - MASTERCARD_CARD
-              - PRIMITIVE
-              - TOK_PAG
-          in: header
-          name: type
-          description: >-
-            State machine type - `MASTERCARD_CARD` (BTG), `PRIMITIVE` and
-            `TOK_PAG`.
-          required: true
-        - in: header
-          name: source
-          schema:
-            type: string
-            description: Dispute status enums, i.e., `OPENED`
-            enum:
-              - OPENED
-              - PENDING
-              - CANCELED
-              - FAILED
-              - CHARGEBACK_REJECTED
-              - CHARGEBACK_CREATED
-              - CHARGEBACK_ACCEPTED
-              - CHARGEBACK_CLOSED
-              - SECOND_PRESENTMENT
-              - PRE_ARBITRATION_OPENED
-              - PRE_ARBITRATION_DECLINED
-              - PRE_ARBITRATION_ACCEPTED
-              - PRE_ARBITRATION_RECALL
-              - PRE_ARB_ALLOCATION_OPENED
-              - FAILED_PRE_ARBITRATION
-              - PRE_ARB_ALLOCATION_ACCEPTED
-              - PRE_ARB_ALLOCATION_DECLINED
-              - PRE_ARB_ALLOCATION_RECALLED
-              - FAILED_DECLINE_PRE_ARB
-              - FAILED_ACCEPT_PRE_ARB
-              - FAILED_ON_CLOSE
-              - EXPIRED
-              - ISSUER_LOSS
-              - MIGRATION
-              - FAILED_MIGRATION
-          required: true
+        - $ref: '#/components/parameters/stateMachineTypeHeader'
+        - $ref: '#/components/parameters/disputeStatusHeader'
       responses:
         '200':
           description: OK
@@ -8525,24 +8793,9 @@ paths:
       tags:
         - Fees
       parameters:
-        - schema:
-            type: string
-          in: header
-          name: x-tenant
-          description: >-
-            Organization/tenant ID. Get all dispute fees associated with an
-            organization/tenant.
-          required: true
-        - schema:
-            type: string
-          in: query
-          name: beginDate
-          description: Beginning date filter,  format = yyyy-mm-dd.
-        - schema:
-            type: string
-          in: query
-          name: endDate
-          description: End date filter, format = yyyy-mm-dd.
+        - $ref: '#/components/parameters/orgIdHeader'
+        - $ref: '#/components/parameters/beginDateQuery'
+        - $ref: '#/components/parameters/endDateQuery'
         - schema:
             type: string
           in: query
@@ -8570,16 +8823,8 @@ paths:
           in: query
           name: status
           description: Status filter.
-        - schema:
-            type: integer
-          in: query
-          name: page
-          description: Page to return.
-        - schema:
-            type: integer
-          in: query
-          name: perPage
-          description: Number of items per page.
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/perPageQuery'
       responses:
         '200':
           description: OK
@@ -8810,7 +9055,7 @@ paths:
                     dispute_status:
                       id: 5
                       description: CHARGEBACK_CONFIDENCE_CREDIT_SYSTEM_DISAGREEMENT.
-                      type: MASTERCARD_CARD
+                      type: PRIMITIVE
                       group: CARDNETWORK_CHARGEBACK
                     reason_code: 4853
                     network_return_reason_code: null
@@ -9959,7 +10204,7 @@ paths:
       tags:
         - Fees V2
       parameters:
-        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/AuthHeader'
       requestBody:
         required: true
         description: Fill out and submit one object
@@ -10298,7 +10543,7 @@ paths:
       tags:
         - Fees V2
       parameters:
-        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/AuthHeader'
         - $ref: '#/components/parameters/FeeId'
       responses:
         '200':
@@ -10873,3 +11118,287 @@ paths:
                     code: EDPT0001
                     message: Request timeout
                     http_status_code: 504
+  /v1/on-us-dispute:
+    post:
+      summary: Create on-us dispute
+      description: >
+
+        Create an on-us dispute. This allows issuers to create a dispute for a
+        non-branded authorization or transaction performed with a Pismo-issued
+        card. Disputes are initially created with a `PENDING` status. Once
+        ready, the issuer must call [Update on-us
+        dispute](ref:post-update-on-us-dispute) with the `OPEN` event to submit
+        the dispute and move the dispute's status to `OPENED`. 
+
+
+        For more information about on-us disputes and its state machine, refer
+        to the [On-us
+        disputes](https://developers.pismo.io/pismo-docs/docs/on-us-disputes)
+        guide.
+
+
+        This endpoint generates a [On-us dispute
+        created](https://developers.pismo.io/events/docs/disputes-disputes-creation-1)
+        event.
+
+
+        **Notes:** 
+          * This endpoint takes an account token - an access token encoded with a Pismo account ID. Tokens can expire quickly, which can result in a <b>401 Unauthorized</b> message.
+          * The account ID, Org ID, and CID (correlation identifer) are parsed from the account token. 
+      operationId: post-create-on-us-dispute
+      tags:
+        - On-Us
+      requestBody:
+        required: true
+        description: Create On-Us dispute request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOnUsDisputeRequest'
+      responses:
+        '201':
+          description: Dispute Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOnUsDisputeResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                EDPT0003 - Failed to parse request payload:
+                  value:
+                    code: EDPT0004
+                    message: Failed to parse request payload
+                    http_status_code: 400
+                EDPT0004 - Invalid param:
+                  value:
+                    code: EDPT0004
+                    message: Invalid <nameOfParam> param
+                    http_status_code: 400
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                EDPT0005 - Missing or invalid Authorization header:
+                  value:
+                    code: EDPT0005
+                    message: Missing or invalid Authorization header
+                    http_status_code: 401
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                EDPT0009 - TransactionById returned not found:
+                  value:
+                    code: EDPT0009
+                    message: 'TransactionById returned [Not found] using ID: 1234567890'
+                    http_status_code: 404
+                BDPT0006 - Modality [123] not found:
+                  value:
+                    code: BDPT0006
+                    message: Modality [123] not found
+                    http_status_code: 404
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                BDPT0001 - Error while validating fields:
+                  value:
+                    code: BDPT0001
+                    message: Error while validating fields
+                    http_status_code: 422
+                    details:
+                      payload:
+                        - field: transaction_id
+                          message: This is field is required
+                        - field: report_type
+                          message: This is an invalid value
+                BDPT0026 - Unable to retrieve program_id from account_id [1234]:
+                  value:
+                    code: BDPT0026
+                    message: Unable to retrieve program_id from account_id [1234]
+                    http_status_code: 422
+                BDPT0027 - Error while validating fields:
+                  value:
+                    code: BDPT0027
+                    message: >-
+                      Program [1010] is not configured to create an On Us
+                      Dispute
+                    http_status_code: 422
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                EDPT9997 - Something went wrong when try to process a request in (entity) using ID:
+                  value:
+                    code: EDPT9997
+                    message: >-
+                      Something went wrong when try to process a request in
+                      Authorizations using ID: 1234
+                    http_status_code: 500
+                EDPT9998 - Something went wrong, please try again later:
+                  value:
+                    code: EDPT9998
+                    message: Something went wrong, please try again later
+                    http_status_code: 500
+                EDPT9999 - Something went wrong, please try again later:
+                  value:
+                    code: EDPT9999
+                    message: Something went wrong, please try again later
+                    http_status_code: 500
+        '504':
+          description: Gateway timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                EDPT0001 - Request timeout:
+                  value:
+                    code: EDPT0001
+                    message: Request timeout
+                    http_status_code: 504
+  /v1/disputes-on-us/{disputeId}/event:
+    post:
+      summary: Update on-us dispute
+      description: >
+
+        Update on-us dispute. Dispute on-us allows issuers to update a dispute
+        for a non-branded authorization or transaction performed with a
+        Pismo-issued card. Disputes are initially created with a `PENDING`
+        status. Once ready, the issuer must call [Update on-us
+        dispute](ref:post-update-on-us-dispute) with the `OPEN` event to submit
+        the dispute and move the dispute status to `OPENED`. 
+
+         For more information about on-us disputes and its state machine, refer to the [On-us disputes](https://developers.pismo.io/pismo-docs/docs/on-us-disputes) guide.
+
+        This endpoint generates a [Dispute status
+        changed](https://developers.pismo.io/events/docs/disputes-dispute-installment-status-change-1)
+        event.
+
+
+        **Notes:** 
+          * This endpoint takes an account token - an access token encoded with a Pismo account ID. Tokens can expire quickly, which can result in a <b>401 Unauthorized</b> message.
+          * The account ID, Org ID and cid (correlation identifier) are parsed from the account token.
+      operationId: post-update-on-us-dispute
+      tags:
+        - On-Us
+      parameters:
+        - $ref: '#/components/parameters/disputeId'
+      requestBody:
+        required: true
+        description: Update On-Us dispute request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOnUsDisputeRequest'
+      responses:
+        '200':
+          description: Dispute updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateOnUsDisputeResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Invalid state machine event:
+                  value:
+                    message: Invalid state machine event
+                    http_status_code: 400
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Missing or invalid Authorization header:
+                  value:
+                    message: Missing or invalid Authorization header
+                    http_status_code: 401
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Could not find any account:
+                  value:
+                    message: Could not find any account
+                    http_status_code: 404
+                Could not find any state machine:
+                  value:
+                    message: Could not find any state machine
+                    http_status_code: 404
+                Dispute Not Found:
+                  value:
+                    message: Dispute Not Found
+                    http_status_code: 404
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Event is required and cannot be empty:
+                  value:
+                    message: Event is required and cannot be empty.
+                    http_status_code: 422
+                This endpoint accepts on-us disputes only.:
+                  value:
+                    message: This endpoint accepts on-us disputes only.
+                    http_status_code: 422
+        '423':
+          description: Access not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                The dispute ID or dispute installment ID is already being used:
+                  value:
+                    message: >-
+                      The dispute ID or dispute installment ID is already being
+                      used
+                    http_status_code: 423
+                Concurrent request detected - another request is already processing this Dispute:
+                  value:
+                    message: >-
+                      Concurrent request detected - another request is already
+                      processing this dispute
+                    http_status_code: 423
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '504':
+          description: Gateway timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
