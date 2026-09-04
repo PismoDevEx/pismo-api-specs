@@ -8,7 +8,7 @@ info:
     name: Copyright Pismo
   version: '1.0'
 servers:
-  - url: https://sandbox.pismolabs.io/qrcode
+  - url: https://sandbox-cdn.pismolabs.io/qrcode
     description: Sandbox API server for testing.
 tags:
   - name: QR Code
@@ -34,7 +34,7 @@ components:
       type: string
       description: >
         Access token related to the `url_payload`/`url_payload_rec` fields, used
-        to register and validate a QR code. 
+        to register and validate a QR code.
 
 
         This field **must** be provided if the PSP requires it. The URL format
@@ -93,6 +93,51 @@ components:
         Payee-created external ID for their reference.
       maxLength: 35
       example: 5509-uroo-78944-9987
+    Taxes:
+      type: object
+      description: >-
+        Now only available on EXT environmentand just for direct parciapants.
+        Tax information related to the transaction.
+      properties:
+        tax_identifier:
+          $ref: '#/components/schemas/TaxIdentifier'
+        records:
+          type: array
+          description: >-
+            Group of information on tax record types. It is mandatory to pass 2
+            objects, at least one with CBS tax type and at least one with IBS
+            tax type.";
+          items:
+            $ref: '#/components/schemas/Records'
+    TaxIdentifier:
+      type: string
+      description: >-
+        Tax identifier, referring to the NFe, NFSe or aggregating tax document.
+        The value entered must correspond to the tax document used for
+        calculating the IBS and CBS taxes associated with the transaction.
+      example: IS0435879820240605bcdb1fhn43a
+      maxLength: 50
+    TaxType:
+      type: string
+      description: >-
+        Tax type. 1- IBS (Goods and Services Tax | 2- CBS Contribution on Goods
+        and Services
+      example: IBS
+      enum:
+        - CBS
+        - IBS
+    TaxAmount:
+      type: number
+      minimum: 0
+      description: Tax amount. Must be greater than zero.
+      example: 1050.44
+    Records:
+      type: object
+      properties:
+        tax_type:
+          $ref: '#/components/schemas/TaxType'
+        amount:
+          $ref: '#/components/schemas/TaxAmount'
     creationDate:
       type: string
       format: datetime
@@ -221,7 +266,7 @@ components:
       description: >
         Government ID, such as a CPF (Cadastro de Pessoas Fisicas - individual
         tax ID in Brazil) or a CNPJ (Cadastro Nacional de Pessoa Juridica -
-        business tax ID in Brazil) number. 
+        business tax ID in Brazil) number.
       example: '42761202686'
     dueDate:
       type: string
@@ -339,13 +384,22 @@ components:
     legalType:
       type: string
       description: |
-        Person legal type: 
-          * `LEGAL_PERSON` - Person 
+        Person legal type:
+          * `LEGAL_PERSON` - Person
           * `NATURAL_PERSON` - Company or organization
       enum:
         - LEGAL_PERSON
         - NATURAL_PERSON
       example: NATURAL_PERSON
+    locStatus:
+      type: string
+      description: QR Code status, in the Pismo standardized enum.
+      enum:
+        - ACTIVE
+        - COMPLETED
+        - REMOVED_BY_PAYEE
+        - REMOVED_BY_PSP
+      example: ACTIVE
     merchantCategory:
       type: string
       description: Receiver ISO 18245 merchant category code.
@@ -667,6 +721,48 @@ components:
           $ref: '#/components/schemas/jws'
         jws_rec:
           $ref: '#/components/schemas/jwsRec'
+    qrcode.CancelRecurrenceQrCodeRequest:
+      type: object
+      description: Cancel a Recurrence Qrcode request
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+          maxLength: 36
+          description: Pismo QR Code identifier of the recurrence to cancel.
+          example: 55d3992a-2f89-46fb-820a-958693bde84d
+        status:
+          type: string
+          description: Cancellation status to apply to the recurrence QR Code.
+          enum:
+            - REMOVED_BY_PSP
+            - REMOVED_BY_PAYEE
+          example: REMOVED_BY_PAYEE
+    qrcode.CancelRecurrenceQrCodeResponse:
+      type: object
+      description: Cancel a Recurrence Qrcode response
+      required:
+        - id
+        - external_id
+        - access_token
+        - recurrence_id
+      properties:
+        id:
+          $ref: '#/components/schemas/qrcodeID'
+        external_id:
+          $ref: '#/components/schemas/externalID'
+        emv:
+          $ref: '#/components/schemas/emv'
+        qrcode_image_b64:
+          $ref: '#/components/schemas/qrcode.imageb64'
+        jws_rec:
+          $ref: '#/components/schemas/jwsRec'
+        access_token:
+          $ref: '#/components/schemas/accessToken'
+        recurrence_id:
+          $ref: '#/components/schemas/recurrenceID'
     qrcode.imageb64:
       type: string
       description: Base64 encoded QR Code
@@ -808,6 +904,7 @@ components:
         - access_token
         - external_id
         - status
+        - loc_status
         - emv
         - qrcode_image_b64
       properties:
@@ -820,8 +917,10 @@ components:
         emv:
           $ref: '#/components/schemas/emv'
         status:
-          $ref: '#/components/schemas/status'
-        qrcode_imageb64:
+          $ref: '#/components/schemas/statusDeprecated'
+        loc_status:
+          $ref: '#/components/schemas/locStatus'
+        qrcode_image_b64:
           $ref: '#/components/schemas/qrcode.imageb64'
         version:
           $ref: '#/components/schemas/version'
@@ -970,7 +1069,7 @@ components:
         allow_attempts_after_expiration:
           $ref: '#/components/schemas/retry'
         taxes:
-          $ref: '#/components/schemas/taxes'
+          $ref: '#/components/schemas/Taxes'
     qrcode.RecurrenceQrcodePayeeRequest:
       type: object
       description: Recurence QR Code payee request
@@ -1003,14 +1102,6 @@ components:
           $ref: '#/components/schemas/amount'
         allows_value_change:
           $ref: '#/components/schemas/allowsValueChange'
-    Records:
-      type: object
-      description: Tax record object
-      properties:
-        tax_type:
-          $ref: '#/components/schemas/taxType'
-        amount:
-          $ref: '#/components/schemas/taxAmount'
     recurrenceDescription:
       type: string
       description: Recurrence payment description
@@ -1060,67 +1151,18 @@ components:
         - REMOVED_BY_PAYEE
         - REMOVED_BY_PSP
       example: ACTIVE
-    taxes:
-      type: object
+    statusDeprecated:
+      type: string
+      deprecated: true
       description: >-
-        Only available in EXT environment for direct parciapants. Tax
-        information related to the transaction.
-      properties:
-        tax_identifier:
-          $ref: '#/components/schemas/taxIdentifier'
-        records:
-          type: array
-          description: >-
-            Tax record types information. You must pass, at a minimum, 2 objects
-            - at least one with `CBS tax type and at least one with `IBS` tax
-            type.
-          items:
-            $ref: '#/components/schemas/Records'
-    taxAmount:
-      type: number
-      minimum: 0
-      description: Tax amount. Must be greater than zero.
-      example: 1050.44
-    taxIdentifier:
-      type: string
-      description: >
-        Tax identifier, referring to the NF-e, NFS-e or aggregating tax
-        document. 
-
-
-        In Brazil, NF-e and NFS-e are the two primary types of mandatory
-        electronic invoices (Notas Fiscais) used for tax compliance.
-
-        * NF-e (Nota Fiscal Eletrônica): Used for the sale and movement of
-        physical goods or products. It is regulated at the state level by SEFAZ
-        (SEFAZ (Secretaria da Fazenda) is the State Department of Finance in
-        Brazil.) and travels with the goods.
-
-        * NFS-e (Nota Fiscal de Serviços Eletrônica): Used for the provision of
-        services (e.g., consulting, repairs, digital subscriptions). It is
-        regulated by individual city governments.
-
-
-        The value entered must correspond to the tax document used for
-        calculating the IBS and CBS taxes associated with the transaction.
-      example: IS0435879820240605bcdb1fhn43a
-      maxLength: 50
-    taxType:
-      type: string
-      description: >
-        Tax type:
-
-        * `IBS` = Goods and services tax. A state and municipal tax that unifies
-        and replaces the main subnational consumption taxes (state ICMS and
-        municipal ISS).
-
-        * `CBS` = Contribution on goods and services. A federal tax that
-        consolidates and replaces previous federal social contributions and
-        taxes (PIS, Cofins, and IPI)
+        QR Code status. Deprecated - use `loc_status` instead. Scheduled for
+        removal on 2027-02-14.
       enum:
-        - CBS
-        - IBS
-      example: IBS
+        - ACTIVE
+        - COMPLETED
+        - REMOVED_BY_PAYEE
+        - REMOVED_BY_PSP
+      example: ACTIVE
     tradeName:
       type: string
       description: Company name
@@ -1131,14 +1173,14 @@ components:
       maxLength: 36
       description: >
         Client-generated unique transaction ID for client monitoring and
-        tracking. 
+        tracking.
       example: trans-id-75789947401234567
     transactionIDSmall:
       type: string
       maxLength: 25
       description: >
         Client-generated unique transaction ID for client monitoring and
-        tracking. 
+        tracking.
       example: trans-id-7578994740
     urlJWK:
       type: string
@@ -1310,12 +1352,12 @@ paths:
       summary: Create dynamic COB QR Code
       description: >
         Generate a new dynamic COB QR Code and EMV (Europay Mastercard Visa)
-        string. 
+        string.
 
 
         COB is short for *cobranca*, which means *charge* in Portuguese. A COB
         QR Code has an expiration date while a COBV QR Code has a due date,
-        fine, interest, and rebates. 
+        fine, interest, and rebates.
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
@@ -1424,12 +1466,12 @@ paths:
       summary: Create dynamic COBV QR Code
       description: >
         Generate a new COBV QR Code image and EMV (Europay Mastercard Visa)
-        string. 
+        string.
 
 
         COB is short for *cobranca*, which means *charge* in Portuguese. A COB
         QR Code has an expiration date while a COBV QR Code has a due date,
-        fine, interest, and rebates.  
+        fine, interest, and rebates.
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
@@ -1599,7 +1641,7 @@ paths:
       summary: Create recurrent COB QR Code
       description: >
         Create a COB QR Code for a recurring payment as a EMV (Europay
-        Mastercard Visa) string. 
+        Mastercard Visa) string.
 
 
         COB is short for *cobranca*, which means charge in Portuguese. A COB QR
@@ -1659,7 +1701,7 @@ paths:
       summary: Create recurrent COBV QR Code
       description: >
         Create a COBV QR Code for a recurring payment as a EMV (Europay
-        Mastercard Visa) string. 
+        Mastercard Visa) string.
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
@@ -1713,7 +1755,7 @@ paths:
       summary: Create recurrent static QR Code
       description: >
         Create a recurrent static QR Code and EMV (Europay Mastercard Visa)
-        string. 
+        string.
 
 
         For more information, refer to [Pix and QR Codes](doc:pix-and-qr-codes).
@@ -1801,6 +1843,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/qrcode.CreateRecurrenceQrCodeResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '502':
+          $ref: '#/components/responses/502BadGateway'
+        '504':
+          $ref: '#/components/responses/504GatewayTimeout'
+  /v1/pix/qrcode/recurrence/cancel:
+    post:
+      summary: Cancel recurrent compound QR Code [Beta]
+      description: >
+        Cancel a recurring payment authorization (compound) QR Code and return
+        the updated QR Code image, EMV (Europay Mastercard Visa) string, and
+        recurrence payload. 
+
+
+        **Notes:** 
+          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
+          * This endpoint is beta, use in the dev-ext environment only
+      operationId: post-cancel-recurrence
+      tags:
+        - Recurring payment
+      parameters:
+        - $ref: '#/components/parameters/authHeader'
+      requestBody:
+        description: Cancel recurrent QR Code request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/qrcode.CancelRecurrenceQrCodeRequest'
+        required: true
+      responses:
+        '200':
+          description: Cancel recurrence QR Code response
+          headers:
+            x-cid:
+              schema:
+                type: string
+              description: Request tracking identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/qrcode.CancelRecurrenceQrCodeResponse'
         '400':
           $ref: '#/components/responses/400BadRequest'
         '401':
