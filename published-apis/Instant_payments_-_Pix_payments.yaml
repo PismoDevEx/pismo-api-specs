@@ -912,10 +912,14 @@ components:
           $ref: '#/components/schemas/CityCode'
     PaymentType:
       type: string
-      description: |
+      description: >
         Payment type.
+
         * `IMMEDIATE` - Immediate payment. 
-        * `FRAUD` - Payment due to suspected fraud.
+
+        * `FRAUD` - Payment due to suspected fraud. **NOT ALLOWED** when
+        `transaction_type` is `REFUND`.
+
         * `SCHEDULED` - Scheduled payment.
       enum:
         - IMMEDIATE
@@ -2480,11 +2484,11 @@ components:
         start_scheduler_date:
           type: string
           description: >
-            Datetime to start the scheduled payment. Format = yyyy-mm-dd.
-            Transfers are made at midnight on this date, and if recurring, every
-            month until `end_scheduler_date`. **REQUIRED** for `type` = `ONCE`
-            or `RECURRING`. **MUST** be omitted for `type` = `PRESET` (the start
-            of the schedule is derived from the earliest execution `due_date`).
+            Date to start the scheduled payment. Format = yyyy-mm-dd. Transfers
+            are made at midnight on this date, and if recurring, every month
+            until `end_scheduler_date`. **REQUIRED** for `type` = `ONCE` or
+            `RECURRING`. **MUST** be omitted for `type` = `PRESET` (the start of
+            the schedule is derived from the earliest execution `due_date`).
           example: '2024-06-10'
         end_scheduler_date:
           type: string
@@ -2496,18 +2500,6 @@ components:
           example: '2024-06-10'
         cycle:
           $ref: '#/components/schemas/SchedulerCycle'
-        executions:
-          type: array
-          minItems: 1
-          maxItems: 60
-          description: >
-            List of pre-established executions. **REQUIRED** for `type` =
-            `PRESET` (1 to 60 items); **MUST** be omitted for `type` = `ONCE` or
-            `RECURRING`. Each execution is created upfront and can be retrieved
-            through the [List Pix scheduler
-            executions](ref:get-scheduler-executions) endpoint.
-          items:
-            $ref: '#/components/schemas/scheduler.PresetExecution'
     scheduler.PresetExecution:
       type: object
       description: A single pre-established execution for a `PRESET` scheduler.
@@ -2521,6 +2513,54 @@ components:
           example: '2026-10-15'
         end_to_end_id:
           $ref: '#/components/schemas/EndToEndID'
+    scheduler.SchedulerDetailsRequest:
+      type: object
+      description: Scheduler details accepted when creating a scheduler.
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/ProcessingType'
+        description:
+          type: string
+          description: Schedule description
+          maxLength: 200
+          example: Pay at end of month
+        start_scheduler_date:
+          type: string
+          description: >
+            Datetime to start the scheduled payment. Format = yyyy-mm-dd.
+            Transfers are made at midnight on this date, and, if recurring,
+            every month until `end_scheduler_date`. **Required** for `type` =
+            `ONCE` or `RECURRING`. Must be omitted for `type` = `PRESET` (the
+            start of the schedule is derived from the earliest execution
+            `due_date`).
+          example: '2024-06-10'
+        end_scheduler_date:
+          type: string
+          description: >
+            Datetime to stop the scheduled payment (maximum = 1 year). Format =
+            yyyy-mm-dd. **Required** for `type` = `ONCE` or `RECURRING`. Must be
+            omitted for `type` = `PRESET` (the end of the schedule is derived
+            from the latest execution `due_date`).
+          example: '2024-06-10'
+        cycle:
+          $ref: '#/components/schemas/SchedulerCycle'
+        executions:
+          type: array
+          minItems: 1
+          maxItems: 60
+          description: >
+            List of pre-established executions. **REQUIRED** for `type` =
+            `PRESET` (1 to 60 items); **must** be omitted for `type` = `ONCE` or
+            `RECURRING`. Each execution is created up front and can be retrieved
+            through the [List Pix scheduler
+            executions](ref:get-scheduler-executions) endpoint. This field is
+            input-only - it is accepted when creating a scheduler and is never
+            returned by the [Get scheduled
+            transfer](ref:get-scheduled-pix-payment) endpoint.
+          items:
+            $ref: '#/components/schemas/scheduler.PresetExecution'
     scheduler.SchedulerRegisterRequest:
       type: object
       required:
@@ -2546,7 +2586,7 @@ components:
         qr_code_additional_information:
           $ref: '#/components/schemas/QRcodeAddInfo'
         scheduler_details:
-          $ref: '#/components/schemas/scheduler.SchedulerDetails'
+          $ref: '#/components/schemas/scheduler.SchedulerDetailsRequest'
         end_to_end_id:
           $ref: '#/components/schemas/EndToEndID'
         remittance_information:
@@ -5146,7 +5186,7 @@ paths:
         Each item has a `due_date` (`yyyy-mm-dd`) and a pre-established
         `end_to_end_id`. From 1 to 60 executions are supported and are all
         created upfront in a single operation. So, `start_scheduler_date`,
-        `end_scheduler_date` and `cycle` **MUST NOT BE** sent for this type. The
+        `end_scheduler_date` and `cycle` **MUST NOT** be sent for this type. The
         schedule window is derived from the executions' `due_date`.
 
 
