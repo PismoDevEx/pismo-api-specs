@@ -419,8 +419,6 @@ components:
           $ref: '#/components/schemas/MaxLimit'
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
-        reset_datetime:
-          $ref: '#/components/schemas/ResetDatetime'
         reset_period:
           $ref: '#/components/schemas/ResetPeriod'
         conditions:
@@ -848,8 +846,6 @@ components:
           $ref: '#/components/schemas/AvailableLimit'
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
-        reset_datetime:
-          $ref: '#/components/schemas/ResetDatetime'
         reset_period:
           $ref: '#/components/schemas/ResetPeriod'
         time_zone:
@@ -890,8 +886,6 @@ components:
           $ref: '#/components/schemas/MaxAmount'
         limit_duration:
           $ref: '#/components/schemas/LimitDuration'
-        reset_datetime:
-          $ref: '#/components/schemas/ResetDatetime'
         reset_period:
           $ref: '#/components/schemas/ResetPeriod'
         reset_strategy:
