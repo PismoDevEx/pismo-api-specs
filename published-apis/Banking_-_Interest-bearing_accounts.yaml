@@ -3606,7 +3606,7 @@ paths:
         - Penalty
       summary: Simulate penalty
       description: >
-        Simulates the penalty applied to a specified withdrawal on a given date.
+        Simulate the penalty applied to a specified withdrawal on a given date.
         The operation is read‑only and does not modify any data.
 
 
