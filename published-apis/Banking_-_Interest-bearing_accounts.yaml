@@ -45,17 +45,7 @@ components:
       description: >
         Account token. Token encoded with a Pismo account ID. Tokens can expire
         quickly, which can result in a 401 Unauthorized error.
-      example: 1234
-    authorizationTokenGenericHeader:
-      name: Authorization
-      in: header
-      schema:
-        type: string
-      required: true
-      description: >
-        Generic token. Token encoded with a generic token ID. Tokens can expire
-        quickly, which can result in a 401 Unauthorized error.
-      example: 1234
+      example: '1234'
     productId:
       description: Product ID
       in: path
@@ -399,29 +389,30 @@ components:
         interest_capitalization_mode:
           type: string
           enum:
-            - PAYOUT
             - REINVEST
-          default: PAYOUT
+            - PAYOUT
+          default: REINVEST
           description: >
-            Controls the treatment of capitalized interest.<br>
+            Controls the treatment of capitalized interest. Optional field.<br>
 
 
-            * `PAYOUT` is the default behavior. In this mode, the capitalized
-            amount is sent to the configured payout_account. If no payout
-            account exists, the amount stays in the base account.
-
-            * `REINVEST` instructs the Pismo platform to add the capitalized
+            * `REINVEST` (default): The Pismo platform adds the capitalized
             amount to the principal through the interest engine. The new
-            principal becomes the foundation for the next accrual cycle.
+            principal becomes the foundation for the next accrual cycle. No
+            `payout_account` is required.
+
+            * `PAYOUT` (explicit): The capitalized amount is routed to
+            `payout_account`. A valid `payout_account` is **required** in this
+            request when this value is passed explicitly—omitting it returns
+            `400 EIBACC0379`.
+
+            * `Omitted`: The Pismo platform applies `REINVEST`. Both the GET
+            operation and events return `REINVEST`.
 
 
             This setting affects only the capitalization process. The maturity
             instruction flow always uses `payout_account`, regardless of the
             value of this field.
-
-
-            If the field is not provided, it is omitted from the attachment and
-            the Pismo platform applies `PAYOUT` at runtime.
           example: REINVEST
         overrides:
           $ref: '#/components/schemas/AttachmentOverridesRequest'
@@ -596,8 +587,7 @@ components:
             - FIXED
         value:
           type: number
-          minimum: 0
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
         valid_until:
           type: string
           format: date-time
@@ -676,28 +666,32 @@ components:
         interest_capitalization_mode:
           type: string
           enum:
-            - PAYOUT
             - REINVEST
-          default: PAYOUT
+            - PAYOUT
+          default: REINVEST
           description: >
             Program‑level setting that defines how capitalized interest should
             be treated.<br>
 
 
-            * `PAYOUT` is the default. In this mode, the capitalized amount is
-            sent to the configured `payout_account`.
-
-            * `REINVEST` instructs the Pismo platform to add the capitalized
+            * `REINVEST` (default): The Pismo platform adds the capitalized
             amount to the principal through the interest engine.
 
+            * `PAYOUT`: The capitalized amount is routed to the `payout_account`
+            configured at account level.
 
-            All accounts attached to the program inherit this behavior unless an
-            account‑level configuration overrides it.
+
+            Both values are allowed at the program level without
+            `payout_account` validation. The `payout_account` binding
+            (`EIBACC0379`) applies only at the account level because
+            `payout_account` is not part of the program attachment. All accounts
+            under the program follow this behavior unless an account‑level
+            configuration replaces it.
 
 
             If the field is not provided, it is omitted from the attachment and
-            the system applies `PAYOUT` at runtime.
-          example: PAYOUT
+            the Pismo platform applies `REINVEST` at runtime.
+          example: REINVEST
         overrides:
           $ref: '#/components/schemas/ProgramAttachmentOverridesRequest'
     AttachmentOverridesPatchRequest:
@@ -712,11 +706,9 @@ components:
         maturity_instructions:
           allOf:
             - $ref: '#/components/schemas/MaturityInstructionsOverrideRequest'
-          nullable: true
         renewal_term:
           allOf:
             - $ref: '#/components/schemas/RenewalTermOverrideRequest'
-          nullable: true
         penalties:
           $ref: '#/components/schemas/PenaltiesPatchRequest'
     PenaltiesPatchRequest:
@@ -734,23 +726,18 @@ components:
         grace_period:
           allOf:
             - $ref: '#/components/schemas/GracePeriodOverrideRequest'
-          nullable: true
         early_withdrawal_after_opening:
           allOf:
             - $ref: '#/components/schemas/EarlyWithdrawalAfterOpeningOverrideRequest'
-          nullable: true
         withdrawal_fee:
           allOf:
             - $ref: '#/components/schemas/WithdrawalFeeOverrideRequest'
-          nullable: true
         tiered_interest_forfeiture:
           allOf:
             - $ref: '#/components/schemas/TieredInterestForfeitureOverrideRequest'
-          nullable: true
         subsequent_withdrawals:
           allOf:
             - $ref: '#/components/schemas/SubsequentWithdrawalsOverrideRequest'
-          nullable: true
     ProgramAttachmentOverridesPatchRequest:
       type: object
       description: |
@@ -763,7 +750,6 @@ components:
         renewal_term:
           allOf:
             - $ref: '#/components/schemas/RenewalTermOverrideRequest'
-          nullable: true
     UpdateAccountAttachmentRequest:
       type: object
       required:
@@ -778,7 +764,6 @@ components:
             maturity_period:
               allOf:
                 - $ref: '#/components/schemas/MaturityPeriod'
-              nullable: true
               description: >
                 Defines the term currently in force and recalculates the cycle’s
                 maturity date immediately. The update takes effect at once; it
@@ -835,25 +820,30 @@ components:
                 - REINVEST
               nullable: true
               description: >
-                Defines how capitalized interest is treated.<br>
+                Updates how capitalized interest is treated on this
+                attachment.<br>
 
 
-                * `PAYOUT` (default): The capitalized amount is routed to
-                `payout_account`. If no payout account is configured, the amount
-                remains in the base account.
+                * `PAYOUT` (explicit): Switching to this mode requires the
+                attachment to already have a valid `payout_account`. If none is
+                configured, the request returns `400 EIBACC0379`—set the
+                `payout_account` first via `PATCH
+                /v1/deposits/accounts/{accountId}`, then switch to this mode.
 
-                * `REINVEST`: the capitalized amount is added to the principal
-                through the interest engine. The updated principal becomes the
-                basis for the next accrual cycle.
+                * `REINVEST`: The capitalized amount is added to the principal
+                through the interest engine. No `payout_account` is required.
+
+                * `Omitted`: The current mode is left unchanged.
+
+                * `null`: Clears the account‑level value and restores the
+                inherited behavior from the program and then the product
+                default. When the value is missing at all levels, the Pismo
+                platform applies `REINVEST`.
 
 
                 This field applies only to the capitalization flow. The maturity
-                instruction flow always uses `payout_account` regardless of this
-                setting.<br>
-
-
-                If the field is not provided, it is absent in the attachment and
-                defaults to `PAYOUT` at runtime.
+                instruction flow always uses `payout_account` regardless of the
+                setting.
               example: REINVEST
             overrides:
               $ref: '#/components/schemas/AttachmentOverridesPatchRequest'
@@ -1424,8 +1414,35 @@ components:
           type: string
           description: The product name.
           example: Tax 1 Default
+        accrual_model:
+          type: string
+          description: >
+            Interest bearing accounts feed the interest engine through two
+            submission modes.<br>
+              * `DEPOSIT_BASIS` sends each deposit and withdrawal as a per‑movement entry, which is the default behavior.
+              * `BALANCE_BASIS` sends the daily closing balance instead.
+
+              Each mode must align with the interest plan’s configured `interest_base_model`.
+          enum:
+            - DEPOSIT_BASIS
+            - BALANCE_BASIS
+          default: DEPOSIT_BASIS
+          example: DEPOSIT_BASIS
+        balance_type:
+          type: string
+          description: >-
+            Which balance of the `balance_history` event is submitted when
+            `accrual_model` is `BALANCE_BASIS`. `VALUE_DATED_BALANCE` uses the
+            cleared balance (default). `LEDGER_BALANCE` includes uncleared
+            funds.
+          enum:
+            - VALUE_DATED_BALANCE
+            - LEDGER_BALANCE
+          default: VALUE_DATED_BALANCE
+          example: VALUE_DATED_BALANCE
         min_amount:
           type: number
+          format: float
           description: >-
             Minimum amount for yield. If balance is below this value, yield is
             not calculated. If no value is provided, any available amount is
@@ -1733,8 +1750,35 @@ components:
           type: string
           description: The product name.
           example: Tax 1 Default
+        accrual_model:
+          type: string
+          description: >
+            Interest bearing accounts feed the interest engine through two
+            submission modes.<br>
+              * `DEPOSIT_BASIS` sends each deposit and withdrawal as a per‑movement entry, which is the default behavior.
+              * `BALANCE_BASIS` sends the daily closing balance instead.
+
+              Each mode must align with the interest plan’s configured `interest_base_model`.
+          enum:
+            - DEPOSIT_BASIS
+            - BALANCE_BASIS
+          default: DEPOSIT_BASIS
+          example: DEPOSIT_BASIS
+        balance_type:
+          type: string
+          description: >-
+            Which balance of the `balance_history` event is submitted when
+            `accrual_model` is `BALANCE_BASIS`. `VALUE_DATED_BALANCE` uses the
+            cleared balance (default). `LEDGER_BALANCE` includes uncleared
+            funds.
+          enum:
+            - VALUE_DATED_BALANCE
+            - LEDGER_BALANCE
+          default: VALUE_DATED_BALANCE
+          example: VALUE_DATED_BALANCE
         min_amount:
           type: number
+          format: float
           description: >-
             Minimum amount for yield. If balance is below this value, yield is
             not calculated. If no value is provided, any available amount is
@@ -1843,7 +1887,7 @@ components:
           description: >
             Present only when this account attachment explicitly defines
             `interest_capitalization_mode`. If the field is missing, the
-            effective value is `PAYOUT`, inherited from the program
+            effective value is `REINVEST`, inherited from the program
             configuration or, if the program does not specify it, from the
             product’s default settings.
           example: REINVEST
@@ -1930,10 +1974,10 @@ components:
           description: >
             Present only when this program attachment explicitly defines
             `interest_capitalization_mode`. If the field is missing, the Pismo
-            platform applies `PAYOUT` as the default behavior. All accounts
+            platform applies `REINVEST` as the default behavior. All accounts
             linked to the program inherit this value unless an account‑level
             configuration provides its own setting.
-          example: PAYOUT
+          example: REINVEST
         overrides:
           allOf:
             - $ref: '#/components/schemas/AttachmentOverridesSnapshot'
@@ -2033,6 +2077,12 @@ components:
           type: number
           description: Account ID.
           example: 123456
+        external_account_id:
+          type: string
+          description: >-
+            External account ID resolved from the account context. Returned when
+            available, including while the calculation status is `PROCESSING`.
+          example: ext-acct-001
         begin_date_datetime:
           type: string
           format: date-time
@@ -2432,21 +2482,22 @@ components:
         type:
           type: string
           enum:
-            - percentage
-            - fixed
+            - PERCENTAGE
+            - FIXED
           description: >
             The penalty calculation type.
 
-            - `percentage`: The penalty calculated as a percentage of the
+            - `PERCENTAGE`: The penalty calculated as a percentage of the
             withdrawal amount
 
-            - `fixed`: The penalty is a fixed amount
-          example: percentage
+            - `FIXED`: The penalty is a fixed amount
+          example: PERCENTAGE
         value:
           type: number
+          format: float
           description: >
-            The penalty value. For `percentage`, this represents the percentage
-            rate, for example, `2.5` = 2.5%. For `fixed`, this is the absolute
+            The penalty value. For `PERCENTAGE`, this represents the percentage
+            rate. For example, `2.5` = 2.5%. For `FIXED`, this is the absolute
             amount in the account's currency.
           example: 2.5
         description:
@@ -2560,11 +2611,17 @@ components:
           minLength: 24
           maxLength: 24
           description: >-
-            Account creation timestamp is passed directly to the
-            transaction‑banking API as an ISO 8601 value
-            (`yyyy‑mm‑ddThh:mm:ss.sssZ`, 24 characters). The field is optional
-            and omitted when not supplied, and all validation is handled by the
-            transaction banking API.
+            Account creation timestamp in RFC 3339 (a strict profile of ISO
+            8601). That is, the format should be `yyyy-mm-ddThh:mm:ss.sssZ` (24
+            characters). Optional. It is forwarded to the transaction-banking
+            API for account creation and is also used by the deposit flow to
+            anchor the attachment's effective date. The timestamp is converted
+            to the account division's local calendar day, and the
+            `calendar_maturity_date` plus the interest cycle are computed from
+            that day. So, a retroactive open (a past timestamp) backdates
+            maturity and interest accrual accordingly. When omitted, the current
+            instant expressed in the division timezone is used. When the
+            division has no timezone configured, the day is resolved in UTC.
           example: '2026-06-24T14:49:36.017Z'
     UnifiedOpenApplicant:
       type: object
@@ -2641,6 +2698,16 @@ components:
               $ref: '#/components/schemas/MaturityInstructionsOverrideRequest'
             penalties:
               $ref: '#/components/schemas/PenaltiesOverrideRequest'
+            interest_capitalization_mode:
+              type: string
+              enum:
+                - PAYOUT
+                - REINVEST
+              description: >
+                Present only when the attachment explicitly defines
+                `interest_capitalization_mode`. Reflects the value stored on the
+                attachment.
+              example: REINVEST
   securitySchemes:
     BearerAuth:
       type: http
@@ -3059,6 +3126,18 @@ paths:
                     details: >-
                       renewal_term requires either both unit and value, or
                       renewal_calendar_maturity_date
+                capitalizationPayoutRequiresPayoutAccount:
+                  summary: >-
+                    interest_capitalization_mode PAYOUT requires a
+                    payout_account
+                  value:
+                    code: EIBACC0379
+                    message: >-
+                      interest_capitalization_mode PAYOUT requires a fully
+                      resolved payout_account
+                    details: >-
+                      payout_account is required when
+                      interest_capitalization_mode is PAYOUT.
         '404':
           $ref: '#/components/responses/404NotFound'
         '409':
@@ -3094,7 +3173,7 @@ paths:
         event.
       operationId: interest-bearing-v1-deposit-detach-account
       parameters:
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       requestBody:
         content:
           application/json:
@@ -3236,6 +3315,7 @@ paths:
                           waived: false
                           type: PERCENTAGE
                           value: 2.5
+                      interest_capitalization_mode: REINVEST
         '400':
           description: Bad Request
           content:
@@ -3259,6 +3339,11 @@ paths:
                     message: >-
                       Field 'account_creation' is required when 'account_id' is
                       not provided
+                invalidAccountCreationDatetime:
+                  summary: account_creation_datetime is not a valid RFC 3339 value
+                  value:
+                    code: EIBACC0380
+                    message: Invalid account_creation_datetime format. Expected RFC3339
                 accountMismatch:
                   summary: Provided account_id does not match external_account_id
                   value:
@@ -3329,6 +3414,18 @@ paths:
                   value:
                     code: EIBACC0284
                     message: Payout account is configured but is invalid
+                capitalizationPayoutRequiresPayoutAccount:
+                  summary: >-
+                    interest_capitalization_mode PAYOUT requires a
+                    payout_account
+                  value:
+                    code: EIBACC0379
+                    message: >-
+                      interest_capitalization_mode PAYOUT requires a fully
+                      resolved payout_account
+                    details: >-
+                      payout_account is required when
+                      interest_capitalization_mode is PAYOUT.
                 maturityPeriodInvalidUnit:
                   summary: maturity_period unit is not a supported value
                   value:
@@ -3509,7 +3606,7 @@ paths:
         - Penalty
       summary: Simulate penalty
       description: >
-        Simulate the penalty applied to a specified withdrawal on a given date.
+        Simulates the penalty applied to a specified withdrawal on a given date.
         The operation is read‑only and does not modify any data.
 
 
@@ -3976,6 +4073,18 @@ paths:
                     details: >-
                       renewal_term requires either both unit and value, or
                       renewal_calendar_maturity_date
+                capitalizationPayoutRequiresPayoutAccount:
+                  summary: >-
+                    switching to PAYOUT requires a payout_account on the
+                    attachment
+                  value:
+                    code: EIBACC0379
+                    message: >-
+                      interest_capitalization_mode PAYOUT requires a fully
+                      resolved payout_account
+                    details: >-
+                      A payout_account must be configured on the attachment
+                      before interest_capitalization_mode can be set to PAYOUT.
         '404':
           $ref: '#/components/responses/404NotFound'
         '409':
@@ -4123,7 +4232,6 @@ paths:
                         reason: Q4 2026 regulatory adjustment
                         grace_period:
                           waived: true
-                        withdrawal_fee: null
       responses:
         '200':
           description: OK
