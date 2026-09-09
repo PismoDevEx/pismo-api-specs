@@ -10,7 +10,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/bacs
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: BACS direct credit
   - name: BACS direct debit
@@ -594,6 +594,18 @@ components:
       type: string
       description: Original transaction ID
       example: 08ec4cf7-2d74-5453-80e0-e940ac8fc219
+    mandate.AdviceReason:
+      type: string
+      description: >
+        Why an amendment is advised to the originator. Mapped to the matching
+        ADDACS advice code on the mandate submission raised for the amendment;
+        scheme codes are not accepted here.
+          * `advance_notice_disputed` - The payer disputes a collection's advance notice. An advice on its own, with no accompanying change of details.
+          * `instruction_details_amended` - The payer's account details on the instruction have changed.
+      enum:
+        - advance_notice_disputed
+        - instruction_details_amended
+      example: advance_notice_disputed
     mandate.AmendRequest:
       type: object
       description: >-
@@ -613,6 +625,8 @@ components:
           $ref: '#/components/schemas/mandate.Debtor'
         beneficiary:
           $ref: '#/components/schemas/mandate.Beneficiary'
+        advice_reason:
+          $ref: '#/components/schemas/mandate.AdviceReason'
     mandate.AmendResponse:
       type: object
       description: The amend endpoint returns this after the pending intent is persisted.
