@@ -74,9 +74,9 @@ components:
       in: query
       name: numberOfLatestTransactions
       description: >-
-        Number of latest transactions. Get the X latest transactions from the
-        date specified in the `event_date` field. This filter overwrites page
-        filters and doesn't allow any other filters with it.
+        Number of latest transactions. This filter gets the specified number of
+        latest transactions, overwrites page filters, and doesn't allow any
+        other filters with it.
       schema:
         type: integer
         format: int64
