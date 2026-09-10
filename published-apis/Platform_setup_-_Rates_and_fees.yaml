@@ -115,7 +115,6 @@ components:
               - 12
             calculation_parameters:
               calculation_method: EQUAL_INSTALLMENTS
-              day_count_method: MONTH_30_YEAR_360
               interest_rate:
                 type: FIXED
                 value: 10
@@ -145,7 +144,6 @@ components:
               - 24
             calculation_parameters:
               calculation_method: EQUAL_INSTALLMENTS
-              day_count_method: MONTH_30_YEAR_360
               interest_rate:
                 type: FIXED
                 value: 12
@@ -180,7 +178,6 @@ components:
               - 36
             calculation_parameters:
               calculation_method: EQUAL_INSTALLMENTS
-              day_count_method: MONTH_30_YEAR_360
               interest_rate:
                 type: FIXED
                 value: 8.5
@@ -1092,18 +1089,16 @@ components:
             example: Invalid date, does not match yyyy-mm-dd format.
             description: Describes the rule that the field did not match.
     HTTPPutErrors:
-      type: array
-      items:
-        type: object
-        properties:
-          error_code:
-            type: string
-            example: RCAPI-INTEGRITY-VIOLATION
-            description: Error code ID.
-          message:
-            type: string
-            example: Attachment has been created already
-            description: Error description
+      type: object
+      properties:
+        error_code:
+          type: string
+          example: RCAPI-INTEGRITY-VIOLATION
+          description: Error code ID.
+        message:
+          type: string
+          example: Attachment has been created already
+          description: Error description
     fees:
       type: array
       description: List of additional fees.
@@ -1287,9 +1282,15 @@ components:
         rule application ends after the 10th transaction.
       example: 100
     ModelID:
-      type: number
+      type: string
+      format: uuid
       description: Pismo fee model ID
-      example: 455586868
+      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+    ModelAttachmentResponse:
+      type: object
+      properties:
+        model_id:
+          $ref: '#/components/schemas/ModelID'
     ModelList:
       type: array
       items:
@@ -1436,8 +1437,6 @@ components:
             - 6
             - 10
             - 12
-        day_count_method:
-          $ref: '#/components/schemas/DayCountMethod'
         billing_method:
           type: string
           description: |
@@ -1453,6 +1452,8 @@ components:
           description: Frequency of the billing. Required for billing_method = `BNPL`
           enum:
             - MONTHLY
+            - WEEKLY
+            - BIWEEKLY
           example: MONTHLY
         installment_parameters:
           $ref: '#/components/schemas/SimulationInstallmentParameters'
@@ -1853,7 +1854,6 @@ components:
         and optional internal fees (e.g., IOF).
       required:
         - calculation_method
-        - day_count_method
         - interest_rate
         - identifier
       properties:
@@ -2574,12 +2574,12 @@ paths:
                           - AUTHORIZATION
                           - CONFIRMATION
       responses:
-        '200':
+        '201':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModelID'
+                $ref: '#/components/schemas/ModelAttachmentResponse'
         '400':
           $ref: '#/components/responses/400BadRequestError'
         '401':
@@ -2669,14 +2669,11 @@ paths:
       parameters:
         - $ref: '#/components/parameters/ModelIDpath'
         - $ref: '#/components/parameters/AccountIDpath'
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '409':
@@ -2692,16 +2689,15 @@ paths:
         - Fee models
       parameters:
         - $ref: '#/components/parameters/AccountIDpath'
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModelID'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
+                $ref: '#/components/schemas/ModelAttachmentResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequestError'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '500':
@@ -2714,12 +2710,11 @@ paths:
         - Fee models
       parameters:
         - $ref: '#/components/parameters/AccountIDpath'
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
+        '400':
+          $ref: '#/components/responses/400BadRequestError'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '500':
@@ -2734,14 +2729,11 @@ paths:
       parameters:
         - $ref: '#/components/parameters/ModelIDpath'
         - $ref: '#/components/parameters/ProgramIDpath'
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '409':
@@ -2757,16 +2749,15 @@ paths:
         - Fee models
       parameters:
         - $ref: '#/components/parameters/ProgramIDpath'
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModelID'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
+                $ref: '#/components/schemas/ModelAttachmentResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequestError'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '500':
@@ -2779,12 +2770,11 @@ paths:
         - Fee models
       parameters:
         - $ref: '#/components/parameters/ProgramIDpath'
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
+        '400':
+          $ref: '#/components/responses/400BadRequestError'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '500':
@@ -2796,17 +2786,13 @@ paths:
       operationId: getModelByOrg
       tags:
         - Fee models
-      parameters:
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModelID'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
+                $ref: '#/components/schemas/ModelAttachmentResponse'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '500':
@@ -2822,14 +2808,11 @@ paths:
         - Fee models
       parameters:
         - $ref: '#/components/parameters/ModelIDpath'
-        - $ref: '#/components/parameters/AuthNoAccount'
       responses:
         '200':
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404ModelNotFound'
         '409':
@@ -2889,7 +2872,7 @@ paths:
       parameters:
         - name: description
           in: query
-          description: Filter by description
+          description: Filter by any description including simulation config id
           required: false
           schema:
             type: string
@@ -2906,6 +2889,20 @@ paths:
           required: false
           schema:
             type: boolean
+        - name: exclude_tenant_attached
+          in: query
+          description: >
+            When set to true, excludes simulation configs that are attached at
+            the TENANT level.
+
+            This is useful to avoid data duplication on screen, since the
+            tenant-attached config
+
+            is typically displayed separately as the default configuration.
+          required: false
+          schema:
+            type: boolean
+            default: false
         - name: page
           in: query
           description: Page Number(starts from 1)
@@ -3028,8 +3025,6 @@ paths:
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3052,8 +3047,6 @@ paths:
                 $ref: '#/components/schemas/SimulationConfigIdPayload'
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3073,8 +3066,6 @@ paths:
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3097,8 +3088,6 @@ paths:
                 $ref: '#/components/schemas/SimulationConfigIdPayload'
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3116,8 +3105,6 @@ paths:
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3137,8 +3124,6 @@ paths:
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3161,8 +3146,6 @@ paths:
                 $ref: '#/components/schemas/SimulationConfigIdPayload'
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3180,8 +3163,6 @@ paths:
           description: OK
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404SimulationConfigNotFound'
         '500':
@@ -3262,7 +3243,5 @@ paths:
                     example: 1
         '400':
           $ref: '#/components/responses/400BadRequestError'
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalServerError'
