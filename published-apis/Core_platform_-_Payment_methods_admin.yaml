@@ -1,15 +1,13 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: Core platform - Payment methods admin
   version: beta
   description: API to handle administrative operations for payment methods.
   contact:
     name: API Support
-    email: support@pismo.io
     url: https://developers.pismo.io/support/
   license:
-    name: Copyrigth Pismo
-    url: https://developers.pismo.io/licenses/
+    name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io/payment-methods-admin
     description: Sandbox API server for testing
@@ -110,12 +108,27 @@ components:
                 status:
                   type: array
                   description: Filter card by statuses
+                  items:
+                    type: string
+                    enum:
+                      - ACTIVE
+                      - PENDING
+                      - SUSPENDED
+                      - NORMAL
+                      - REISSUED
                   example:
                     - ACTIVE
-                    - BLOCKED
+                    - SUSPENDED
                 type:
                   type: array
                   description: Filter card by types
+                  items:
+                    type: string
+                    enum:
+                      - PLASTIC
+                      - VIRTUAL
+                      - TEMPORARY
+                      - RECURRING
                   example:
                     - PLASTIC
                     - VIRTUAL
@@ -126,6 +139,12 @@ components:
                 status:
                   type: array
                   description: Filter account by statuses
+                  items:
+                    type: string
+                    enum:
+                      - NORMAL
+                      - BLOCKED
+                      - CANCELLED
                   example:
                     - NORMAL
                     - BLOCKED
@@ -239,7 +258,10 @@ components:
           type: string
           example: VALIDATED
     SimulationRequest:
-      description: Request
+      description: >
+        Request. Provide `card.pan`, `document_number`, or `plan_ids`. When only
+        `plan_ids` is provided, the simulation runs as a prospect flow without
+        account or program lookup.
       required:
         - amount
         - authorization_mode
@@ -261,15 +283,14 @@ components:
             - DEBIT
         card:
           type: object
-          description: >-
-            Information related to the card used to perform this simulation.
-            **REQUIRED** if `document_number` is not present.
+          description: Information related to the card used to perform this simulation.
           properties:
             pan:
               type: string
               description: >-
-                Primary account number of the card being used for simulation.
-                **REQUIRED** if `document_number` is not present.
+                Primary account number (PAN) of the card being used for
+                simulation. Provide this field when simulating from an existing
+                card.
               example: '5555550000000001'
         custom_filters:
           type: array
@@ -285,9 +306,8 @@ components:
           type: string
           description: >-
             Document number related to the account to be used as the owner of
-            this request. This field should be used in requests simulation based
-            on client document number. **REQUIRED** if card `pan` is not
-            present.
+            this request. Provide this field for simulations based on a client
+            document number.
           example: '39947739977'
         merchants:
           type: array
@@ -316,7 +336,9 @@ components:
               example: 50
         plan_ids:
           type: array
-          description: Plan IDs used to filter the simulation
+          description: >-
+            Plan IDs used to filter the simulation. **REQUIRED** when neither
+            `card.pan` nor `document_number` is provided.
           items:
             type: string
             example: '000900'
@@ -339,11 +361,15 @@ components:
       properties:
         account_id:
           type: integer
-          description: Pismo ID of the account assigned as the owner of this request
+          description: >-
+            Pismo ID of the account assigned as the owner of this request.
+            Omitted for prospect simulations.
           example: 123
         program_id:
           type: number
-          description: Program ID linked to the user account
+          description: >-
+            Program ID linked to the user account. Omitted for prospect
+            simulations.
           example: 1
         amount:
           type: number

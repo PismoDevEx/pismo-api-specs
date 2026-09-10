@@ -177,7 +177,7 @@ components:
       type: number
       format: double
       description: >
-        `installment_amount` is the full amount of an installment before any
+        `installment_amount` is the full amount of a recurring charge before any
         discount is applied.
       example: 10.9
     IsLastPage:
@@ -197,7 +197,7 @@ components:
       format: int32
       description: >
         Number of cycles to apply the charge plan. In other words, this is the
-        number of installments.
+        number of recurring charges.
 
         Must be greater than `first_cycles_to_discount` if used. Otherwise, it
         must be greater than 0.
@@ -220,16 +220,16 @@ components:
         Processing code for the debit transaction.
 
 
-        If `split_transaction` is `false` (the default), each installment
-        payment is recorded as one debit transaction equal to the installment
-        amount minus the discount, and `processing_code` is the processing code
-        for that transaction.
+        If `split_transaction` is `false` (the default), each recurring payment
+        is recorded as one debit transaction equal to the payment amount minus
+        the discount, and `processing_code` is the processing code for that
+        transaction.
 
 
-        If `split_transaction` is `true`, each installment payment is recorded
-        as two transactions: a debit transaction for the installment amount and
-        a credit transaction for the discount. In this case, `processing_code`
-        is the processsing code for the debit transaction, and
+        If `split_transaction` is `true`, each recurring payment is recorded as
+        two transactions: a debit transaction for the payment amount and a
+        credit transaction for the discount. In this case, `processing_code` is
+        the processsing code for the debit transaction, and
         `second_processing_code` is the processing code for the credit
         transaction.
       example: '99066'
@@ -311,15 +311,16 @@ components:
         Normally, you should use a processing code for a credit transaction.
     SplitTransaction:
       description: >
-        Use separate transactions for the installment amount and the discount?
+        Use separate transactions for the amount of the recurring charge and the
+        discount?
 
 
-        Suppose the installment amount for a cycle is $20 and the discount is
-        $2. If `split_transaction` is `false`, then one debit transaction for
+        Suppose the recurring charge amount for a cycle is $20, and the discount
+        is $2. If `split_transaction` is `false`, then one debit transaction for
         $18 ($20 - $2) is posted to the account for that cycle. It also appears
         as one debit transaction on the statement. If `split_transaction` is
-        `true`, then two transactions are posted to the account — a debit
-        transaction for $20 and a credit transaction for $2 — and those two
+        `true`, then two transactions are posted to the account—a debit
+        transaction for $20 and a credit transaction for $2—and those two
         transactions appear on the statement. When `split_transaction` is
         `true`, `secondary_processing_code` is used to create the credit
         transaction.
@@ -558,10 +559,10 @@ components:
             Used to create a description for the secondary transaction. Use
             "{counter}" to indicate where the cycle count should be placed.
             Example: "{counter} Annuity" generates "2/12 Annuity" for the second
-            of twelve installments. If "{counter}" is not present, the counter
-            is placed at the end of the description. If no description is
-            provided, the transaction type's description is used and the counter
-            is not shown.
+            of twelve recurring charges. If "{counter}" is not present, the
+            counter is placed at the end of the description. If no description
+            is provided, the transaction type's description is used and the
+            counter is not shown.
         number_of_cycles:
           $ref: '#/components/schemas/NumberOfCycles'
         first_cycles_to_discount:
@@ -598,7 +599,7 @@ components:
             "{counter}" to indicate where the cycle count should be placed.
 
             Example: "{counter} Annuity" generates "2/12 Annuity" for the second
-            of twelve installments.
+            of twelve recurring charges.
 
             If "{counter}" is not present, the counter is placed at the end of
             the description. If no description is provided, the transaction
@@ -700,12 +701,12 @@ paths:
       summary: Create recurring charge plan
       description: >
         Create a recurring charge plan. A recurring charge is a charge that is
-        applied on a monthly basis for a fixed number of installments. When you
-        create a recurring charge plan, you specify the number of installments
-        (cycles) and the installment amount.
+        applied on a monthly basis for a fixed number of cycles. When you create
+        a recurring charge plan, you specify the number of cycles and the amount
+        of the monthly charge.
 
 
-        Creating a plan does not activate it. A plan must be linked to an
+        Creating a plan does not activate it. You must link the plan to an
         account to activate the charge schedule defined in it.
 
 
@@ -717,9 +718,12 @@ paths:
         **NOTES:**
 
 
-        - To work correctly, you must set the program parameter [504 -
+        - If an account is canceled while it has an active recurring charge
+        attached to it, you want the recurring charge to be canceled, too, so
+        that charges don't continue to accrue. To ensure this, set the
+        multivalue program parameter [504 -
         RECURRING_CHARGE_FINAL_ACCOUNT_STATUS](doc:multivalue-parameters) to the
-        value for an account status.  Usually you use `CANCELLED` for this. When
+        value for an account status. Usually you use `CANCELLED` for this. When
         the account enters this status, the system cancels all pending recurring
         charges. (Note that if you provide more than one value, the system only
         uses the first one, even though this is a multivalue program parameter.)
