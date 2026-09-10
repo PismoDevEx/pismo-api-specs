@@ -1,21 +1,18 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Banking - Authentication
   version: '1.0'
   description: >
     This API saves client credentials and generates token requests for accessing
     third-party banking services.
-  termsOfService: https://developers.pismo.io/terms/
   contact:
     name: API Support
-    email: support@pismo.com.br
     url: https://developers.pismo.io/support/
   license:
-    name: Copyrights Pismo
-    url: https://developers.pismo.io/licenses/
+    name: Copyright Pismo
 servers:
-  - url: https://api-sandbox.pismolabs.io
-    description: Primary API server
+  - url: https://sandbox.pismolabs.io
+    description: Sandbox API server for testing
 security:
   - bearerAuth: []
 tags:
