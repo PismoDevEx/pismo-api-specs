@@ -192,8 +192,8 @@ components:
       in: query
       description: >-
         Filter loans created on or after this date (inclusive). Format =
-        `YYYY-MM-DD`. Invalid format returns 400 Bad Request. Can be used alone
-        to get all loans created from this date onwards, or combined with
+        YYYY-MM-DD. Invalid format returns 400 Bad Request. Can be used alone to
+        get all loans created from this date onwards, or combined with
         `toCreatedDate` to filter within a specific date range.
       required: false
       schema:
@@ -204,8 +204,8 @@ components:
       in: query
       description: >-
         Filter loans created on or before this date (inclusive). Format =
-        `YYYY-MM-DD`. Invalid format returns 400 Bad Request. Can be used alone
-        to get all loans created up to this date, or combined with
+        YYYY-MM-DD. Invalid format returns 400 Bad Request. Can be used alone to
+        get all loans created up to this date, or combined with
         `fromCreatedDate` to filter within a specific date range.
       required: false
       schema:
@@ -216,7 +216,7 @@ components:
       in: query
       description: >-
         Filter loans with start/activation date on or after this date
-        (inclusive). Format = `YYYY-MM-DD`. Invalid format returns 400 Bad
+        (inclusive). Format = YYYY-MM-DD. Invalid format returns 400 Bad
         Request. Can be used alone to get all loans with start date from this
         date onwards, or combined with `toStartDate` to filter within a specific
         date range.
@@ -229,7 +229,7 @@ components:
       in: query
       description: >-
         Filter loans with start/activation date on or before this date
-        (inclusive). Format = `YYYY-MM-DD`. Invalid format returns 400 Bad
+        (inclusive). Format = YYYY-MM-DD. Invalid format returns 400 Bad
         Request. Can be used alone to get all loans with start date up to this
         date, or combined with `fromStartDate` to filter within a specific date
         range.
@@ -557,7 +557,7 @@ components:
       example: 999
     DateValue:
       type: string
-      description: Date value in YYYY-MM-DD format
+      description: Date value. Format = YYYY-MM-DD.
       format: date
       example: '2023-12-31'
     DaysPastDue:
@@ -1039,6 +1039,8 @@ components:
           $ref: '#/components/schemas/LoanStatus'
         total_payable:
           $ref: '#/components/schemas/TotalPayable'
+        total_paid:
+          $ref: '#/components/schemas/TotalPaid'
         updated_at:
           $ref: '#/components/schemas/LoanUpdatedAt'
         authorization_tracking_id:
@@ -1164,7 +1166,7 @@ components:
         loan_start_date:
           type: string
           format: date-time
-          description: Date the loan started
+          description: Date the loan started. Format = YYYY-MM-DDThh:mm:ss.SSSZ.
         minimum_total_payment_delta:
           $ref: '#/components/schemas/MinimumTotalPaymentDelta'
     LoanAmount:
@@ -1203,8 +1205,8 @@ components:
     LoanCreatedAt:
       type: string
       format: date-time
-      description: Loan created date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
-      example: '2024-03-15T13:00:00.000+00:00'
+      description: Loan created date in UTC. Format = YYYY-MM-DDThh:mm:ss.SSSZ
+      example: '2026-09-03T17:58:35.520Z'
     LoanDisbursement:
       type: object
       description: >-
@@ -1266,7 +1268,7 @@ components:
     LoanDisbursementDate:
       type: string
       format: date
-      description: Disbursement date
+      description: Disbursement date. Format = YYYY-MM-DD.
       example: '2025-11-13'
     LoanDisbursementID:
       type: string
@@ -1667,7 +1669,7 @@ components:
     LoanUpdatedAt:
       type: string
       format: date-time
-      description: Loan last updated date in UTC. Format = yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+      description: Loan last updated date in UTC. Format = YYYY-MM-DDThh:mm:ss.SSSZ.
       example: '2024-03-15T13:00:00.000+00:00'
     LockInPeriod:
       description: >-
@@ -1852,7 +1854,7 @@ components:
         due_date:
           type: string
           format: date
-          description: Installment due date. Format = `YYYY-MM-DD`.
+          description: Installment due date. Format = YYYY-MM-DD.
           example: '2026-06-15'
         fee_amount:
           type: number
@@ -1901,7 +1903,8 @@ components:
           format: date
           description: >-
             Reference date used to compute the prepayment. When omitted, the
-            platform sets the value to the current date. Format = `YYYY-MM-DD`.
+            Pismo platform sets the value to the current date. Format =
+            YYYY-MM-DD.
           example: '2026-05-15'
         waive_fee:
           type: boolean
@@ -1921,8 +1924,8 @@ components:
           format: date-time
           description: >-
             Date and time the simulation was created. ISO 8601 with millisecond
-            precision and offset. Format = `YYYY-MM-DDThh:mm:ss.SSS-XX:00`.
-          example: '2026-05-15T10:15:30.123-03:00'
+            precision and offset. Format = YYYY-MM-DDThh:mm:ss.SSSZ.
+          example: '2026-09-03T17:59:36.550Z'
         insurance_amount_paid:
           type: number
           format: double
@@ -1972,8 +1975,8 @@ components:
           format: date-time
           description: >-
             When the prepayment record was created. Format =
-            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
-          example: '2026-06-15T10:00:00.000+00:00'
+            YYYY-MM-DDThh:mm:ss.SSSZ.
+          example: '2026-06-15T10:00:00.000Z'
         insurance_amount_paid:
           type: number
           description: Insurance portion settled with the prepayment, if any
@@ -1998,8 +2001,8 @@ components:
           format: date-time
           description: >-
             Settlement date of the prepayment. Format =
-            yyyy-MM-dd'T'HH:mm:ss.SSSXXX
-          example: '2026-06-15T10:00:00.000+00:00'
+            YYYY-MM-DDThh:mm:ss.SSSZ.
+          example: '2026-06-15T10:00:00.000Z'
         status:
           type: string
           description: Lifecycle status of the prepayment
@@ -2016,9 +2019,9 @@ components:
           type: string
           format: date-time
           description: >-
-            When the prepayment record was last updated (ISO 8601 with UTC
-            offset)
-          example: '2026-06-15T10:00:00.000+00:00'
+            When the prepayment record was last updated. Format =
+            YYYY-MM-DDThh:mm:ss.SSSZ.
+          example: '2026-06-15T10:00:00.000Z'
     PrepaymentV2Request:
       required:
         - repayment_ids
@@ -2065,8 +2068,8 @@ components:
           example: '2026-08-31'
           description: >-
             Date after which the pending prepayment expires and its installments
-            revert to their base status. Defaults to reference_date (or today
-            when absent) plus 30 days.
+            revert to their base status. Defaults to `reference_date` (or today
+            when absent) plus 30 days. Format = YYYY-MM-DD.
         insurance:
           type: object
           description: Insurance prepayment details (if applicable)
@@ -2089,8 +2092,8 @@ components:
           format: date
           example: '2026-08-01'
           description: >-
-            Reference date applied to the prepayment (pricing base); null when
-            not provided in the request.
+            Reference date applied to the prepayment (pricing base); `null` when
+            not provided in the request. Format = YYYY-MM-DD.
     PresentValueAmount:
       type: number
       format: double
@@ -2493,6 +2496,32 @@ components:
           $ref: '#/components/schemas/TaxAmount'
         total:
           $ref: '#/components/schemas/TotalAmount'
+    TotalPaid:
+      type: object
+      description: >-
+        Consolidated loan-level amount that has already been paid across all
+        repayments, aggregated server-side and broken down by component under
+        `amount_paid`. Removes the need to total all repayment-level objects.
+        Loan progress can be derived from `total_paid.amount_paid.total` versus
+        `total_payable.total`.
+      properties:
+        amount_paid:
+          type: object
+          properties:
+            principal:
+              $ref: '#/components/schemas/PrincipalAmount'
+            interest:
+              $ref: '#/components/schemas/InterestAmount'
+            fee:
+              $ref: '#/components/schemas/FeeAmount'
+            tax:
+              $ref: '#/components/schemas/TaxAmount'
+            charge:
+              $ref: '#/components/schemas/ChargeAmount'
+            penalty:
+              $ref: '#/components/schemas/PenaltyAmount'
+            total:
+              $ref: '#/components/schemas/TotalAmount'
     TrackingID:
       type: string
       format: uuid
@@ -2765,6 +2794,15 @@ paths:
                             penalty: 27
                             total: 2052
                           arrears:
+                            principal: 0
+                            interest: 0
+                            charge: 0
+                            tax: 0
+                            fee: 0
+                            penalty: 0
+                            total: 0
+                        total_paid:
+                          amount_paid:
                             principal: 0
                             interest: 0
                             charge: 0
