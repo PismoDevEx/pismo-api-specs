@@ -970,7 +970,7 @@ components:
       type: number
       format: float
       description: Amount value
-      exclusiveMinimum: 0
+      minimum: 0
       maximum: 100000000000000000
       example: 1000.52
     ApplicantName:
@@ -4500,7 +4500,7 @@ components:
         cursor:
           $ref: '#/components/schemas/Cursor'
     ParentAccountID:
-      maximum: 200000000
+      maximum: 18446744073709552000
       description: >-
         Parent account ID. If provided, the account is the child of the account
         referenced by `parent_account_id`. The account referenced by
@@ -4739,7 +4739,7 @@ components:
     ProgramID:
       type: integer
       format: int64
-      maximum: 99999999999
+      maximum: 18446744073709552000
       description: >
         Program ID. The program must belong to the organization. Use [List
         programs](https://developers.pismo.io/pismo-docs/reference/programs-1)
@@ -6859,10 +6859,6 @@ paths:
                   value:
                     code: WCAC0005
                     message: program_id is a required field
-                program_id max size:
-                  value:
-                    code: WCAC0005
-                    message: program_id must be 99,999,999,999 or less
                 Program Id not bound to Division:
                   value:
                     code: WCAC0006
@@ -6893,10 +6889,6 @@ paths:
                   value:
                     code: WCAC0005
                     message: external_id must be a maximum of 60 characters in length
-                parent_account_id max value:
-                  value:
-                    code: WCAC0005
-                    message: parent_account_id must be 200,000,000 or less
                 external_account_id required:
                   value:
                     code: WCAC0005
@@ -7229,10 +7221,6 @@ paths:
                   value:
                     code: WCAC0005
                     message: division_code must be a maximum of 36 characters in length
-                program_id max size:
-                  value:
-                    code: WCAC0005
-                    message: program_id must be 99,999,999,999 or less
                 Programs with different currencies:
                   value:
                     code: WCAC0031
@@ -10375,10 +10363,6 @@ paths:
                     message: >-
                       The number of decimal places is not compatible with the
                       specified currency
-                Backdating not permitted:
-                  value:
-                    code: WEAM0029
-                    message: Earmark not permitted on a backdating operation
                 Corporate Metadata must be an object:
                   value:
                     code: WCMN0002
@@ -10490,13 +10474,6 @@ paths:
                   value:
                     code: WPMT0019
                     message: Cannot use same account for credit and debit
-                Validation rules conflict:
-                  description: >-
-                    This error occurs when validation rules conflict with
-                    internal accounts program
-                  value:
-                    code: WPMT0032
-                    message: Validation rules conflict with internal accounts program
                 Invalid header account:
                   description: >-
                     This error occurs when the x-account-id header is invalid or
@@ -11887,35 +11864,6 @@ paths:
                           amount: 1000.52
                           currency: USD
                           errors: []
-                Backdating earmark not allowed:
-                  description: >-
-                    This error occurs when the user specifies a payment date in
-                    an earmark debit operation.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    data:
-                      multileg_id: b37a045b-8f84-4085-ac97-1d8684a4227b
-                      debits:
-                        - tracking_id: 7ebb12b9-98e1-469c-b57f-07aebbe12658
-                          external_account_id: '289'
-                          processing_code: '220035'
-                          soft_descriptor: ACME Inc. - Invoice 2938
-                          amount: 1000.52
-                          currency: USD
-                          earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                          payment_datetime: '2033-10-24T12:00:00Z'
-                          errors:
-                            - code: WMLP1020
-                              message: Earmark not permitted on a backdating operation
-                      credits:
-                        - tracking_id: eb93fac3-548e-4a09-a577-1b678b4a9986
-                          external_account_id: '289'
-                          processing_code: '220035'
-                          soft_descriptor: ACME Inc. - Invoice 2938
-                          amount: 1000.52
-                          currency: USD
-                          errors: []
                 Retroactive payment datetime not allowed:
                   description: >-
                     This error occurs when the given `payment_datetime` is
@@ -12734,12 +12682,6 @@ paths:
                   value:
                     code: WPMT0014
                     message: Action not permitted on a closed account
-                Schedule payment as creditor not permitted:
-                  value:
-                    code: WPMT0020
-                    message: >-
-                      Scheduling a payment crediting your own account isn't
-                      allowed
                 Tracking ID required:
                   value:
                     code: WPMT0018
@@ -14228,31 +14170,6 @@ paths:
                             message: >-
                               The payment date cannot be earlier than the
                               account migration date
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Backdating earmark not allowed:
-                  description: >-
-                    This error occurs when the user specifies a payment date in
-                    an earmark debit operation.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        payment_datetime: '2033-10-24T12:00:00Z'
-                        errors:
-                          - code: WMLP1020
-                            message: Earmark not permitted on a backdating operation
                     credits:
                       - external_account_id: '289'
                         processing_code: '220035'
@@ -17938,10 +17855,6 @@ paths:
                     message: >-
                       The number of decimal places is not compatible with the
                       specified currency
-                Backdating not permitted:
-                  value:
-                    code: WEAM0029
-                    message: Earmark not permitted on a backdating operation
                 Corporate Metadata must be an object:
                   value:
                     code: WCMN0002
@@ -18053,13 +17966,6 @@ paths:
                   value:
                     code: WPMT0019
                     message: Cannot use same account for credit and debit
-                Validation rules conflict:
-                  description: >-
-                    This error occurs when validation rules conflict with
-                    internal accounts program
-                  value:
-                    code: WPMT0032
-                    message: Validation rules conflict with internal accounts program
                 Invalid header account:
                   description: >-
                     This error occurs when the x-account-id header is invalid or
@@ -18766,12 +18672,6 @@ paths:
                   value:
                     code: WPMT0014
                     message: Action not permitted on a closed account
-                Schedule payment as creditor not permitted:
-                  value:
-                    code: WPMT0020
-                    message: >-
-                      Scheduling a payment crediting your own account isn't
-                      allowed
                 Tracking ID required:
                   value:
                     code: WPMT0018
