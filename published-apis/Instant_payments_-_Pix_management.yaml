@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Instant payments - Pix management
   description: >-
@@ -1329,15 +1329,6 @@ components:
         - REGISTRATION_NAME
         - SOCIAL_NAME
       example: SOCIAL_NAME
-    FlowType:
-      type: string
-      description: |
-        Flow type: 
-          * `INTERACTIVE` - You control each step manually
-          * `AUTOMATIC` - DICT manages the entire process automatically 
-      enum:
-        - INTERACTIVE
-        - AUTOMATED
     FraudMarkerAcceptedResponse:
       type: object
       required:
@@ -1474,26 +1465,22 @@ components:
     FundsRecoveryStatus:
       type: string
       description: >
-        Funds recovery status: 
+        Funds recovery status:
 
-        * `CREATED` - For `INTERACTIVE`
+        * `CREATED` - Recovery created, awaiting next action.
 
-        * `AWAITING_ANALYSIS` - For `AUTOMATED` when processed synchronously
-
-        * `CREATED` - Recovery created, awaiting next action. Both flows.
-
-        * `TRACKED` - Tracking graph created. `INTERACTIVE` only 
+        * `TRACKED` - The transaction tracking graph has been created.
 
         * `AWAITING_ANALYSIS` - Awaiting analysis from receiver PSPs (deadline:
-        7 days). Both flows.
+        7 calendar days).
 
-        * `ANALYSED` - Analysis completed, ready for refund. Both flows 
+        * `ANALYSED` - Analysis completed, ready for refund.
 
-        * `REFUNDING` - Refund process in progress. Both flows.
+        * `REFUNDING` - Refund process in progress.
 
-        * `COMPLETED` - Recovery successfully completed. Both flows.
+        * `COMPLETED` - Recovery successfully completed.
 
-        * `CANCELLED` - Recovery cancelled. Both flows.
+        * `CANCELLED` - Recovery cancelled.
       enum:
         - CREATED
         - AWAITING_ANALYSIS
@@ -2771,18 +2758,30 @@ components:
       example: '2020-08-13T13:49:03Z'
     RootTransactionID:
       type: string
-      description: Fraudulent transaction end-to-end-id
+      description: |
+        Identifier of the contested transaction, 32 characters.
+
+          * Contesting an original transaction — its **end-to-end ID**, which begins with `E`.
+          * Contesting a reversal transaction — its **reversal end-to-end ID**, which begins with `D`.
+      minLength: 32
+      maxLength: 32
       example: E1234567890123456789012345678901
     SituationType:
       type: string
-      description: |
-        Situation type: 
-          * `SCAM` - Scam/fraud through social engineering 
-          * `ACCOUNT_TAKEOVER` - Unauthorized transaction without digital authentication 
-          * `COERCION` - Coercion crime (kidnapping, extortion) 
+      description: >
+        Situation type:
+          * `SCAM` - Scam/fraud through social engineering
+          * `ACCOUNT_TAKEOVER` - Unauthorized transaction without digital authentication
+          * `COERCION` - Coercion crime (kidnapping, extortion)
           * `FRAUDULENT_ACCESS` - Fraudulent access and authorization (phishing, stolen password) |
           * `OTHER` - Other cases. This option **REQUIRES** you pass `report_details`.
           * `UNKNOWN` - Unknown state
+
+        When the contested transaction is a reversal, the DICT operating manual
+        requires
+
+        `situation_type` to be `OTHER`, which in turn makes `report_details`
+        mandatory.
       enum:
         - SCAM
         - ACCOUNT_TAKEOVER
@@ -2841,7 +2840,11 @@ components:
           example: PT2H
         max_hops:
           type: integer
-          description: Maxium tracking depth (1-10 layers)
+          description: Maximum tracking depth, in graph layers.
+          minimum: 1
+          maximum: 10
+          default: 2
+          example: 5
     TrackingGraphResponse:
       type: object
       properties:
@@ -2880,8 +2883,15 @@ components:
       properties:
         id:
           type: string
-          description: Transaction end-to-end-ID
-          pattern: ^E[0-9]{31}$
+          description: >
+            Transaction identifier, 32 characters. The **end-to-end ID** of an
+            original transaction,
+
+            which begins with `E`, or the **reversal end-to-end ID** of a
+            reversal transaction,
+
+            which begins with `D`.
+          pattern: ^[ED][A-Za-z0-9]{31}$
           example: E1234567890123456789012345678901
         debtor_account_id:
           type: string
@@ -3026,17 +3036,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/message.Message'
-          examples:
-            EPDG0035:
-              summary: Entry owned by different person
-              value:
-                code: EPDG0035
-                message: Entry owned by different person
-            EPDG0036:
-              summary: Entry owned by same person, but with different participant.
-              value:
-                code: EPDG0036
-                message: Entry owned by same person, but with different participant.
     400BadRequestCreateFundsRecovery:
       description: Bad Request
       headers:
@@ -3049,14 +3048,12 @@ components:
           examples:
             Invalid request payload:
               value:
-                code: EPDA0000
-                message: must be INTERACTIVE or AUTOMATED
-            Transaction too old:
+                code: EPDA0001
+                message: root_transaction_id must be 32 characters long
+            Account is not the payer of the contested transaction:
               value:
-                code: EPDA0000
-                message: >-
-                  Transaction is older than 80 days and not eligible for funds
-                  recovery
+                code: EPDA0192
+                message: AccountID does not belong to the payer transaction
     401Unauthorized:
       description: Unauthorized
       headers:
@@ -3474,6 +3471,16 @@ paths:
                     message: >-
                       Provider authentication service rejected request due to a
                       client payload misconfiguration
+                Entry owned by different person:
+                  summary: Entry owned by different person
+                  value:
+                    code: EPDG0035
+                    message: Entry owned by different person
+                Entry owned by same person but different participant:
+                  summary: Entry owned by same person, but with different participant
+                  value:
+                    code: EPDG0036
+                    message: Entry owned by same person, but with different participant
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -6802,21 +6809,34 @@ paths:
 
 
         The tracking follows the chain of subsequent transactions starting from
-        the original fraudulent transaction.
+        the contested transaction.
 
 
-        **Automated flow**
+        DICT manages the entire process. You define the initial
+        `tracking_graph_parameters` and DICT
 
-           DICT manages the entire process automatically. You only define the initial parameters and the system executes tracking, prioritization, and blocking.
-           **Use for**: Standard cases, high volume of recoveries, or when you trust DICT's default algorithm.
+        executes tracking, prioritization, and blocking, then opens the
+        infraction notifications that
+
+        the receiving PSPs analyze.
+
 
         **Notes:**
 
-          * Fraudulent transactions must have occurred less than **80 days** ago
-          * Only the **debtor participant** (payer) can create funds recovery
+          * The contested transaction must have occurred less than **80 days** ago. This limit is the same for an original transaction and for a reversal transaction.
+          * Only the payer **of the contested transaction** can create funds recovery. When contesting a reversal, the payer is the participant that sent the reversal — that is, the PSP of the party who received the original transaction.
+          * `root_transaction_id` takes the **end-to-end ID** of the original transaction, or the **reversal end-to-end ID** when contesting a reversal.
+          * A reversal issued to settle an **operational flaw cannot be contested**. If the refund behind the reversal had `refund_reason` of `OPERATIONAL_FLAW`, DICT rejects the funds recovery as ineligible. This is the only restriction on contesting a reversal.
+          * When contesting a reversal, `situation_type` must be `OTHER`, which makes `report_details` mandatory.
           * Recipient PSPs have **7 calendar days** to analyze infraction notifications
           * Refund must be initiated within **72 hours** after analysis completion
           * Once refunding starts, the process **cannot be cancelled**
+
+        **Terminology:** the DICT operating manual refers to an original
+        transaction as `pacs.008`
+
+        and to a reversal transaction as `pacs.004`.
+
 
         Thie endpoint generates a [Pix funds recovery status
         changed](https://developers.pismo.io/events/docs/pix-dict-funds-recoveries-status-change-1)
@@ -6835,8 +6855,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateFundsRecoveryRequest'
             examples:
-              automated:
-                summary: Example
+              originalTransaction:
+                summary: Contesting an original transaction
                 value:
                   root_transaction_id: E9876543210987654321098765432109
                   situation_type: COERCION
@@ -6850,7 +6870,23 @@ paths:
                     min_transaction_amount: 100
                     max_transactions: 5
                     hop_window: PT2H
-                    max_hops: 10
+                    max_hops: 5
+              reversalTransaction:
+                summary: Contesting a reversal transaction
+                value:
+                  root_transaction_id: D2721411220260831204766547975600
+                  situation_type: OTHER
+                  contact_information:
+                    email: security@yourbank.com
+                    phone: '+5511988888888'
+                  report_details: >-
+                    Reversal of the root transaction of a funds recovery that
+                    was opened by the payer in order to defraud the payee.
+                  tracking_graph_parameters:
+                    min_transaction_amount: 100
+                    max_transactions: 5
+                    hop_window: PT2H
+                    max_hops: 5
       responses:
         '201':
           description: Created - synchronous success
@@ -6865,7 +6901,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AsyncResponse'
               example:
-                code: EPDA0000
+                code: EPDA0169
                 message: >-
                   Funds recovery creation will continue asynchronously. Monitor
                   events for completion.
@@ -6879,30 +6915,31 @@ paths:
                 invalidData:
                   summary: Invalid data
                   value:
-                    code: EPDA0000
+                    code: EPDA0001
                     message: Invalid request payload
-                transactionTooOld:
-                  summary: Transaction too old
+                accountDoesNotOwnTransaction:
+                  summary: Account is not the payer of the contested transaction
                   value:
-                    code: EPDA0000
-                    message: >-
-                      Transaction is older than 80 days and not eligible for
-                      funds recovery
-        '403':
-          description: Not authorized to create funds recovery for this transaction
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/message.Message'
-              examples:
-                Provider service error:
-                  value:
-                    code: EPDA0000
-                    message: >-
-                      Only the debtor participant can create funds recovery for
-                      this transaction
+                    code: EPDA0192
+                    message: AccountID does not belong to the payer transaction
         '404':
-          description: Transaction not found
+          description: >
+            Transaction not found.
+
+
+            This response is also returned when the transaction **does** exist
+            in Pismo but the
+
+            requesting organization is not the payer of it. The root transaction
+            is resolved from
+
+            the leg where the organization is the payer: a `PIX-OUT` for an
+            original transaction,
+
+            or a `PIX-IN` of type `PIX-IN-REVERSAL` for a reversal. A plain
+            `PIX-IN` is rejected,
+
+            since the party that received a transaction is not its payer.
           content:
             application/json:
               schema:
@@ -6910,7 +6947,7 @@ paths:
               examples:
                 Transaction not found:
                   value:
-                    code: EPDA0000
+                    code: EPDA0079
                     message: Transaction not found
         '409':
           description: Recovery already exists
@@ -6921,8 +6958,31 @@ paths:
               examples:
                 Recovery already exists:
                   value:
-                    code: EPDA0000
-                    message: Active funds recovery already exists for this transaction
+                    code: EPDA0190
+                    message: >-
+                      An active funds recovery already exists for the given root
+                      transaction
+        '422':
+          description: Transaction is not eligible for funds recovery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                transactionTooOld:
+                  summary: Outside the 80-day eligibility window
+                  value:
+                    code: EPDA0191
+                    message: >-
+                      Transaction is outside the 80-day eligibility period for
+                      funds recovery
+                invalidTransactionStatus:
+                  summary: Transaction is not settled
+                  value:
+                    code: EPDA0192
+                    message: >-
+                      Funds recovery cannot be initiated for this transaction
+                      due to its current status
         '504':
           description: Timeout
           content:
@@ -7201,6 +7261,81 @@ paths:
                   value:
                     code: EPDA0000
                     message: Timeout communicating with DICT
+    patch:
+      summary: Update funds recovery
+      description: >
+        Update some funds recovery fields. 
+
+
+        **Note:** The update is only possible when the record is in `CREATED`,
+        `TRACKED`, or `AWAITING_ANALYSIS` states.
+      operationId: patch-funds-recovery
+      tags:
+        - Funds recovery
+      parameters:
+        - $ref: '#/components/parameters/FundsRecoveryIdPath2'
+        - $ref: '#/components/parameters/AuthHeader'
+        - $ref: '#/components/parameters/OrgIDheader'
+        - $ref: '#/components/parameters/AccountIDheader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+        - $ref: '#/components/parameters/CIDheader'
+      requestBody:
+        description: Update funds recovery request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FundsRecoveryUpdateRequest'
+      responses:
+        '202':
+          description: OK - success
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '500':
+          description: Internal Server Error
+          headers:
+            x-cid:
+              $ref: '#/components/headers/XCidResponseHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message.Message'
+              examples:
+                Provider service communication error:
+                  value:
+                    code: EPDA0029
+                    message: >-
+                      Internal errors while attempting to communicate with the
+                      provider service
+                Invalid client error:
+                  value:
+                    code: EPDG0005
+                    message: Invalid Pix provider '{provider_name}'
+                Failed marshalling object:
+                  value:
+                    code: EPDG0006
+                    message: Failed to marshal JSON object
+                Failed unmarshalling object:
+                  value:
+                    code: EPDG0007
+                    message: Failed to unmarshal JSON object
+                Error reading response data:
+                  value:
+                    code: EPDG0010
+                    message: 'I/O error while reading response data: ''{details}'''
+                Provider service error:
+                  value:
+                    code: EPDG0016
+                    message: >-
+                      Provider service returned an internal error while trying
+                      to access the resource
+                    details:
+                      external:
+                        - code: PBE315
+                          message: Generic error
+        '502':
+          $ref: '#/components/responses/502BadGateway'
+        '504':
+          $ref: '#/components/responses/504GatewayTimeout2'
   /v1/pix/funds-recoveries/{funds_recovery_id}/tracking-graph:
     get:
       summary: Get tracking graph [beta]
@@ -7477,81 +7612,6 @@ paths:
                   value:
                     code: EPDA0000
                     message: Timeout communicating with DICT
-  /v1/pix/funds-recoveries/:funds_recovery_id:
-    patch:
-      summary: Update funds recovery
-      description: >
-        Update some funds recovery fields. 
-
-
-        **Note:** The update is only possible when the record is in `CREATED`,
-        `TRACKED`, or `AWAITING_ANALYSIS` states.
-      operationId: patch-funds-recovery
-      tags:
-        - Funds recovery
-      parameters:
-        - $ref: '#/components/parameters/AuthHeader'
-        - $ref: '#/components/parameters/OrgIDheader'
-        - $ref: '#/components/parameters/AccountIDheader'
-        - $ref: '#/components/parameters/IdempotencyKeyHeader'
-        - $ref: '#/components/parameters/CIDheader'
-      requestBody:
-        description: Update funds recovery request body
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FundsRecoveryUpdateRequest'
-      responses:
-        '202':
-          description: OK - success
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          description: Internal Server Error
-          headers:
-            x-cid:
-              $ref: '#/components/headers/XCidResponseHeader'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/message.Message'
-              examples:
-                Provider service communication error:
-                  value:
-                    code: EPDA0029
-                    message: >-
-                      Internal errors while attempting to communicate with the
-                      provider service
-                Invalid client error:
-                  value:
-                    code: EPDG0005
-                    message: Invalid Pix provider '{provider_name}'
-                Failed marshalling object:
-                  value:
-                    code: EPDG0006
-                    message: Failed to marshal JSON object
-                Failed unmarshalling object:
-                  value:
-                    code: EPDG0007
-                    message: Failed to unmarshal JSON object
-                Error reading response data:
-                  value:
-                    code: EPDG0010
-                    message: 'I/O error while reading response data: ''{details}'''
-                Provider service error:
-                  value:
-                    code: EPDG0016
-                    message: >-
-                      Provider service returned an internal error while trying
-                      to access the resource
-                    details:
-                      external:
-                        - code: PBE315
-                          message: Generic error
-        '502':
-          $ref: '#/components/responses/502BadGateway'
-        '504':
-          $ref: '#/components/responses/504GatewayTimeout2'
   /v2/pix/fraud-markers/list:
     post:
       summary: List fraud markers
