@@ -1429,11 +1429,7 @@ paths:
                 not-found-response:
                   $ref: '#/components/examples/NotFoundResponse'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/500InternalServerError'
+          $ref: '#/components/responses/500InternalServerError'
   /divisions-core/v2/administrative-division/{id}:
     get:
       summary: Get administrative division info (deprecated)
