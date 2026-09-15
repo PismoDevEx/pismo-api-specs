@@ -907,10 +907,22 @@ components:
     AdministrativeDivisionID:
       type: integer
       format: int64
-      description: >-
+      description: >
         Administrative division ID. Specifying an administrative division ID in
         this field links your division to it. This is useful when you want to
-        use the holidays defined in that administrative division.
+        use the holidays defined in that administrative division.<br>
+
+
+        **NOTE**: `administrative_division_id` points to [holiday
+        calendar](ref:post-add-holiday-to-calendar). Administrative division is
+        deprecated and replaced by holiday calendar, and both continue to use
+        the same underlying data structure for backward compatibility. The
+        administrative division ID is functionally equivalent to
+        `holiday_calendar_id` and refers to the calendar that defines holidays
+        and working days.
+
+        For more information, refer to [Add
+        holiday](ref:post-add-holiday-to-calendar).
       example: 13
     AllowedOperations:
       type: array
@@ -3538,6 +3550,8 @@ components:
                 $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
               type:
                 $ref: '#/components/schemas/RestrictedFundsType'
+              metadata:
+                $ref: '#/components/schemas/RestrictedFundsMainMetadata'
               increase_datetime_limit:
                 $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
             required:
@@ -5074,6 +5088,25 @@ components:
       pattern: ^[A-Za-z0-9._-]+$
       maxLength: 60
       example: e4adf199-c925-4d11-b002-c5bfd5679030
+    RestrictedFundsMainMetadata:
+      type: object
+      description: >
+        Key-value pairs containing data intended for storage in the Pismo
+        system.<br>
+
+
+        This metadata applies when you don't send metadata for the
+        restricted‑funds operation. It covers cases such as automatic recurrent
+        operations or held‑funds expiration.
+
+
+        **Note**: This field must not be used to send Personally Identifiable
+        Information (PII), Payment Card Industry (PCI) data, or any
+        sensitive/regulated information. Metadata fields are intended for
+        operational, non-sensitive data only. For sensitive data, use the
+        specific parameters designed for that purpose. For more information,
+        refer to [Get started with Pismo
+        APIs](ref:get-started-with-pismo-apis#metadata).
     RestrictedFundsType:
       type: string
       description: |-
@@ -5115,6 +5148,8 @@ components:
           $ref: '#/components/schemas/RestrictedFundsSoftDescriptor'
         type:
           $ref: '#/components/schemas/RestrictedFundsType'
+        metadata:
+          $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
       required:
@@ -5200,6 +5235,8 @@ components:
           $ref: '#/components/schemas/RestrictedFundsOperations'
         type:
           $ref: '#/components/schemas/RestrictedFundsType'
+        metadata:
+          $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
       required:
