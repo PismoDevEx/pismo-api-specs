@@ -174,6 +174,12 @@ components:
         the same idempotency key to avoid creating duplicate resources.
       example: 123e4567-e89b-12d3-a456-426614174000
   schemas:
+    ExternalAccountId:
+      type: string
+      description: >-
+        External account ID. Returned only when the account has an external
+        account identifier.
+      example: ext-acct-001
     ErrorResponse:
       type: object
       properties:
@@ -397,9 +403,8 @@ components:
 
 
             * `REINVEST` (default): The Pismo platform adds the capitalized
-            amount to the principal through the interest engine. The new
-            principal becomes the foundation for the next accrual cycle. No
-            `payout_account` is required.
+            amount to the principal. The new principal becomes the foundation
+            for the next accrual cycle. No `payout_account` is required.
 
             * `PAYOUT` (explicit): The capitalized amount is routed to
             `payout_account`. A valid `payout_account` is **required** in this
@@ -675,7 +680,7 @@ components:
 
 
             * `REINVEST` (default): The Pismo platform adds the capitalized
-            amount to the principal through the interest engine.
+            amount to the principal.
 
             * `PAYOUT`: The capitalized amount is routed to the `payout_account`
             configured at account level.
@@ -814,11 +819,13 @@ components:
                 the current cycle’s maturity date. Both fields are independent
                 and might appear in the same request.
             interest_capitalization_mode:
-              type: string
+              type:
+                - string
+                - 'null'
               enum:
                 - PAYOUT
                 - REINVEST
-              nullable: true
+                - null
               description: >
                 Updates how capitalized interest is treated on this
                 attachment.<br>
@@ -830,8 +837,8 @@ components:
                 `payout_account` first via `PATCH
                 /v1/deposits/accounts/{accountId}`, then switch to this mode.
 
-                * `REINVEST`: The capitalized amount is added to the principal
-                through the interest engine. No `payout_account` is required.
+                * `REINVEST`: The Pismo platform adds the capitalized amount to
+                the principal. No `payout_account` is required.
 
                 * `Omitted`: The current mode is left unchanged.
 
@@ -859,11 +866,13 @@ components:
             be provided.
           properties:
             interest_capitalization_mode:
-              type: string
+              type:
+                - string
+                - 'null'
               enum:
                 - PAYOUT
                 - REINVEST
-              nullable: true
+                - null
               description: >
                 Updates the program-level default capitalization mode. Inherited
                 by all accounts attached to this program unless overridden at
@@ -888,11 +897,7 @@ components:
           description: Product ID
           example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
         external_account_id:
-          type: string
-          description: >-
-            External account identifier of the account. Returned only when the
-            account has an external account identifier.
-          example: ext-acc-001
+          $ref: '#/components/schemas/ExternalAccountId'
         effective_date:
           type: string
           format: date
@@ -1132,8 +1137,19 @@ components:
             penalty is defined and penalties do not apply. The grace‑period
             expiration is scheduled according to the account’s division
             timezone, using the parent division’s timezone when available, or
-            UTC when no division timezone is defined.
+            UTC when no division timezone is defined. There is no enforced
+            minimum or maximum; any positive integer is accepted.
           example: 30
+        accrue_during_grace_period:
+          type: boolean
+          description: >-
+            Controls whether interest continues to accrue during the
+            post‑maturity grace period. When set to `true` (the default), the
+            Pismo platform submits daily accruals to the interest engine. When
+            set to `false`, those submissions stop. If the field is omitted or
+            null, it is treated as `true`. Note that this setting does not
+            change the grace‑period lifecycle.
+          example: true
         name:
           type: string
           description: Product name
@@ -1182,14 +1198,26 @@ components:
           example: FIXED
         accrual_model:
           type: string
-          description: >-
-            How interest bearing accounts feed the interest engine.
-            `DEPOSIT_BASIS` submits per-movement deposits/withdrawals (default).
-            `BALANCE_BASIS` submits the daily closing balance.
+          description: >
+            Interest accrual model configured at the product level and returned
+            in both the creation event and API response.
+
+            With `DEPOSIT_BASIS`, the Pismo platform calculates accruals based
+            on the net daily balance change (credits minus debits) at the end of
+            each day.
+
+            With `BALANCE_BASIS`, accruals are calculated using the account's
+            closing balance at the end of the day, regardless of whether any
+            transactions occurred. For example, if an account has a balance of
+            1000 and no transactions are made during the day, the platform still
+            uses 1000 as the accrual basis.
+
+            At creation, the interest plan determines the model:
+            `BALANCE-CHANGE` maps to `DEPOSIT_BASIS`, and `CLOSING-BALANCE` maps
+            to `BALANCE_BASIS`.
           enum:
             - DEPOSIT_BASIS
             - BALANCE_BASIS
-          default: DEPOSIT_BASIS
           example: DEPOSIT_BASIS
         balance_type:
           type: string
@@ -1266,18 +1294,33 @@ components:
             - FLEXIBLE
           example: FIXED
         accrual_model:
-          type: string
+          type:
+            - string
+            - 'null'
           description: >
-            Interest bearing accounts feed the interest engine through two
-            submission modes.<br>
-              * `DEPOSIT_BASIS` sends each deposit and withdrawal as a per‑movement entry, which is the default behavior.
-              * `BALANCE_BASIS` sends the daily closing balance instead.
+            Defines the balance basis for daily interest accrual:
 
-              Each mode must align with the interest plan’s configured `interest_base_model`.
+            - `DEPOSIT_BASIS`: Net daily balance change (credits minus debits),
+            determined at the end of the day.
+
+            - `BALANCE_BASIS`: Daily closing balance.
+
+
+            If not provided (omitted, `null`, or empty string `""`), the value
+            is derived from the interest plan: `BALANCE-CHANGE` →
+            `DEPOSIT_BASIS` or `CLOSING-BALANCE` → `BALANCE_BASIS`. An explicit
+            value must match the plan; otherwise, the request returns a `400`
+            error: `EIBACC0365`.
+
+
+            If the plan's `interest_base_model` is missing, `null`, or empty,
+            the Pismo platform treats it as `CLOSING-BALANCE`, which produces
+            `BALANCE_BASIS` when the request does not set `accrual_model`.
           enum:
             - DEPOSIT_BASIS
             - BALANCE_BASIS
-          default: DEPOSIT_BASIS
+            - ''
+            - null
           example: DEPOSIT_BASIS
         balance_type:
           type: string
@@ -1306,7 +1349,7 @@ components:
             before the account is blocked. The value of this field is calculated
             in days.
           example: 12
-        grace_period:
+        grace_period_duration_days:
           type: integer
           format: int32
           description: >-
@@ -1315,8 +1358,20 @@ components:
             configure it under `penalties.grace_period`. The grace‑period
             expiration is scheduled according to the account’s division
             timezone, using the parent division’s timezone when available, or
-            UTC when no division timezone is defined.
+            UTC when no division timezone is defined. There is no enforced
+            minimum or maximum; any positive integer is accepted.
           example: 10
+        accrue_during_grace_period:
+          type: boolean
+          default: true
+          description: >-
+            Controls whether interest continues to accrue during the
+            post‑maturity grace period. When set to `true` (the default), the
+            Pismo platform submits daily accruals to the interest engine. When
+            set to `false`, those submissions stop. If the field is omitted or
+            null, it is treated as `true`. Note that this setting does not
+            change the grace‑period lifecycle.
+          example: true
         min_amount:
           type: number
           description: >-
@@ -1415,18 +1470,33 @@ components:
           description: The product name.
           example: Tax 1 Default
         accrual_model:
-          type: string
+          type:
+            - string
+            - 'null'
           description: >
-            Interest bearing accounts feed the interest engine through two
-            submission modes.<br>
-              * `DEPOSIT_BASIS` sends each deposit and withdrawal as a per‑movement entry, which is the default behavior.
-              * `BALANCE_BASIS` sends the daily closing balance instead.
+            Defines the balance basis for daily interest accrual:
 
-              Each mode must align with the interest plan’s configured `interest_base_model`.
+            - `DEPOSIT_BASIS`: Net daily balance change (credits minus debits),
+            determined at the end of the day.
+
+            - `BALANCE_BASIS`: Daily closing balance.
+
+
+            If not provided (omitted, `null`, or empty string `""`), the value
+            is derived from the interest plan: `BALANCE-CHANGE` →
+            `DEPOSIT_BASIS` or `CLOSING-BALANCE` → `BALANCE_BASIS`. An explicit
+            value must match the plan; otherwise, the request returns a `400`
+            error: `EIBACC0365`.
+
+
+            If the plan's `interest_base_model` is missing, `null`, or empty,
+            the Pismo platform treats it as `CLOSING-BALANCE`, which produces
+            `BALANCE_BASIS` when the request does not set `accrual_model`.
           enum:
             - DEPOSIT_BASIS
             - BALANCE_BASIS
-          default: DEPOSIT_BASIS
+            - ''
+            - null
           example: DEPOSIT_BASIS
         balance_type:
           type: string
@@ -1503,9 +1573,9 @@ components:
     PatchProductRequest:
       type: object
       description: >
-        All fields are optional, but at least one of `status`, `min_amount`, or
-        `notices` must be included. If `status` is present, `reason` becomes
-        required.
+        All fields are optional, but at least one of `status`, `min_amount`,
+        `notices`, or `accrue_during_grace_period` must be included. If `status`
+        is present, `reason` becomes required.
       properties:
         status:
           description: Product status
@@ -1542,6 +1612,14 @@ components:
           example:
             - days_before_maturity: 60
               description: Updated single 60-day notice
+        accrue_during_grace_period:
+          type: boolean
+          description: >-
+            Controls whether interest accrual continues during the post‑maturity
+            grace period. Applies only to deposit products. The value is read
+            live and takes effect on the next daily cycle. It does not alter the
+            grace‑period lifecycle.
+          example: false
     DepositProcessingCodes:
       type: object
       properties:
@@ -1753,16 +1831,25 @@ components:
         accrual_model:
           type: string
           description: >
-            Interest bearing accounts feed the interest engine through two
-            submission modes.<br>
-              * `DEPOSIT_BASIS` sends each deposit and withdrawal as a per‑movement entry, which is the default behavior.
-              * `BALANCE_BASIS` sends the daily closing balance instead.
+            Interest accrual model configured at the product level and returned
+            in both the creation event and API response.
 
-              Each mode must align with the interest plan’s configured `interest_base_model`.
+            With `DEPOSIT_BASIS`, the Pismo platform calculates accruals based
+            on the net daily balance change (credits minus debits) at the end of
+            each day.
+
+            With `BALANCE_BASIS`, accruals are calculated using the account's
+            closing balance at the end of the day, regardless of whether any
+            transactions occurred. For example, if an account has a balance of
+            1000 and no transactions are made during the day, the platform still
+            uses 1000 as the accrual basis.
+
+            At creation, the interest plan determines the model:
+            `BALANCE-CHANGE` maps to `DEPOSIT_BASIS`, and `CLOSING-BALANCE` maps
+            to `BALANCE_BASIS`.
           enum:
             - DEPOSIT_BASIS
             - BALANCE_BASIS
-          default: DEPOSIT_BASIS
           example: DEPOSIT_BASIS
         balance_type:
           type: string
@@ -1843,6 +1930,8 @@ components:
           type: string
           description: Product identifier.
           example: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
         interest_plan_id:
           type: string
           description: >-
@@ -2102,9 +2191,9 @@ components:
           items:
             type: string
             enum:
-              - available
-              - savings
-              - held_funds
+              - AVAILABLE
+              - SAVINGS
+              - HELD_FUNDS
           description: >
             Choose a balance to calculate its average balance, you can select
             multiple balance types to calculate their average balances
@@ -2115,10 +2204,7 @@ components:
             * `savings`
 
             * `held_funds`
-          example:
-            - available
-            - savings
-            - held_funds
+             example: [ "AVAILABLE", "SAVINGS", "HELD_FUNDS" ]
     DetachProductFromProgramRequest:
       type: object
       required:
@@ -2353,9 +2439,10 @@ components:
           description: Previous grace period in days
           example: 5
         previous_calendar_maturity_date:
-          type: string
+          type:
+            - string
+            - 'null'
           format: date-time
-          nullable: true
           description: >-
             Previous calendar maturity date. The datetime format follows the ISO
             8601 standard `yyyy-mm-ddThh:mm:ss.sssZ`.
@@ -2854,6 +2941,14 @@ paths:
 
         For information about interest-bearing accounts, refer to
         [Interest-bearing accounts](doc:interest-bearing-accounts).
+
+        The interest plan is fetched once and used to resolve or validate
+        `accrual_model` before any resource configuration. Missing, null, or
+        empty values derive the model from the plan. An explicit mismatch
+        returns `HTTP 400 EIBACC0365`. An unknown nonempty plan model or a
+        missing plan object returns `HTTP 500 EIBACC0007`, and errors from the
+        interest plan API are passed through. None of these failures configure
+        resources, persist a product, or publish a creation event.
       operationId: interest-bearing-v1-create-deposit-product
       requestBody:
         content:
@@ -2939,6 +3034,14 @@ paths:
 
         For information about interest-bearing accounts, see [Interest-bearing
         accounts](doc:interest-bearing-accounts).
+
+        The interest plan is fetched once and used to resolve or validate
+        `accrual_model` before any resource configuration. Missing, null, or
+        empty values derive the model from the plan. An explicit mismatch
+        returns `HTTP 400 EIBACC0365`. An unknown nonempty plan model or a
+        missing plan object returns `HTTP 500 EIBACC0007`, and errors from the
+        interest plan API are passed through. None of these failures configure
+        resources, persist a product, or publish a creation event.
       operationId: interest-bearing-v1-create-savings-account-product
       requestBody:
         content:
@@ -3531,6 +3634,13 @@ paths:
                   value:
                     code: EIBACC0106
                     message: The product ID provided is already attached
+                accountAlreadyExistsNotAttachable:
+                  summary: Existing account cannot be attached (status not NORMAL)
+                  value:
+                    code: EIBACC0396
+                    message: >-
+                      Account already exists but could not be attached, status
+                      is not "NORMAL"
         '422':
           description: Unprocessable Entity
           content:
@@ -3786,7 +3896,7 @@ paths:
         proceeds are sent.
       operationId: interest-bearing-v1-deposit-update-payout-account
       parameters:
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       requestBody:
         required: true
         content:
@@ -3906,7 +4016,7 @@ paths:
         The payout account specifies where interest payments are sent.
       operationId: interest-bearing-v1-savings-account-update-payout-account
       parameters:
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       requestBody:
         required: true
         content:
@@ -4122,7 +4232,7 @@ paths:
     patch:
       tags:
         - Account attachment
-      summary: Update deposit account attachment
+      summary: Update deposit account attachment overrides
       description: >
         Partially updates `deposit_configs.maturity_period`,
         `deposit_configs.overrides` and
@@ -4163,14 +4273,21 @@ paths:
         date (maturity instruction, maturity notices) are re-evaluated against
         the new date.
 
-        * `product_id` and `payout_account` are immutable after attach and are
-        ignored if present in the body. To change the payout account, use `PATCH
-        /v1/deposits/accounts/{accountId}/payout-account`.
+        * `product_id` and `payout_account` stay fixed after attach and are
+        ignored if included in the request body. To change the payout account,
+        use [Update payout account for deposit
+        account](ref:interest-bearing-v1-deposit-update-payout-account).
 
 
         This endpoint generates an [Account attachment
         updated](https://developers.pismo.io/events/docs/deposit-product-account-attachment-updated-1)
-        event, carrying the term in force in `data.maturity_period`.
+        event that includes the active term in `data.maturity_period`. If the
+        account has an external account ID, the event also includes it in
+        `data.external_account_id`.
+
+
+        The response returns `external_account_id` whenever the account has one;
+        it is omitted for an account with no external identifier.
       operationId: interest-bearing-v1-deposit-update-account-attachment
       parameters:
         - $ref: '#/components/parameters/accountId'
@@ -4248,6 +4365,7 @@ paths:
                   value:
                     product_type: deposit
                     product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+                    external_account_id: ext-acct-001
                     interest_plan_id: a3c73958-e2bd-4b8b-ab72-1ae6c0b5aade
                     maturity_period:
                       unit: MONTHS
@@ -4268,6 +4386,7 @@ paths:
                   value:
                     product_type: deposit
                     product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
+                    external_account_id: ext-acct-001
                     interest_plan_id: a3c73958-e2bd-4b8b-ab72-1ae6c0b5aade
                     maturity_period:
                       unit: DAYS
