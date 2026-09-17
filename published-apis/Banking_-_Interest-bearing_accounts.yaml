@@ -1941,11 +1941,12 @@ components:
           example: 263d509a-d5d0-4b3a-b909-ce1b9174beff
         maturity_period:
           $ref: '#/components/schemas/MaturityPeriod'
-        attached_at:
+        attachment_date:
           type: string
           format: date-time
           description: >
-            Timestamp that indicates when the attach API call was called.
+            Timestamp that indicates when the attachment was created (when the
+            attach API call was made).
 
             The datetime format follows the ISO 8601 standard
             `yyyy-mm-ddThh:mm:ss.sssZ`.
@@ -1960,7 +1961,7 @@ components:
             calculated from this date.
 
             For attachments created in the past, the date defaults to the value
-            of `attached_at`.
+            of `attachment_date`.
           example: '2025-12-01'
         fee_model_id:
           type: string
@@ -2028,11 +2029,12 @@ components:
           example: 263d509a-d5d0-4b3a-b909-ce1b9174beff
         maturity_period:
           $ref: '#/components/schemas/MaturityPeriod'
-        attached_at:
+        attachment_date:
           type: string
           format: date-time
           description: >
-            Timestamp that indicates when the attach API call was called
+            Timestamp that indicates when the attachment was created (when the
+            attach API call was made).
 
             The datetime format follows the ISO 8601 standard
             `yyyy-mm-ddThh:mm:ss.sssZ`.
@@ -2046,8 +2048,8 @@ components:
             This is the date when the attachment becomes valid. Maturity is
             calculated from this date.
 
-            For attachments created in the past, the date defaults to the vaue
-            of `attached_at`.
+            For attachments created in the past, the date defaults to the value
+            of `attachment_date`.
           example: '2025-12-01'
         fee_model_id:
           type: string
@@ -2845,17 +2847,17 @@ components:
             effectiveDateInFuture:
               summary: effective_date cannot be in the future
               value:
-                code: EIBACC0308
+                code: EIBACC0321
                 message: Effective date cannot be in the future
             effectiveDateTooFarInPast:
               summary: effective_date exceeds maximum backdating limit
               value:
-                code: EIBACC0309
+                code: EIBACC0319
                 message: Effective date exceeds maximum backdating limit
             effectiveDateInvalidFormat:
               summary: effective_date is not in YYYY-MM-DD format
               value:
-                code: EIBACC0310
+                code: EIBACC0320
                 message: Invalid effective date format. Expected YYYY-MM-DD
     404NotFound:
       description: Bad request
@@ -2964,6 +2966,25 @@ paths:
                 $ref: '#/components/schemas/DepositProduct'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '409':
+          description: >-
+            Conflict — the penalty processing code already has a divergent
+            tenant balance-config
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                divergentPenaltyBalanceConfig:
+                  summary: >-
+                    The penalty processing code already has a divergent tenant
+                    balance-config (deposit with penalties)
+                  value:
+                    code: EIBACC0393
+                    message: >-
+                      Penalty processing code has a balance‑config that
+                      conflicts with the required penalty configuration
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/deposits/{productId}:
@@ -4371,7 +4392,7 @@ paths:
                       unit: MONTHS
                       value: 18
                       calendar_maturity_date: '2025-11-28'
-                    attached_at: '2024-05-29T14:00:00Z'
+                    attachment_date: '2024-05-29T14:00:00Z'
                     effective_date: '2024-05-29'
                     interest_capitalization_mode: REINVEST
                 calendarForm:
@@ -4392,7 +4413,7 @@ paths:
                       unit: DAYS
                       value: 365
                       calendar_maturity_date: '2026-12-31'
-                    attached_at: '2026-01-01T14:00:00Z'
+                    attachment_date: '2026-01-01T14:00:00Z'
                     effective_date: '2026-01-01'
         '400':
           description: Bad Request
