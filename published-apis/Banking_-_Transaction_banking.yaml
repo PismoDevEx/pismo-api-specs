@@ -7158,10 +7158,6 @@ paths:
                   value:
                     code: WCAC0012
                     message: Corporate account not found
-                division_code required:
-                  value:
-                    code: WCAC0005
-                    message: division_code is a required field
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -12876,6 +12872,11 @@ paths:
         [Create public and private
         keys](doc:file-signature-and-encryption#creating-public-and-private-keys)
         section in <i>File signature and encryption</i>.
+
+
+        To understand how bulk file payment processing works, refer to the [Bulk
+        file-based payment processing](doc:bulk-file-based-payment-processing)
+        guide.
       operationId: post-bulk-keys
       parameters: []
       tags:
@@ -12952,7 +12953,13 @@ paths:
     get:
       summary: Get public key
       operationId: get-bulk-keys
-      description: Get a public key by its ID.
+      description: >
+        Get a public key by its ID.<br>
+
+
+        To understand how bulk file payment processing works, refer to the [Bulk
+        file-based payment processing](doc:bulk-file-based-payment-processing)
+        guide.
       parameters:
         - $ref: '#/components/parameters/PublicKeyIdPath'
       tags:
@@ -13009,6 +13016,13 @@ paths:
           "aes_key": "245ca959580cae6317c8f8215cbae42c8b98bbf30d9f222b92db30df81a06f91"
           "iv": "7b75d3b5a25e9651e69245fa844cf3ec"
         }
+
+        ```
+
+
+        To understand how bulk file payment processing works, refer to the [bulk
+        file-based payment processing](doc:bulk-file-based-payment-processing)
+        guide.
       parameters:
         - $ref: '#/components/parameters/BulkIdPath'
       requestBody:
@@ -13060,6 +13074,11 @@ paths:
 
         For detailed instructions, refer to [File signature and
         encryption](doc:file-signature-and-encryption).
+
+
+        To understand how bulk file payment processing works, refer to the [bulk
+        file-based payment processing](doc:bulk-file-based-payment-processing)
+        guide.
 
 
         <b>Note</b>: Pismo reserves the right to offer this endpoint only for
