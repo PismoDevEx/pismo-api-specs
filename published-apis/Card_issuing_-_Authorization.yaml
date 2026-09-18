@@ -444,6 +444,47 @@ components:
             id: merchantId
         mti:
           $ref: '#/components/schemas/MTI'
+        account_type:
+          type: string
+          description: >-
+            Authorization mode being simulated. Use `20` for debit simulation
+            and `30` for credit simulation.
+          example: '20'
+        acquirer_reference_number:
+          type: string
+          description: Acquirer generated number
+          example: '1234569876541'
+        advice_detail_code:
+          type: string
+          description: Advice detail code
+          example: '0004'
+        advice_reason_code:
+          $ref: '#/components/schemas/AdviceReasonCode'
+        airport_tax:
+          type: number
+          description: >
+            Boarding fee—in a purchase with installments, this value is present
+            at first installment. In a purchase without installments, this value
+            should not be sent since it is included in the authorization amount.
+          example: 3.5
+        atc:
+          type: string
+          description: >
+            Application transaction counter (ATC). The chip card application
+            maintains and increments this counter. The ATC provides a sequential
+            reference for each transaction. For more information, refer to
+            [Application Transaction Counter
+            (ATC)](doc:application-transaction-counter-atc).
+          example: '0100'
+        arqc_present:
+          type: boolean
+          description: Is chip present?
+          example: true
+          default: false
+        authorization_code:
+          type: string
+          description: Authorization code
+          example: ABCDEF
         bin:
           type: string
           description: >-
@@ -451,6 +492,48 @@ components:
             eight digits on a credit card and identifies the financial
             institution that issued the card.
           example: '587498'
+        cardholder_billing_amount:
+          type: number
+          description: Transaction amount in cardholder currency
+          example: 11.5
+        cardholder_billing_currency:
+          type: string
+          description: Cardholder ISO 4217 currency code
+          example: '840'
+        cash_back_amount:
+          type: number
+          description: Cash back amount used to simulate purchase with cash back
+          example: 2
+        cvv_present:
+          type: boolean
+          description: Is CVV present?
+          example: true
+          default: false
+        clearing_s3_path:
+          $ref: '#/components/schemas/ClearingS3path'
+        invoice_address:
+          type: string
+          description: Invoice address
+          example: Avenue Five, 222
+        message_number:
+          type: string
+          description: >-
+            Message number assigned to a clearing message. This **must** be a
+            numeric and sequential number.
+          example: '123'
+        nsu:
+          $ref: '#/components/schemas/NSU'
+        password_present:
+          type: boolean
+          description: Is PIN entered?
+          example: true
+          default: false
+        processing_julian_date:
+          type: string
+          description: >-
+            Reconciliation processing date. Format = YYDDD. **REQUIRED** for
+            clearing simulations.
+          example: '25147'
         processing_code:
           type: string
           description: >
@@ -467,15 +550,10 @@ components:
             - '20'
             - '28'
           example: '00'
-        atc:
+        retrieval_reference_number:
           type: string
-          description: >
-            Application transaction counter (ATC). The chip card application
-            maintains and increments this counter. The ATC provides a sequential
-            reference for each transaction. For more information, refer to
-            [Application Transaction Counter
-            (ATC)](doc:application-transaction-counter-atc).
-          example: '0100'
+          description: Merchant POS system generated number
+          example: '5600001085571'
         settlement_amount:
           type: number
           description: >-
@@ -486,63 +564,6 @@ components:
           type: string
           description: Settlement ISO 4217 currency code
           example: '840'
-        cardholder_billing_amount:
-          type: number
-          description: Transaction amount in cardholder currency
-          example: 11.5
-        cardholder_billing_currency:
-          type: string
-          description: Cardholder ISO 4217 currency code
-          example: '840'
-        account_type:
-          type: string
-          description: >-
-            Authorization mode being simulated. Use `20` for debit simulation
-            and `30` for credit simulation.
-          example: '20'
-        invoice_address:
-          type: string
-          description: Invoice address
-          example: Avenue Five, 222
-        authorization_code:
-          type: string
-          description: Authorization code
-          example: ABCDEF
-        retrieval_reference_number:
-          type: string
-          description: Merchant POS system generated number
-          example: '5600001085571'
-        nsu:
-          $ref: '#/components/schemas/NSU'
-        processing_julian_date:
-          type: string
-          description: >-
-            Reconciliation processing date. Format = YYDDD. **REQUIRED** for
-            clearing simulations.
-          example: '25147'
-        acquirer_reference_number:
-          type: string
-          description: Acquirer generated number
-          example: '1234569876541'
-        airport_tax:
-          type: number
-          description: >
-            Boarding fee—in a purchase with installments, this value is present
-            at first installment. In a purchase without installments, this value
-            should not be sent since it is included in the authorization amount.
-          example: 3.5
-        message_number:
-          type: string
-          description: >-
-            Message number assigned to a clearing message. This **must** be a
-            numeric and sequential number.
-          example: '123'
-        clearing_s3_path:
-          $ref: '#/components/schemas/ClearingS3path'
-        transaction_identifier:
-          type: string
-          description: Transaction ID
-          example: '589256582795978'
         simule_tokenized_transaction:
           type: boolean
           description: Does the simulation use a tokenized transaction?
@@ -551,16 +572,20 @@ components:
             - true
           example: true
           default: false
-        cash_back_amount:
-          type: number
-          description: Cash back amount used to simulate purchase with cash back
-          example: 2
-        advice_reason_code:
-          $ref: '#/components/schemas/AdviceReasonCode'
-        advice_detail_code:
+        track1_present:
+          type: boolean
+          description: Is magnetic stripe track 1 data present?
+          example: true
+          default: false
+        track2_present:
+          type: boolean
+          description: Is magnetic stripe track 2 data present?
+          example: true
+          default: false
+        transaction_identifier:
           type: string
-          description: Advice detail code
-          example: '0004'
+          description: Transaction ID
+          example: '589256582795978'
         wallet_identifier:
           type: string
           description: Wallet ID
