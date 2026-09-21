@@ -3183,7 +3183,7 @@ paths:
         event.
       operationId: interest-bearing-v1-deposit-attach-account
       parameters:
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       requestBody:
         content:
           application/json:
@@ -3778,7 +3778,7 @@ paths:
         current book balance.
       operationId: interest-bearing-v1-simulate-penalty
       parameters:
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       requestBody:
         required: true
         content:
@@ -4313,7 +4313,7 @@ paths:
         it is omitted for an account with no external identifier.
       operationId: interest-bearing-v1-deposit-update-account-attachment
       parameters:
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       requestBody:
         content:
           application/json:
@@ -4772,7 +4772,7 @@ paths:
       operationId: interest-bearing-calculate-average-balance
       parameters:
         - $ref: '#/components/parameters/idempotencyHeader'
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       requestBody:
         content:
           application/json:
@@ -4802,7 +4802,7 @@ paths:
       operationId: interest-bearing-get-average-balance
       parameters:
         - $ref: '#/components/parameters/idempotencyHeader'
-        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/accountIdentifier'
       responses:
         '200':
           description: Success
