@@ -2480,6 +2480,8 @@ components:
           format: date-time
           description: The date and time when the payout account was updated
           example: '2024-01-23T13:26:25.000Z'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
     PenaltySimulationRequest:
       type: object
       required:
