@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Core platform - Accounting
   version: 1.0.0
-  description: API used to manage the accounting context
+  description: API used to manage the accounting context.
   contact:
     name: API Support
     url: https://developers.pismo.io/support/
@@ -11,6 +11,8 @@ info:
 servers:
   - url: https://sandbox.pismolabs.io/accounting
     description: Sandbox API server for testing
+security:
+  - BearerAuth: []
 components:
   schemas:
     AccountingAccount:
@@ -126,7 +128,7 @@ components:
           type: string
           format: date
           description: Event date
-          example: '2021-06-26'
+          example: '2021-06-26T00:00:00.000Z'
         program_id:
           type: integer
           format: int64
@@ -195,6 +197,215 @@ components:
           type: integer
           format: int64
           description: Related program ID
+    AccountingScriptV1CreateError:
+      type: object
+      description: >
+        V1 error response for `POST /v1/accounting-scripts`.
+
+        The `error` field carries a **descriptive** message: it wraps a stable
+        sentinel prefix with a
+
+        contextual detail that always includes the offending **numeric ID**
+        (`program_id`,
+
+        `event_type_id`, `entry_type_id`, `debit_accounting_account_id`,
+
+        `credit_accounting_account_id`) or the offending **field name**
+        (`entry_name`, `cost_center.*`,
+
+        `debit_account.account`, etc.) so the caller can self-serve the fix.
+
+        User-supplied **string values** (account numbers, cosif, descriptions,
+        tenant identifiers) are
+
+        **never echoed back** — they remain in server-side logs and can be
+        correlated with the `cid`
+
+        field also echoed in every 4xx/5xx response body. When a scenario names
+        multiple offenders,
+
+        the additional structured field `invalid_fields` accompanies the `error`
+        string.
+
+        When the request body fails to deserialize because a field was sent with
+        the **wrong JSON
+
+        type** (e.g. a numeric ID sent as a quoted string), the `error` names
+        the offending field and
+
+        the expected/received JSON type and the singular `invalid_field` key
+        carries that field name
+
+        (see `V1BindTypeMismatchError`, which describes the same shape shared
+        across all V1 JSON body
+
+        endpoints).
+      properties:
+        error:
+          type: string
+          description: >
+            Descriptive error message wrapping a sentinel prefix and a
+            contextual detail. Examples:
+              - `the following fields must be positive integers greater than zero: entry_type_id, program_id`
+              - `Validation error, entry Type doesn't exist: entry_type_id 300 not found for the tenant`
+              - `Validation error, invalid programId: program_id 42 not found for the tenant`
+              - `Validation error, debit account doesn't exist: debit_accounting_account_id 987 not found for the tenant`
+              - `Validation error, credit account doesn't exist: credit_accounting_account_id 987 is deactivated for the tenant`
+              - `Validation error, invalid entry name: accepted values: [amount, amount-advancement, ...]`
+              - `Validation error, invalid company: onboard the tenant via /v1/accounting-companies before creating accounting scripts`
+              - `Accounting Script already exists`
+          example: >-
+            Validation error, entry Type doesn't exist: entry_type_id 300 not
+            found for the tenant
+        cid:
+          type: string
+          description: >-
+            Correlation ID echoed in every 4xx/5xx response body so support can
+            locate the offending user-supplied strings in server-side logs.
+        invalid_fields:
+          type: array
+          description: >
+            Present on the positive-integer aggregator branch of `POST
+            /v1/accounting-scripts`.
+
+            Enumerates every top-level field that violated the "must be a
+            positive integer greater
+
+            than zero" rule, so the caller can fix them all in a single retry.
+          items:
+            type: string
+          example:
+            - entry_type_id
+            - program_id
+        invalid_field:
+          type: string
+          description: >
+            Present when the request body could not be deserialized because a
+            field was sent with the
+
+            wrong JSON type (a `*json.UnmarshalTypeError`). Carries the JSON
+            path of the offending
+
+            field. See `V1BindTypeMismatchError`.
+          example: credit_accounting_account_id
+    V1BindTypeMismatchError:
+      type: object
+      description: >
+        Shared V1 error body returned by **every** endpoint that binds a JSON
+        request body when a
+
+        field is sent with the wrong JSON type (a `*json.UnmarshalTypeError`) —
+        e.g. a numeric ID
+
+        sent as a quoted string. It is additive and backward compatible: the
+        HTTP status stays `400`,
+
+        only the free-text `error` value changed and the optional `cid` /
+        `invalid_field` keys were
+
+        added. Any other body-parse failure (malformed JSON, empty body,
+        oversized body) keeps each
+
+        endpoint's pre-existing generic message and is not described by this
+        schema.
+
+
+        Endpoints that emit this shape on a type mismatch:
+          - `POST /v1/accounting-scripts`, `POST /v1/accounting-scripts/deactivate`
+          - `PATCH /v1/accounting-scripts/{accountingScriptId}`, `PATCH /v1/accounting-scripts/batch`
+          - `POST /v1/event-types`, `PATCH /v1/event-types/{eventTypeId}`
+          - `POST /v1/entry-types`, `PATCH /v1/entry-types/{entryTypeId}`
+          - `POST /v1/accounting-accounts`, `PATCH /v1/accounting-accounts/{accountingAccountId}`
+          - `POST /v1/accounting-entries`
+
+        The offending user-supplied **value** is never echoed — only the field
+        name and the JSON
+
+        types (expected vs received) appear in the message, and the `cid`
+        correlates to server logs.
+      properties:
+        error:
+          type: string
+          description: >
+            Descriptive message naming the offending field and the
+            expected/received JSON type.
+          example: >-
+            field 'credit_accounting_account_id' must be of type integer number
+            (unquoted) but received a string value
+        cid:
+          type: string
+          description: Correlation ID echoed on every 4xx/5xx response body.
+          example: 6fdd31b0-c5b9-911a-a713-10158c1fd6ea
+        invalid_field:
+          type: string
+          description: JSON path of the field whose type did not match the schema.
+          example: credit_accounting_account_id
+    AccountingScriptV2Error:
+      type: object
+      description: >
+        V2 structured error response used by `POST /v2/accounting-scripts`.
+        Every validation and
+
+        business failure surfaces a domain-prefixed code (`ET****`) plus a
+        descriptive `message`
+
+        that includes the offending value/field so clients can resolve issues
+        without support.
+      properties:
+        code:
+          type: string
+          description: |
+            Accounting-Script domain error code. Known values:
+              - `ET0001` - Accounting Script not found
+              - `ET0002` - Accounting Script already exists
+              - `ET0004` - Accounting Script ID is invalid
+              - `ET0005` - Accounting Script ID wasn't informed
+              - `ET0006` - Fee Information is not valid (message enumerates accepted fee values)
+              - `ET0007` - Invalid expression (message pinpoints the offending characters, unbalanced parentheses/brackets, or an unknown identifier outside the evaluator vocabulary)
+              - `ET0008` - Invalid parameter name or value (message enumerates accepted names/values)
+              - `ET0009` - Accounting Script Parameter not found
+              - `ET0010` - Incorrect x-tenant (accounting company not configured)
+              - `ET0011` - Bucket reference not found
+              - `ET0012` - Event Type not found
+              - `ET0013` - Entry Type not found for the tenant (generic message; offending entry_type_id is logged server-side only)
+              - `ET0014` - Program not found for the tenant (generic message; offending program_id is logged server-side only)
+              - `ET0015` - Tenant has no accounting company configured
+              - `ET0016` - Required field is missing or empty (message identifies the field name only)
+              - `ET0017` - Field contains an invalid value (message identifies the field name and reason only)
+              - `ET0018` - Exactly one of program_id, program_types or program_list_ids must be provided
+              - `ET0019` - Expression exceeds the maximum length of 1024 characters
+              - `ET0020` - Debit account payload is invalid and cannot be resolved (user-fixable). Generic message; account/cosif/program_id are logged server-side only. **Infrastructure failures (DB down, downstream API 5xx, timeouts, cancellations) are NOT surfaced with this code — they return `DO0001` / 500 (see `Exception`)**.
+              - `ET0021` - Credit account payload is invalid and cannot be resolved (user-fixable). Generic message; account/cosif/program_id are logged server-side only. **Infrastructure failures return `DO0001` / 500.**
+              - `ET0022` - Cost Center payload is invalid and cannot be resolved (missing/invalid `debit_org`, `credit_org`, `debit_cost` or `credit_cost`). **Infrastructure failures return `DO0001` / 500.**
+          example: ET0013
+        message:
+          type: string
+          description: >
+            Sanitized, human-readable message. It never echoes back tenant
+            identifiers, user-supplied
+
+            strings or numeric IDs — those values remain in server-side logs and
+            can be located via `cid`.
+          example: >-
+            Entry Type was not found for the tenant. Provide a valid
+            entry_type_id.
+        details:
+          type: string
+          description: Optional additional context (may be empty).
+        violations:
+          type: array
+          description: >-
+            Optional list of field-level violations produced by structural
+            validation.
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: entry_type_id
+              message:
+                type: string
+                example: must be a positive integer greater than zero
     AccountingScriptBucket:
       type: object
       properties:
@@ -243,19 +454,35 @@ components:
           example: REGULAR, DUEDATE
     AccountingScriptPatch:
       type: object
+      description: >
+        Fields to update on an accounting script. At least one recognized field
+        with a non-zero/non-empty value MUST be provided; otherwise the API
+        returns 400 with `ErrNoChangesProvided` (PISMO-376794 silent-clone
+        guard).
+
+        Unknown JSON fields are silently ignored by the decoder, so a body
+        composed exclusively of unknown fields is treated as "no changes
+        provided".
       properties:
-        debit_account_number:
-          type: string
-          description: Debit account accounting number
-        credit_account_number:
-          type: string
-          description: Credit account accounting number
+        debit_accounting_account_id:
+          type: integer
+          format: int64
+          description: Debit accounting account ID
+        credit_accounting_account_id:
+          type: integer
+          format: int64
+          description: Credit accounting account ID
         debit_cost:
           type: string
           description: Debit cost center
         credit_cost:
           type: string
           description: Credit cost center
+        entry_name:
+          type: string
+          description: >-
+            New entry name (e.g., "amount", "interest", "iof"). Must match the
+            allow-list from `POST /v1/accounting-scripts`.
     AccountingScriptPatchResponse:
       type: object
       additionalProperties:
@@ -315,9 +542,12 @@ components:
             - amount-anticipation
             - amount-cancelment-anticipation
             - amount-clearing
+            - amount-clearing-without-match
             - amount-contract
             - amount-dueDate
             - amount-dueDate-cancelment
+            - amount-interest-iof
+            - amount-interest-iof-dueDate
             - amount-reversal
             - contractAmount
             - daily-interest
@@ -325,6 +555,8 @@ components:
             - interest
             - interest-advancement
             - interest-advancement-dueDate
+            - interest-advancement-shift
+            - interest-advancement-shift-dueDate
             - interest-anticipation
             - interest-dueDate
             - interest-not-appropriated
@@ -332,6 +564,7 @@ components:
             - iof
             - iof-dueDate
             - overdue
+            - fine
           default: amount
           description: >
             Base entry ID. If not provided, defaults to 'amount'.
@@ -382,9 +615,9 @@ components:
             the due date (for example, an installment or invoice that is due).
             Used when the amount to be posted is linked to a specific due date,
             even if the event occurs before that date. It represents the due
-            date posting of the `amount`. 
+            date posting of the `amount`.
 
-            * `amount-dueDate-cancelment`: This amount name is deprecated. 
+            * `amount-dueDate-cancelment`: This amount name is deprecated.
 
             * `amount-reversal`: This amount name is deprecated and has no
             corresponding movement, as there are no mapped usage scenarios for
@@ -502,6 +735,18 @@ components:
 
             It can be a simple mathematical expression or a more complex one
             using functions.
+
+            Identifiers must belong to the evaluator vocabulary: AMOUNT,
+            INTEREST, FEE, BUCKET,
+
+            TRANSACTIONS, DISCHARGE_AMOUNT, BALANCE_AMOUNT, MDR_AMOUNT,
+            SETTLEMENT_AMOUNT (and the
+
+            SUM function); quoted map keys such as FEE['iof'] are allowed.
+            Unknown identifiers
+
+            (e.g. V1 entry-name strings like amount-dueDate) are rejected with
+            ET0007.
         fee_information:
           type: object
           description: |
@@ -555,6 +800,18 @@ components:
 
             It can be a simple mathematical expression or a more complex one
             using functions.
+
+            Identifiers must belong to the evaluator vocabulary: AMOUNT,
+            INTEREST, FEE, BUCKET,
+
+            TRANSACTIONS, DISCHARGE_AMOUNT, BALANCE_AMOUNT, MDR_AMOUNT,
+            SETTLEMENT_AMOUNT (and the
+
+            SUM function); quoted map keys such as FEE['iof'] are allowed.
+            Unknown identifiers
+
+            (e.g. V1 entry-name strings like amount-dueDate) are rejected with
+            ET0007.
         cash_in_bucket:
           $ref: '#/components/schemas/AccountingScriptBucket'
         cash_out_bucket:
@@ -659,7 +916,7 @@ components:
           type: string
           format: date
           description: Bucket last updated date
-          example: '2021-06-26'
+          example: '2021-06-26T00:00:00.000Z'
     CostCenter:
       required:
         - debit_org
@@ -1393,7 +1650,7 @@ paths:
       operationId: CreateAccountingScriptV2
       summary: Create accounting script V2
       description: >
-        Create an accounting script. 
+        Create an accounting script.
 
 
         Refer to the [How to create accounting
@@ -1523,7 +1780,7 @@ paths:
       operationId: CreateAccountingScript
       summary: Create accounting script V1
       description: >
-        Create an accounting script. 
+        Create an accounting script.
 
 
         Refer to the [How to create accounting
@@ -1543,18 +1800,77 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccountingScript'
         '400':
-          description: Bad request when a provided parameter is invalid
+          description: >
+            Bad request — one or more parameters are invalid. Every 4xx body
+            carries the descriptive
+
+            `error` string plus the `cid` correlation ID. Depending on the
+            failure scenario, the body
+
+            may also carry `invalid_fields` (positive-integer aggregator)
+            enumerating the offending
+
+            top-level fields. Refer to `AccountingScriptV1CreateError` for the
+            full contract.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error description
-                    example: Validation error, entry Type doesn't exists
+                $ref: '#/components/schemas/AccountingScriptV1CreateError'
+              examples:
+                entryTypeNotFound:
+                  summary: Entry type not found for the tenant
+                  value:
+                    error: >-
+                      Validation error, entry Type doesn't exist: entry_type_id
+                      300 not found for the tenant
+                    cid: b0d4d7fb-1f38-4c3f-8b3b-8f4f0b2c1a20
+                invalidPositiveIDs:
+                  summary: One or more required IDs are non-positive
+                  value:
+                    error: >-
+                      the following fields must be positive integers greater
+                      than zero: entry_type_id, program_id
+                    invalid_fields:
+                      - entry_type_id
+                      - program_id
+                    cid: c1e5b7f9-2a44-4b3d-9e1b-3f2a0c4d5e6f
+                debitAccountNotFound:
+                  summary: Debit accounting account not found for the tenant
+                  value:
+                    error: >-
+                      Validation error, debit account doesn't exist:
+                      debit_accounting_account_id 987 not found for the tenant
+                    cid: d2f6c8a0-3b55-4c4e-af2c-4a3b1d5e6f70
+                invalidEntryName:
+                  summary: entry_name is not in the accepted allow-list
+                  value:
+                    error: >-
+                      Validation error, invalid entry name: accepted values:
+                      [amount, amount-advancement, ...]
+                    cid: e3a7d9b1-4c66-4d5f-b03d-5b4c2e6f7081
+                tenantNotOnboarded:
+                  summary: Tenant has no accounting company configured
+                  value:
+                    error: >-
+                      Validation error, invalid company: onboard the tenant via
+                      /v1/accounting-companies before creating accounting
+                      scripts
+                    cid: f4b8eac2-5d77-4e60-c14e-6c5d3f708192
+                jsonTypeMismatch:
+                  summary: >-
+                    A field was sent with the wrong JSON type (see
+                    V1BindTypeMismatchError)
+                  value:
+                    error: >-
+                      field 'debit_accounting_account_id' must be of type
+                      integer number (unquoted) but received a string value
+                    invalid_field: debit_accounting_account_id
+                    cid: 6fdd31b0-c5b9-911a-a713-10158c1fd6ea
         '409':
-          description: Accounting script already exists
+          description: >-
+            Accounting script already exists — the tuple (program_id,
+            event_type_id, entry_type_id, entry_name) already has an active
+            script for the tenant.
     get:
       operationId: SearchAccountingScript
       summary: List accounting scripts V1
@@ -1634,7 +1950,20 @@ paths:
                   has_error: false
                   new_id: 403948
         '400':
-          description: Bad request - invalid parameter
+          description: >
+            Bad request — validation failure, any operation error other than
+            not-found/deactivated,
+
+            or no changes provided in any operation payload (PISMO-376794). When
+            the body itself fails
+
+            to deserialize because a field was sent with the wrong JSON type,
+            the response is the
+
+            shared `V1BindTypeMismatchError` shape (`error`, `cid`,
+            `invalid_field`) instead of the
+
+            per-item map below.
           content:
             application/json:
               schema:
@@ -1643,6 +1972,22 @@ paths:
                 '393028':
                   has_error: true
                   error_message: Debit account not found
+        '404':
+          description: >-
+            Every failing operation targets a missing or deactivated accounting
+            script
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingScriptPatchResponse'
+              example:
+                '393028':
+                  has_error: true
+                  error_message: Accounting Script doesn't exist, impossible to update
+        '500':
+          description: >-
+            Internal server error (client receives generic "something went
+            wrong")
   /v1/buckets:
     get:
       operationId: GetBucketsByAccount
@@ -1738,11 +2083,50 @@ paths:
               example:
                 new_id: 403948
         '400':
-          description: Bad request - invalid parameter
+          description: >
+            Bad request — validation failure (invalid entry name,
+            missing/deactivated debit or credit
+
+            account, invalid company, or no changes provided in the payload —
+            PISMO-376794). A JSON
+
+            field type mismatch in the body returns the shared
+            `V1BindTypeMismatchError` shape
+
+            (`error`, `cid`, `invalid_field`).
+          content:
+            application/json:
+              examples:
+                validation:
+                  summary: Validation failure
+                  value:
+                    message: >-
+                      Validation error, credit account doesn't exist: account
+                      not found
+                jsonTypeMismatch:
+                  summary: >-
+                    A field was sent with the wrong JSON type (see
+                    V1BindTypeMismatchError)
+                  value:
+                    error: >-
+                      field 'credit_accounting_account_id' must be of type
+                      integer number (unquoted) but received a string value
+                    invalid_field: credit_accounting_account_id
+                    cid: 6fdd31b0-c5b9-911a-a713-10158c1fd6ea
+        '404':
+          description: Accounting Script not found or already deactivated
           content:
             application/json:
               example:
-                message: Debit account not found
+                message: Accounting Script doesn't exist, impossible to update
+        '500':
+          description: >-
+            Internal server error (client receives generic "something went
+            wrong")
+          content:
+            application/json:
+              example:
+                message: something went wrong
     delete:
       operationId: DeactivateAccountingScript
       summary: Deactivate accounting script V1
@@ -1771,7 +2155,7 @@ paths:
       operationId: CreateAccountingEntry
       summary: Create accounting entry
       description: >
-        Create an accounting entry. 
+        Create an accounting entry.
 
 
         This endpoint generates an [Accounting entry
@@ -1796,6 +2180,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccountingEntryPost'
         '400':
-          description: Bad request when a provided parameter is invalid.
+          description: >
+            Bad request when a provided parameter is invalid. A JSON field type
+            mismatch in the body
+
+            (e.g. a numeric ID sent as a quoted string) returns the shared
+            `V1BindTypeMismatchError`
+
+            shape (`error`, `cid`, `invalid_field`); the offending value is
+            never echoed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1BindTypeMismatchError'
+              example:
+                error: >-
+                  field 'entry_type_id' must be of type integer number
+                  (unquoted) but received a string value
+                invalid_field: entry_type_id
+                cid: 6fdd31b0-c5b9-911a-a713-10158c1fd6ea
         '409':
           description: Conflict when TrackingId already exists.
