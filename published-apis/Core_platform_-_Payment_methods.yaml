@@ -3474,28 +3474,11 @@ components:
           $ref: '#/components/schemas/Metadata'
     PaymentsConfirmResponse:
       type: object
-      description: Response for a cash-in or cash-out confirmation operation.
-      required:
-        - authorization_id
-        - tracking_id
-        - response_code
-      properties:
-        authorization_id:
-          $ref: '#/components/schemas/AuthorizationID'
-        tracking_id:
-          $ref: '#/components/schemas/TrackingID'
-        account_id:
-          $ref: '#/components/schemas/AccountID'
-        response_code:
-          $ref: '#/components/schemas/ResponseCode'
-        denial_code:
-          $ref: '#/components/schemas/DenialCode'
-      example:
-        authorization_id: 125
-        tracking_id: 634c43f2-5b7e-4a80-81c7-e6a7d5edc7fe
-        account_id: 456
-        response_code: '00'
-        denial_code: ''
+      description: >-
+        Response for a cash-in or cash-out confirmation operation, which will be
+        an empty JSON object (`{}`). The confirmation outcome is delivered
+        asynchronously via the Platform authorization created event (category
+        `CONFIRMATION`).
     PaymentsCancelRequest:
       type: object
       description: Request payment cancellation.
@@ -4744,7 +4727,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/401Unauthorized'
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
               examples:
                 Unauthorized:
                   value:
@@ -4754,7 +4742,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/403Forbidden'
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
               examples:
                 Forbidden:
                   value:
@@ -5122,7 +5115,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/v2PaymentsResponse'
         '202':
-          description: Request will be processed asynchronously.
+          description: >
+            Request was accepted and will be processed asynchronously. The
+            response body is empty (`{}`).
+
+            The confirmation outcome (`authorization_id`, `tracking_id`,
+            `account_id`, `response_code`,
+
+            `denial_code`) is not returned on this response — it is delivered
+            through the *Platform
+
+            authorization created* event (category `CONFIRMATION`). A populated
+            body is only returned on
+
+            the `200` idempotent-replay response.
           content:
             application/json:
               schema:
@@ -5501,7 +5507,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransfersResponse'
         '202':
-          description: Request will be processed asynchronous
+          description: >
+            Request was accepted and will be processed asynchronously. The
+            response body is empty (`{}`).
+
+            The confirmation outcome (`authorization_id`, `tracking_id`,
+            `account_id`, `response_code`,
+
+            `denial_code`) is not returned on this response — it is delivered
+            through the *Platform
+
+            authorization created* event (category `CONFIRMATION`). A populated
+            body is only returned on
+
+            the `200` idempotent-replay response.
           content:
             application/json:
               schema:
