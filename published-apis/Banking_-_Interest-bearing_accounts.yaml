@@ -2821,46 +2821,6 @@ components:
                 details: >-
                   error EIBACC0008: Validation error [(Field 'Order' is
                   invalid)]
-            maturityPeriodMutuallyExclusive:
-              summary: >-
-                maturity_period — calendar_maturity_date and unit/value are
-                mutually exclusive
-              value:
-                code: EIBACC0307
-                message: Validation error
-                details: >-
-                  maturity_period accepts either calendar_maturity_date OR
-                  unit+value, not both. Choose one: send calendar_maturity_date
-                  for an explicit date, or unit+value for a relative period.
-            calendarMaturityDateInvalidFormat:
-              summary: >-
-                maturity_period — calendar_maturity_date is not in YYYY-MM-DD
-                format
-              value:
-                code: EIBACC0305
-                message: Validation error
-                details: calendar_maturity_date must be in YYYY-MM-DD format
-            calendarMaturityDateNotFuture:
-              summary: maturity_period — calendar_maturity_date is not a future date
-              value:
-                code: EIBACC0306
-                message: Validation error
-                details: calendar_maturity_date must be a future date (after today)
-            effectiveDateInFuture:
-              summary: effective_date cannot be in the future
-              value:
-                code: EIBACC0321
-                message: Effective date cannot be in the future
-            effectiveDateTooFarInPast:
-              summary: effective_date exceeds maximum backdating limit
-              value:
-                code: EIBACC0319
-                message: Effective date exceeds maximum backdating limit
-            effectiveDateInvalidFormat:
-              summary: effective_date is not in YYYY-MM-DD format
-              value:
-                code: EIBACC0320
-                message: Invalid effective date format. Expected YYYY-MM-DD
     404NotFound:
       description: Bad request
       content:
@@ -3418,6 +3378,7 @@ paths:
                       maturity_period:
                         unit: MONTHS
                         value: 6
+                        calendar_maturity_date: '2027-03-10'
                       payout_account:
                         type: EXTERNAL
                         external_account:
