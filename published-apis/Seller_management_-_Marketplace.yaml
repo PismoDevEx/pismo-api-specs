@@ -1439,8 +1439,8 @@ paths:
         This endpoint creates a merchant asynchronously [Merchant
         Creation](https://developers.pismo.io/pismo-docs/reference/createmerchant).
 
-        This endpoint is **deprecated**. It is replaced by [Create marketplace
-        V3](https://developers.pismo.io/pismo-docs/reference/createmarketplace).
+        This endpoint is **deprecated**. It is replaced by [Create
+        marketplace](https://developers.pismo.io/pismo-docs/reference/createmarketplace).
       tags:
         - Marketplace
       operationId: PostMarketplacesV2
@@ -1477,8 +1477,12 @@ paths:
           $ref: '#/components/responses/502BadGateway'
   /v2/marketplaces/{marketplaceId}:
     get:
-      summary: Get marketplace
-      description: Get marketplace given its ID in the path.
+      deprecated: true
+      summary: Get marketplace V2 (deprecated)
+      description: >-
+        Get marketplace given its ID in the path. This endpoint is
+        **deprecated**. It is replaced by [Get
+        marketplace](https://developers.pismo.io/pismo-docs/reference/getmarketplacebyid).
       tags:
         - Marketplace
       operationId: GetMarketPlaceByIdV2
@@ -1547,12 +1551,12 @@ paths:
           $ref: '#/components/responses/502BadGateway'
     get:
       deprecated: true
-      summary: Get marketplace (deprecated)
+      summary: Get marketplace V1 (deprecated)
       description: >
         This endpoint gets a marketplace by ID.
 
         This endpoint is **deprecated**. It is replaced by [Get
-        marketplace](https://developers.pismo.io/pismo-docs/reference/getmarketplacebyid). 
+        marketplace](https://developers.pismo.io/pismo-docs/reference/getmarketplacebyid).
       tags:
         - Marketplace
       operationId: GetMarketplaceByIdV1
@@ -1582,8 +1586,8 @@ paths:
       description: >
         This endpoint creates a marketplace.
 
-        This endpoint is **deprecated**. It is replaced by [Create marketplace
-        V3](https://developers.pismo.io/pismo-docs/reference/createmarketplace).
+        This endpoint is **deprecated**. It is replaced by [Create
+        marketplace](https://developers.pismo.io/pismo-docs/reference/createmarketplace).
       tags:
         - Marketplace
       operationId: PostMarketplacesV1
@@ -1614,7 +1618,7 @@ paths:
           $ref: '#/components/responses/502BadGateway'
     get:
       deprecated: true
-      summary: List marketplaces (deprecated)
+      summary: List marketplaces V1 (deprecated)
       description: >-
         List marketplaces using query parameters. This endpoint is
         **deprecated**. It is replaced by [List
@@ -1827,6 +1831,10 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '401':
           $ref: '#/components/responses/401Unauthorized'
+        '409':
+          description: >-
+            Conflict. One or more submitted creditor operations already exist
+            for the specified merchants.
         '500':
           $ref: '#/components/responses/500InternalServer'
     put:
