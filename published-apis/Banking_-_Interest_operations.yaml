@@ -57,6 +57,14 @@ components:
       exclusiveMinimum: 0
       description: Amount to be deposited
       example: 550.35
+    DivisionCode:
+      type: string
+      minLength: 1
+      maxLength: 36
+      description: >-
+        Optional division code. When provided, must be between 1 and 36
+        characters.
+      example: DIV-001
     DivisionId:
       type: string
       maxLength: 64
@@ -140,6 +148,8 @@ components:
           $ref: '#/components/schemas/BalanceId'
         division_id:
           $ref: '#/components/schemas/DivisionId'
+        division_code:
+          $ref: '#/components/schemas/DivisionCode'
         account_id:
           $ref: '#/components/schemas/AccountId'
         external_account_id:
@@ -157,6 +167,7 @@ components:
       example:
         balance_id: uuid-generated-client-id
         division_id: '123'
+        division_code: DIV-001
         account_id: '4040'
         external_account_id: '4141'
         interest_plan_id: df3f3e3e-62d3-4323-902e-6ae6cc210f49
@@ -208,6 +219,8 @@ components:
           $ref: '#/components/schemas/MaturityDate'
         division_id:
           $ref: '#/components/schemas/DivisionId'
+        division_code:
+          $ref: '#/components/schemas/DivisionCode'
         metadata:
           $ref: '#/components/schemas/Metadata'
       example:
@@ -219,6 +232,7 @@ components:
         value_date: '2024-01-15'
         maturity_date: '2025-01-15'
         division_id: '123'
+        division_code: DIV-001
     InterestDepositResponse:
       title: InterestDepositResponse
       type: object
@@ -400,8 +414,11 @@ paths:
 
         The event payload includes: `program_id`, `balance_id`, `account_id`,
         `interest_plan_id`, `balance`, `start_cycle_date`, `value_date`, and
-        `maturity_date`. Optional fields `division_id` and `external_account_id`
-        are included in the event only when present in the request.
+        `maturity_date`. The optional field `external_account_id` is included in
+        the event only when present in the request. The division fields
+        `division_id` and `division_code` are included in the event only when a
+        non-default division is provided. They are omitted when `division_id` is
+        `DEFAULT_DIVISION` or the value is null.
 
 
         The optional field `external_account_id` is only returned in the
@@ -468,6 +485,11 @@ paths:
 
         The optional field `external_account_id` is only returned in the
         response and included in the events when present in the request.
+
+
+        The division fields `division_id` and `division_code` are included in
+        the events only when a non-default division is provided. They are
+        omitted when `division_id` is `DEFAULT_DIVISION` or the value is null.
 
 
         For more information, refer to the [Interest-bearing
