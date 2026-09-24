@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Banking - Interest management (B3)
+  title: Banking - Interest management for B3-listed products
   version: 1.0.0
   description: API to handle interest-bearing account operations
   contact:
@@ -245,10 +245,15 @@ components:
     FixedInterestRate:
       type: string
       format: number
-      description: >-
-        Fixed annual interest rate for investments or deposits. If a `benchmark`
-        value is provided, this field must be null. Otherwise, this field is
-        required.
+      description: >
+        Nominal annual interest rate, expressed as a decimal fraction. 0.10 =
+        10% per year. 1.00 = 100% per year. Do not send 10 for 10%. Maximum
+        precision: 8 decimal places. The platform converts this annual rate to
+        the accrual period using `accrual_basis` and `interest_type`.
+
+
+        If you pass a value for `benchmark`, this field must be null. Otherwise,
+        it's required.
       example: '0.10'
     GetBenchmarkRate:
       type: object
@@ -417,20 +422,26 @@ components:
       type: number
       format: double
       description: >
-        Also known as a spread, this is an incremental rate the clients receive
-        over the investments or deposits. 
+        Additive spread, in the same unit and period as the benchmark rate:
+        nominal annual, decimal fraction. If `benchmark` is 0.025 and `margin`
+        is 0.0225, the resulting annual rate is 0.0475.
 
-        If a `benchmark` value is provided, this field is optional.
 
-        If `benchmark` is null, this field must be null also.
+        If you pass a value for `benchmark`, this field is optional. If
+        `benchmark` is null, this field must be null also.
       example: 0.02
     MarginRate:
       type: number
       format: double
-      description: >-
-        Rate linked to the benchmark rate. For example, for 110% FED, margin
-        rate is 110%. If a `benchmark` value is not provided, this field must be
-        null. Otherwise, this field is required.
+      description: >
+        Multiplier applied to the benchmark rate, expressed as a decimal
+        fraction of 100%. 1.00 = 100% of the benchmark. 1.10 = 110% of the
+        benchmark. 0.95 = 95% of the benchmark. This is not added to the
+        benchmark—use `margin` for an additive spread.
+
+
+        If you do not pass a value for `benchmark`, this field must be null.
+        Otherwise, it's required.
       example: 1.1
     OrgId:
       type: string
@@ -536,7 +547,7 @@ security:
 paths:
   /v1/interest/plan:
     post:
-      summary: Create interest plan (B3 only)
+      summary: Create interest plan for B3-listed products
       description: >
         Create an interest plan configuration that defines how the platform
         calculates interest accrual.
@@ -592,7 +603,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/plan/{interestPlanId}:
     get:
-      summary: Get interest plan (B3 only)
+      summary: Get interest plan for B3-listed products
       description: >
         Get interest plan details.
 
@@ -622,7 +633,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/account/{accountId}:
     get:
-      summary: Get account interest (B3 only)
+      summary: Get account interest for B3-listed products
       description: >
         Get account interest details.
 
@@ -651,7 +662,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     put:
-      summary: Update account interest (B3 only)
+      summary: Update account interest for B3-listed products
       description: >
         Apply specific interest accrual options to an account.
 
@@ -689,7 +700,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/benchmark-rate:
     post:
-      summary: Configure benchmark rate (B3 only)
+      summary: Configure benchmark rate for B3-listed products
       description: >
         Configure the benchmark rate and its start date. Used to calculate
         interest accual for floating and hybrid investments.
@@ -726,7 +737,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     get:
-      summary: Get Org benchmark rates (B3 only)
+      summary: Get Org benchmark rates for B3-listed products
       description: >
         Get all benchmark rates configured for an organization.
 
@@ -756,7 +767,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/benchmark-rate/{benchmark}:
     get:
-      summary: Get specific benchmark rates (B3 only)
+      summary: Get specific benchmark rates for B3-listed products
       description: >
         Get all rates configured for a specific benchmark.
 
