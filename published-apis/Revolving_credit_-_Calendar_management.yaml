@@ -1636,8 +1636,13 @@ paths:
         - Close account cycle
       summary: Close account cycle
       operationId: CycleClosingRequest
-      description: |
+      description: >
         Close cycle for a specific account.
+
+
+        **Note:** This endpoint does not change the account's due date or real
+        due date. It only updates the cycle closing date to the date the
+        endpoint is executed.
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
         - $ref: '#/components/parameters/XTenantHeader'
