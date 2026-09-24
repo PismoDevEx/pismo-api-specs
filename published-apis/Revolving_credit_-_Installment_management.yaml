@@ -518,8 +518,8 @@ components:
         Cutoff date used for interest recalculation when `calculator` is
         `PRESENT_VALUE`.
 
-        Reflects the value provided in the request. `null` if not provided.
-        Format = yyyy-mm-dd.
+        Reflects the value passed in the request. `null` if not passed. Format =
+        yyyy-mm-dd.
       example: '2021-04-14'
     NewAmount:
       type: number
@@ -809,7 +809,7 @@ paths:
         - The `calculator`, `reschedule`, and `remove_interest_from_current`
         fields are required at the root level.
 
-        - The `contracts` array should <i>not</i> be provided.
+        - The `contracts` array should <i>not</i> be passed.
 
 
         **MULTIPLE_CONTRACTS mode**: Advances installments for specific
@@ -820,7 +820,7 @@ paths:
         - Provide a `contracts` array with individual contract configurations.
 
         - Root-level `calculator`, `reschedule`, and
-        `remove_interest_from_current` fields must not be provided.
+        `remove_interest_from_current` fields must not be passed.
 
 
         When you advance installments, you must specify what to do with the
@@ -1141,8 +1141,8 @@ paths:
         - Installment advancements
       summary: Get installment advancement (deprecated)
       description: >
-        Retrieves an installment advancement by its ID. This is a DEPRECATED
-        endpoint. Use the non-deprecated [Get installment
+        Get an installment advancement by its ID. This is a DEPRECATED endpoint.
+        Use the non-deprecated [Get installment
         advancement](ref:getinstallmentadvancementv2byid) endpoint instead.
       operationId: GetIntallmentAdvancementById
       deprecated: true
