@@ -549,7 +549,7 @@ paths:
     post:
       summary: Create interest plan for B3-listed products
       description: >
-        Create an interest plan configuration that defines how the platform
+        Creates an interest plan configuration that defines how the platform
         calculates interest accrual.
 
 
