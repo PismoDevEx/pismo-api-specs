@@ -214,8 +214,8 @@ components:
       type: number
       format: double
       description: >-
-        Cap effective rate. If you provide a value for `cap_effective_rate`, you
-        must also provide a value for `cap_threshold`.
+        Cap effective rate. If you pass a value for `cap_effective_rate`, you
+        must also pass a value for `cap_threshold`.
       example: 1.2
     CapitalizationFrequency:
       type: string
@@ -241,8 +241,8 @@ components:
       type: number
       format: double
       description: >-
-        Cap threshold value. If you provide a value for `cap_threshold`, you
-        must also provide a value for `cap_effective_rate`.
+        Cap threshold value. If you pass a value for `cap_threshold`, you must
+        also pass a value for `cap_effective_rate`.
       example: 1.1
     CurrentPage:
       type: integer
@@ -319,8 +319,12 @@ components:
           example: 0.0038
         threshold_amount:
           type: number
-          description: Amount threshold above which the tax rule applies.
-          example: 1000
+          format: double
+          nullable: true
+          description: >-
+            Optional monetary threshold amount associated with the tax rule. Use
+            null when the rule does not depend on a threshold.
+          example: null
     TaxWithholding:
       type: object
       description: >
@@ -355,10 +359,15 @@ components:
     FixedInterestRate:
       type: number
       format: float
-      description: >-
-        Fixed annual interest rate for investments or deposits. If a `benchmark`
-        value is provided, this field must be `null`. Otherwise, this field is
-        required.
+      description: >
+        Nominal annual interest rate, expressed as a decimal fraction. 0.10 =
+        10% per year. 1.00 = 100% per year. Do not send 10 for 10%. Maximum
+        precision: 8 decimal places. The platform converts this annual rate to
+        the accrual period using `accrual_basis` and `interest_type`.
+
+
+        If you pass a value for `benchmark`, this field must be null. Otherwise,
+        it's required.
       example: 0.1
     FloorEffectiveRate:
       type: number
@@ -887,20 +896,26 @@ components:
       type: number
       format: double
       description: >
-        Also known as a spread, this is an incremental rate the clients receive
-        on investments or deposits.
+        Additive spread, in the same unit and period as the benchmark rate:
+        nominal annual, decimal fraction. If `benchmark` is 0.025 and `margin`
+        is 0.0225, the resulting annual rate is 0.0475.
 
-        If a `benchmark` value is provided, this field is optional.
 
-        If `benchmark` is null, this field must be null also.
+        If you pass a value for `benchmark`, this field is optional. If
+        `benchmark` is null, this field must be null also.
       example: 0.02
     MarginRate:
       type: number
       format: double
-      description: >-
-        Rate linked to the benchmark rate. For example, for 110% FED, margin
-        rate is 110%. If a `benchmark` value is not provided, this field must be
-        `null`. Otherwise, this field is required.
+      description: >
+        Multiplier applied to the benchmark rate, expressed as a decimal
+        fraction of 100%. 1.00 = 100% of the benchmark. 1.10 = 110% of the
+        benchmark. 0.95 = 95% of the benchmark. This is not added to the
+        benchmark—use `margin` for an additive spread.
+
+
+        If you don't pass a value for `benchmark`, this field must be null.
+        Otherwise, it's required.
       example: 1.1
     OperationType:
       type: string
@@ -1506,14 +1521,14 @@ paths:
         Set up the time when the daily accrual calculations should occur.
 
 
-        If you provide a value for `division_id`, then the value provided in
+        If you pass a value for `division_id`, then the value passed in
         `time_utc` is only used for the corresponding division. That is, it's
         only used for the accruals of installment plans associated with that
         division.
 
 
-        If you don't provide a value for `division_id`, then the value provided
-        in `time_utc` is used for all installment plans in the program's org,
+        If you don't pass a value for `division_id`, then the value passed in
+        `time_utc` is used for all installment plans in the program's org,
         unless they are associated with a division that already has a time
         assigned to it. (That is, unless you already ran the endpoint with
         `division_id` set to the ID for that division.)
@@ -1521,7 +1536,7 @@ paths:
 
         <b>Note:</b> If you run the endpoint a second time using the same value
         `division_id`, it generates an error. This also happens if you run the
-        endpoint twice without providing a value for `division_id`.
+        endpoint twice without passing a value for `division_id`.
       tags:
         - Interest accrual
       operationId: post-v1-interest-accrual-setup
