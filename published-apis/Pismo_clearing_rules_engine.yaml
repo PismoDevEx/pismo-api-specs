@@ -1,0 +1,614 @@
+openapi: 3.1.0
+info:
+  title: Pismo clearing rules engine
+  description: DLQ (Dead Letter Queue) rules engine for managing clearing rules
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://developers.pismo.io/support/
+  license:
+    name: Copyright Pismo
+servers:
+  - url: https://sandbox.pismolabs.io/clearing-rules
+    description: Sandbox API server for testing
+security:
+  - BearerAuth: []
+tags:
+  - name: Audit
+    description: Operations related to the audit history of clearing rules (internal)
+  - name: Clearing rules
+    description: Operations related to clearing rules
+  - name: Checksum
+    description: Operations related to the checksum of clearing rules (internal)
+  - name: Health
+    description: Operations related to the health of the API (internal)
+  - name: Readiness
+    description: Operations related to the readiness of the API (internal)
+components:
+  schemas:
+    ClearingRulesConfig:
+      type: object
+      description: Clearing rules configuration shared across request and response models
+      properties:
+        account_status:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the account
+            status isn't `NORMAL`? (If `false`, the platform processes the
+            clearing normally.)
+          example: true
+        card_not_found:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the card isn't
+            found in Pismo's records? (If `false`, the platform discards the
+            event.)
+          example: true
+        card_region_restriction:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when an
+            international transaction was made with a domestic card? (If
+            `false`, the platform processes the clearing normally.)
+          example: true
+        clearing_with_zero_amount:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the clearing
+            amount is zero? (If `false`, the platform discards the event.)
+          example: false
+        conciliation_deadline:
+          type: integer
+          format: int32
+          description: >-
+            Maximum number of days after the authorization date in which the
+            clearing transaction can still be received and processed. Past this
+            deadline, the event goes to pending transactions
+          example: 30
+        different_processing_code:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the clearing
+            processing code doesn't match the authorization processing code? (If
+            `false`, the platform discards the clearing.)
+          example: true
+        installment_plan_verification:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the
+            installment plan differs from the authorized installment plan? (If
+            `false`, the platform processes the clearing normally.)
+          example: true
+        invalid_card_mode:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the card mode
+            is incompatible with the transaction type, such as credit or debit?
+            (If `false`, the platform processes the clearing normally.)
+          example: false
+        invalid_julian_date:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the
+            transaction carries an invalid Julian date? (If `false`, the
+            platform uses the clearing date instead.)
+          example: true
+        mcc_amount_exceeds_authorization:
+          $ref: '#/components/schemas/MCCAmountExceedsAuthorizationConfig'
+          description: >-
+            Merchant category codes routed to pending transactions when the
+            cleared amount differs from the authorized amount. Codes outside
+            this list keep the platform's current behavior
+        mcc_authorization_not_found:
+          type: array
+          description: >-
+            List of merchant category codes routed to pending transactions when
+            the matching authorization isn't found. Codes outside this list keep
+            the platform's current behavior
+          items:
+            type: string
+            description: Four-digit merchant category code
+            example: '5812'
+        not_permitted_operation:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when the operation
+            isn't permitted for the program or the processing code? (If `false`,
+            the clearing is discarded.)
+          example: false
+        not_refundable_authorization:
+          type: boolean
+          description: >-
+            Route the clearing event to pending transactions when a cancellation
+            is invalid or out of order? (If `false`, the cancellation is
+            retained or discarded according to the current rule.)
+          example: true
+    AuditConfigBody:
+      $ref: '#/components/schemas/ClearingRulesConfig'
+    AuditItemResponse:
+      type: object
+      description: One versioned entry in an organization's configuration history
+      properties:
+        checksum:
+          type: string
+          description: >-
+            SHA256 checksum of the configuration at this version, prefixed with
+            sha256:
+          example: >-
+            sha256:597ea4051f151bde9c96ea5d1713e69c9a712255146bafc6dc7de22c385004b1
+        config:
+          $ref: '#/components/schemas/ClearingRulesConfig'
+          description: Clearing rules configuration stored at this version
+        description:
+          type: string
+          description: >-
+            Note explaining why the configuration changed, stored with the
+            version for auditing
+          example: Enable DLQ routing for key reasons org-wide
+        updated_at:
+          type: string
+          description: >-
+            Date and time this version was written, in UTC. Format =
+            yyyy-mm-ddThh:mm:ssZ
+          example: '2026-04-15T01:07:13Z'
+        updated_by:
+          type: string
+          description: User or service account that requested the update
+          example: admin@pismo.com
+        version:
+          type: integer
+          format: int64
+          description: >-
+            Version number of this configuration snapshot. It increases by one
+            on every change
+          example: 18
+    ChecksumErrorResponse:
+      type: object
+      description: Error returned when a checksum request is invalid or cannot be served
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code identifying the failure
+          example: INVALID_ORG_ID
+        message:
+          type: string
+          description: Human-readable explanation of the error
+          example: orgId must start with TN
+    ChecksumResponse:
+      type: object
+      description: Checksum for the global configuration or a single organization
+      properties:
+        checksum:
+          type: string
+          description: >-
+            SHA256 checksum, prefixed with `sha256:`. Use to detect
+            configuration changes.
+          example: >-
+            sha256:597ea4051f151bde9c96ea5d1713e69c9a712255146bafc6dc7de22c385004b1
+        lastUpdated:
+          type: string
+          description: >-
+            Date and time the configuration was last updated, in UTC. Format =
+            yyyy-mm-ddThh:mm:ssZ.
+          example: '2026-04-15T01:07:13Z'
+        message:
+          type: string
+          description: Human-readable label describing the checksum scope
+          example: Organization-specific configuration checksum
+        orgId:
+          type: string
+          description: >-
+            Organization the checksum applies to. Returned only for an
+            organization-specific checksum.
+          example: TN-ddce7e50-0485-49ec-a910-866dff0bfd0f
+        type:
+          type: string
+          description: >-
+            Scope of the checksum with supported values of `global` or
+            `organization`
+          example: organization
+    ClearingRulesResponse:
+      type: object
+      description: Version metadata for the configuration that was created or updated
+      properties:
+        checksum:
+          type: string
+          description: >-
+            SHA256 checksum of the stored configuration, prefixed with
+            `sha256:`. Use it to detect configuration changes.
+          example: >-
+            sha256:597ea4051f151bde9c96ea5d1713e69c9a712255146bafc6dc7de22c385004b1
+        orgId:
+          type: string
+          description: Organization that owns the configuration
+          example: TN-ddce7e50-0485-49ec-a910-866dff0bfd0f
+        programId:
+          type: string
+          description: >-
+            Program the configuration applies to. Returned only for a
+            program-scoped configuration.
+          example: prog456
+        scope:
+          $ref: '#/components/schemas/ScopeType'
+          description: Scope the configuration applies to
+        updated_at:
+          type: string
+          description: >-
+            Date and time the configuration was updated, in UTC. Format =
+            yyyy-mm-ddThh:mm:ssZ.
+          example: '2026-02-20T10:30:00Z'
+        updated_by:
+          type: string
+          description: User or service account that requested the update
+          example: admin@pismo.com
+        version:
+          type: integer
+          format: int64
+          description: >-
+            Version assigned to this configuration, increased by one on every
+            change
+          example: 18
+    ConfigBody:
+      $ref: '#/components/schemas/ClearingRulesConfig'
+    EffectiveConfig:
+      type: object
+      description: >-
+        Effective clearing rules configuration for one scope, with its checksum
+        and version
+      properties:
+        checksum:
+          type: string
+          description: >-
+            SHA256 checksum of the stored configuration, prefixed with
+            `sha256:`. Used to detect configuration changes.
+          example: >-
+            sha256:597ea4051f151bde9c96ea5d1713e69c9a712255146bafc6dc7de22c385004b1
+        config:
+          $ref: '#/components/schemas/ClearingRulesConfig'
+          description: Clearing rules currently in effect for this scope
+        orgId:
+          type: string
+          description: Organization that owns the configuration
+          example: TN-ddce7e50-0485-49ec-a910-866dff0bfd0f
+        programId:
+          type: string
+          description: >-
+            Program the configuration applies to. Returned only for a
+            program-scoped configuration.
+          example: prog456
+        scope:
+          type: string
+          description: Scope the configuration applies to, either `ORG` or `PROGRAM`
+          example: ORG
+        version:
+          type: integer
+          format: int64
+          description: >-
+            Version assigned to this configuration, increased by one on every
+            change
+          example: 18
+    GetAuditResponse:
+      type: object
+      description: >-
+        Paginated configuration history for an organization, ordered
+        newest-first
+      properties:
+        history:
+          type: array
+          description: List of versioned configuration entries, ordered newest-first
+          items:
+            $ref: '#/components/schemas/AuditItemResponse'
+        nextCursor:
+          type: string
+          description: >-
+            Pagination token for the next page. Empty when there are no more
+            entries.
+          example: eyJ2IjoxN30
+        orgId:
+          type: string
+          description: Organization the history belongs to
+          example: TN-ddce7e50-0485-49ec-a910-866dff0bfd0f
+        programId:
+          type: string
+          description: >-
+            Program the history applies to. Returned only for a program-scoped
+            request.
+          example: prog456
+        scope:
+          $ref: '#/components/schemas/ScopeType'
+          description: Scope the history applies to
+    GetConfigResponse:
+      type: object
+      description: >-
+        Latest clearing rules configuration for the requested scope, with its
+        version metadata
+      properties:
+        checksum:
+          type: string
+          description: >-
+            SHA256 checksum of the stored configuration, prefixed with
+            `sha256:`. Used to detect configuration changes.
+          example: >-
+            sha256:597ea4051f151bde9c96ea5d1713e69c9a712255146bafc6dc7de22c385004b1
+        config:
+          $ref: '#/components/schemas/ClearingRulesConfig'
+          description: Clearing rules currently in effect
+        description:
+          type: string
+          description: >-
+            Note explaining why the configuration changed, stored with the
+            version for auditing
+          example: Enable DLQ routing for key reasons org-wide
+        orgId:
+          type: string
+          description: Organization that owns the configuration
+          example: TN-ddce7e50-0485-49ec-a910-866dff0bfd0f
+        scope:
+          $ref: '#/components/schemas/ScopeType'
+          description: Scope the configuration applies to
+        updated_at:
+          type: string
+          description: >-
+            Date and time the configuration was updated, in UTC. Format =
+            yyyy-mm-ddThh:mm:ssZ.
+          example: '2026-04-15T01:07:13Z'
+        updated_by:
+          type: string
+          description: User or service account that requested the update
+          example: admin@pismo.com
+        version:
+          type: integer
+          format: int64
+          description: >-
+            Version assigned to this configuration, increased by one on every
+            change
+          example: 18
+    Health:
+      type: object
+      description: Liveness status of the service
+      properties:
+        ok:
+          type: boolean
+          description: Is the service alive?
+          example: true
+    HTTPError:
+      type: object
+      description: Standard error response envelope
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: orgId does not match x-tenant header
+    LoadResponse:
+      type: object
+      description: >-
+        Full in-memory configuration snapshot across all scopes, with the global
+        checksum
+      properties:
+        generatedAt:
+          type: string
+          description: >-
+            Date and time the snapshot was generated, in UTC. Format =
+            yyyy-mm-ddThh:mm:ssZ.
+          example: '2026-04-15T01:07:13Z'
+        globalChecksum:
+          type: string
+          description: >-
+            SHA256 checksum aggregated across every org configuration in the
+            snapshot, prefixed with `sha256:`
+          example: >-
+            sha256:597ea4051f151bde9c96ea5d1713e69c9a712255146bafc6dc7de22c385004b1
+        orgConfigs:
+          type: array
+          description: List of org-scoped effective configurations, sorted by `orgId`
+          items:
+            $ref: '#/components/schemas/EffectiveConfig'
+        programConfigs:
+          type: array
+          description: List of program-scoped effective configurations, sorted by `orgId`
+          items:
+            $ref: '#/components/schemas/EffectiveConfig'
+    MCCAmountExceedsAuthorizationConfig:
+      type: object
+      description: >-
+        Merchant category codes and percentage tolerance used when the cleared
+        amount exceeds the authorized amount
+      properties:
+        mcc:
+          type: array
+          description: >-
+            List of merchant category codes sensitive to an amount mismatch
+            between the authorization and the clearing
+          items:
+            type: string
+            description: Four-digit merchant category code
+            example: '5411'
+        percentage:
+          type: integer
+          format: int32
+          description: >-
+            Percentage tolerance applied to the difference between the
+            authorized and cleared amounts
+          example: 10
+    PatchableConfig:
+      allOf:
+        - $ref: '#/components/schemas/ClearingRulesConfig'
+      additionalProperties: false
+      description: >-
+        Clearing rules to apply. Every field is optional. Only the fields you
+        send are changed, and the others keep their current values.
+    PutClearingRulesRequest:
+      type: object
+      additionalProperties: false
+      description: >-
+        Clearing rules configuration to create or update for an organization or
+        a program.
+      required:
+        - config
+        - orgId
+      properties:
+        config:
+          $ref: '#/components/schemas/PatchableConfig'
+          description: Clearing rules to apply. Send only the fields you want to change.
+        orgId:
+          type: string
+          description: Organization that owns the configuration
+          example: TN-ddce7e50-0485-49ec-a910-866dff0bfd0f
+        description:
+          type: string
+          maxLength: 500
+          description: >-
+            Note explaining why the configuration changed, stored with the
+            version for auditing
+          example: Enable DLQ routing for key reasons org-wide
+        programId:
+          type: string
+          description: >-
+            Program the configuration applies to. Send it only for a
+            program-scoped configuration.
+          example: prog456
+        scope:
+          $ref: '#/components/schemas/ScopeType'
+          description: >-
+            Scope the configuration applies to. When omitted, it's `PROGRAM` if
+            programId is present and `ORG` otherwise.
+        updated_by:
+          type: string
+          description: User or service account that requested the update.
+          example: admin@pismo.com
+    Ready:
+      type: object
+      description: Readiness status of the service
+      properties:
+        ok:
+          type: boolean
+          description: Is the service ready to process requests?
+          example: true
+    ReasonFlagsAndMCC:
+      $ref: '#/components/schemas/ClearingRulesConfig'
+    ScopeType:
+      type: string
+      description: >-
+        Level a clearing rules configuration applies to: `ORG` covers every
+        program in the organization, `PROGRAM` covers a single program
+      example: ORG
+      enum:
+        - ORG
+        - PROGRAM
+      x-enum-varnames:
+        - ScopeOrg
+        - ScopeProgram
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+paths:
+  /v1/rules:
+    get:
+      operationId: dlq-get-clearing-rules
+      tags:
+        - Clearing rules
+      summary: Get latest clearing rules configuration
+      description: >-
+        Return the latest stored config JSON with metadata for the requested
+        organization
+      parameters:
+        - name: orgId
+          in: query
+          description: Organization ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Configuration found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConfigResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+        '404':
+          description: Configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+    put:
+      operationId: dlq-update-clearing-rules
+      tags:
+        - Clearing rules
+      summary: Update clearing rules configuration
+      description: >-
+        Updates the latest configuration for a given scope, organization or
+        program, and returns the new version and checksum. Persistence is
+        asynchronous—the endpoint publishes an event and the immutable snapshot
+        is written afterward, so it isn't guaranteed at response time. The
+        [Pending transactions
+        sent](https://developers.pismo.io/events/docs/networktransactions-pending-transactions-2)
+        event reports clearing events that these rules route to the DLQ, and you
+        can reprocess them with [Perform clearing
+        reconciliation](https://developers.pismo.io/pismo-docs/reference/performclearingreconciliation).
+        For background on the clearing flow, see [Clearing/Base
+        II](https://developers.pismo.io/pismo-docs/docs/clearingbase).
+      parameters: []
+      requestBody:
+        description: Clearing rules configuration
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutClearingRulesRequest'
+      responses:
+        '200':
+          description: Configuration updated or no changes detected
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ClearingRulesResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: No changes detected
+        '201':
+          description: Configuration created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClearingRulesResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+        '403':
+          description: Forbidden - orgId does not match x-tenant header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPError'
