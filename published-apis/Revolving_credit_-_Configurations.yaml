@@ -1164,7 +1164,7 @@ paths:
 
         NOTE: This endpoint requires an account-specific access token. Getting
         an account token requires you to call [Get OpenID access
-        token](ref:post-passport-v1-oauth2-token-1) with an external account ID.
+        token](ref:post-passport-v1-oauth2-token) with an external account ID.
         Tokens can expire quickly, which can result in an Unauthorized message.
       operationId: postAccountAccrualTypesRates
       tags:
@@ -1198,7 +1198,7 @@ paths:
 
         NOTE: This endpoint requires an account-specific access token. Getting
         an account token requires you to call [Get OpenID access
-        token](ref:post-passport-v1-oauth2-token-1) with an external account ID.
+        token](ref:post-passport-v1-oauth2-token) with an external account ID.
         Tokens can expire quickly, which can result in an Unauthorized message.
       operationId: listAccountAccrualTypeRates
       tags:
@@ -1242,7 +1242,7 @@ paths:
 
         NOTE: This endpoint requires an account-specific access token. Getting
         an account token requires you to call [Get OpenID access
-        token](ref:post-passport-v1-oauth2-token-1) with an external account ID.
+        token](ref:post-passport-v1-oauth2-token) with an external account ID.
         Tokens can expire quickly, which can result in an Unauthorized message.
       operationId: deleteAccountAccrualTypesRate
       tags:
