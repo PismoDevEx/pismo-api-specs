@@ -998,8 +998,8 @@ components:
       description: >
         Representation of the persisted overrides, present only when the request
         defined at least one override. Sub-fields are included only when set.
-        The `renewal_term` retains the structure provided by the client
-        (calendar form or `unit`+`value`), mirroring the behavior of
+        The `renewal_term` always returns all three fields together (`unit`,
+        `value` and `renewal_calendar_maturity_date`), mirroring the behavior of
         `maturity_period`.
       properties:
         maturity_instructions:
@@ -1011,10 +1011,11 @@ components:
     RenewalTermResponse:
       type: object
       description: >
-        Renewal term applied on each rollover. The platform preserves the
-        client’s original format: `unit`+`value` appears when provided, and
-        `renewal_calendar_maturity_date` is returned as a string when that form
-        is used.
+        Renewal term applied on each rollover. Always returns all three fields
+        together — `unit`, `value` and `renewal_calendar_maturity_date` —
+        regardless of the form the client used to configure it, mirroring
+        `maturity_period`. Legacy terms persisted before the calendar date was
+        stored return only `unit`+`value`.
       properties:
         unit:
           type: string
@@ -1132,23 +1133,22 @@ components:
         grace_period_duration_days:
           type: integer
           description: >-
-            The number of days in the grace period. Withdrawals are allowed
-            during this period. This field applies only if no grace period
-            penalty is defined and penalties do not apply. The grace‑period
-            expiration is scheduled according to the account’s division
-            timezone, using the parent division’s timezone when available, or
-            UTC when no division timezone is defined. There is no enforced
-            minimum or maximum; any positive integer is accepted.
+            The number of days in the grace period. Applies only when no
+            grace‑period penalty is defined. The grace‑period window opens at
+            the start of the next cycle, spanning `cycle_start_date`,
+            `cycle_start_date` + `grace_period_duration_days`, and the renewed
+            cycle’s maturity extends by these days (`cycle_start_date` +
+            `grace_period_duration_days` + term - 1, inclusive). The first cycle
+            does not include a grace period. During grace period, interest
+            accrues daily only when `accrue_during_grace_period` is `true`.
           example: 30
         accrue_during_grace_period:
           type: boolean
           description: >-
-            Controls whether interest continues to accrue during the
-            post‑maturity grace period. When set to `true` (the default), the
-            Pismo platform submits daily accruals to the interest engine. When
-            set to `false`, those submissions stop. If the field is omitted or
-            null, it is treated as `true`. Note that this setting does not
-            change the grace‑period lifecycle.
+            Whether interest accrues daily during the grace window. Defaults to
+            true. When false, no submissions are sent to the Interest Engine
+            during grace (audited as `IN_GRACE_NO_ACCRUAL`) and accrual starts
+            when grace ends. Deposit products only.
           example: true
         name:
           type: string
@@ -1353,13 +1353,15 @@ components:
           type: integer
           format: int32
           description: >-
-            Number of days during which changes can be made to the product
-            before it rolls over. If you define a grace period penalty,
-            configure it under `penalties.grace_period`. The grace‑period
-            expiration is scheduled according to the account’s division
-            timezone, using the parent division’s timezone when available, or
-            UTC when no division timezone is defined. There is no enforced
-            minimum or maximum; any positive integer is accepted.
+            Grace‑period duration in days. The maturity date is a hard boundary,
+            and pay, rollover, and detach execute at maturity. The grace window
+            opens at the start of the next cycle, spanning `cycle_start_date`,
+            `cycle_start_date` + `grace_period`. The first cycle does not
+            include a grace-period window. During grace period, interest accrues
+            daily only when `accrue_during_grace_period` is `true`. If you
+            define a grace‑period penalty, configure it under
+            `penalties.grace_period` (`penalty‑grace` still pauses at maturity
+            and is not relocated).
           example: 10
         accrue_during_grace_period:
           type: boolean
@@ -2098,10 +2100,6 @@ components:
     CalculateAverageBalanceRequest:
       type: object
       properties:
-        account_id:
-          type: number
-          description: Account identifier.
-          example: 123456
         begin_date_datetime:
           type: string
           format: date-time
@@ -2408,21 +2406,32 @@ components:
           example: ee2b8b77-f6a0-4ba4-890a-0dc23f13fcb4
         current_grace_period:
           type: integer
-          description: Current grace period in days
+          description: >-
+            Grace‑period duration in days for the current cycle. For non‑first
+            cycles, the grace window opens at the start of the cycle, spanning
+            `cycle_start_date`, `cycle_start_date` + `current_grace_period`. The
+            first cycle does not include a grace window.
           example: 10
         current_rollover_date:
           type: string
           format: date-time
           description: >-
-            Current rollover date, The datetime format follows the ISO 8601
-            standard `yyyy-mm-ddThh:mm:ss.sssZ`.
+            Date the current cycle rolls into the next one
+            (`current_calendar_maturity_date` + 1 or the next cycle’s
+            `cycle_start_date`). Rollover occurs at the maturity date, so grace
+            no longer sits between maturity and rollover. Format =
+            `yyyy-mm-ddThh:mm:ss.sssZ`.
           example: '2026-02-01T00:00:00Z'
         current_calendar_maturity_date:
           type: string
           format: date-time
           description: >-
-            Current calendar maturity date. The datetime format follows the ISO
-            8601 standard `yyyy-mm-ddThh:mm:ss.sssZ`.
+            Maturity date of the current cycle. Uses inclusive day count (day 1
+            is `cycle_start_date`). For the first cycle, the maturity date is
+            `cycle_start_date` + term - 1. For a renewed cycle, the maturity
+            date is `cycle_start_date` + `current_grace_period` + term - 1
+            because grace extends the cycle. Format =
+            `yyyy-mm-ddThh:mm:ss.sssZ`.
           example: '2026-01-26T12:00:00Z'
         previous_product_id:
           type: string
