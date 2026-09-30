@@ -342,6 +342,52 @@ components:
       description: Authorization tracking ID
       format: uuid
       example: 4df987e3-8179-11ed-8209-06c7b022d1ee
+    BackdatingReason:
+      type: string
+      description: >
+        Reason a payment is being backdated. Required only when `repayment_date`
+        is a genuine backdate (earlier than the processing date).
+        Case-insensitive. An invalid value returns `ELND2304`.
+
+
+        The reason is a governance/audit label, not a verified fact — pick the
+        value that best matches the situation, and use `OTHER` when none fits.
+
+
+        - `RAIL_DELAY`: Payment was made on time, but the payment rail or bank
+        file reporting it reached Pismo later.
+
+        - `SYSTEM_ERROR`: A technical failure or outage delayed recording a
+        payment that was actually made earlier.
+
+        - `OPS_CORRECTION`: An operations team is correcting the recorded date
+        of a payment (back-office correction).
+
+        - `RETRY_WINDOW`: Payment was originally initiated within the expected
+        timeframe but was temporarily unsuccessful (e.g., transient bank,
+        network, or processing failure) and subsequently reprocessed. The
+        payment is backdated to reflect the original intended payment date.
+
+        - `REINSTATEMENT`: A previously reversed, cancelled, returned, or
+        otherwise invalidated payment is being reinstated and recorded using its
+        original effective payment date to restore the loan to the correct
+        historical state.
+
+        - `MISAPPLIED_PAYMENT_CORRECTION`: A payment applied to the wrong loan
+        or installment is being corrected and re-applied using its true
+        effective payment date.
+
+        - `OTHER`: Generic catch-all for a legitimate backdating reason not
+        covered by the specific values above.
+      enum:
+        - RAIL_DELAY
+        - SYSTEM_ERROR
+        - OPS_CORRECTION
+        - RETRY_WINDOW
+        - REINSTATEMENT
+        - MISAPPLIED_PAYMENT_CORRECTION
+        - OTHER
+      example: RAIL_DELAY
     Balance:
       description: Balance details for a loan
       properties:
@@ -1433,19 +1479,44 @@ components:
             Value must be greater than `overdue_threshold_days` when both fields
             are provided. Returns `ELND0378` if `delinquency_closure_days` are
             less than or equal to `overdue_threshold_days`.
+          type:
+            - number
+            - 'null'
+          format: int32
+          minimum: 1
+          maximum: 365
+          example: 90
+        bring_to_present_value_on_delinquency:
+          description: >
+            Should the platform bring future installments to present value
+            before cancellation when closing due to delinquency?
+
+            When set to `true`, at least one
+            `processing_codes.present_value_discount` code must be configured on
+            the loan product (either provided in the same request or already
+            present on the product for updates). Returns `ELND0380` otherwise.
+          type: boolean
+          default: false
+          example: false
+        backdating_enabled:
+          description: >-
+            Does the product allow backdated payments? (These payments do not
+            get penalized for arriving after the effective payment date).
+            Defaults to `false`.
+          type: boolean
+          default: false
+          example: true
+        max_backdating_window_days:
+          description: >
+            Maximum age (in days) of a backdated `repayment_date`. Meaningful
+            only when `backdating_enabled` is `true`; defaults to 60 when
+            backdating is enabled and no value is provided. Returns `ELND0379`
+            if set while `backdating_enabled` is not `true`.
           type: number
           format: int32
           minimum: 1
           maximum: 365
-          nullable: true
-          example: 90
-        bring_to_present_value_on_delinquency:
-          description: >-
-            Should the platform bring future installments to present value
-            before cancellation when closing due to delinquency?
-          type: boolean
-          default: false
-          example: false
+          example: 60
     LoanProductV2Response:
       required:
         - collateral
@@ -1542,34 +1613,6 @@ components:
         `RENEGOTIATED`-The original loan terms have been modified after booking,
         typically due to a change in repayment conditions or borrower
         circumstances.
-
-
-        `SCHEDULED`-A repayment is expected to be paid on or before the due date
-        of the repayment.
-
-
-        `PROCESSING`-An intermediate state that happens whenever there are
-        asynchronous process that demand a state change. For example, BOOKING →
-        PROCESSING → ACTIVE. Common use case - A repayment registration has just
-        been requested using the Register repayment endpoint and is being
-        processed.
-
-
-        `PAID`-The expected repayment amount has been paid in full on or before
-        the due date of the repayment.
-
-
-        `PARTIALLY_PAID`-Only part of the expected payment amount has been paid.
-        However, the repayment due date has not passed, so the borrower could
-        still make the full payment on time.
-
-
-        `PAST_DUE`-The repayment due date has passed and the expected repayment
-        amount has not been paid in full.
-
-
-        `NOT_PAID`-An attempt to execute an auto repayment for this installment
-        was not successful.
       example: ACTIVE
       enum:
         - PENDING
@@ -1578,12 +1621,6 @@ components:
         - CANCELED
         - SETTLED
         - RENEGOTIATED
-        - SCHEDULED
-        - PROCESSING
-        - PAID
-        - PARTIALLY_PAID
-        - PAST_DUE
-        - NOT_PAID
     LoanSummary:
       type: object
       description: Aggregated loan data for the account matching the applied filters
@@ -2322,7 +2359,13 @@ components:
         - RATES
     RepaymentDate:
       type: string
-      description: Repayment date. Format = YYYY-MM-DD.
+      description: >
+        Repayment date. Format = YYYY-MM-DD. When earlier than the date the
+        payment is processed, it is treated as a backdated payment: the product
+        must have `backdating_enabled`, the date must be within
+        `max_backdating_window_days`, and a `backdating_reason` is required. On
+        success the arrears penalty charged for the days after this date is
+        given back.
       format: date
       example: '2022-06-30'
     RepaymentHierarchyCodeV2:
@@ -2385,6 +2428,8 @@ components:
           $ref: '#/components/schemas/RepaymentAmount'
         repayment_date:
           $ref: '#/components/schemas/RepaymentDate'
+        backdating_reason:
+          $ref: '#/components/schemas/BackdatingReason'
       required:
         - repayment_id
     RepayV2Result:
@@ -3240,6 +3285,18 @@ paths:
                   value:
                     code: ELND0376
                     message: Field minimum_total_payment must be positive
+                ELND0379:
+                  value:
+                    code: ELND0379
+                    message: >-
+                      Field max_backdating_window_days can only be set when
+                      backdating_enabled is true
+                ELND0380:
+                  value:
+                    code: ELND0380
+                    message: >-
+                      Field processing_codes.present_value_discount is required
+                      when bring_to_present_value_on_delinquency is true.
         '404':
           description: Not Found
           content:
@@ -3479,6 +3536,12 @@ paths:
                   value:
                     code: ELND0363
                     message: Processing code %s is invalid or does not exist.
+                ELND0380:
+                  value:
+                    code: ELND0380
+                    message: >-
+                      Field processing_codes.present_value_discount is required
+                      when bring_to_present_value_on_delinquency is true.
                 ELND0011:
                   value:
                     code: ELND0011
@@ -3487,6 +3550,12 @@ paths:
                   value:
                     code: ELND0012
                     message: '%s %s not valid. Allowed values : %s'
+                ELND0379:
+                  value:
+                    code: ELND0379
+                    message: >-
+                      Field max_backdating_window_days can only be set when
+                      backdating_enabled is true
         '500':
           description: Internal Server Error
           content:
@@ -4269,6 +4338,42 @@ paths:
                     message: Authorization failed
                     response_code: '62'
                     denial_code: IAD
+                ELND2300:
+                  description: Backdated repayment_date is in the future.
+                  value:
+                    code: ELND2300
+                    message: repayment_date must be less than or equal to current date.
+                ELND2301:
+                  description: Backdating is not enabled for the product.
+                  value:
+                    code: ELND2301
+                    message: Backdating is not enabled for this product.
+                ELND2302:
+                  description: >-
+                    Backdated repayment_date is older than the maximum
+                    backdating window.
+                  value:
+                    code: ELND2302
+                    message: >-
+                      repayment_date is older than the maximum backdating
+                      window.
+                ELND2303:
+                  description: Backdating reason missing on a backdated repayment.
+                  value:
+                    code: ELND2303
+                    message: >-
+                      Backdating reason is required when the operation is
+                      backdated.
+                ELND2304:
+                  description: Backdating reason is not a known value.
+                  value:
+                    code: ELND2304
+                    message: Invalid backdating reason.
+                ELND2305:
+                  description: Backdated repayment_date is before the loan creation date.
+                  value:
+                    code: ELND2305
+                    message: repayment_date must not be before the loan creation date.
         '500':
           description: Internal Server Error
           content:
