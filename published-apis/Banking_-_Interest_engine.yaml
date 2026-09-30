@@ -110,7 +110,9 @@ components:
         - MATURITY
       example: DAILY
     Amount:
-      type: number
+      type:
+        - number
+        - 'null'
       format: double
       description: Amount in the `interest_by_tier`
       example: 1000
@@ -318,9 +320,10 @@ components:
           description: Fixed percentage applied by the tax rule.
           example: 0.0038
         threshold_amount:
-          type: number
+          type:
+            - number
+            - 'null'
           format: double
-          nullable: true
           description: >-
             Optional monetary threshold amount associated with the tax rule. Use
             null when the rule does not depend on a threshold.
@@ -905,7 +908,9 @@ components:
         `benchmark` is null, this field must be null also.
       example: 0.02
     MarginRate:
-      type: number
+      type:
+        - number
+        - 'null'
       format: double
       description: >
         Multiplier applied to the benchmark rate, expressed as a decimal
