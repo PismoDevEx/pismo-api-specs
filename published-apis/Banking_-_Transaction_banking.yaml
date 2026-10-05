@@ -841,11 +841,9 @@ components:
       type: integer
       format: int64
       minimum: 1
-      maximum: 4294967295
       description: |
         Account ID<br>
         `minimum: 1`
-        `maximum: 4294967295`
       example: 102778
     AccountID3:
       type: integer
@@ -855,8 +853,6 @@ components:
         Account](https://developers.pismo.io/pismo-docs/reference/post-account).<br>
 
         `minimum: 1`
-
-        `maximum: 4294967295`
       example: 102701621
     AccountID4:
       type: integer
@@ -866,8 +862,6 @@ components:
         application](ref:post-acquisitions-v3-s2s-applications).<br>
 
         `minimum: 1`
-
-        `maximum: 4294967295`
       example: 102701621
     AccountStatus:
       type: string
@@ -891,11 +885,9 @@ components:
       type: integer
       format: int64
       minimum: 1
-      maximum: 4294967295
       description: |
         Account status reason ID<br>
         `minimum: 1`
-        `maximum: 4294967295`
       example: 1438
     AccountStatusReasonExternalID:
       type: string
@@ -3556,8 +3548,6 @@ components:
                 $ref: '#/components/schemas/RestrictedFundsMainMetadata'
               increase_datetime_limit:
                 $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
-              release_datetime:
-                $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
             required:
               - restricted_funds_id
               - hold_method
@@ -4530,15 +4520,12 @@ components:
       type: integer
       format: int64
       minimum: 1
-      maximum: 4294967295
       description: >
         Parent account ID. The account retrieved is the child of the account
         referenced by `parent_account_id`. The account referenced by
         `parent_account_id` can be in another program or division.<br>
 
         `minimum: 1`
-
-        `maximum: 4294967295`
       example: 123
     ParentCode:
       type: string
@@ -4775,11 +4762,9 @@ components:
       type: integer
       format: int64
       minimum: 1
-      maximum: 4294967295
       description: |
         Program ID<br>
         `minimum: 1`
-        `maximum: 4294967295`
       example: 492
     ProgramID3:
       type: integer
@@ -5136,16 +5121,6 @@ components:
           - Only accepted on creation when `hold_method` is `RECURRENT`
           - Must not be in the past
       example: '2026-12-31T23:59:59Z'
-    RestrictedFundsReleaseDatetime:
-      type: string
-      format: date-time
-      description: >-
-        Indicates the date and time when the remaining held funds are
-        automatically released to the account. Displayed in RFC 3339 format.
-
-
-        **Note**: The date and time cannot be set in the past.
-      example: '2026-12-31T23:59:59Z'
     RestrictedFundsRequest:
       description: Create funds restriction request body
       type: object
@@ -5166,8 +5141,6 @@ components:
           $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
-        release_datetime:
-          $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
       required:
         - hold_method
         - amount
@@ -5255,8 +5228,6 @@ components:
           $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
-        release_datetime:
-          $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
       required:
         - restricted_funds_id
         - hold_method
@@ -17077,23 +17048,11 @@ paths:
                       is RECURRENT
                 Increase datetime limit in the past:
                   description: >-
-                    This error occurs when `increase_datetime_limit` is set in
-                    the past
+                    This error occurs when `increase_datetime_limit` is in the
+                    past
                   value:
                     code: WRFO0016
                     message: increase_datetime_limit cannot be in the past
-                Release datetime in the past:
-                  description: This error occurs when `release_datetime` is set in the past
-                  value:
-                    code: WRFO0019
-                    message: release_datetime cannot be in the past
-                Release datetime before increase datetime limit:
-                  description: >-
-                    This error occurs when `release_datetime` is before the
-                    `increase_datetime_limit`
-                  value:
-                    code: WRFO0020
-                    message: release_datetime cannot be before increase_datetime_limit
         '401':
           description: Unauthorized
           content:
