@@ -584,7 +584,9 @@ components:
     BalanceHistoryTargetIdPath:
       name: targetId
       in: path
-      description: Target ID (either `org_id`, `program_id`, or `division_id`)
+      description: >-
+        Target ID (either `org_id`, `program_id`, or `division_id`). When
+        `targetType` is `DIVISION`, the division code is also accepted.
       schema:
         type: string
         minLength: 1
@@ -1505,7 +1507,7 @@ components:
             target_type:
               $ref: '#/components/schemas/AccountBalanceConfigTargetTypev2'
             target_id:
-              $ref: '#/components/schemas/TargetID'
+              $ref: '#/components/schemas/BalanceHistoryTargetID'
             cycle_closing_time:
               $ref: '#/components/schemas/CycleClosingTimeV2'
             cycle_event_delay:
@@ -3554,6 +3556,8 @@ components:
                 $ref: '#/components/schemas/RestrictedFundsMainMetadata'
               increase_datetime_limit:
                 $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
+              release_datetime:
+                $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
             required:
               - restricted_funds_id
               - hold_method
@@ -5132,6 +5136,16 @@ components:
           - Only accepted on creation when `hold_method` is `RECURRENT`
           - Must not be in the past
       example: '2026-12-31T23:59:59Z'
+    RestrictedFundsReleaseDatetime:
+      type: string
+      format: date-time
+      description: >-
+        Indicates the date and time when the remaining held funds are
+        automatically released to the account. Displayed in RFC 3339 format.
+
+
+        **Note**: The date and time cannot be set in the past.
+      example: '2026-12-31T23:59:59Z'
     RestrictedFundsRequest:
       description: Create funds restriction request body
       type: object
@@ -5152,6 +5166,8 @@ components:
           $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
+        release_datetime:
+          $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
       required:
         - hold_method
         - amount
@@ -5239,6 +5255,8 @@ components:
           $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
+        release_datetime:
+          $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
       required:
         - restricted_funds_id
         - hold_method
@@ -8546,6 +8564,13 @@ paths:
                   value:
                     code: WEAM0034
                     message: Tracking id is already in use
+                Earmark was concurrently modified:
+                  description: >-
+                    This error occurs when the earmark is modified by a
+                    concurrent operation. The request can be safely retried.
+                  value:
+                    code: WEAM0049
+                    message: Earmark was concurrently modified
         '423':
           description: Locked
           content:
@@ -8799,6 +8824,13 @@ paths:
                   value:
                     code: WEAM0034
                     message: Tracking id is already in use
+                Earmark was concurrently modified:
+                  description: >-
+                    This error occurs when the earmark is modified by a
+                    concurrent operation. The request can be safely retried.
+                  value:
+                    code: WEAM0049
+                    message: Earmark was concurrently modified
         '423':
           description: Locked
           content:
@@ -9465,7 +9497,12 @@ paths:
                 value:
                   target_type: ORGANIZATION
                   target_id: TN-097d9c0e-0331-492a-93e2-95c8c2019fd1
-                  division_code: my-division
+                  cycle_closing_time: '23:59:59'
+                  cycle_event_delay: 60
+              Create account balance history config for a division:
+                value:
+                  target_type: DIVISION
+                  target_id: my-division-code
                   cycle_closing_time: '23:59:59'
                   cycle_event_delay: 60
       responses:
@@ -10576,6 +10613,13 @@ paths:
                   value:
                     code: WPMT0052
                     message: tracking_id is already in use
+                Earmark was concurrently modified:
+                  description: >-
+                    This error occurs when the earmark is modified by a
+                    concurrent operation. The request can be safely retried.
+                  value:
+                    code: WEAM0049
+                    message: Earmark was concurrently modified
         '423':
           description: Locked
           content:
@@ -16698,6 +16742,11 @@ paths:
                   value:
                     code: WCPT0013
                     message: tracking_id [...] is already in use
+                VersionConflict:
+                  summary: Check posting was concurrently modified
+                  value:
+                    code: WCPT0019
+                    message: Check posting was concurrently modified
         '500':
           $ref: '#/components/responses/500InternalServer'
       security:
@@ -16792,19 +16841,22 @@ paths:
                 message: Check posting not found
                 code: WCPT0003
         '409':
-          description: Tracking ID already exists
+          description: Conflict
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  code:
-                    type: string
-              example:
-                message: Tracking ID already exists for another operation
-                code: WCPT0013
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                TrackingIdExists:
+                  summary: Tracking ID already exists
+                  value:
+                    code: WCPT0013
+                    message: Tracking ID already exists for another operation
+                VersionConflict:
+                  summary: Check posting was concurrently modified
+                  value:
+                    code: WCPT0019
+                    message: Check posting was concurrently modified
         '500':
           $ref: '#/components/responses/500InternalServer'
       security:
@@ -17025,11 +17077,23 @@ paths:
                       is RECURRENT
                 Increase datetime limit in the past:
                   description: >-
-                    This error occurs when `increase_datetime_limit` is in the
-                    past
+                    This error occurs when `increase_datetime_limit` is set in
+                    the past
                   value:
                     code: WRFO0016
                     message: increase_datetime_limit cannot be in the past
+                Release datetime in the past:
+                  description: This error occurs when `release_datetime` is set in the past
+                  value:
+                    code: WRFO0019
+                    message: release_datetime cannot be in the past
+                Release datetime before increase datetime limit:
+                  description: >-
+                    This error occurs when `release_datetime` is before the
+                    `increase_datetime_limit`
+                  value:
+                    code: WRFO0020
+                    message: release_datetime cannot be before increase_datetime_limit
         '401':
           description: Unauthorized
           content:
@@ -17287,6 +17351,10 @@ paths:
                   value:
                     code: WRFO0005
                     message: tracking_id is already in use
+                Version conflict:
+                  value:
+                    code: WRFO0019
+                    message: Restricted funds was concurrently modified
         '429':
           description: Too many requests
           content:
@@ -17483,6 +17551,10 @@ paths:
                   value:
                     code: WRFO0005
                     message: tracking_id is already in use
+                Version conflict:
+                  value:
+                    code: WRFO0019
+                    message: Restricted funds was concurrently modified
         '422':
           description: Unprocessable Entity
           content:
@@ -18091,6 +18163,13 @@ paths:
                   value:
                     code: WPMT0052
                     message: tracking_id is already in use
+                Earmark was concurrently modified:
+                  description: >-
+                    This error occurs when the earmark is modified by a
+                    concurrent operation. The request can be safely retried.
+                  value:
+                    code: WEAM0049
+                    message: Earmark was concurrently modified
         '423':
           description: Locked
           content:
@@ -19345,6 +19424,13 @@ paths:
                   value:
                     code: WEAM0034
                     message: Tracking id is already in use
+                Earmark was concurrently modified:
+                  description: >-
+                    This error occurs when the earmark is modified by a
+                    concurrent operation. The request can be safely retried.
+                  value:
+                    code: WEAM0049
+                    message: Earmark was concurrently modified
         '423':
           description: Locked
           content:
@@ -19580,6 +19666,13 @@ paths:
                   value:
                     code: WEAM0034
                     message: Tracking id is already in use
+                Earmark was concurrently modified:
+                  description: >-
+                    This error occurs when the earmark is modified by a
+                    concurrent operation. The request can be safely retried.
+                  value:
+                    code: WEAM0049
+                    message: Earmark was concurrently modified
         '423':
           description: Locked
           content:
