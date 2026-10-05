@@ -6567,9 +6567,15 @@ paths:
     put:
       summary: Change due date
       description: >
-        Update the due date for all subsequent account statements. The new due
-        date must always be greater than the current due date to avoid
-        inconsistencies in the platform. 
+        Update the due date for all subsequent account statements.
+
+
+        To avoid inconsistencies in the platform:
+
+        - The new due date must always be greater than the current due date.
+
+        - The new due date must always be greater than the current cycle closing
+        date. 
 
 
         **Important:** The due date must be updated no later than two days
