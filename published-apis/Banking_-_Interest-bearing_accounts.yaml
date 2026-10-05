@@ -2380,6 +2380,11 @@ components:
         dates, and principal details. Supports audit, statement, and
         reconciliation workflows without requiring clients to reassemble the
         account’s history from individual events.
+
+        The lifecycle dates in this response (`cycle_start_date`,
+        `current_calendar_maturity_date`, `current_rollover_date`, and the grace
+        window) are anchored at 00:00 in the account’s division timezone. When
+        the division has no timezone configured, they are resolved in UTC.
       properties:
         account_id:
           type: integer
