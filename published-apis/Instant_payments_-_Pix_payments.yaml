@@ -2167,13 +2167,15 @@ components:
         * `ONCE` - A single scheduled transfer executed on
         `start_scheduler_date`.
 
+
         * `RECURRING` - Transfers created over time according to `cycle`, from
         `start_scheduler_date` until `end_scheduler_date`.
 
+
         * `PRESET` - **(Beta)** The caller pre-establishes all executions in the
-        `scheduler_details.executions` list and created upfront.
-        `start_scheduler_date`/`end_scheduler_date` and `cycle` are not used;
-        the schedule window is derived from the executions' `due_date`.
+        `scheduler_details.executions` list.
+        `start_scheduler_date`/`end_scheduler_date` and `cycle` are **NOT** used
+        - the schedule window is derived from the executions' `due_date`.
       enum:
         - ONCE
         - RECURRING
@@ -2297,6 +2299,40 @@ components:
         Date to schedule the process. RFC 3339 value, i.e.,
         "2023-04-12T23:20:50.52Z".
       example: '2020-08-13T13:49:03.000Z'
+    SchedulerDateEnd:
+      type: string
+      description: >
+        Date to stop the scheduled payment (maximum = 1 year). 
+
+
+        Format = yyyy-mm-dd. 
+
+
+        **REQUIRED** for `type` = `ONCE` or `RECURRING`. 
+
+
+        Must **NOT** be passed for `type` = `PRESET`. The schedule end is
+        derived from the latest execution `due_date`.
+      example: '2024-06-10'
+    SchedulerDateStart:
+      type: string
+      description: >
+        Date to start the scheduled payment. 
+
+
+        Format = yyyy-mm-dd. 
+
+
+        Transfers are made at midnight on this date and, if recurring, every
+        month until `end_scheduler_date`.
+
+
+        **REQUIRED** for `type` = `ONCE` or `RECURRING`. 
+
+
+        Must **NOT** be passed for `type` = `PRESET`. The schedule start is
+        derived from the earliest execution `due_date`.
+      example: '2024-06-10'
     scheduler.BankAccount:
       type: object
       required:
@@ -2516,32 +2552,9 @@ components:
           maxLength: 200
           example: Pay at end of month
         start_scheduler_date:
-          type: string
-          description: >
-            Date to start the scheduled payment. Format = yyyy-mm-dd.
-
-
-            Transfers are made at midnight on this date, and if recurring, every
-            month until `end_scheduler_date`.
-
-
-            **REQUIRED** for `type` = `ONCE` or `RECURRING`. Must be omitted for
-            `type` = `PRESET` (the schedule start is derived from the earliest
-            execution `due_date`).
-          example: '2024-06-10'
+          $ref: '#/components/schemas/SchedulerDateStart'
         end_scheduler_date:
-          type: string
-          description: >
-            Date to stop the scheduled payment (maximum = 1 year). Format =
-            yyyy-mm-dd. 
-
-
-            **REQUIRED** for `type` = `ONCE` or `RECURRING`. 
-
-
-            Must be omitted for `type` = `PRESET` (the schedule end is derived
-            from the latest execution `due_date`).
-          example: '2024-06-10'
+          $ref: '#/components/schemas/SchedulerDateEnd'
         cycle:
           $ref: '#/components/schemas/SchedulerCycle'
     scheduler.PresetExecution:
@@ -2571,22 +2584,9 @@ components:
           maxLength: 200
           example: Pay at end of month
         start_scheduler_date:
-          type: string
-          description: >
-            Date to start the scheduled payment. Format = yyyy-mm-dd. Transfers
-            are made at midnight on this date and, if recurring, every month
-            until `end_scheduler_date`. **REQUIRED** for `type` = `ONCE` or
-            `RECURRING`. Must be omitted for `type` = `PRESET` (the start of the
-            schedule is derived from the earliest execution `due_date`).
-          example: '2024-06-10'
+          $ref: '#/components/schemas/SchedulerDateStart'
         end_scheduler_date:
-          type: string
-          description: >
-            Datetime to stop the scheduled payment (maximum = 1 year). Format =
-            yyyy-mm-dd. **Required** for `type` = `ONCE` or `RECURRING`. Must be
-            omitted for `type` = `PRESET` (the end of the schedule is derived
-            from the latest execution `due_date`).
-          example: '2024-06-10'
+          $ref: '#/components/schemas/SchedulerDateEnd'
         cycle:
           $ref: '#/components/schemas/SchedulerCycle'
         executions:
