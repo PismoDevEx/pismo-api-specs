@@ -458,9 +458,10 @@ paths:
     post:
       summary: Post interest accruals
       description: >
-        The platform filters all accruals by `accrual_status` and, optionally,
-        by `start_date` and `end_date`. For each accrual type in the results, it
-        adds the values and posts one transaction for the total amount.
+        The Pismo platform filters all accruals by `accrual_status` and,
+        optionally, by `start_date` and `end_date`. For each accrual type in the
+        results, it adds the values and posts one transaction for the total
+        amount.
 
 
         The status for each accrual filtered is changed to `PROCESSED`.
