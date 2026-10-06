@@ -1204,8 +1204,29 @@ components:
           $ref: '#/components/schemas/InitialAmount'
         initiator_document_number:
           type: string
-          description: Payment initiator document number when `type` is `PAYMENT_INITIATOR`
+          description: >
+            Payment initiator CNPJ, validated as a CNPJ.
+
+
+            Cadastro Nacional da Pessoa Jurídica (CNPJ) is Brazil's 14-character
+            federal taxpayer registration number for companies and legal
+            entities.
+
+
+            **REQUIRED** when `initiation_type` = `PAYMENT_INITIATOR`.
+
+
+            Also accepted when `initiation_type` = `AUTOMATIC_PIX`, for a
+            payment initiator Pix out originated in <a
+            href="https://www.bcb.gov.br/en/financialstability/open_finance"
+            target="_blank">Open Finance</a>. 
+
+
+            It is this field's presence, not the `initiation_type` that
+            identifies an Open Finance origin: when it is passed,
+            `transaction_identification` **MUST NOT** be passed.
           maxLength: 14
+          example: '12345678912345'
         payment_type:
           $ref: '#/components/schemas/PaymentType'
         psp_account:
@@ -1217,10 +1238,23 @@ components:
             endpoint.
 
 
-            Transaction ID is **REQUIRED** when `initiation_type` is
-            `DYNAMIC_QRCODE` and should not be passed otherwise. If a
-            `STATIC_QRCODE` contains the transaction identification, it is also
-            **REQUIRED** to pass it. 
+            Transaction ID is **REQUIRED** in the following circumstances:
+
+
+            *  If `initiation_type` = `DYNAMIC_QRCODE` . 
+
+
+            * `STATIC_QRCODE` contains the transaction ID
+
+
+            * If `initiation_type` = `PAYMENT_INITIATOR` (must be less than 26
+            characters).
+
+
+            * When `initiation_type` = `AUTOMATIC_PIX` and
+            `initiator_document_number` is **NOT** passed. It must have the
+            originating `pain.013` instruction's value (26 to 35 characters). Do
+            **NOT* pass this if `initiator_document_number` is passed.
           example: 1a84daf6-a61b-4aba-919a-a9943db7102e
         metadata:
           $ref: '#/components/schemas/Metadata'
@@ -2484,19 +2518,29 @@ components:
         start_scheduler_date:
           type: string
           description: >
-            Date to start the scheduled payment. Format = yyyy-mm-dd. Transfers
-            are made at midnight on this date, and if recurring, every month
-            until `end_scheduler_date`. **REQUIRED** for `type` = `ONCE` or
-            `RECURRING`. **MUST** be omitted for `type` = `PRESET` (the start of
-            the schedule is derived from the earliest execution `due_date`).
+            Date to start the scheduled payment. Format = yyyy-mm-dd.
+
+
+            Transfers are made at midnight on this date, and if recurring, every
+            month until `end_scheduler_date`.
+
+
+            **REQUIRED** for `type` = `ONCE` or `RECURRING`. Must be omitted for
+            `type` = `PRESET` (the schedule start is derived from the earliest
+            execution `due_date`).
           example: '2024-06-10'
         end_scheduler_date:
           type: string
           description: >
-            Datetime to stop the scheduled payment (maximum = 1 year). Format =
-            yyyy-mm-dd. **REQUIRED** for `type` = `ONCE` or `RECURRING`.
-            **MUST** be omitted for `type` = `PRESET` (the end of the schedule
-            is derived from the latest execution `due_date`).
+            Date to stop the scheduled payment (maximum = 1 year). Format =
+            yyyy-mm-dd. 
+
+
+            **REQUIRED** for `type` = `ONCE` or `RECURRING`. 
+
+
+            Must be omitted for `type` = `PRESET` (the schedule end is derived
+            from the latest execution `due_date`).
           example: '2024-06-10'
         cycle:
           $ref: '#/components/schemas/SchedulerCycle'
@@ -2529,12 +2573,11 @@ components:
         start_scheduler_date:
           type: string
           description: >
-            Datetime to start the scheduled payment. Format = yyyy-mm-dd.
-            Transfers are made at midnight on this date, and, if recurring,
-            every month until `end_scheduler_date`. **Required** for `type` =
-            `ONCE` or `RECURRING`. Must be omitted for `type` = `PRESET` (the
-            start of the schedule is derived from the earliest execution
-            `due_date`).
+            Date to start the scheduled payment. Format = yyyy-mm-dd. Transfers
+            are made at midnight on this date and, if recurring, every month
+            until `end_scheduler_date`. **REQUIRED** for `type` = `ONCE` or
+            `RECURRING`. Must be omitted for `type` = `PRESET` (the start of the
+            schedule is derived from the earliest execution `due_date`).
           example: '2024-06-10'
         end_scheduler_date:
           type: string
@@ -2551,14 +2594,20 @@ components:
           minItems: 1
           maxItems: 60
           description: >
-            List of pre-established executions. **REQUIRED** for `type` =
-            `PRESET` (1 to 60 items); **must** be omitted for `type` = `ONCE` or
-            `RECURRING`. Each execution is created up front and can be retrieved
-            through the [List Pix scheduler
-            executions](ref:get-scheduler-executions) endpoint. This field is
-            input-only - it is accepted when creating a scheduler and is never
-            returned by the [Get scheduled
-            transfer](ref:get-scheduled-pix-payment) endpoint.
+            List of pre-established executions. 
+
+
+            **REQUIRED** if `type` = `PRESET` (1 to 60 items).
+
+
+            Must **NOT** be passed for `type` = `ONCE` or `RECURRING`. 
+
+
+            Each execution is created up front and can be retrieved through the
+            [List Pix scheduler executions](ref:get-scheduler-executions)
+            endpoint.
+
+             This field is input-only: it is passed when creating a scheduler. The [Get scheduled transfer](ref:get-scheduled-pix-payment) endpoint does not return this field.
           items:
             $ref: '#/components/schemas/scheduler.PresetExecution'
     scheduler.SchedulerRegisterRequest:
@@ -3172,6 +3221,31 @@ paths:
                   value:
                     code: EPIX0115
                     message: Missing required transaction identification
+                EPIX0226:
+                  summary: >-
+                    Transaction identification not allowed with initiator
+                    document number
+                  value:
+                    code: EPIX0226
+                    message: >-
+                      Transaction identification not allowed with initiator
+                      document number
+                EPIX0227:
+                  summary: >-
+                    Invalid transaction identification length for payment
+                    initiator
+                  value:
+                    code: EPIX0227
+                    message: >-
+                      Invalid transaction identification length for payment
+                      initiator
+                EPIX0228:
+                  summary: Invalid transaction identification length for automatic pix
+                  value:
+                    code: EPIX0228
+                    message: >-
+                      Invalid transaction identification length for automatic
+                      pix
                 EPIX0136:
                   summary: Missing required initiator document number
                   value:
@@ -5178,16 +5252,14 @@ paths:
         change. Reach out to Pismo before using it in production.
 
 
-        To create a preset payment: 
-
-          * Set `type` = `PRESET` 
-          * Provide the full list of executions in `scheduler_details.executions` 
+        To create a preset payment: set `type` = `PRESET` and provide the full
+        list of executions in `scheduler_details.executions`. 
 
         Each item has a `due_date` (`yyyy-mm-dd`) and a pre-established
         `end_to_end_id`. From 1 to 60 executions are supported and are all
-        created upfront in a single operation. So, `start_scheduler_date`,
-        `end_scheduler_date` and `cycle` **MUST NOT** be sent for this type. The
-        schedule window is derived from the executions' `due_date`.
+        created upfront in a single operation, so `start_scheduler_date`,
+        `end_scheduler_date` and `cycle` must **NOT** be passed for this type —
+        the schedule window is derived from the executions' `due_date`.
 
 
         Once created, the executions can be listed through the [List Pix
