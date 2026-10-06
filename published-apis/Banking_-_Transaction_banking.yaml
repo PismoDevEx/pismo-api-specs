@@ -2346,9 +2346,12 @@ components:
     DivisionCode:
       type: string
       maxLength: 36
-      description: >-
+      description: >
         Code used to identify your division within the organization. Division
         code should only contain letters, numbers, and hyphens.
+
+
+        This is a client-provided ID and can be changed.
       example: US
     DivisionCode2:
       type: string
@@ -2366,9 +2369,12 @@ components:
       example: NY - New York City
     DivisionID:
       type: string
-      description: >-
-        Pismo generates the division ID when you use the [Create
+      description: >
+        The Pismo platform generates the division ID when you use the [Create
         division](ref:post-division-v2) endpoint.
+
+
+        This ID is immutable and cannot be changed.
       format: uuid
       example: 6f8a456a-8b1a-4022-a2f8-7612595330b5
     DivisionName:
@@ -3025,6 +3031,7 @@ components:
         - account_id
         - account_creation_datetime
         - division_code
+        - division_id
         - program_id
         - future_dated_credits_balance
         - future_dated_debits_balance
@@ -3035,6 +3042,8 @@ components:
           $ref: '#/components/schemas/AccountCreationDatetime'
         division_code:
           $ref: '#/components/schemas/DivisionCode'
+        division_id:
+          $ref: '#/components/schemas/DivisionID'
         program_id:
           $ref: '#/components/schemas/ProgramID2'
         future_dated_credits_balance:
@@ -7110,6 +7119,7 @@ paths:
                   value:
                     account_id: 184034550
                     division_code: division-7
+                    division_id: 6f8a456a-8b1a-4022-a2f8-7612595330b5
                     program_id: 10768
                     children:
                       - 10983
