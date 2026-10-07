@@ -516,6 +516,7 @@ components:
     CityCode:
       type: string
       minLength: 7
+      maxLength: 7
       description: >
 
         An <a href='https://www.ibge.gov.br/explica/codigos-dos-municipios.php'
