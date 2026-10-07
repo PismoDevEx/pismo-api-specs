@@ -2128,7 +2128,7 @@ components:
       properties:
         is_transmitter_withdrawal:
           type: boolean
-          description: Is this a withdrawal servicer flag
+          description: Is this a withdrawal servicer?
     pix.WithdrawalServicePointResponse:
       type: object
       properties:
@@ -2479,7 +2479,8 @@ components:
           example: Weekly payment
         continue_even_failed:
           type: boolean
-          description: Continue on failure?
+          description: Continue on failure?  Default is `false`.
+          default: false
           example: true
         execution_hour:
           type: string
@@ -2969,7 +2970,7 @@ components:
       example: '2024-11-14T17:54:40Z'
     Urgency:
       type: string
-      description: Urgency. Default is `HIGH`."
+      description: Urgency. Default is `HIGH`.
       enum:
         - NORMAL
         - HIGH
