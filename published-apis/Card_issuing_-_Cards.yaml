@@ -12,7 +12,7 @@ servers:
   - url: https://sandbox.pismolabs.io
     description: Sandbox API server for testing.
   - url: https://gw-pci.pismolabs.io
-    description: Sandbox PCI API server for testing
+    description: Sandbox PCI API server for testing.
 security:
   - BearerAuth: []
 tags:
@@ -512,7 +512,7 @@ components:
           $ref: '#/components/schemas/ReissuedCardID'
     Brand:
       type: string
-      description: Card network, i.e., Visa, Mastercard, ELO, RuPay, Private
+      description: Card network, i.e., Visa, Mastercard, ELO, RuPay, Private, GPN
       example: Visa
     BulkResponse:
       type: object
@@ -2500,6 +2500,7 @@ components:
         - ELO
         - RUPAY
         - PRIVATE
+        - GPN
     SequentialNumber:
       type: integer
       description: Embossing file sequential number
@@ -3733,7 +3734,7 @@ paths:
 
 
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment. 
+        environment.
       tags:
         - PCI
       requestBody:
@@ -5803,6 +5804,18 @@ paths:
         and PIN.
 
 
+        This endpoint uses AES256 with the GCM mode. AES-256 GCM is an
+        authenticated encryption mode that uses the Advanced Encryption Standard
+        (AES) with a 256-bit key in Galois/Counter Mode (GCM) to provide both
+        confidentiality and integrity for data. In AES, an initialization vector
+        (IV) is a fixed-size, non-secret randomized number used alongside the
+        secret key to jumpstart the encryption process. The caller is
+        responsible for generating the IV.  The Additional Authenticated Data
+        (AAD) parameter used is the organization/tenant ID. AAD, in AES-GCM, is
+        unencrypted data that is authenticated alongside the ciphertext to
+        ensure the message's integrity and authenticity.
+
+
         **Notes:**
 
          * To set up encryption for this endpoint, contact your Pismo representative.
@@ -5855,6 +5868,18 @@ paths:
 
         `UNNUMBERED` cards are created without a Pismo platform-generated PAN
         and PIN.
+
+
+        This endpoint uses AES256 with the GCM mode. AES-256 GCM is an
+        authenticated encryption mode that uses the Advanced Encryption Standard
+        (AES) with a 256-bit key in Galois/Counter Mode (GCM) to provide both
+        confidentiality and integrity for data. In AES, an initialization vector
+        (IV) is a fixed-size, non-secret randomized number used alongside the
+        secret key to jumpstart the encryption process. The caller is
+        responsible for generating the IV.  The Additional Authenticated Data
+        (AAD) parameter used is the organization/tenant ID. AAD, in AES-GCM, is
+        unencrypted data that is authenticated alongside the ciphertext to
+        ensure the message's integrity and authenticity.
 
 
         To set up encryption for this endpoint, contact your Pismo
@@ -6006,23 +6031,23 @@ paths:
     post:
       summary: Get nominal encrypted card data for embossing V2 [beta]
       description: >
-        Get encrypted card embossing data. 
+        Get encrypted card embossing data.
 
 
         Issuers who do their own embossing can use this endpoint to get a card's
         data, which needs to be encrypted as per regulations.
 
 
-        This endpoint uses AES256 with the GCM mode, and randomly generates the
-        initialization vector, returning it in the response. AES-256 GCM is an
+        This endpoint uses AES256 with the GCM mode. AES-256 GCM is an
         authenticated encryption mode that uses the Advanced Encryption Standard
         (AES) with a 256-bit key in Galois/Counter Mode (GCM) to provide both
-        confidentiality and integrity for data. The Additional Authenticated
-        Data (AAD) parameter used is the organization/tenant ID.  AAD, in
-        AES-GCM, is unencrypted data that is authenticated alongside the
-        ciphertext to ensure the message's integrity and authenticity. 
-
-
+        confidentiality and integrity for data. In AES, an initialization vector
+        (IV) is a fixed-size, non-secret randomized number used alongside the
+        secret key to jumpstart the encryption process. The caller is
+        responsible for generating the IV.  The Additional Authenticated Data
+        (AAD) parameter used is the organization/tenant ID. AAD, in AES-GCM, is
+        unencrypted data that is authenticated alongside the ciphertext to
+        ensure the message's integrity and authenticity.
 
 
         **To use this endpoint:**
@@ -6239,14 +6264,16 @@ paths:
         data, which needs to be encrypted as per regulations.
 
 
-        This endpoint uses AES256 with the GCM mode, and randomly generates the
-        initialization vector, returning it in the response. AES-256 GCM is an
+        This endpoint uses AES256 with the GCM mode. AES-256 GCM is an
         authenticated encryption mode that uses the Advanced Encryption Standard
         (AES) with a 256-bit key in Galois/Counter Mode (GCM) to provide both
-        confidentiality and integrity for data. The Additional Authenticated
-        Data (AAD) parameter used is the organization/tenant ID.  AAD, in
-        AES-GCM, is unencrypted data that is authenticated alongside the
-        ciphertext to ensure the message's integrity and authenticity. 
+        confidentiality and integrity for data. In AES, an initialization vector
+        (IV) is a fixed-size, non-secret randomized number used alongside the
+        secret key to jumpstart the encryption process. The caller is
+        responsible for generating the IV.  The Additional Authenticated Data
+        (AAD) parameter used is the organization/tenant ID. AAD, in AES-GCM, is
+        unencrypted data that is authenticated alongside the ciphertext to
+        ensure the message's integrity and authenticity.
 
 
         **To use this endpoint:**
@@ -6355,8 +6382,20 @@ paths:
         PAN](ref:post-v1-card-search-by-pan) endpoint.
 
 
+        This endpoint uses AES256 with the GCM mode. AES-256 GCM is an
+        authenticated encryption mode that uses the Advanced Encryption Standard
+        (AES) with a 256-bit key in Galois/Counter Mode (GCM) to provide both
+        confidentiality and integrity for data. In AES, an initialization vector
+        (IV) is a fixed-size, non-secret randomized number used alongside the
+        secret key to jumpstart the encryption process. The caller is
+        responsible for generating the IV.  The Additional Authenticated Data
+        (AAD) parameter must be the organization/tenant ID. AAD, in AES-GCM, is
+        unencrypted data that is authenticated alongside the ciphertext to
+        ensure the message's integrity and authenticity.
+
+
         **Note:** This is a PCI endpoint, use the https://gw-pci.pismolabs.io
-        environment. 
+        environment.
       operationId: post-v3-card-search-by-pan
       tags:
         - PCI
