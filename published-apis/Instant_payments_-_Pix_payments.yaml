@@ -1314,6 +1314,10 @@ components:
             assigns a value managed internally. If you provide a custom value,
             you take full responsibility for its correctness — an invalid or
             mismatched code may cause processing or reconciliation failures.
+
+
+            For more information, refer to the [Processing
+            code](doc:processing-codes-and-transaction-types) guide.
           maxLength: 6
           example: '123456'
     pix.OutTransferPSPaccount:
@@ -2658,9 +2662,13 @@ components:
           $ref: '#/components/schemas/Taxes'
         processing_code:
           type: string
-          description: >-
+          description: >
             Optional processing code propagated to the resulting Pix-out
             transfer. Up to 6 alphanumeric characters.
+
+
+            For more information, refer to the [Processing
+            codes](doc:processing-codes-and-transaction-types) guide.
           maxLength: 6
           example: '500001'
     scheduler.SchedulerRegisterResponse:
@@ -2836,7 +2844,7 @@ components:
     Taxes:
       type: object
       description: >
-        Only available in the EXT environment for direct participants. Tax
+        Only available in the test environment for direct participants. Tax
         information related to the transaction.
       properties:
         tax_identifier:
