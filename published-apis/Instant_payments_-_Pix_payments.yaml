@@ -1502,10 +1502,10 @@ components:
       properties:
         pix_change:
           type: boolean
-          description: Is Pix change transaction available flag
+          description: Is Pix change transaction available?
         pix_withdrawal:
           type: boolean
-          description: Is Pix withdrawal transaction available flag
+          description: Is Pix withdrawal transaction available?
     pix.QRCodeRequest:
       required:
         - emv
@@ -2479,7 +2479,7 @@ components:
           example: Weekly payment
         continue_even_failed:
           type: boolean
-          description: Continue if failed flag
+          description: Continue on failure?
           example: true
         execution_hour:
           type: string
@@ -2969,7 +2969,7 @@ components:
       example: '2024-11-14T17:54:40Z'
     Urgency:
       type: string
-      description: ' **REQUIRED** when `initiation_type` = `PAYMENT_INITIATOR`. Must be `NORMAL` in this case. Default is `HIGH`.'
+      description: Urgency. Default is `HIGH`."
       enum:
         - NORMAL
         - HIGH
