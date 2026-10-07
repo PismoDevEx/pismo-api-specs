@@ -2642,11 +2642,15 @@ components:
           $ref: '#/components/schemas/RemittanceInformation'
         transaction_identification:
           type: string
-          description: >
-            Transaction ID. **REQUIRED** if `initiation_type` =
-            `DYNAMIC_QR_CODE`. Cannot be passed if  `MANUAL` or `DICT`. If
-            `STATIC_QR_CODE` contains `transaction_identification`, it is
-            **REQUIRED** to pass it.
+          description: |
+            Transaction ID. 
+
+            **Notes:**
+              * **REQUIRED** if `initiation_type` = `DYNAMIC_QR_CODE`. 
+
+              * Do **NOT** pass if `initiation_type` = `MANUAL` or `DICT`. 
+
+              * If `STATIC_QR_CODE` contains `transaction_identification`, it is **REQUIRED** to pass it.
           example: 1a84daf6-a61b-4aba-919a-a9943db7102e
         flex_controls:
           $ref: '#/components/schemas/FlexControls'
