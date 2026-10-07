@@ -1878,13 +1878,11 @@ components:
       type: object
       description: >
         Signature information, including the digital signature over the request
-        data that <a
-        href="https://www.legislation.gov.uk/ukpga/2022/46/contents" that a PSTI
-        validates. A Prestadores de Serviços de Tecnologia da Informação (PSTI)
-        - Information and Technology Service Provider in English — is a
-        technology service provider that connects to the banking/financial
-        infrastructure (specifically the Rede do Sistema Financeiro Nacional –
-        RSFN) on participants' behalf.
+        data that a PSTI validates. A Prestadores de Serviços de Tecnologia da
+        Informação (PSTI) - Information and Technology Service Provider in
+        English — is a technology service provider that connects to the
+        banking/financial infrastructure (specifically the Rede do Sistema
+        Financeiro Nacional - RSFN) on participants' behalf.
 
 
         The signature here is the digital signature standard using a private
