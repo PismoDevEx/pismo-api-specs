@@ -408,6 +408,8 @@ components:
           $ref: '#/components/schemas/PaymentDateTime'
         transaction_identification:
           $ref: '#/components/schemas/TransactionIdentification'
+        city_code:
+          $ref: '#/components/schemas/CityCode'
     AuthorizationResponse:
       type: object
       properties:
@@ -513,10 +515,13 @@ components:
           $ref: '#/components/schemas/CancellatedAt'
     CityCode:
       type: string
-      description: >-
-        The <a href='https://www.ibge.gov.br/explica/codigos-dos-municipios.php'
-        target="_blank">IBGE</a> (Instituto Brasileiro de Geografia e
-        Estatística) city code.
+      minLength: 7
+      description: >
+
+        An <a href='https://www.ibge.gov.br/explica/codigos-dos-municipios.php'
+        target="_blank">IBGE</a> municipal code is a 7-digit numerical ID that
+        the Brazilian Institute of Geography and Statistics (IBGE) assigns to
+        uniquely ID each municipality and federal district in Brazil.
       example: '3550308'
     CancellatedAt:
       type: string
