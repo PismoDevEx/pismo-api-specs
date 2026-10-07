@@ -2804,7 +2804,9 @@ components:
           example: MONTHLY
         count:
           type: integer
-          description: Cycle count for generating new transactions
+          description: >-
+            Cycle count for generating new transactions. Each daily, weekly,
+            monthly, or yearly occurrence is counted as one cycle.
           example: 1
     SchedulerID:
       type: string
