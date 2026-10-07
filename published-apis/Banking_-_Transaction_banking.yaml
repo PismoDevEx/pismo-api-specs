@@ -9264,6 +9264,8 @@ paths:
                     earmarked_balance: 20
                     overdraft_limit: 0
                     value_dated_balance: 70
+                    held_funds: 20.55
+                    held_checks_balance: 20.55
                     restricted_funds: 0
                     legal_holds: 0
                     remunerative_interest_accrued: 1.23
@@ -9361,6 +9363,8 @@ paths:
                         uncleared_checks_balance: 0
                         overdraft_limit: 0
                         value_dated_balance: 70
+                        held_funds: 20.55
+                        held_checks_balance: 20.55
                         cycle_closing_datetime: '2023-01-21T23:00:00Z'
                         date: '2023-06-22'
                         business_date: '2023-06-22'
