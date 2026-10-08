@@ -364,10 +364,8 @@ components:
         - `WEEKS`: Multiplies `value` by 7. Example: `value=4` → 28 days.
 
         - `MONTHS`: Calculates calendar-month with end-of-month (EOM) clamping
-        when the target day does not exist. The maturity date falls on the same
-        day of the month as the start date. Example: `2026-09-22` + 3 months =
-        `2026-12-22`; `2024-01-31` + 1 month = `2024-02-29` (leap year) or
-        `2025-02-28` (non-leap year).
+        when the target day does not exist. Example: `2024-01-31` + 1 month =
+        `2024-02-29` (leap year) or `2025-02-28` (non-leap year).
 
         - `YEARS`: Calculates calendar-year, for example: `2024-02-29` + 1 year
         = `2025-02-28`. Note that there is no Feb 29 in 2025.
@@ -1102,7 +1100,7 @@ components:
           example: 0
         created_at:
           type: string
-          format: datetime
+          format: date-time
           description: Date and time the product was created
           example: '2024-01-23T13:26:25.000Z'
         funding_duration:
@@ -1858,12 +1856,12 @@ components:
       properties:
         created_at:
           type: string
-          format: datetime
+          format: date-time
           description: The moment when a product is created.
           example: '2024-01-23T13:26:25.000Z'
         updated_at:
           type: string
-          format: datetime
+          format: date-time
           description: The moment when a product is updated.
           example: '2024-01-23T13:26:25.000Z'
         interest_plan_id:
