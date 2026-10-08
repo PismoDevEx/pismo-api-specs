@@ -4091,6 +4091,11 @@ components:
           description: Device identifier
           minLength: 1
           maxLength: 48
+        devices_binding:
+          type: boolean
+          description: Is the token bound to the device?
+          example: true
+          default: false
         event_date_time:
           type: string
           format: date-time

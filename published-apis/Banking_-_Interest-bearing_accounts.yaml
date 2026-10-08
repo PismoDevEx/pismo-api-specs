@@ -116,6 +116,18 @@ components:
         type: string
         format: date-time
       example: '2024-01-30T10:33:01.000Z'
+    pageQuery:
+      description: >-
+        Page number to return (1-indexed). Values lower than `1` fall back to
+        `1`.
+      in: query
+      name: page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      example: 1
     perPageQuery:
       description: Number of items per page.
       in: query
@@ -352,8 +364,10 @@ components:
         - `WEEKS`: Multiplies `value` by 7. Example: `value=4` → 28 days.
 
         - `MONTHS`: Calculates calendar-month with end-of-month (EOM) clamping
-        when the target day does not exist. Example: `2024-01-31` + 1 month =
-        `2024-02-29` (leap year) or `2025-02-28` (non-leap year).
+        when the target day does not exist. The maturity date falls on the same
+        day of the month as the start date. Example: `2026-09-22` + 3 months =
+        `2026-12-22`; `2024-01-31` + 1 month = `2024-02-29` (leap year) or
+        `2025-02-28` (non-leap year).
 
         - `YEARS`: Calculates calendar-year, for example: `2024-02-29` + 1 year
         = `2025-02-28`. Note that there is no Feb 29 in 2025.
@@ -1572,6 +1586,39 @@ components:
             - $ref: '#/components/schemas/DepositProduct'
             - $ref: '#/components/schemas/SavingsAccountProduct'
           description: A collection of individual product objects.
+    ProductListV2:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          description: Current page number (1-indexed)
+          example: 2
+        per_page:
+          type: integer
+          description: Number of items per page. The default is `20`, maximum is `100`.
+          maximum: 100
+          minimum: 1
+          example: 10
+          default: 20
+        total_items:
+          type: integer
+          description: Total number of products matching the filters
+          example: 47
+        pages:
+          type: integer
+          description: >-
+            Total number of pages, calculated by dividing the total number of
+            items by the number of items per page and rounding up to the nearest
+            whole number. The minimum value is `1`.
+          example: 5
+        items:
+          allOf:
+            - $ref: '#/components/schemas/DepositProduct'
+            - $ref: '#/components/schemas/SavingsAccountProduct'
+          description: >-
+            A collection of product objects that follow the same structure as
+            the items returned by [List
+            products](ref:interest-bearing-v1-list-products).
     PatchProductRequest:
       type: object
       description: >
