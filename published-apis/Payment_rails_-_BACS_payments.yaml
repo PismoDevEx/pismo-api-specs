@@ -10,7 +10,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/bacs
-    description: Sandbox API server for testing
+    description: Sandbox API server for testing.
 tags:
   - name: BACS direct credit
   - name: BACS direct debit
@@ -219,19 +219,21 @@ components:
           type: boolean
           default: true
           description: >
-            Controls whether a return instruction is generated as part of the
-            cancellation.
+            Should a return instruction be generated as part of the
+            cancellation? Default is `true`.
 
-            - `true` (default) - cancel the transaction and return the funds to
-            the originating institution (debiting the beneficiary if the amount
-            was already credited).
 
-            - `false` - cancel the transaction only; no return instruction is
+            * `true`- Cancel the transaction and return the funds to the
+            originating institution (debiting the beneficiary if the amount was
+            already credited).
+
+
+            * `false` - Cancel the transaction only. No return instruction is
             created.
           example: true
         reason:
           type: string
-          description: >-
+          description: >
             Optional business reason for the cancellation (for example,
             `DAY2_RECALL`).
           example: DAY2_RECALL
@@ -244,7 +246,7 @@ components:
           $ref: '#/components/schemas/bacs_cancel.status'
         returnFunds:
           type: boolean
-          description: The effective returnFunds value applied to this cancellation.
+          description: Cancellation's effective return funds value
           example: true
     bacs_cancel.status:
       type: string
@@ -622,7 +624,7 @@ components:
           - These four specials only: - (hyphen), . (full stop), & (ampersand), / (solidus)
 
         **Reference-field rules on top of the character set**:
-          - 6–18 characters
+          - 6-18 characters
           - Must not begin with a space
           - Must not be all the same character (e.g. all zeros)
           - First 4 chars must not be DDIC (reserved for bank/indemnity-claim use)
@@ -866,26 +868,39 @@ components:
       maxLength: 18
       pattern: ^DDIC[A-Za-z0-9]{2,14}$
       description: >
-        Claim reference. Must begin with `DDIC` followed by 2–14 alphanumeric
-        characters (maximum length 18). The `DDIC` prefix is reserved by Bacs
-        for indemnity-claim references.
+        Claim reference. Must begin with `DDIC` followed by 2-6 alphanumeric
+        characters (maximum length 18). 
+
+
+        BACS reserves the `DDIC` prefix for indemnity-claim references.
       example: DDIC0001AB
     claim.reasonCode:
       type: string
       description: >
-        Bacs DDIC reason code identifying why the indemnity claim is being
-        raised, as defined by the Bacs DDIC scheme rules:
-          * `1`—The amount and/or date collected differs from the advance notice.
-          * `2`—No advance notice was received (or the payment was collected earlier than notified).
-          * `3`—The Direct Debit Instruction (DDI) is disputed / no valid mandate is held.
-          * `4`—The payer canceled the DDI directly with the service user.
-          * `5`—The account holder is deceased.
-          * `6`—The payer canceled the DDI with their bank.
-          * `7`—Claim raised at the service user's request.
-          * `8`—Service user name disputed / the payer does not recognise the collecting service user.
+        `bacs_out.RemittanceInformation`: Direct Debit Indemnity Claim (DDIC)
+        reason code. BACS DDIC scheme rules that indicate why the indemnity
+        claim is being raised:
+
+          * `1`— The amount and/or date collected differs from the advance notice.
+
+          * `2`— No advance notice was received (or the payment was collected earlier than notified).
+
+          * `3`— The Direct Debit Instruction (DDI) is disputed / no valid mandate is held.
+
+          * `4`— The payer canceled the DDI directly with the service user.
+
+          * `5`— The account holder is deceased.
+
+          * `6`— The payer canceled the DDI with their bank.
+
+          * `7`— Claim raised at the service user's request.
+
+          * `8`— Service user name disputed / the payer does not recognise the collecting service user.
 
         Conditional fields:
+
           * `3`—`processing_date` is required.
+
           * `7`—`contact_name` and `request_date` are required.
       enum:
         - '1'
@@ -900,10 +915,14 @@ components:
     claim.status:
       type: string
       description: |
-        DDIC claim / claim-reversal lifecycle status
+        DDIC claim / claim-reversal lifecycle status_reason:
+
           * `CREATED`—Claim persisted, pending submission to the scheme via Form3.
+
           * `PROCESSING`—Claim submitted and in flight through Form3 / the scheme.
+
           * `CONFIRMED`—Claim delivery confirmed by the scheme. Terminal state.
+
           * `FAILED`—Claim rejected or failed validation/submission. Terminal state.
       enum:
         - CREATED
@@ -913,7 +932,7 @@ components:
       example: CREATED
     claim.OriginalInstruction:
       type: object
-      description: The original Direct Debit Instruction (DDI) the claim relates to
+      description: Original Direct Debit Instruction (DDI) the claim relates to
       required:
         - clearing_id
         - reference
@@ -923,11 +942,11 @@ components:
         reference:
           type: string
           maxLength: 18
-          description: Reference of the original Direct Debit Instruction
+          description: Original Direct Debit Instruction reference
           example: MANDATE-REF-001
     claim.DisputedTransaction:
       type: object
-      description: A single disputed Direct Debit collection included in the claim
+      description: Single disputed Direct Debit collection included in the claim
       required:
         - amount
         - date
@@ -940,7 +959,7 @@ components:
         date:
           type: string
           format: date
-          description: Date of the disputed transaction. Format = YYYY-MM-DD.
+          description: Disputed transaction date. Format = YYYY-MM-DD.
           example: '2026-08-15'
     claim.CreateRequest:
       type: object
@@ -973,35 +992,43 @@ components:
         number_of_transactions:
           type: integer
           format: int32
+          maximum: 12
           description: >-
-            Optional. If provided (non-zero), it must equal the number of
+            If passed (non-zero), it must equal the number of
             `disputed_transactions`. Maximum 12.
           example: 1
         processing_date:
           type: string
           format: date
-          description: >-
-            Required when `reason_code` is `3`. Must not be set otherwise.
-            Format = YYYY-MM-DD.
+          description: >
+            **REQUIRED** when `reason_code` = `3`. Must **NOT** be passed
+            otherwise. Format = YYYY-MM-DD.
           example: '2026-08-20'
         contact_name:
           type: string
           maxLength: 51
-          description: >-
-            Service user contact name. Required when `reason_code` is `7`. Must
-            not be set otherwise. Must not be all spaces.
+          description: >
+            Service user contact name. 
+
+
+            **REQUIRED** if `reason_code` = `7`. Must **NOT** be passed
+            otherwise. 
+
+
+            Must not be all spaces.
           example: Jane Smith
         request_date:
           type: string
           format: date
-          description: >-
-            Service user request date. Required when `reason_code` is `7`. Must
-            not be set otherwise. Format = YYYY-MM-DD.
+          description: |
+            Service user request date. Format = YYYY-MM-DD.
+
+            **REQUIRED** when `reason_code` = `7`. Do not pass otherwise. 
           example: '2026-08-18'
         reason:
           type: string
           maxLength: 255
-          description: Optional free-text reason for the claim
+          description: Free-text reason for the claim
           example: Duplicate collection
     claim.CreateResponse:
       type: object
@@ -1012,7 +1039,7 @@ components:
           $ref: '#/components/schemas/claim.status'
     claim.RaiseReversalRequest:
       type: object
-      description: Payload to raise a reversal of a delivery-confirmed DDIC claim
+      description: Payload to raise a delivery-confirmed DDIC claim reversal.
       required:
         - original_instruction_id
       properties:
@@ -1020,14 +1047,11 @@ components:
           type: string
           maxLength: 20
           description: >-
-            DDIC Sequence Number of the claim being reversed. Forwarded to the
+            Claim being reversed's DDIC claim sequence number. Forwarded to the
             scheme.
           example: '0000000000001234'
         reason:
-          type: string
-          maxLength: 255
-          description: Optional free-text reason for the reversal
-          example: Claim raised in error
+          $ref: '#/components/schemas/reversalReason'
     claim.RaiseReversalResponse:
       type: object
       properties:
@@ -1090,10 +1114,7 @@ components:
           description: Request date. Format = YYYY-MM-DD.
           example: '2026-08-18'
         reason:
-          type: string
-          maxLength: 255
-          description: Reason
-          example: Duplicate collection
+          $ref: '#/components/schemas/reversalReason'
         created_at:
           $ref: '#/components/schemas/createdAtDateTime'
         updated_at:
@@ -1169,9 +1190,9 @@ components:
       description: |
         The reason for the return.
           * `account_closed` — The beneficiary account is no longer active.
-          * `account_currency_mismatch`—The payment currency does not match the account currency.
-          * `other`—A reason that the other specific codes do not cover.
-          * `cancelled_by_payer`—The payer requests cancellation of the payment.
+          * `account_currency_mismatch` — The payment currency does not match the account currency.
+          * `other` — A reason that the other specific codes do not cover.
+          * `cancelled_by_payer`— The payer requests cancellation of the payment.
       enum:
         - account_closed
         - account_currency_mismatch
@@ -1193,6 +1214,11 @@ components:
       type: string
       description: The ID of the new return transaction.
       example: 019e92ec-3362-7c54-9d17-89f5542a06e4
+    reversalReason:
+      type: string
+      maxLength: 255
+      description: Free-text reason for reversal
+      example: Claim raised in error
     role:
       type: string
       description: Transaction role
@@ -1759,7 +1785,7 @@ paths:
 
         A DDIC reclaims money that was incorrectly debited from a payer's
         account under the Direct Debit Guarantee. The claim is validated and
-        persisted, then submitted asynchronously to the Bacs scheme via Form3.
+        persisted, then submitted asynchronously to the BACS scheme via Form3.
 
 
         **Notes:**
@@ -1768,7 +1794,7 @@ paths:
 
           * The claim is persisted with `status` = `CREATED` and submitted asynchronously. Creation itself returns immediately. Subsequent status transitions generate a [BACS direct debit claim status changed](https://developers.pismo.io/events/docs/direct-debit-claim-status-change-1) event (for example `PROCESSING`, `CONFIRMED`, `FAILED`).
 
-          * `reason_code` must be a Bacs DDIC reason code (`1`–`8`). Code `3` also requires `processing_date`. Code `7` also requires `contact_name` and `request_date`.
+          * `reason_code` must be a Bacs DDIC reason code (`1`-`8`). Code `3` also requires `processing_date`. Code `7` also requires `contact_name` and `request_date`.
       operationId: post-create-claim
       tags:
         - BACS direct debit
@@ -1856,7 +1882,10 @@ paths:
       summary: List BACS Direct Debit indemnity claims [beta]
       description: >
         List DDIC claims for an account. The account is parsed from the account
-        token. Claim reversals are not returned by this endpoint.
+        token. 
+
+
+        This endpoint does not return claim reversals.
       operationId: get-bacs-claim-list
       tags:
         - BACS direct debit
@@ -1919,15 +1948,15 @@ paths:
                     message: Internal error
   /v1/payments/bacs/directdebit/claims/reversal/{id}:
     post:
-      summary: Reverse Bacs Direct Debit indemnity claim [beta]
+      summary: Reverse BACS Direct Debit indemnity claim [beta]
       description: >
 
-        Reverse a previously raised Bacs Direct Debit indemnity claim.
+        Reverse a previously raised BACS Direct Debit indemnity claim.
 
 
         Only a claim that has been delivery-confirmed (`status` = `CONFIRMED`)
         can be reversed. The reversal is persisted with `status` = `CREATED` and
-        submitted asynchronously to the Bacs scheme via Form3.
+        submitted asynchronously to the BACS scheme via Form3.
 
 
         **Notes:**
@@ -2322,9 +2351,9 @@ paths:
         flag (default `true`) controls whether the funds are returned to the
         originating institution:
 
-          * `returnFunds` = `true` - cancel the transaction and generate a return instruction (debiting the beneficiary if the amount was already credited).
+          * `returnFunds` = `true` - Cancel the transaction and generate a return instruction (debiting the beneficiary if the amount was already credited).
 
-          * `returnFunds` = `false` - cancel the transaction only; no return instruction is created.
+          * `returnFunds` = `false` - Cancel the transaction only; no return instruction is created.
 
         In all cases the transaction is removed from the Day 3 settlement queue
         and marked `CANCELLED`.
@@ -2342,8 +2371,8 @@ paths:
         - $ref: '#/components/parameters/idPath'
       requestBody:
         description: >-
-          Optional cancellation options. When omitted, `returnFunds` defaults to
-          `true`.
+          Optional cancellation options. When not passed, `returnFunds` defaults
+          to `true`.
         content:
           application/json:
             schema:
