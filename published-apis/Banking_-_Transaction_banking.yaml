@@ -17539,6 +17539,18 @@ paths:
                   value:
                     code: WRFO0017
                     message: Cannot increase a restriction with zero held amount
+                Increase window expired:
+                  value:
+                    code: WRFO0021
+                    message: >-
+                      Cannot increase a restriction after
+                      increase_datetime_limit has passed
+                Increase exceeds requested amount:
+                  value:
+                    code: WRFO0022
+                    message: >-
+                      Increase would make the held amount exceed the requested
+                      amount
         '429':
           description: Too many requests
           content:
