@@ -71,7 +71,7 @@ components:
       in: query
       description: >
         Begin creation date for scheduler executions filter. Format =
-        yyyy-mm-dd.
+        YYYY-MM-DD.
       schema:
         type: string
       example: '2023-04-12'
@@ -102,7 +102,7 @@ components:
       name: endDate
       in: query
       description: |
-        End creation date for scheduler executions filter. Format = yyyy-mm-dd.
+        End creation date for scheduler executions filter. Format = YYYY-MM-DD.
       schema:
         type: string
       example: '2023-04-12'
@@ -461,7 +461,7 @@ components:
           example: '2020-09-15T19:39:54.013Z'
         due_date:
           type: string
-          description: Due date, format = yyyy-mm-dd
+          description: Due date, format = YYYY-MM-DD
           example: '2020-09-15'
         expiration_datetime:
           type: string
@@ -663,7 +663,7 @@ components:
     FirstPaymentDate:
       type: string
       format: datetime
-      description: First charge/payment date. Format = yyyy-mm-dd
+      description: First charge/payment date. Format = YYYY-MM-DD
       example: '2025-04-25'
     FlexControls:
       type: object
@@ -824,7 +824,7 @@ components:
     LastPaymentDate:
       type: string
       format: datetime
-      description: Last charge/payment date. Format = yyyy-mm-dd
+      description: Last charge/payment date. Format = YYYY-MM-DD
       example: '2026-06-10'
     Metadata:
       type: object
@@ -1241,7 +1241,7 @@ components:
             Transaction ID is **REQUIRED** in the following circumstances:
 
 
-            *  If `initiation_type` = `DYNAMIC_QRCODE` . 
+            *  If `initiation_type` = `DYNAMIC_QRCODE`. 
 
 
             * `STATIC_QRCODE` contains the transaction ID
@@ -1528,7 +1528,7 @@ components:
         desired_payment_date:
           type: string
           description: >
-            Desired payment date, format = yyyy-mm-dd
+            Desired payment date, format = YYYY-MM-DD
 
 
             This field is used to calculate fees and discounts on QR codes with
@@ -2307,7 +2307,7 @@ components:
         Date to stop the scheduled payment (maximum = 1 year). 
 
 
-        Format = yyyy-mm-dd. 
+        Format = YYYY-MM-DD. 
 
 
         **REQUIRED** for `type` = `ONCE` or `RECURRING`. 
@@ -2322,7 +2322,7 @@ components:
         Date to start the scheduled payment. 
 
 
-        Format = yyyy-mm-dd. 
+        Format = YYYY-MM-DD 
 
 
         Transfers are made at midnight on this date and, if recurring, every
@@ -2457,11 +2457,11 @@ components:
           $ref: '#/components/schemas/IsDeviceRegistered'
         end_date:
           type: string
-          description: End date, format = yyyy-mm-dd
+          description: End date, format = YYYY-MM-DD
           example: '2025-11-14'
         start_date:
           type: string
-          description: Start date, format = yyyy-mm-dd
+          description: Start date, format = YYYY-MM-DD
           example: '2024-11-14'
         scheduler_id:
           $ref: '#/components/schemas/SchedulerID'
@@ -2477,7 +2477,7 @@ components:
           example: Weekly payment
         continue_even_failed:
           type: boolean
-          description: Continue on failure?  Default is `false`.
+          description: Continue on failure?
           default: false
           example: true
         execution_hour:
@@ -2569,7 +2569,7 @@ components:
       properties:
         due_date:
           type: string
-          description: Date on which the execution runs. Format = yyyy-mm-dd.
+          description: Date on which the execution runs. Format = YYYY-MM-DD.
           example: '2026-10-15'
         end_to_end_id:
           $ref: '#/components/schemas/EndToEndID'
@@ -5268,7 +5268,7 @@ paths:
         To create a preset payment: set `type` = `PRESET` and provide the full
         list of executions in `scheduler_details.executions`. 
 
-        Each item has a `due_date` (`yyyy-mm-dd`) and a pre-established
+        Each item has a `due_date` (`YYYY-MM-DD`) and a pre-established
         `end_to_end_id`. From 1 to 60 executions are supported and are all
         created upfront in a single operation, so `start_scheduler_date`,
         `end_scheduler_date` and `cycle` must **NOT** be passed for this type —
