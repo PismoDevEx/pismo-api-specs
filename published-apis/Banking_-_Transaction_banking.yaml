@@ -4817,6 +4817,7 @@ components:
       example: '219248'
     PublicKeyExpiresAt:
       type: string
+      format: date-time
       description: >-
         Expiration date and time of the public key. If not provided, it is set
         to 6 months from the date of submission.
@@ -4826,7 +4827,7 @@ components:
       description: >-
         ID of the public key. Only digits, letters, hyphens, and underscores are
         allowed, and cannot exceed 60 characters.
-      maximum: 60
+      maxLength: 60
       example: b6cdccc4-f6bf-4218-9e5e-7fb8f66008e3
     PutUploadBulkFile:
       type: string
