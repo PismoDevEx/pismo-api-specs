@@ -32,8 +32,8 @@ components:
       schema:
         type: string
       description: >
-        Account token - token encoded with a Pismo account ID. Tokens can expire
-        quickly, which can result in a <b>401 Unauthorized</b> message
+        Account token - access token encoded with a Pismo account ID. Tokens can
+        expire quickly, which can result in a <b>401 Unauthorized</b> message
       required: true
     beginDateQuery:
       name: beginDate
@@ -1880,8 +1880,11 @@ paths:
     get:
       summary: List BACS Direct Debit indemnity claims [beta]
       description: >
-        List DDIC claims for an account. The account is parsed from the account
-        token. 
+        List DDIC claims for an account. 
+
+
+        This endpoint takes an account token - an access token encoded with a
+        Pismo account ID.  The account is parsed from the token. 
 
 
         This endpoint does not return claim reversals.
@@ -1962,7 +1965,7 @@ paths:
 
           * The operation is idempotent via the `Idempotency-key` header.
 
-          * Subsequent status transitions generate a [BACS direct debit claim reversal status changed](https://developers.pismo.io/events/docs/direct-debit-claim-reversal-status-change-1) event (for example `PROCESSING`, `CONFIRMED`, `FAILED`).
+          * Subsequent status transitions generate a [BACS direct debit claim reversal status changed](https://developers.pismo.io/events/docs/direct-debit-claim-reversal-status-change-1) event.
       operationId: post-raise-claim-reversal
       tags:
         - BACS direct debit
@@ -3229,8 +3232,11 @@ paths:
     get:
       summary: List BACS direct debit mandates [beta]
       description: >
-        List BACS direct debit mandates for an account. The account is parsed
-        from the account token.
+        List BACS direct debit mandates for an account. 
+
+
+        This endpoint takes an account token - an access token encoded with a
+        Pismo account ID.  The account is parsed from the token.
       operationId: get-bacs-mandate-list
       tags:
         - BACS direct debit
@@ -3413,8 +3419,11 @@ paths:
     get:
       summary: List BACS direct credit transactions [beta]
       description: >
-        List BACS direct credit transactions for an account. The account is
-        parsed from the account token.
+        List BACS direct credit transactions for an account.
+
+
+        This endpoint takes an account token - an access token encoded with a
+        Pismo account ID.  The account is parsed from the token.
       operationId: get-bacs-directcredit-list
       tags:
         - BACS direct credit
