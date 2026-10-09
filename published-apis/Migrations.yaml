@@ -3366,13 +3366,12 @@ components:
         soft_descriptor:
           type: string
           description: >
-            Human-readable description that identifies the transaction. For an
-            installment purchase, this usually is the **merchant name**, the
-            **city/state**, and the **installment number**. For example, the
-            value `Wellmart NYC 2/4` indicates the merchant is `Wellmart`, the
-            transaction was made in `New York City`, and it is installment `2`
-            of `4`.
-          maxLength: 25
+            Identifies the transaction. For an installment purchase, this
+            usually is the **merchant name**, the **city/state**, and the
+            **installment number**. For example, the value `Wellmart NYC 2/4`
+            indicates the merchant is `Wellmart`, the transaction was made in
+            `New York City`, and it is installment `2` of `4`.
+          maxLength: 100
           example: Wellmart NYC 2/4
         type:
           type: string
