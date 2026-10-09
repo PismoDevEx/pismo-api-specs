@@ -1779,7 +1779,7 @@ paths:
       summary: Raise BACS Direct Debit indemnity claim [beta]
       description: >
 
-        Create a Bacs Direct Debit Indemnity Claim (DDIC).
+        Create a BACS Direct Debit Indemnity Claim (DDIC).
 
 
         A DDIC reclaims money that was incorrectly debited from a payer's
@@ -1793,7 +1793,7 @@ paths:
 
           * The claim is persisted with `status` = `CREATED` and submitted asynchronously. Creation itself returns immediately. 
           
-          * Subsequent status transitions generate a [BACS direct debit claim status changed](https://developers.pismo.io/events/docs/direct-debit-claim-status-change-1) event.
+          * Subsequent status transitions generate a [BACS direct debit claim status changed](https://developers.pismo.io/events/docs/bacs-direct-debit-claim-status-change-1) event.
       operationId: post-create-claim
       tags:
         - BACS direct debit
@@ -1965,7 +1965,8 @@ paths:
 
           * The operation is idempotent via the `Idempotency-key` header.
 
-          * Subsequent status transitions generate a [BACS direct debit claim reversal status changed](https://developers.pismo.io/events/docs/direct-debit-claim-reversal-status-change-1) event.
+          * Subsequent status transitions generate a [BACS direct debit claim reversal status changed](https://developers.pismo.io/events/docs/bacs-direct-debit-claim-reversal-status-change-1) event.
+          
       operationId: post-raise-claim-reversal
       tags:
         - BACS direct debit
