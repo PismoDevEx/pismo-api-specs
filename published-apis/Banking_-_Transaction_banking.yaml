@@ -892,7 +892,7 @@ components:
     AccountStatusReasonExternalID:
       type: string
       minLength: 1
-      maximum: 120
+      maxLength: 120
       description: |
         External reason ID specifying account restrictions<br>
         `minimum: 1`
@@ -1075,7 +1075,7 @@ components:
     BulkID:
       type: string
       description: Bulk settlement request ID provided by the requester.
-      maximum: 60
+      maxLength: 60
       pattern: ^[a-zA-Z0-9-]+$
       example: 0a50c88a-ade8-4bcc-a639-9a0b0f11e244
     BulkSettlementRequest:
@@ -1122,7 +1122,7 @@ components:
             division](https://developers.pismo.io/pismo-docs/reference/post-division-v2)
             endpoint for which payments are enabled or disabled. It must comply
             with the rule `^[a-zA-Z0-9-]+$`.
-          maximum: 36
+          maxLength: 36
           pattern: ^[a-zA-Z0-9-]+$
           example: my-division-code
         business_date:
@@ -2147,14 +2147,14 @@ components:
       properties:
         start:
           type: string
-          format: datetime
+          format: date-time
           description: >-
             The date and time when the configuration becomes valid. Format =
             `yyyy-mm-dd:hr:mm:ss`.
           example: '2023-04-01T22:10:00Z'
         end:
           type: string
-          format: datetime
+          format: date-time
           description: >-
             The date and time when the configuration ends. Format =
             `yyyy-mm-dd:hr:mm:ss`.
@@ -2359,7 +2359,7 @@ components:
         Division code registered in the [Create
         division](https://developers.pismo.io/pismo-docs/reference/post-division-v2)
         endpoint.
-      maximum: 36
+      maxLength: 36
       example: US
     DivisionDescription:
       type: string
@@ -2381,7 +2381,7 @@ components:
       type: string
       description: Division name
       example: NY
-      maximum: 40
+      maxLength: 40
     DivisionResponseV2:
       type: object
       properties:
@@ -3323,7 +3323,7 @@ components:
       example: 50
     InternalOperationCreatedAt:
       type: string
-      format: datetime
+      format: date-time
       description: |
         Internal operation creation time. Format = yyyy-mm-dd:hr:mm:ss.
       example: '2022-02-10T15:00:00Z'
@@ -3427,7 +3427,7 @@ components:
         hierarchy](https://developers.pismo.io/pismo-docs/reference/post-hierarchies)
         endpoint.
       format: uuid
-      maximum: 36
+      maxLength: 36
       example: 9bb95e15-c0e6-4c84-b644-350c76a83358
     LevelIdGeneratedInternally:
       type: string
@@ -4782,7 +4782,7 @@ components:
       example: 2222
     ProgramIDs:
       type: array
-      maximum: 100
+      maxItems: 100
       description: >
         List of allowed program IDs. The programs must belong to the
         organization.
@@ -7818,7 +7818,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/401Unauthorized'
+                $ref: '#/components/schemas/ErrorResponse'
               examples:
                 Account not authorized:
                   value:
@@ -17539,18 +17539,6 @@ paths:
                   value:
                     code: WRFO0017
                     message: Cannot increase a restriction with zero held amount
-                Increase window expired:
-                  value:
-                    code: WRFO0021
-                    message: >-
-                      Cannot increase a restriction after
-                      increase_datetime_limit has passed
-                Increase exceeds requested amount:
-                  value:
-                    code: WRFO0022
-                    message: >-
-                      Increase would make the held amount exceed the requested
-                      amount
         '429':
           description: Too many requests
           content:
