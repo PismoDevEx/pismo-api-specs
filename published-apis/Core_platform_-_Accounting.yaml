@@ -25,11 +25,11 @@ components:
         description:
           type: string
           description: Description of the accounting account
-          maximum: 100
+          maxLength: 100
         account:
           type: string
           description: Accounting account number
-          maximum: 50
+          maxLength: 50
         program_id:
           type: integer
           format: int64
@@ -61,13 +61,13 @@ components:
           description: >-
             Description that helps to identify the accounting account.  Can be
             `0` or any value if there's no corresponding account.
-          maximum: 100
+          maxLength: 100
         account:
           type: string
           description: >-
             Accounting account number.  Can be `0` or any value if there's no
             corresponding account.
-          maximum: 50
+          maxLength: 50
       example:
         description: SAMPLE ACCOUNT
         account: 123123132-x
@@ -79,7 +79,7 @@ components:
         description:
           type: string
           description: Description that helps to identify the accounting account
-          maximum: 100
+          maxLength: 100
       example:
         description: SAMPLE ACCOUNT
     AccountingAccountPost:
@@ -94,13 +94,13 @@ components:
           description: >-
             Description that helps to identify the accounting account.  Can be
             `0` or any value if there's no corresponding account.
-          maximum: 100
+          maxLength: 100
         account:
           type: string
           description: >-
             Accounting account number. Can be `0` or any value if there's no
             corresponding account.
-          maximum: 50
+          maxLength: 50
         program_id:
           type: integer
           format: int64
@@ -149,7 +149,7 @@ components:
             Tracking ID in UUID format, optional idempotence key. You can use
             [Online UUID Generator](https://www.uuidgenerator.net/version4) to
             generate a random UUID value.
-          maximum: 50
+          maxLength: 50
         transaction_id:
           type: integer
           format: int64
@@ -548,6 +548,7 @@ components:
             - amount-dueDate-cancelment
             - amount-interest-iof
             - amount-interest-iof-dueDate
+            - amount-principal
             - amount-reversal
             - contractAmount
             - daily-interest
@@ -687,7 +688,7 @@ components:
             details of how much of that payment corresponds to late interest.
         processing_code:
           type: string
-          maximum: 6
+          maxLength: 6
           description: >-
             Processint code. When the script is based on a processing code, this
             field is **REQUIRED**.
@@ -927,19 +928,19 @@ components:
       properties:
         debit_org:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of your Org’s debit accounting account
         credit_org:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of your Org’s credit accounting account
         debit_cost:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of the cost center of the debit accounting account
         credit_cost:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of the cost center of the credit accounting account
         deactivated_at:
           type: string
@@ -963,19 +964,19 @@ components:
       properties:
         debit_org:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of your Org’s debit accounting account
         credit_org:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of your Org’s credit accounting account
         debit_cost:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of the cost center of the debit accounting account
         credit_cost:
           type: string
-          maximum: 50
+          maxLength: 50
           description: Number of the cost center of the credit accounting account
       example:
         debit_org: '999999'
@@ -1009,7 +1010,7 @@ components:
         responsible: John Doe
     EntryTypeDescription:
       type: string
-      maximum: 250
+      maxLength: 250
       description: Entry type description.
       example: CREDIT
     EntryTypeGetById:
@@ -1072,7 +1073,7 @@ components:
           $ref: '#/components/schemas/HistoryResponsible'
     EntryTypeType:
       type: string
-      maximum: 100
+      maxLength: 100
       description: >
         Set the entry type:
 
@@ -1098,7 +1099,7 @@ components:
           description: Event type ID
         description:
           type: string
-          maximum: 100
+          maxLength: 100
           description: Event type description
       example:
         id: 101
@@ -1138,12 +1139,12 @@ components:
           example: '2021-10-10T10:10:00Z'
     HistoryReason:
       type: string
-      maximum: 250
+      maxLength: 250
       description: Reason for the operation.
       example: Creation of a new entry type configuration.
     HistoryResponsible:
       type: string
-      maximum: 100
+      maxLength: 100
       description: User name or ID of the person performing the operation.
       example: John Doe
     OrgID:
