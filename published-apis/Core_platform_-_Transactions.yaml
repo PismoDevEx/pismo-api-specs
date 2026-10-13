@@ -57,18 +57,20 @@ components:
     eventDateStart:
       in: query
       name: eventDateStart
-      description: Event date period start
+      description: >-
+        Event date period start in `date` (YYYY-MM-DD) or `date-time`
+        (YYYY-MM-DDThh:mm:ssZ) format
       schema:
         type: string
-        format: date or date-time
         example: '2021-06-26T12:03:04Z'
     eventDateEnd:
       in: query
       name: eventDateEnd
-      description: Event date period end
+      description: >-
+        Event date period end in `date` (YYYY-MM-DD) or `date-time`
+        (YYYY-MM-DDThh:mm:ssZ) format
       schema:
         type: string
-        format: date or date-time
         example: '2021-06-26T12:03:04Z'
     numberOfLatestTransactions:
       in: query
@@ -496,7 +498,7 @@ components:
           $ref: '#/components/schemas/TransactionTypeId'
         processing_code:
           type: string
-          maximum: 6
+          maxLength: 6
           description: Processing code that issues the transaction type.
         key:
           type: string
@@ -520,7 +522,7 @@ components:
             - OTHER
         custom_key:
           type: string
-          maximum: 200
+          maxLength: 200
           description: >-
             The customized relation between transaction type and processing
             code. This field is tied to the type or ID of a custom fee model
@@ -559,7 +561,7 @@ components:
             - OTHER
         custom_key:
           type: string
-          maximum: 200
+          maxLength: 200
           description: >-
             Sets a customized relation between transaction type and processing
             code. This field is tied to the type or ID of a custom fee model
@@ -580,7 +582,7 @@ components:
             $ref: '#/components/schemas/TransactionTypeId'
           processing_code:
             type: string
-            maximum: 6
+            maxLength: 6
             description: Processing code that issues the transaction type
           key:
             type: string
@@ -605,7 +607,7 @@ components:
               - OTHER
           custom_key:
             type: string
-            maximum: 200
+            maxLength: 200
             description: >-
               Sets a customized relation between transaction type and processing
               code, usually to configure fees, taxes, or other charges. REQUIRED
