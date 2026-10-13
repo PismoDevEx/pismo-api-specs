@@ -2039,17 +2039,20 @@ components:
           type: string
           description: Attachment Type
         program_id:
-          type: string
-          nullable: true
-          description: Program ID when attachment_type is PROGRAM
+          type:
+            - string
+            - 'null'
+          description: Program ID when `attachment_type` is `PROGRAM`
         account_id:
-          type: string
-          nullable: true
-          description: Account ID when attachment_type is ACCOUNT
+          type:
+            - string
+            - 'null'
+          description: Account ID when `attachment_type` is `ACCOUNT`
         org_id:
-          type: string
-          nullable: true
-          description: Organization ID when attachment_type is TENANT
+          type:
+            - string
+            - 'null'
+          description: Organization ID when `attachment_type` is `TENANT`
   securitySchemes:
     bearerAuth:
       type: http
