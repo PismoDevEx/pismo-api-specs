@@ -341,10 +341,49 @@ components:
     ProgramIDquery:
       in: query
       name: programId
-      description: Pismo program ID filter
+      deprecated: true
+      description: |
+        **Deprecated** - use `program_ids` instead. Filters by a single Pismo
+        program ID. Mutually exclusive with `program_ids`: sending both returns
+        400.
       required: false
       schema:
         type: integer
+    ProgramIDsquery:
+      in: query
+      name: program_ids
+      description: >
+        Filters by one or more Pismo program IDs. **Recommended** over the
+
+        deprecated `programId` parameter.
+
+
+        - **Format:** comma-separated list, e.g. `program_ids=1,2,3`. Repeating
+          the parameter (`program_ids=1&program_ids=2`) is also accepted.
+        - **Values:** each ID must be a positive integer; a value `<= 0` returns
+          `400 RCAPI-INVALID-QUERY-PARAM`.
+        - **Duplicates:** IDs should be distinct; any repeated IDs are
+        tolerated,
+          de-duplicated server-side, and do not count toward the maximum.
+        - **Maximum:** up to 20 distinct program IDs per request. Sending more
+          than 20 returns `400 RCAPI-INVALID-QUERY-PARAM`.
+        - **Mutual exclusivity:** cannot be combined with `programId`; sending
+          both returns `400 RCAPI-INVALID-QUERY-PARAM`.
+      required: false
+      schema:
+        type: array
+        minItems: 1
+        maxItems: 20
+        uniqueItems: true
+        items:
+          type: integer
+          minimum: 1
+        example:
+          - 1
+          - 2
+          - 3
+      style: form
+      explode: false
     SimulationConfigIDpath:
       in: path
       name: simulation_config_id
@@ -399,6 +438,23 @@ components:
           type: string
           description: Error description
           example: The request payload is invalid
+    ValidationErrorResponse:
+      type: object
+      required:
+        - error_code
+        - message
+        - errors
+      properties:
+        error_code:
+          type: string
+          description: Error code ID
+          example: RCAPI-VALIDATION-ERROR
+        message:
+          type: string
+          description: Error description
+          example: Request validation failed
+        errors:
+          $ref: '#/components/schemas/HTTPErrors'
     CalculationMethodSubset:
       type: string
       description: Calculation method.
@@ -585,12 +641,7 @@ components:
           type: string
           example: sellos
         precedence:
-          description: >
-            Calculation order. All fees with the same precedence number are
-            calculated in the same iteration. The next iteration uses the
-            previous output as its calculation basis.
-          type: integer
-          example: 0
+          $ref: '#/components/schemas/Precedence'
         deduct_from_transaction_value:
           description: |
             Should fee be deducted from transaction value flag. Default=`false`.
@@ -619,6 +670,7 @@ components:
             - $ref: '#/components/schemas/FeeCalculationAging'
             - $ref: '#/components/schemas/FeeCalculationIof'
             - $ref: '#/components/schemas/FeeCalculationConstantRepayment'
+            - $ref: '#/components/schemas/FeeCalculationBuiltIn'
         filters:
           $ref: '#/components/schemas/Filters'
         additional_fees:
@@ -740,25 +792,27 @@ components:
       type: object
       required:
         - calculation_method
+        - fees
         - interest_rate
         - precedence
-        - fees
-        - calculation
       properties:
-        calculation:
-          type: object
-          properties:
-            calculation_method:
-              type: string
-              description: Calculation method - `EQUAL_INSTALLMENTS`.
-              enum:
-                - EQUAL_INSTALLMENTS
-            day_count_method:
-              $ref: '#/components/schemas/DayCountMethod'
-            interest_rate:
-              $ref: '#/components/schemas/InterestRateWithGracePeriod'
-            fees:
-              $ref: '#/components/schemas/fees'
+        calculation_method:
+          type: string
+          description: Calculation method - `EQUAL_INSTALLMENTS`.
+          enum:
+            - EQUAL_INSTALLMENTS
+        fees:
+          $ref: '#/components/schemas/fees'
+        interest_rate:
+          $ref: '#/components/schemas/InterestRateWithGracePeriod'
+        precedence:
+          $ref: '#/components/schemas/Precedence'
+        day_count_method:
+          type: string
+          enum:
+            - MONTH_30_YEAR_360
+            - MONTH_ACTUAL_YEAR_365
+          example: MONTH_30_YEAR_360
     FeeCalculationCompoundInterest:
       type: object
       required:
@@ -874,6 +928,36 @@ components:
         value:
           type: number
           description: Percentage amount as decimal field.
+          example: 1.3
+    FeeCalculationBuiltIn:
+      type: object
+      description: >
+        Fee calculation for `BUILT_IN` model. A `BUILT_IN` fee is always applied
+        before any other fee. The percentage defined in `value` is applied to
+        the principal amount and the resulting fee amount is incorporated into
+        the principal, so all subsequent fees are calculated over the principal
+        plus the `BUILT_IN` fee.
+
+
+        A `BUILT_IN` fee can only be added if its `precedence` is lower than the
+        `precedence` of every other fee in the same fee model that shares at
+        least one `processing_code` with it. If any of those fees has an equal
+        or lower `precedence`, the API returns `400 Bad Request` with an invalid
+        payload error listing the violated `field` and `violation`.
+      required:
+        - calculation_method
+        - value
+      properties:
+        calculation_method:
+          type: string
+          description: >-
+            Calculation method - `BUILT_IN`. Always applied before any other
+            fee, and its amount is incorporated into the principal.
+          enum:
+            - BUILT_IN
+        value:
+          type: number
+          description: Percentage amount as decimal field, applied to the principal amount.
           example: 1.3
     FeeCalculationConstantRepayment:
       type: object
@@ -1508,6 +1592,13 @@ components:
           type: string
           description: Plan configuration description
           example: Electronic
+    Precedence:
+      description: >
+        Calculation order. All fees with the same precedence number are
+        calculated in the same iteration. The next iteration uses the previous
+        output as its calculation basis.
+      type: integer
+      example: 0
     ProgramID:
       type: number
       description: Pismo program ID
@@ -1977,6 +2068,48 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/BadRequestError'
+    400FeeModelInvalidPayload:
+      description: >
+        Bad request - the fee model payload is invalid. The response body
+        depends on the validation that failed:
+
+        * Schema validation (body that is not valid JSON, missing field, wrong
+        type, invalid calculation structure) - list with each invalid field and
+        the violated rule.
+
+        * Business rule validation across fees (`RCAPI-VALIDATION-ERROR`) -
+        error object with the list of invalid fields and violated rules in
+        `errors`.
+
+        * Request that cannot be bound, or invalid `model_id` on update
+        (`RCAPI-INVALID-REQUEST-PAYLOAD`) - error object with code and message.
+      content:
+        application/json:
+          schema:
+            anyOf:
+              - $ref: '#/components/schemas/HTTPErrors'
+              - $ref: '#/components/schemas/ValidationErrorResponse'
+              - $ref: '#/components/schemas/BadRequestError'
+          examples:
+            Schema validation:
+              value:
+                - field: body.fees.0.calculation
+                  violation: Must validate one and only one schema (oneOf)
+                - field: body.fees.0.calculation.rules.0
+                  violation: Must validate one and only one schema (oneOf)
+                - field: body.fees.0.calculation.rules.0.calculation
+                  violation: value is required
+            Business rule validation:
+              value:
+                error_code: RCAPI-VALIDATION-ERROR
+                message: Request validation failed
+                errors:
+                  - field: body.fees[1].filters.amount_range.minimum
+                    violation: Fees contain overlapping amount ranges
+            Invalid request payload:
+              value:
+                error_code: RCAPI-INVALID-REQUEST-PAYLOAD
+                message: The request payload is invalid
     401Unauthorized:
       description: InvalidToken
       content:
@@ -2548,6 +2681,23 @@ paths:
                             calculation_method: PERCENTAGE
                             value: 0.5
                           type: selios
+              Calculation method Built In:
+                value:
+                  model_description: Fee model applied to org
+                  fees:
+                    - description: Fee wdl
+                      type: dom
+                      id: dom_wdl
+                      deduct_from_transaction_value: false
+                      calculation_basis: PRINCIPAL_AMOUNT
+                      precedence: 0
+                      calculation:
+                        calculation_method: BUILT_IN
+                        value: 1.3
+                      filters:
+                        processing_codes:
+                          - '02'
+                          - '0040'
               Calculation method Percentage with all filters filled:
                 summary: Calculation method Percentage with all filters filled
                 description: |
@@ -2581,7 +2731,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ModelAttachmentResponse'
         '400':
-          $ref: '#/components/responses/400BadRequestError'
+          $ref: '#/components/responses/400FeeModelInvalidPayload'
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '500':
@@ -2652,7 +2802,7 @@ paths:
         '200':
           description: OK
         '400':
-          $ref: '#/components/responses/400BadRequestError'
+          $ref: '#/components/responses/400FeeModelInvalidPayload'
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '404':
@@ -2883,6 +3033,7 @@ paths:
           schema:
             type: string
         - $ref: '#/components/parameters/ProgramIDquery'
+        - $ref: '#/components/parameters/ProgramIDsquery'
         - name: has_attachments
           in: query
           description: Filter by attachment presence
