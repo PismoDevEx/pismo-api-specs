@@ -1850,26 +1850,50 @@ components:
       format: date-time
       description: Discharge datetime. Format is yyyy-mm-dd:hr:mm:ss.
       example: '2023-02-22T15:17:05'
+    DischargeOrder:
+      type: integer
+      format: int32
+      description: Discharge order
+      example: 4
+    PaymentHierarchyID:
+      type: string
+      maxLength: 75
+      description: >
+        Identifies the payment hierarchy used to process the discharge.
+
+        - Returns `default` when the discharge is processed by the new discharge
+        architecture using 
+
+        the platform's default hierarchy.
+
+        - Returns the payment hierarchy UUID if a custom hierarchy is
+        configured.
+
+        - The field is omitted when the discharge is processed by the legacy
+        architecture.
+
+
+        For more information, refer to the [Discharging
+        transactions](doc:discharging-transactions) guide.
+      example: e4259b9a-db06-4ff0-9812-204cef409465
     DischargeTrackingListResponse:
       type: object
       properties:
         current_page:
           $ref: '#/components/schemas/CurrentPage'
-        per_page:
-          $ref: '#/components/schemas/PerPageDefault10'
-        total_items:
-          $ref: '#/components/schemas/TotalItems'
-        items_on_page:
-          $ref: '#/components/schemas/ItemsOnPage'
-        pages:
-          $ref: '#/components/schemas/Pages'
         is_last_page:
           $ref: '#/components/schemas/IsLastPage'
         items:
           type: array
           items:
             type: object
+            required:
+              - discharge_order
             properties:
+              discharge_order:
+                $ref: '#/components/schemas/DischargeOrder'
+              payment_hierarchy_id:
+                $ref: '#/components/schemas/PaymentHierarchyID'
               transaction_id:
                 $ref: '#/components/schemas/TransactionID'
               statement_id:
@@ -1917,6 +1941,14 @@ components:
                       $ref: '#/components/schemas/PreviousBalance'
                     final_balance:
                       $ref: '#/components/schemas/FinalBalance'
+        items_on_page:
+          $ref: '#/components/schemas/ItemsOnPage'
+        pages:
+          $ref: '#/components/schemas/Pages'
+        per_page:
+          $ref: '#/components/schemas/PerPageDefault10'
+        total_items:
+          $ref: '#/components/schemas/TotalItems'
     DueInFuture:
       type: number
       format: float
