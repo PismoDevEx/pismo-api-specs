@@ -455,19 +455,21 @@ components:
     CancelAllLoansV2Response:
       type: object
       required:
-        - canceled_loans
+        - to_be_canceled_loans
         - total_to_be_canceled
       properties:
-        canceled_loans:
+        to_be_canceled_loans:
           type: array
-          description: List of canceled loan summaries
+          description: >-
+            List of loan summaries whose cancellation was accepted and is
+            tracked by tracking_id
           items:
-            $ref: '#/components/schemas/CanceledLoanV2Summary'
+            $ref: '#/components/schemas/ToBeCanceledLoanV2Summary'
         total_to_be_canceled:
           type: integer
           description: Total number of loans to be canceled
           example: 2
-    CanceledLoanV2Summary:
+    ToBeCanceledLoanV2Summary:
       type: object
       required:
         - loan_id
@@ -594,6 +596,15 @@ components:
           $ref: '#/components/schemas/RepaymentCalculationMethodV2'
         repayment_hierarchy_code:
           $ref: '#/components/schemas/RepaymentHierarchyCodeV2'
+    ContractedInstallmentCount:
+      description: >-
+        Number of installments contracted when the loan was booked. For loans
+        booked before this value was stored, it is the number of installments
+        the loan has, cancelled installments included.
+      type: integer
+      format: int32
+      minimum: 1
+      example: 6
     CurrencyCode:
       type: integer
       description: ISO 4217 currency code
@@ -884,6 +895,29 @@ components:
         multiple times while the system processes it only once.
       format: uuid
       example: 4df987e3-8179-11ed-8209-06c7b022d1ee
+    InitialAmounts:
+      type: object
+      description: >-
+        Loan amounts contracted at booking including principal, interest, amount
+        charged, tax, fees, and penalties. For loans booked before these amounts
+        were stored, each missing component is the sum of that component across
+        the installments' booking postings (`tax` from the Brazilian IOF
+        posting, `penalty` is zero). The sum of all components is the `total`.
+      properties:
+        principal:
+          $ref: '#/components/schemas/PrincipalAmount'
+        interest:
+          $ref: '#/components/schemas/InterestAmount'
+        charge:
+          $ref: '#/components/schemas/ChargeAmount'
+        tax:
+          $ref: '#/components/schemas/TaxAmount'
+        fee:
+          $ref: '#/components/schemas/FeeAmount'
+        penalty:
+          $ref: '#/components/schemas/PenaltyAmount'
+        total:
+          $ref: '#/components/schemas/TotalAmount'
     InstallmentAmount:
       type: object
       description: Installment amount
@@ -1091,6 +1125,8 @@ components:
           $ref: '#/components/schemas/LoanUpdatedAt'
         authorization_tracking_id:
           $ref: '#/components/schemas/AuthorizationTrackingId'
+        contracted_installment_count:
+          $ref: '#/components/schemas/ContractedInstallmentCount'
         days_past_due:
           $ref: '#/components/schemas/DaysPastDue'
         disbursement:
@@ -1099,6 +1135,8 @@ components:
           $ref: '#/components/schemas/ExternalID'
         grace_period_days:
           $ref: '#/components/schemas/GracePeriodDays'
+        initial_amounts:
+          $ref: '#/components/schemas/InitialAmounts'
         insurance_summary:
           $ref: '#/components/schemas/LoanInsuranceSummary'
         loan_principal_amount:
@@ -1169,6 +1207,14 @@ components:
                 $ref: '#/components/schemas/InsurancePremiumState'
         restructure_loan_id:
           $ref: '#/components/schemas/RestructureLoanID'
+        restructured_initial_amounts:
+          description: >-
+            Initial amounts of the previous loan this loan replaced through
+            restructuring (the loan referenced by `original_loan_id`). Omitted
+            when the loan is not a restructuring, or when the previous loan
+            cannot be read.
+          allOf:
+            - $ref: '#/components/schemas/InitialAmounts'
         total_expected_payment_amount:
           $ref: '#/components/schemas/TotalExpectedPaymentAmount'
         transactions_ids:
@@ -2198,7 +2244,7 @@ components:
       description: Open text that describes the product
       example: Acme business loan
     ProductPenaltyPlanCodes:
-      maxLength: 20
+      maxItems: 20
       uniqueItems: true
       type: array
       description: List of charge plan codes in order
@@ -2813,6 +2859,23 @@ paths:
                         total_expected_payment_amount: 2052
                         grace_period_days: 7
                         days_past_due: 12
+                        contracted_installment_count: 6
+                        initial_amounts:
+                          principal: 178
+                          interest: 83.05
+                          charge: 0
+                          tax: 3.37
+                          fee: 0
+                          penalty: 0
+                          total: 264.42
+                        restructured_initial_amounts:
+                          principal: 178
+                          interest: 44.84
+                          charge: 0
+                          tax: 2.01
+                          fee: 0
+                          penalty: 0
+                          total: 224.85
                         original_loan_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
                         restructure_loan_id: 2717a296-124a-47cc-b2a1-91e80dc723eb
                         transactions_ids:
@@ -3049,7 +3112,7 @@ paths:
                   description: All loans canceled successfully
                   value:
                     total_to_be_canceled: 2
-                    canceled_loans:
+                    to_be_canceled_loans:
                       - loan_id: 550e8400-e29b-41d4-a716-446655440000
                         tracking_id: 4df987e3-8179-11ed-8209-06c7b022d1ee
                       - loan_id: 550e8400-e29b-41d4-a716-446655440001
@@ -3824,6 +3887,15 @@ paths:
                 total_expected_payment_amount: 2000
                 grace_period_days: 7
                 days_past_due: 0
+                contracted_installment_count: 12
+                initial_amounts:
+                  principal: 1800
+                  interest: 200
+                  charge: 0
+                  tax: 0
+                  fee: 0
+                  penalty: 0
+                  total: 2000
                 rates:
                   interest_rate: 12
                   annual_interest_rate: 12
