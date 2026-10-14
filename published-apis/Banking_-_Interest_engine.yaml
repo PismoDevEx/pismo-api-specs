@@ -208,7 +208,6 @@ components:
           $ref: '#/components/schemas/Version'
     BenchmarkRateList:
       type: array
-      format: array
       items:
         $ref: '#/components/schemas/GetBenchmarkRate'
       description: Benchmark rate list
@@ -253,7 +252,6 @@ components:
       example: 1
     CurrencyCode:
       type: string
-      format: number
       description: >-
         Numeric currency code in ISO 4217 standard. Only the following codes are
         accepted: 986 (BRL), 826 (GBP), 356 (INR), 840 (USD), 978 (EUR), 604
@@ -273,7 +271,9 @@ components:
         - '578'
       example: '986'
     Days:
-      type: integer
+      type:
+        - integer
+        - 'null'
       format: int32
       description: Number of days in `interest_by_tier`
       example: 30
@@ -287,7 +287,6 @@ components:
       example: d9b2c9e1-4633-4a10-841b-270f7f1493cd
     FeeProcessingCode:
       type: string
-      format: number
       description: >-
         Processing code configured in the [fee model](doc:fee-model) for
         charging a tax, penalty, or fee.
@@ -360,7 +359,9 @@ components:
           items:
             $ref: '#/components/schemas/TaxRule'
     FixedInterestRate:
-      type: number
+      type:
+        - number
+        - 'null'
       format: float
       description: >
         Nominal annual interest rate, expressed as a decimal fraction. 0.10 =
@@ -703,7 +704,7 @@ components:
       example: TERM
     InterestPlanId:
       type: string
-      format: UUID
+      format: uuid
       description: >-
         Interest plan ID generated during the plan's creation. Must be an
         alphanumeric UUID with the alphabetical characters in lowercase.
@@ -938,13 +939,13 @@ components:
       example: TN-cc8f8b89-233a-4582-9f36-63ee85278d6d
     Pages:
       type: integer
-      format: Int32
+      format: int32
       description: Total number of pages. Default is `1`.
       example: 1
     PerPage:
       type: integer
       description: Number of items per page. Default is `10`.
-      format: Int32
+      format: int32
       example: 1
     PlanStartDate:
       type: string
@@ -1245,7 +1246,7 @@ paths:
     post:
       summary: Create interest plan
       description: >
-        Creates an interest plan configuration that defines how the platform
+        Create an interest plan configuration that defines how the platform
         calculates interest accrual. After it's created, you can apply the
         interest plan to a specific product or account. For example, you can
         provide the `interest_plan_id` when creating a [deposit
