@@ -202,18 +202,19 @@ components:
           description: >
             Specifies the status of the principal amount at maturity.
 
-            - `NO_ACTION`: No action is taken with the principal amount
+            - `PAY`: The principal amount is paid to the payout account. If no
+            payout account is configured, it remains in the account
 
             - `ROLLOVER`: The principal amount is rolled over to a new deposit
             term
 
 
-            If no value is selected, the principal defaults to `NO_ACTION`.
+            If no value is selected, the principal defaults to `PAY`.
           example: ROLLOVER
           enum:
-            - NO_ACTION
+            - PAY
             - ROLLOVER
-          default: NO_ACTION
+          default: PAY
         interest:
           type: string
           description: >
@@ -236,8 +237,9 @@ components:
         - If the principal or interest are `ROLLOVER,` the respective amounts is
         rolled over to a new deposit term.
 
-        - If the principal is `NO_ACTION`, no action is taken with the principal
-        amount at maturity.
+        - If the principal is `PAY`, the principal amount is paid to the payout
+        account at maturity. If no payout account is configured, it remains in
+        the account.
 
         - If the interest is `PAY` and the accrued interest is greater than
         zero, it's paid to the account's cash balance.
@@ -1092,6 +1094,13 @@ components:
           type: string
           format: date-time
           description: Date and time the product was created
+          example: '2024-01-23T13:26:25.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: >-
+            Date and time the product was last updated. Returned only when the
+            product is updated.
           example: '2024-01-23T13:26:25.000Z'
         funding_duration:
           type: integer
@@ -2514,17 +2523,17 @@ components:
           type: string
           format: date-time
           description: >
-            Specifies the simulated withdrawal date in ISO 8601 format. The
-            value must match the current UTC date. Requests that use a past date
-            return error `EIBACC0294`, while requests that use a future date
-            return error `EIBACC0405`.
+            The simulated withdrawal date in ISO 8601 format. The value must
+            match the current UTC date. Requests that use a past date return
+            error `EIBACC0294`, while requests that use a future date return
+            error `EIBACC0407`.
           example: '2026-06-15T00:00:00Z'
     PenaltySimulationResponse:
       type: object
       properties:
         external_account_id:
           type: string
-          description: >-
+          description: >
             External account identifier of the resolved account. Returned only
             when the account has an external account identifier.
           example: a4070788-bbe3-4127-8abc-12345
@@ -3876,8 +3885,8 @@ paths:
                 withdrawalDateInFuture:
                   summary: Withdrawal date set in the future
                   value:
-                    code: EIBACC0405
-                    message: withdrawalDate cannot be a future date
+                    code: EIBACC0407
+                    message: withdrawalDate must not be in the future
                 productNotDeposit:
                   summary: Product is not a deposit product
                   value:
