@@ -200,7 +200,7 @@ components:
       required: false
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2020-06-18'
     BeginDateRequiredQuery:
       name: beginDate
@@ -212,7 +212,7 @@ components:
       required: true
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2020-06-18'
     BeginDueDateQuery:
       name: beginDueDate
@@ -225,7 +225,7 @@ components:
         If `beginDueDate` is provided, `endDueDate` must also be provided.
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2025-02-01'
     CreditTransactionBeginDateQuery:
       name: creditTransactionBeginDate
@@ -313,7 +313,7 @@ components:
       required: false
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2020-06-18'
     EndDateRequiredQuery:
       name: endDate
@@ -324,7 +324,7 @@ components:
       required: true
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2020-06-18'
     EndDueDateQuery:
       name: endDueDate
@@ -337,7 +337,7 @@ components:
         If `endDueDate` is provided, `beginDueDate` must also be provided.
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2025-06-01'
     FirstPaymentDateQuery:
       name: firstPaymentDate
@@ -348,7 +348,7 @@ components:
       explode: true
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2020-01-01'
     GracePeriodDaysQuery:
       name: gracePeriodDays
@@ -634,7 +634,7 @@ components:
       required: false
       schema:
         type: string
-        format: full-date
+        format: date
         example: '2020-06-18'
     PerPageQuery:
       name: perPage
@@ -944,7 +944,7 @@ components:
   schemas:
     AccountCanceledDate:
       type: string
-      format: full-date
+      format: date
       description: Account definitive cancellation date. Format = yyyy-mm-dd.
       example: '2020-08-19'
     AccountCollectionStatusV1PatchResponse:
@@ -1371,7 +1371,7 @@ components:
     BankslipDueDate:
       description: Bankslip due date. Format = yyyy-mm-dd.
       type: string
-      format: full-date
+      format: date
       example: '2020-06-06'
     BarCode:
       type: string
@@ -1383,7 +1383,7 @@ components:
         Statement best transaction date. The first full day of a cycle. This
         always comes right after the last cycle closing date. Format =
         yyyy-mm-dd.
-      format: full-date
+      format: date
       example: '2020-05-23'
     BestTransactionDay:
       type: integer
@@ -1748,7 +1748,7 @@ components:
           $ref: '#/components/schemas/CycleNumber'
     CycleOpeningDate:
       type: string
-      format: full-date
+      format: date
       description: Cycle opening date. Format = yyyy-mm-dd.
       example: '2020-01-01'
     DailyIofAmount:
@@ -1768,7 +1768,7 @@ components:
       example: MySQL
     DateLastPurchase:
       type: string
-      format: full-date
+      format: date
       description: Date of customer's last purchase. Format = yyyy-mm-dd.
       example: '2020-09-13'
     Day:
@@ -1976,7 +1976,7 @@ components:
       description: Standard error response
     EventDatetime:
       type: string
-      format: full-date-time
+      format: date-time
       description: Event datetime. Format = yyyy-mm-dd:hr:mm:ss.
       example: '2023-02-22T15:17:05'
     EvolveToDelinquency:
@@ -2049,7 +2049,7 @@ components:
       example: 23.6
     FirstPaymentDate:
       type: string
-      format: full-date
+      format: date
       description: Due date for first payment. Format = yyyy-mm-dd.
       example: '2021-06-01'
     FixedIofAmount:
@@ -2326,7 +2326,7 @@ components:
           type: array
           items:
             type: string
-            format: full-date
+            format: date
             example: '2020-06-01'
     GetStatementAgreementSummaryV1ResponseSuccess:
       type: object
@@ -2466,7 +2466,7 @@ components:
             paid_amount_before_due_date: 14
             max_number_of_installments: 4
             financed_balance: 85
-            posted_date: '2020-06-21'
+            posted_date: '2020-05-21T03:00:00Z'
             international_debts: 0
             exchange_rate: 0
             summary:
@@ -2585,7 +2585,7 @@ components:
       example: UP
     ImportedAt:
       type: string
-      format: full-date-time
+      format: date-time
       description: When statement was imported. Format = yyyy-mm-ddThh:mm:ss.
       example: '2021-08-10T00:00:00'
     ImportStatementID:
@@ -3283,7 +3283,7 @@ components:
       example: 5
     LastPaymentDate:
       type: string
-      format: full-date
+      format: date
       description: Last payment date. Format = yyyy-mm-dd.
       example: '2021-04-14'
     ListStatementBalancesResponse:
@@ -3594,7 +3594,7 @@ components:
       example: 0
     OverdueDate:
       type: string
-      format: full-date
+      format: date
       description: Overdue date. Format = yyyy-mm-dd.
       example: '2020-08-17'
     OverdueDays:
@@ -3690,7 +3690,7 @@ components:
       example: PROCESSED
     PaymentDate:
       type: string
-      format: full-date
+      format: date
       description: Payment date. Format = yyyy-mm-dd.
       example: '2020-05-01'
     PaymentDatetime:
@@ -3816,7 +3816,7 @@ components:
     PreviousDueDate:
       type: string
       description: Previous statement due date. Format = yyyy-mm-dd.
-      format: full-date
+      format: date
       example: '2020-05-01'
     PreviousUseOriginalRate:
       type: boolean
@@ -4272,7 +4272,7 @@ components:
     StatementCloseDate:
       type: string
       description: Statement close date. Format = yyyy-mm-ddThh:mm:ss.
-      format: full-date-time
+      format: date-time
       example: '2020-05-21T03:00:00Z'
     StatementDueDateRequest:
       required:
@@ -4410,7 +4410,7 @@ components:
       example: 2021
     StatusUpdatedAt:
       type: string
-      format: full-date-time
+      format: date-time
       description: >-
         When the status's imported statement was updated. Format =
         yyyy-mm-ddThh:mm:ss.
