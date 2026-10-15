@@ -2533,10 +2533,10 @@ components:
       properties:
         external_account_id:
           type: string
-          description: >
-            External account identifier of the resolved account. Returned only
-            when the account has an external account identifier.
-          example: a4070788-bbe3-4127-8abc-12345
+          description: >-
+            External account identifier (UUID). Returned only when the account
+            has an external account ID. This ID is client-provided.
+          example: a4070788-bbe3-4127-8abc-123456789012
         withdrawal_amount:
           type: number
           description: >-
@@ -2551,16 +2551,19 @@ components:
         penalty_rule_applied:
           type: array
           description: >
-            List of penalty rules that applies to the withdrawal, omitted if no
-            penalties apply.
+            List of penalty rules applied to the withdrawal; omitted when no
+            penalty applies. Every non-zero `penalty_breakdown` component has at
+            least one matching rule here: a `FIXED` rule for `fixed_amount` and
+            a `PERCENTAGE` rule for `percentage_amount`.
           items:
             $ref: '#/components/schemas/PenaltyRuleApplied'
         penalty_amount:
           type: number
-          description: >-
-            The total penalty amount applied to the withdrawal, combining all
-            relevant penalty rules.
-          example: 231.75
+          description: >
+            The total penalty applied to the withdrawal. Always equals the sum
+            of the `penalty_breakdown` components (`fixed_amount` +
+            `percentage_amount`).
+          example: 1066.68
         penalty_breakdown:
           $ref: '#/components/schemas/PenaltyBreakdown'
         currency:
@@ -2572,15 +2575,16 @@ components:
         gross_amount:
           type: number
           description: >
-            Represents the gross amount of the deposit account. When a
-            capitalization total record is available, this value equals the sum
-            of the principal balance and the total interest accrued. If no
-            capitalization total record exists, such as before the first
-            capitalization event, the amount is derived from the account balance
-            specified by `balance_type` (`VALUE_DATED_BALANCE` or
-            `LEDGER_BALANCE`), or from the book balance when using deposit-based
-            accrual. This field is always returned.
-          example: 41329.34
+            The gross amount of the deposit account. When a capitalization total
+            record is available, this value equals the sum of the principal
+            balance and the total interest accrued. If no capitalization total
+            record exists, such as before the first capitalization event, the
+            amount is derived from the account balance specified by
+            `balance_type` (`VALUE_DATED_BALANCE` or `LEDGER_BALANCE`), or from
+            the book balance when using deposit-based accrual. This field is
+            always returned. Because it is account-level, it does not
+            necessarily equal `withdrawal_amount` + `interest_earned_amount`.
+          example: 41334.34
         interest_earned_amount:
           type: number
           description: >
@@ -2592,11 +2596,12 @@ components:
         net_amount:
           type: number
           description: >
-            Represents the amount remaining after deducting penalties from the
-            gross amount (`gross_amount` - `penalty_amount`). The value cannot
-            be negative when `withdrawal_amount` does not exceed the resolved
-            balance and the applicable penalty has been calculated correctly.
-          example: 41097.59
+            The amount remaining after deducting penalties from the gross
+            amount: `net_amount` = `gross_amount` - `penalty_amount`. The value
+            cannot be negative when `withdrawal_amount` does not exceed the
+            resolved balance and the applicable penalty has been calculated
+            correctly.
+          example: 40267.66
         simulation_timestamp:
           type: string
           format: date-time
@@ -2631,22 +2636,32 @@ components:
           example: 2.5
         description:
           type: string
-          description: Describes the penalty rule that triggers the penalty
-          example: Early withdrawal after opening penalty
+          description: >
+            Identifies the applied penalty rule as a constant: one of
+            `WITHDRAWAL_FEE`, `EARLY_WITHDRAWAL_AFTER_OPENING`, `GRACE_PERIOD`,
+            `TIERED_INTEREST_FORFEITURE`, `WITHDRAWAL`.
+          example: EARLY_WITHDRAWAL_AFTER_OPENING
     PenaltyBreakdown:
       type: object
-      description: >-
-        Breakdown of the total penalty amount by calculation type. Omitted when
-        no penalty applies.
+      description: >
+        Breakdown of the total penalty by calculation type. `fixed_amount` +
+        `percentage_amount` = `penalty_amount`. Every non-zero component has a
+        matching rule of that type in `penalty_rule_applied`. Omitted when no
+        penalty applies.
       properties:
         fixed_amount:
           type: number
-          description: The sum of all fixed-amount penalties
+          description: >-
+            The sum of all FIXED-type penalties; corresponds to the FIXED
+            entries in `penalty_rule_applied`.
           example: 50
         percentage_amount:
           type: number
-          description: The sum of all percentage-based penalties
-          example: 75.5
+          description: >
+            The sum of all percentage-based penalties. Each percentage penalty
+            is `rule.value`% of the `withdrawal_amount` (the documented base is
+            the withdrawn amount).
+          example: 1016.68
     UnifiedDepositOpenRequest:
       type: object
       required:
@@ -2885,6 +2900,14 @@ components:
               value:
                 code: EIBACC0114
                 message: Product is already detached
+            divergentInterestBalanceConfig:
+              summary: Interest processing code already has a divergent balance-config
+              value:
+                code: EIBACC0381
+                message: >-
+                  Interest processing code already has a divergent
+                  balance-config
+                detail: balance-config {id}
     500InternalServer:
       description: Internal error
       content:
@@ -3078,6 +3101,8 @@ paths:
                 $ref: '#/components/schemas/SavingsAccountProduct'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '409':
+          $ref: '#/components/responses/409Conflict'
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/savings-accounts/{productId}:
@@ -3797,6 +3822,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PenaltySimulationResponse'
+              example:
+                external_account_id: a4070788-bbe3-4127-8abc-123456789012
+                withdrawal_amount: 40667.17
+                withdrawal_date: '2026-12-15T00:00:00Z'
+                penalty_rule_applied:
+                  - type: FIXED
+                    value: 50
+                    description: WITHDRAWAL_FEE
+                  - type: PERCENTAGE
+                    value: 2.5
+                    description: EARLY_WITHDRAWAL_AFTER_OPENING
+                penalty_amount: 1066.68
+                penalty_breakdown:
+                  fixed_amount: 50
+                  percentage_amount: 1016.68
+                currency: BRL
+                gross_amount: 41334.34
+                interest_earned_amount: 667.17
+                net_amount: 40267.66
+                simulation_timestamp: '2026-06-19T19:22:55Z'
         '400':
           description: Bad Request
           content:
