@@ -1748,12 +1748,12 @@ paths:
 
 
         - `x-account-id`: An Accounts API call confirms the account ID exists.
-        If it does not,
-          the request fails with `400` and `account_id not found`.
+        If it does not, the request fails with `400` and `account_id not found`.
+
         - `x-external-account-id`: A Corporate API call resolves the external
-        account ID to a
-          Pismo `account_id`. If the external account ID does not exist, the request fails with
-          `400` and `external_account_id not found`.
+        account ID to a Pismo `account_id`. If the external account ID does not
+        exist, the request fails with `400` and `external_account_id not found`.
+
 
         A `404` means the identifier is valid but the account has no active or
         future
@@ -1883,51 +1883,43 @@ paths:
       summary: Partially update account interest [Beta]
       description: >
         Record an effective-dated change to the interest configuration of an
-        account. Send only the
-
-        interest parameters you want to change, together with the date on which
-        the change takes
-
-        effect. The change is appended to the account's history of configuration
-        changes, which you
-
-        can retrieve with [Get account interest](ref:get-v1-interest-account).
+        account. Send only the interest parameters you want to change, together
+        with the date on which the change takes effect. The change is appended
+        to the account's history of configuration changes, which you can
+        retrieve with [Get account interest](ref:get-v1-interest-account).
 
 
         Key features:
 
         - Updates only the provided parameters. A parameter that is omitted is
-        left untouched, and a
-          parameter sent as `null` clears the account-level value so the interest plan value applies.
+        left untouched, and a parameter sent as `null` clears the account-level
+        value so the interest plan value applies.
+
         - Applies from `effective_date` and, optionally, up to `end_date`. After
-        `end_date`, the
-          configuration that applied before the change takes effect again.
+        `end_date`, the configuration that applied before the change takes
+        effect again.
+
         - Allows overlapping changes. For each parameter, the most recently
-        created change that
-          covers a date determines the value that applies on that date.
+        created change that covers a date determines the value that applies on
+        that date.
+
         - Validates the resulting configuration for every date from today onward
-        and rejects the
-          request with `400` when it is invalid.
+        and rejects the request with `400` when it is invalid.
+
         - Rejects requests that contain no interest parameter, only dates and
         `metadata`.
 
 
         Once an account has a configuration change, `PUT
-        /v1/interest/account/{accountId}` is
-
-        rejected for that account with `409`.
+        /v1/interest/account/{accountId}` is rejected for that account with
+        `409`.
 
 
         **Account identification.** The token identifies the account. Exactly
-        one of
-
-        `x-account-id` or `x-external-account-id` must be passed and must match
-        the
-
-        `{accountId}` path parameter. Otherwise the request is rejected (`403`
-        on a mismatch or
-
-        when neither header is passed, `400` when both are).
+        one of `x-account-id` or `x-external-account-id` must be passed and must
+        match the `{accountId}` path parameter. Otherwise the request is
+        rejected (`403` on a mismatch or when neither header is passed, `400`
+        when both are).
 
 
         **Stored identifiers.** Which identifiers are stored follows the header
@@ -1935,29 +1927,25 @@ paths:
 
 
         - `x-account-id`: An Accounts API call confirms the account ID exists,
-        then `account_id`
-          is stored with the change.
+        then `account_id` is stored with the change.
+
         - `x-external-account-id`: A Corporate API call resolves the external
-        account ID to a
-          Pismo `account_id`, and both IDs are stored with the change.
+        account ID to a Pismo `account_id`, and both IDs are stored with the
+        change.
+
 
         If the Accounts or Corporate API cannot resolve the identifier the
-        request fails with
-
-        `400` and nothing is persisted. Any other failure of those APIs fails
-        with `500`.
+        request fails with `400` and nothing is persisted. Any other failure of
+        those APIs fails with `500`.
 
 
         **Idempotency.** If a change was already recorded with the same `x-cid`
-        for the
-
-        organization, the request succeeds without recording a second change.
+        for the organization, the request succeeds without recording a second
+        change.
 
 
         When a new change is recorded, the endpoint publishes an
-        `interest_account_update_success`
-
-        event.
+        `interest_account_update_success` event.
       tags:
         - Account interest
       operationId: patch-v1-interest-account
@@ -1966,9 +1954,8 @@ paths:
       requestBody:
         description: >
           Interest parameters to change and the dates on which the change
-          applies. Refer to the schema
-
-          description for the rules applied to the resulting configuration.
+          applies. Refer to the schema description for the rules applied to the
+          resulting configuration.
         required: true
         content:
           application/json:
