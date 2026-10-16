@@ -1730,21 +1730,15 @@ paths:
 
 
         **Account identification.** The token identifies the account—the path
-        alone is not
-
-        enough. Exactly one of `x-account-id` or `x-external-account-id` must be
-        passed and must
-
-        match the `{accountId}` path parameter. Otherwise the request is
-        rejected (`403` on a
-
-        mismatch or when neither header is passed, `400` when both are).
+        alone is not enough. Exactly one of `x-account-id` or
+        `x-external-account-id` must be passed and must match the `{accountId}`
+        path parameter. Otherwise the request is rejected (`403` on a mismatch
+        or when neither header is passed, `400` when both are).
 
 
         **Identifier validation.** The ID encoded in the token is confirmed to
-        exist by calling
-
-        an external API before the configuration changes are read:
+        exist by calling an external API before the configuration changes are
+        read:
 
 
         - `x-account-id`: An Accounts API call confirms the account ID exists.
@@ -1756,9 +1750,8 @@ paths:
 
 
         A `404` means the identifier is valid but the account has no active or
-        future
-
-        configuration changes. Any other failure of those APIs fails with `500`.
+        future configuration changes. Any other failure of those APIs fails with
+        `500`.
       tags:
         - Account interest
       operationId: get-v1-interest-account
