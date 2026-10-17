@@ -4298,11 +4298,11 @@ components:
           type: string
           format: date
           description: >
-            Valid in VISA Consumer Disputes Flux (Reason Code 13). Date on which
-            the merchant's facilities were withdrawn. Format = YYYY-MM-DD.
-            Applies to Cancelled Recurring Transaction disputes (`disputeDueTo`
-            = `CR`) and complements the existing `merchantFacilitiesWithdrawn`
-            walue.
+            Valid in VISA Consumer Disputes Flux (Reason Code 13).  Date on
+            which the merchant's facilities were withdrawn. Format = YYYY-MM-DD.
+            **REQUIRED** when `merchantFacilitiesWithdrawn` is `true`. Applies
+            to Cancelled Recurring Transaction disputes (`disputeDueTo` = `CR`)
+            and complements the existing `merchantFacilitiesWithdrawn` value.
           example: '2026-01-15'
         dateCardholderCheckedOut:
           type: string
