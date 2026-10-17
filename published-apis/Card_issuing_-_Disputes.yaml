@@ -4309,10 +4309,10 @@ components:
           format: date
           description: >
             Valid in VISA Consumer Disputes Flux (Reason Code 13). Date when
-            cardholder checked out of the hotel. **REQUIRED** when
-            `merchandiseOrServices` = `Services`, `disputeDueTo` = `ND` (Not as
-            Described) or `Q` (Quality), and the transaction MCC is a hotel code
-            (`7011`, or `3501-3856`).
+            cardholder checked out of the hotel. Format = YYYY-MM-DD.
+            **REQUIRED** when `merchandiseOrServices` = `Services`,
+            `disputeDueTo` = `ND` (Not as Described) or `Q` (Quality), and the
+            transaction MCC is a hotel code (`7011`, or `3501-3856`).
           example: '2026-01-20'
       x-examples:
         collaborationQuestionnaire:
