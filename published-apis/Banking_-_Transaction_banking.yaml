@@ -866,11 +866,11 @@ components:
     AccountStatus:
       type: string
       minLength: 1
-      maxLength: 9
+      maxLength: 200
       description: |
         Account status<br>
         `minLength: 1`
-        `maxLength: 9`
+        `maxLength: 200`
       example: DORMANT
     AccountStatusReasonDescription:
       type: string
@@ -1578,6 +1578,8 @@ components:
           $ref: '#/components/schemas/ExternalAccountID'
         division_code:
           $ref: '#/components/schemas/DivisionCode'
+        account_creation_datetime:
+          $ref: '#/components/schemas/AccountCreationDatetime'
       required:
         - account_id
         - program_id
@@ -3557,6 +3559,8 @@ components:
                 $ref: '#/components/schemas/RestrictedFundsMainMetadata'
               increase_datetime_limit:
                 $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
+              release_datetime:
+                $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
             required:
               - restricted_funds_id
               - hold_method
@@ -4064,7 +4068,7 @@ components:
     NewAccountStatus:
       type: string
       minLength: 1
-      maxLength: 9
+      maxLength: 200
       description: >
         New status for the account.<br>
 
@@ -5131,6 +5135,17 @@ components:
           - Only accepted on creation when `hold_method` is `RECURRENT`
           - Must not be in the past
       example: '2026-12-31T23:59:59Z'
+    RestrictedFundsReleaseDatetime:
+      type: string
+      format: date-time
+      description: >-
+        Specifies the date and time when any remaining held funds will be
+        automatically released to the account. The value must be provided in RFC
+        3339 format.
+
+
+        **Note**: The specified date and time must be in the future.
+      example: '2026-12-31T23:59:59Z'
     RestrictedFundsRequest:
       description: Create funds restriction request body
       type: object
@@ -5151,6 +5166,8 @@ components:
           $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
+        release_datetime:
+          $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
       required:
         - hold_method
         - amount
@@ -5238,6 +5255,8 @@ components:
           $ref: '#/components/schemas/RestrictedFundsMainMetadata'
         increase_datetime_limit:
           $ref: '#/components/schemas/RestrictedFundsIncreaseDatetimeLimit'
+        release_datetime:
+          $ref: '#/components/schemas/RestrictedFundsReleaseDatetime'
       required:
         - restricted_funds_id
         - hold_method
@@ -6866,6 +6885,7 @@ paths:
                     account_id: 178800
                     external_account_id: b993ba96-b3e8-4ef7-9cf7-7eee5ddafdab
                     program_id: 8086
+                    account_creation_datetime: '2025-02-01T22:07:58.000Z'
                     division_code: my-division
         '400':
           description: >
@@ -7006,6 +7026,12 @@ paths:
                   value:
                     code: WCAC0014
                     message: Duplicate corporate account
+                Concurrent registration for the same applicant:
+                  value:
+                    code: WCAC0047
+                    message: >-
+                      Account registration conflicted with a concurrent request
+                      for the same applicant.
         '500':
           $ref: '#/components/responses/500InternalServer'
     parameters: []
@@ -17063,11 +17089,23 @@ paths:
                       is RECURRENT
                 Increase datetime limit in the past:
                   description: >-
-                    This error occurs when `increase_datetime_limit` is in the
-                    past
+                    This error occurs when `increase_datetime_limit` is set in
+                    the past
                   value:
                     code: WRFO0016
                     message: increase_datetime_limit cannot be in the past
+                Release datetime in the past:
+                  description: This error occurs when `release_datetime` is set in the past
+                  value:
+                    code: WRFO0019
+                    message: release_datetime cannot be in the past
+                Release datetime before increase datetime limit:
+                  description: >-
+                    This error occurs when `release_datetime` is set before the
+                    `increase_datetime_limit`
+                  value:
+                    code: WRFO0020
+                    message: release_datetime cannot be before increase_datetime_limit
         '401':
           description: Unauthorized
           content:
@@ -17107,7 +17145,7 @@ paths:
                     concurrent operations
                   value:
                     code: WRFO0003
-                    message: Account is locked, please try again later
+                    message: Account is locked
         '500':
           $ref: '#/components/responses/500InternalServer'
       security:
@@ -17299,7 +17337,7 @@ paths:
                 Amount exceeds the held amount:
                   value:
                     code: WRFO0008
-                    message: Release amount exceeds the currently held amount
+                    message: Requested amount exceeds the currently held amount
                 Invalid decimal places:
                   value:
                     code: WRFO0009
@@ -17327,7 +17365,7 @@ paths:
                     message: tracking_id is already in use
                 Version conflict:
                   value:
-                    code: WRFO0019
+                    code: WRFO0023
                     message: Restricted funds was concurrently modified
         '429':
           description: Too many requests
@@ -17527,7 +17565,7 @@ paths:
                     message: tracking_id is already in use
                 Version conflict:
                   value:
-                    code: WRFO0019
+                    code: WRFO0023
                     message: Restricted funds was concurrently modified
         '422':
           description: Unprocessable Entity
@@ -17538,8 +17576,20 @@ paths:
               examples:
                 Cannot increase restriction with zero held amount:
                   value:
-                    code: WRFO0017
+                    code: WRFO0018
                     message: Cannot increase a restriction with zero held amount
+                Increase window expired:
+                  value:
+                    code: WRFO0021
+                    message: >-
+                      Cannot increase a restriction after
+                      increase_datetime_limit has passed
+                Increase exceeds requested amount:
+                  value:
+                    code: WRFO0022
+                    message: >-
+                      Increase would make the held amount exceed the requested
+                      amount
         '429':
           description: Too many requests
           content:
