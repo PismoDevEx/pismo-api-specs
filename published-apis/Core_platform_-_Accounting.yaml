@@ -995,7 +995,9 @@ components:
         org_id:
           $ref: '#/components/schemas/OrgID'
         history:
-          $ref: '#/components/schemas/History'
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/History'
     EntryTypeDelete:
       required:
         - reason
@@ -1022,6 +1024,8 @@ components:
           $ref: '#/components/schemas/EntryTypeDescription'
         type:
           $ref: '#/components/schemas/EntryTypeType'
+        org_id:
+          $ref: '#/components/schemas/OrgID'
         reason:
           $ref: '#/components/schemas/HistoryReason'
         responsible:
@@ -1872,6 +1876,18 @@ paths:
             Accounting script already exists — the tuple (program_id,
             event_type_id, entry_type_id, entry_name) already has an active
             script for the tenant.
+        '500':
+          description: >-
+            Internal server error — an infrastructure failure (DB error or
+            dependency 5xx) during validation or persistence; the generic
+            `error` is `something went wrong` and the real cause is logged
+            server-side, correlated by `cid`.
+        '504':
+          description: >-
+            Gateway timeout — a catalog or account lookup exceeded the 10s
+            request context (e.g. MySQL or Programs API saturation); the `error`
+            is `request timed out while validating accounting script; please
+            retry` with the `cid`, and the request is safe to retry.
     get:
       operationId: SearchAccountingScript
       summary: List accounting scripts V1
