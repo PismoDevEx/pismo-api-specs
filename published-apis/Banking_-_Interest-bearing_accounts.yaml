@@ -2540,8 +2540,8 @@ components:
         withdrawal_amount:
           type: number
           description: >-
-            The withdrawal amount used in the simulation (equals `book_balance`
-            when omitted in request)
+            The withdrawal amount used in the simulation. (Equals `book_balance`
+            when not passed in the request.)
           example: 40667.17
         withdrawal_date:
           type: string
@@ -2578,10 +2578,10 @@ components:
             Gross amount of the deposit account. When a capitalization total
             record exists, this value equals the principal balance plus the
             total accrued interest. Before the first capitalization event, when
-            no capitalization total record is available, the amount is derived
-            from the balance specified by `balance_type` (`VALUE_DATED_BALANCE`
-            or `LEDGER_BALANCE`), or from the book balance for deposit-based
-            accrual. This field is always returned. 
+            no capitalization total record is available, the amount derives from
+            the balance specified by `balance_type` (`VALUE_DATED_BALANCE` or
+            `LEDGER_BALANCE`), or from the book balance for deposit-based
+            accruals.
 
 
             Because it reflects the total value of the deposit account, it does
@@ -2592,17 +2592,17 @@ components:
           type: number
           description: >
             Total interest earned through interest payments or capitalization.
-            Always returned and set to `0` when no interest has been paid or
-            capitalized. A positive `gross_amount` does not necessarily indicate
-            earned interest, as it also reflects the account balance.
+            Returns `0` if no interest has been paid or capitalized. A positive
+            `gross_amount` does not necessarily indicate earned interest, as it
+            also reflects the account balance.
           example: 667.17
         net_amount:
           type: number
           description: >
             Amount remaining after penalties are deducted from the gross amount,
             calculated as `net_amount` = `gross_amount` - `penalty_amount`. This
-            value is expected to be non-negative when `withdrawal_amount` does
-            not exceed the resolved balance.
+            value is non-negative when `withdrawal_amount` does not exceed the
+            resolved balance.
           example: 40267.66
         simulation_timestamp:
           type: string
@@ -2640,8 +2640,17 @@ components:
           type: string
           description: >
             Type of penalty rule applied, represented by one of the following
-            constants: `WITHDRAWAL_FEE`, `EARLY_WITHDRAWAL_AFTER_OPENING`,
-            `GRACE_PERIOD`, `TIERED_INTEREST_FORFEITURE`, or `WITHDRAWAL`.
+            constants: 
+
+            - `WITHDRAWAL_FEE`
+
+            - `EARLY_WITHDRAWAL_AFTER_OPENING`
+
+            - `GRACE_PERIOD` 
+
+            - `TIERED_INTEREST_FORFEITURE`
+
+            - `WITHDRAWAL`
           example: EARLY_WITHDRAWAL_AFTER_OPENING
     PenaltyBreakdown:
       type: object
@@ -2654,15 +2663,15 @@ components:
         fixed_amount:
           type: number
           description: >-
-            The sum of all `FIXED`-type penalties; corresponds to the `FIXED`
+            The sum of all `FIXED`-type penalties. Corresponds to the `FIXED`
             entries in `penalty_rule_applied`.
           example: 50
         percentage_amount:
           type: number
           description: >
             The sum of all percentage-based penalties. Each percentage penalty
-            is `rule.value`% of the `withdrawal_amount` (the documented base is
-            the withdrawal amount).
+            is `rule.value` % of the `withdrawal_amount`. (The documented base
+            is the withdrawal amount.)
           example: 1016.68
     UnifiedDepositOpenRequest:
       type: object
@@ -2813,6 +2822,18 @@ components:
           type: string
           description: External account ID
           example: ext-acct-001
+        account_creation_datetime:
+          type: string
+          format: date-time
+          description: >
+            The date time the account was created, displayed in UTC. The date
+            time format follows the ISO 8601 standard. Format =
+            `yyyy-mm-ddThh:mm:ss.sssZ`.<br>
+             `minLength: 24`
+             `maxLength: 24`
+          minLength: 24
+          maxLength: 24
+          example: '2026-06-24T14:49:36.000Z'
         product_id:
           type: string
           description: Product ID of the attached deposit product
@@ -3438,6 +3459,7 @@ paths:
                   value:
                     account_id: 123456
                     external_account_id: ext-acct-001
+                    account_creation_datetime: '2026-06-24T14:49:36.000Z'
                     product_id: 2c336e9d-d04f-4fd0-8f6e-25808f48d70c
                     deposit_configs:
                       maturity_period:
