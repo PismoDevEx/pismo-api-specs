@@ -403,26 +403,34 @@ components:
       example: Country
     HolidayWorkingDays:
       type: array
-      description: |
+      description: >
         Working days array
 
-        `1` = Monday, `6` = Saturday. Default = `[1, 2, 3, 4, 5]`.
+
+        `0` = Sunday, `1` = Monday, ..., `6` = Saturday. Default = `[1, 2, 3, 4,
+        5]`.
       items:
         type: integer
         enum:
+          - 0
           - 1
           - 2
           - 3
           - 4
           - 5
           - 6
+      default:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
       example:
         - 1
         - 2
         - 3
         - 4
         - 5
-        - 6
     IsHoliday:
       type: boolean
       description: Is this a holiday?
@@ -1461,10 +1469,6 @@ paths:
         endpoint instead.
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Create a holiday&mdash;a day on which your company's offices are closed
         for normal business activity though online financial transactions and
         other business activity could still be occurring.
@@ -1502,10 +1506,6 @@ paths:
       description: >
         **DEPRECATED**. Call the Call the [List holiday
         calendars](ref:list-holiday-calendars) endpoint instead.
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Return a paginated list of holidays registered for an organization.
@@ -1546,10 +1546,6 @@ paths:
         day](ref:post-search-business-day) endpoint instead.
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Get information for an administrative division's holiday.
 
          **Note:** The response could contain outdated information until at least one minute after an update is made to an administrative division.
@@ -1583,10 +1579,6 @@ paths:
       description: >
         **DEPRECATED**. Call the [Update holiday](ref:update-holiday) endpoint
         instead.
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Update a holiday's name.
@@ -1623,10 +1615,6 @@ paths:
         endpoint instead.
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Delete a holiday.
       tags:
         - Holidays (deprecated)
@@ -1651,10 +1639,6 @@ paths:
       description: >
         **DEPRECATED**. Call the [Get business
         day](ref:post-search-business-day) endpoint instead.
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Check if a specific date is a business day for an administrative
@@ -1698,10 +1682,6 @@ paths:
         days](ref:get-non-business-days) endpoint instead.
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Return a list of non-business days.
       operationId: v1-get-non-business-days
       deprecated: true
@@ -1739,10 +1719,6 @@ paths:
         calendars](ref:list-holiday-calendars) endpoint instead.
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Return a paginated list of holidays registered for an administrative
         division, including those inherited from a parent division.
       operationId: get-v1-holidays-with-administrative-divisions-ancestors
@@ -1778,10 +1754,6 @@ paths:
       description: >
         **DEPRECATED**. Call the [Add holiday](ref:post-add-holiday-to-calendar)
         endpoint instead.
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Create a holiday&mdash;a day on which your company's offices are closed
@@ -1826,10 +1798,6 @@ paths:
         endpoint instead.
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Return a paginated list of holidays registered for an organization. 
 
 
@@ -1872,10 +1840,6 @@ paths:
       description: >
         **DEPRECATED**. Call the new [Update holiday](ref:update-holiday)
         endpoint instead. 
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Update some holiday information. Only parameters that are passed are
