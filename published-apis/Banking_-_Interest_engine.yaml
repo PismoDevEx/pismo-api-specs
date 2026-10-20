@@ -1779,41 +1779,27 @@ paths:
       summary: Update account interest
       description: >
         Apply specific interest accrual options to an account by replacing its
-        full interest
-
-        configuration.
+        full interest configuration.
 
 
         This operation has full-replacement semantics: every request must
-        redeclare the complete
-
-        configuration. Partial updates (sending only the fields you want to
-        change) are not
-
-        supported and cause the validation to fail.
+        redeclare the complete configuration. Partial updates (sending only the
+        fields you want to change) are not supported and cause the validation to
+        fail.
 
 
         Although every property in the request body is independently optional,
-        the body as a
-
-        whole must satisfy several conditional rules. See the request body
-        schema description
-
-        for the full set of `benchmark`/`fixed_interest_rate`,
-
-        `tax_withholding`, and `taxes_exemption` rules.
+        the body as a whole must satisfy several conditional rules. See the
+        request body schema description for the full set of
+        `benchmark`/`fixed_interest_rate`, `tax_withholding`, and
+        `taxes_exemption` rules.
 
 
         **Account identification.** The token identifies the account. Exactly
-        one of
-
-        `x-account-id` or `x-external-account-id` must be passed and must match
-        the
-
-        `{accountId}` path parameter. Otherwise the request is rejected (`403`
-        on a mismatch or
-
-        when neither header is passed, `400` when both are).
+        one of `x-account-id` or `x-external-account-id` must be passed and must
+        match the `{accountId}` path parameter. Otherwise the request is
+        rejected (`403` on a mismatch or when neither header is passed, `400`
+        when both are).
 
 
         **Stored identifiers.** Which identifiers are stored follows the header
@@ -1821,21 +1807,18 @@ paths:
 
 
         - `x-account-id`: An Accounts API call confirms the account ID exists,
-        then `account_id`
-          is stored and `external_account_id` is stored as `null` - **any external account ID
-          previously stored for this account is cleared**.
+        then `account_id` is stored and `external_account_id` is stored as
+        `null` - **any external account ID previously stored for this account is
+        cleared**.
+
         - `x-external-account-id`: A Corporate API call resolves the external
-        account ID to a
-          Pismo `account_id`, and both IDs are stored.
+        account ID to a Pismo `account_id`, and both IDs are stored.
+
 
         If the Accounts or Corporate API cannot resolve the identifier the
-        request fails with
-
-        `400` and nothing is persisted. Any other failure of those APIs fails
-        with `500`. In both
-
-        cases, the interest account is left unchanged and no update event is
-        emitted.
+        request fails with `400` and nothing is persisted. Any other failure of
+        those APIs fails with `500`. In both cases, the interest account is left
+        unchanged and no update event is emitted.
       tags:
         - Account interest
       operationId: put-v1-interest-account
