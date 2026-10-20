@@ -1012,6 +1012,7 @@ components:
         responsible: John Doe
     EntryTypeDescription:
       type: string
+      minLength: 3
       maxLength: 250
       description: Entry type description.
       example: CREDIT
@@ -1143,11 +1144,13 @@ components:
           example: '2021-10-10T10:10:00Z'
     HistoryReason:
       type: string
+      minLength: 3
       maxLength: 250
       description: Reason for the operation.
       example: Creation of a new entry type configuration.
     HistoryResponsible:
       type: string
+      minLength: 3
       maxLength: 100
       description: User name or ID of the person performing the operation.
       example: John Doe
