@@ -575,7 +575,7 @@ components:
         - transaction_type_id
         - processing_code
         - key
-      type: array
+      type: object
       items:
         properties:
           transaction_type_id:
@@ -613,16 +613,12 @@ components:
               code, usually to configure fees, taxes, or other charges. REQUIRED
               if the key is OTHER.
       example:
-        - transaction_type_id: 7001
-          processing_code: 00AB11
-          key: OTHER
-          custom_key: national_rate
-        - transaction_type_id: 7002
-          processing_code: 00AB22
-          key: OTHER
-          custom_key: fee_amount
+        transaction_type_id: 7001
+        processing_code: 00AB11
+        key: OTHER
+        custom_key: national_rate
     ListTransactionTypes:
-      type: array
+      type: object
       items:
         properties:
           transaction_type_id:
@@ -642,14 +638,10 @@ components:
               Indicates whether transactions are posted on statements (`true`)
               or not (`false`)
       example:
-        - transaction_type_id: 7001
-          description: Purchase
-          credit: false
-          posted_transaction: true
-        - transaction_type_id: 7002
-          description: Purchase reversal
-          credit: true
-          posted_transaction: true
+        transaction_type_id: 7001
+        description: Purchase
+        credit: false
+        posted_transaction: true
     TransactionTypePatch:
       required:
         - description
