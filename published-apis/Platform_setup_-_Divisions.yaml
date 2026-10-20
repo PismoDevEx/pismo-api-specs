@@ -883,10 +883,6 @@ paths:
         calendar](ref:post-create-holiday-calendar) instead. 
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Create an administrative division. 
 
 
@@ -952,10 +948,6 @@ paths:
         ID](ref:get-holiday-calendar-by-external-id) instead. 
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Get detailed administrative division information.
       operationId: get-v1-admin-division-external-id
       deprecated: true
@@ -1011,8 +1003,6 @@ paths:
         **DEPRECATED**. Call [Get holiday calendar](ref:get-holiday-calendar)
         instead. 
 
-         This endpoint is deprecated starting April 30, 2026, and final removal from both test (EXT) and production environments on October 30, 2026.
-
          Get detailed administrative division information.
       operationId: get-v1-admin-division
       deprecated: true
@@ -1060,10 +1050,6 @@ paths:
       description: >
         **DEPRECATED**. Call [Update holiday
         calendar](ref:update-holiday-calendar) instead. 
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Update administrative division.
@@ -1125,10 +1111,6 @@ paths:
         calendar](ref:delete-holiday-calendar) instead. 
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Delete an administrative division.
       parameters:
         - $ref: '#/components/parameters/AdminDivisionIdPath'
@@ -1172,10 +1154,6 @@ paths:
       description: >
         **DEPRECATED**. Call [List holiday
         calendars](ref:list-holiday-calendars) instead. 
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Get the complete tree of child administrative divisions using the
@@ -1225,10 +1203,6 @@ paths:
         calendars](ref:list-holiday-calendars) instead. 
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Get the full tree of administrative divisions using an external ID
       operationId: get-v1-admin-division-tree-external-id
       deprecated: true
@@ -1273,10 +1247,6 @@ paths:
       description: >
         **DEPRECATED**. Call [List holiday
         calendars](ref:list-holiday-calendars) instead. 
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         List ancestors for an administrative division using administrative
@@ -1326,10 +1296,6 @@ paths:
         calendars](ref:list-holiday-calendars) instead. 
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         List ancestors for an administrative division using an external ID.
       operationId: get-v1-admin-division-ancestors-external-id
       deprecated: true
@@ -1374,10 +1340,6 @@ paths:
       description: >
         **DEPRECATED**. Call [Create holiday
         calendar](ref:post-create-holiday-calendar) instead. 
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Create an administrative division. 
@@ -1438,10 +1400,6 @@ paths:
         instead. 
 
 
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
-
-
         Get administrative division detailed information.
       operationId: get-v2-admin-division
       deprecated: true
@@ -1489,10 +1447,6 @@ paths:
       description: >
         **DEPRECATED**. Call [Update holiday
         calendar](ref:update-holiday-calendar) instead. 
-
-
-        This endpoint is deprecated starting April 30, 2026, and final removal
-        from both test (EXT) and production environments on October 30, 2026.
 
 
         Update an administrative division.
