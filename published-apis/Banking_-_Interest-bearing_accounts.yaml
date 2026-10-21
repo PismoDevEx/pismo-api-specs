@@ -597,6 +597,8 @@ components:
         value:
           type: number
           exclusiveMinimum: 0
+          description: Same format as the product's `withdrawal_fee.value`.
+          example: 1.5
         valid_until:
           type: string
           format: date-time
@@ -2117,7 +2119,14 @@ components:
           description: >
             The specified datetime when the average balance calculation begins.
             The datetime is displayed in the RFC 3339 format; for example:
-            `2024-01-28T10:33:01Z`.
+            `2024-01-28T10:33:01Z`.<br>
+
+            The date time is converted to the account's time zone (refer to the
+            operation description), and only the resulting calendar date is
+            considered. The calculation starts at the beginning of that day
+            (`00:00:00`). For example, `2024-01-28T02:00:00Z` converts to
+            `2024-01-27` in the `America/Sao_Paulo` time zone, so the
+            calculation begins at `2024-01-27T00:00:00-03:00`.
           example: '2024-01-28T10:33:01.000Z'
         end_date_datetime:
           type: string
@@ -2125,7 +2134,13 @@ components:
           description: >
             The specified datetime when the average balance calculation ends.
             The datetime is displayed in the RFC 3339 format; for example:
-            `2024-01-29T10:33:01Z`.
+            `2024-01-29T10:33:01Z`.<br>
+
+            The date time is interpreted in the account's time zone (see the
+            operation description), and only the calendar date is used. The
+            calculation ends at `23:59:59` on that date. The date must have
+            already passed in the account's time zone. The current date and
+            future dates are rejected with `HTTP 400`.
           example: '2024-01-30T10:33:01.000Z'
         balance_types_to_calculate:
           type: array
@@ -2187,16 +2202,20 @@ components:
           type: string
           format: date-time
           description: >
-            The date and time when the calculation begins. The date and time are
-            displayed in RFC 3339 format, for example: `2024-01-28T10:33:01Z`.
-          example: '2024-01-28T10:33:01.000Z'
+            The date and time when the calculation begins, normalized to the
+            beginning of the day (`00:00:00`) in the account's timezone and
+            returned with that timezone offset. The date and time are displayed
+            in RFC 3339 format, for example: `2024-01-28T00:00:00-03:00`.
+          example: '2024-01-28T03:00:00.000Z'
         end_date_datetime:
           type: string
           format: date-time
           description: >
-            The date and time when the calculation ends. The date and time are
-            displayed in RFC 3339 format, for example: `2024-01-29T10:33:01Z`.
-          example: '2024-01-30T10:33:01.000Z'
+            The date and time when the calculation ends, normalized to the end
+            of the day (`23:59:59`) in the account's timezone and returned with
+            that timezone offset. The date and time are displayed in RFC 3339
+            format, for example: `2024-01-30T23:59:59-03:00`.
+          example: '2024-01-31T02:59:59.000Z'
         balance_types_to_calculate:
           type: array
           items:
@@ -2333,7 +2352,14 @@ components:
           example: PERCENTAGE
         value:
           type: number
-          description: Value of the withdrawal fee
+          description: >
+            Value of the withdrawal fee, with up to 2 decimal places.
+
+            - `PERCENTAGE`: a percentage, not a decimal fraction (`1` = 1%,
+            `0.01` = 0.01%). Fee = `withdrawal_amount × value / 100`. Unlike
+            interest plan rates (`0.035` = 3.5%).
+
+            - `FIXED`: an amount in the account's currency.
           example: 1.5
     SubsequentWithdrawals:
       type: object
@@ -2512,13 +2538,6 @@ components:
       required:
         - withdrawal_date
       properties:
-        withdrawal_amount:
-          type: number
-          description: >
-            The amount the customer intends to withdraw. When omitted, the
-            system fetches the current book balance from Bank Statements API.
-            When provided, it must not exceed the current book balance.
-          example: 5000
         withdrawal_date:
           type: string
           format: date-time
@@ -2527,7 +2546,16 @@ components:
             match the current UTC date. Requests that use a past date return
             error `EIBACC0294`, while requests that use a future date return
             error `EIBACC0407`.
-          example: '2026-06-15T00:00:00Z'
+          example: '2026-06-19T00:00:00Z'
+        withdrawal_amount:
+          type: number
+          format: float
+          description: >
+            The amount to withdraw. When omitted, the account balance is used:
+            `book_balance` for `DEPOSIT_BASIS` products, or the `balance_type`
+            balance for `BALANCE_BASIS` products. The amount provided cannot
+            exceed that balance.
+          example: 5000
     PenaltySimulationResponse:
       type: object
       properties:
@@ -2540,21 +2568,21 @@ components:
         withdrawal_amount:
           type: number
           description: >-
-            The withdrawal amount used in the simulation. (Equals `book_balance`
-            when not passed in the request.)
+            The withdrawal amount used in the simulation. (Equals the account
+            balance when not passed in the request.)
           example: 40667.17
         withdrawal_date:
           type: string
           format: date-time
           description: The withdrawal date used in the simulation in ISO 8601 format.
-          example: '2026-12-15T00:00:00Z'
+          example: '2026-06-19T00:00:00Z'
         penalty_rule_applied:
           type: array
           description: >
-            List of penalty rules applied to the withdrawal; omitted when no
+            List of penalty rules applied to the withdrawal, omitted when no
             penalty applies. Every non-zero `penalty_breakdown` component has at
-            least one matching rule here: a `FIXED` rule for `fixed_amount` and
-            a `PERCENTAGE` rule for `percentage_amount`.
+            least one matching rule: a `FIXED` rule for `fixed_amount` and a
+            `PERCENTAGE` rule for `percentage_amount`.
           items:
             $ref: '#/components/schemas/PenaltyRuleApplied'
         penalty_amount:
@@ -2562,15 +2590,16 @@ components:
           description: >
             The total penalty applied to the withdrawal. Always equals the sum
             of the `penalty_breakdown` components (`fixed_amount` +
-            `percentage_amount`).
+            `percentage_amount`). Returns `0` when no penalties are triggered or
+            during the cool-off period. 
           example: 1066.68
         penalty_breakdown:
           $ref: '#/components/schemas/PenaltyBreakdown'
         currency:
           type: string
           description: >-
-            The currency in ISO 4217 alphabetic format, omitted if no penalty
-            applies.
+            The 3-letter currency code in ISO 4217 alphabetic format, omitted if
+            no penalty applies.
           example: BRL
         gross_amount:
           type: number
@@ -2603,6 +2632,10 @@ components:
             calculated as `net_amount` = `gross_amount` - `penalty_amount`. This
             value is non-negative when `withdrawal_amount` does not exceed the
             resolved balance.
+
+
+            When the penalty amount is `0`, `net_amount` equals `gross_amount`
+            and `penalty_rule_applied` is omitted.
           example: 40267.66
         simulation_timestamp:
           type: string
@@ -2633,8 +2666,11 @@ components:
           format: float
           description: >
             The penalty value. For `PERCENTAGE`, this represents the percentage
-            rate. For example, `2.5` = 2.5%. For `FIXED`, this is the absolute
-            amount in the account's currency.
+            rate with up to 4 decimal places. For example, `2.5` = 2.5% and
+            `0.0671` = 0.0671%. It is the exact rate used to calculate the
+            penalty, which is not rounded before it is applied to the
+            `withdrawal_amount`. For `FIXED`, this is the absolute amount in the
+            account's currency with two decimal places.
           example: 2.5
         description:
           type: string
@@ -2671,7 +2707,8 @@ components:
           description: >
             The sum of all percentage-based penalties. Each percentage penalty
             is `rule.value` % of the `withdrawal_amount`. (The documented base
-            is the withdrawal amount.)
+            is the withdrawal amount.) Only the sum is rounded to 2 decimal
+            places.
           example: 1016.68
     UnifiedDepositOpenRequest:
       type: object
@@ -2893,7 +2930,7 @@ components:
               summary: Bad Request
               value:
                 code: EIBACC0008
-                message: Bad Request
+                message: Validation error
                 details: >-
                   error EIBACC0008: Validation error [(Field 'Order' is
                   invalid)]
@@ -2926,7 +2963,7 @@ components:
             divergentInterestBalanceConfig:
               summary: Interest processing code already has a divergent balance-config
               value:
-                code: EIBACC0381
+                code: EIBACC0384
                 message: >-
                   Interest processing code already has a divergent
                   balance-config
@@ -3029,7 +3066,7 @@ paths:
                   value:
                     code: EIBACC0393
                     message: >-
-                      Penalty processing code has a balance‑config that
+                      Penalty processing code has a balance-config that
                       conflicts with the required penalty configuration
         '500':
           $ref: '#/components/responses/500InternalServer'
@@ -3254,7 +3291,7 @@ paths:
                   summary: Generic validation error
                   value:
                     code: EIBACC0008
-                    message: Bad Request
+                    message: Validation error
                 overrideValidUntilPast:
                   summary: valid_until must be a future datetime
                   value:
@@ -3502,7 +3539,7 @@ paths:
                   summary: Request body validation error
                   value:
                     code: EIBACC0008
-                    message: Bad Request
+                    message: Validation error
                     details: >-
                       error EIBACC0008: Validation error [(Field
                       'external_account_id' is required)]
@@ -3516,7 +3553,7 @@ paths:
                 invalidAccountCreationDatetime:
                   summary: account_creation_datetime is not a valid RFC 3339 value
                   value:
-                    code: EIBACC0380
+                    code: EIBACC0383
                     message: Invalid account_creation_datetime format. Expected RFC3339
                 accountMismatch:
                   summary: Provided account_id does not match external_account_id
@@ -3819,14 +3856,16 @@ paths:
         - `withdrawal_date` must be the current date (UTC); past and future
         dates are rejected.
 
-        - A withdrawal date inside the cool‑off period results in no penalties
+        - A withdrawal date inside the cool‑off period, or an inactive penalty
+        record, returns `penalty_amount: 0` and `net_amount` = `gross_amount`,
+        with `penalty_rule_applied`, `penalty_breakdown` and `currency` omitted.
 
-        - If `withdrawal_amount` is omitted, the Pismo platform fetches the
-        current book balance from [Get transaction banking account
-        balance](ref:get-account-balances).
-
-        - If `withdrawal_amount` is provided, the balance cannot exceed the
-        current book balance.
+        - The account balance comes from [Get transaction banking account
+        balance](ref:get-account-balances): `book_balance` for `DEPOSIT_BASIS`
+        products, or the `balance_type` balance for `BALANCE_BASIS` products.
+        When `withdrawal_amount` is omitted, the account balance is used as the
+        withdrawal amount. `withdrawal_amount` cannot exceed the account
+        balance.
 
         - `gross_amount` reflects the account's resolved balance until a
         capitalization total record becomes available.
@@ -3849,7 +3888,7 @@ paths:
               example:
                 external_account_id: a4070788-bbe3-4127-8abc-123456789012
                 withdrawal_amount: 40667.17
-                withdrawal_date: '2026-12-15T00:00:00Z'
+                withdrawal_date: '2026-06-19T00:00:00Z'
                 penalty_rule_applied:
                   - type: FIXED
                     value: 50
@@ -3874,11 +3913,20 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/ErrorResponse'
               examples:
-                invalidAccountId:
-                  summary: Invalid account ID path parameter
+                missingAccountIdentifier:
+                  summary: Neither x-account-id nor x-external-account-id was provided
                   value:
-                    code: EIBACC0015
-                    message: Invalid accountId path param
+                    code: EIBACC0376
+                    message: >-
+                      One of 'x-account-id' or 'x-external-account-id' is
+                      required
+                ambiguousAccountIdentifier:
+                  summary: Both x-account-id and x-external-account-id were provided
+                  value:
+                    code: EIBACC0377
+                    message: >-
+                      Only one of 'x-account-id' or 'x-external-account-id' must
+                      be provided
                 invalidWithdrawalAmount:
                   summary: Invalid withdrawal amount (zero or negative)
                   value:
@@ -3900,7 +3948,7 @@ paths:
                       withdrawal_date must be a valid ISO 8601 datetime (e.g.
                       2026-01-15T15:00:00Z)
                 withdrawalAmountExceedsBalance:
-                  summary: Withdrawal amount exceeds book balance
+                  summary: Withdrawal amount exceeds the account balance
                   value:
                     code: EIBACC0338
                     message: >-
@@ -3920,6 +3968,11 @@ paths:
                   value:
                     code: EIBACC0005
                     message: 'Missing required header: ''x-tenant'''
+                invalidAccountIdHeader:
+                  summary: Invalid x-account-id header
+                  value:
+                    code: EIBACC0006
+                    message: 'Invalid account id header: ''x-account-id'''
         '404':
           description: Not Found
           content:
@@ -3928,16 +3981,36 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/ErrorResponse'
               examples:
-                accountNotFound:
-                  summary: Account not found
+                accountNotFoundForIdentifier:
+                  summary: Account not found for the provided account ID
                   value:
-                    code: EIBACC0226
-                    message: Account not found
-                productNotAttached:
-                  summary: Product is not attached to account
+                    code: EIBACC0375
+                    message: Account not found for the provided account ID
+                accountNotFoundInAccountsApi:
+                  summary: Account not found in the Accounts API
+                  value:
+                    code: EIBACC0019
+                    message: Accounts API - Request returned error 404
+                productNotFound:
+                  summary: Product not found
                   value:
                     code: EIBACC0064
                     message: Product not found
+                productNotAttached:
+                  summary: Product is not attached to account
+                  value:
+                    code: EIBACC0113
+                    message: Product attachment not found
+                interestPlanNotFound:
+                  summary: Interest plan not found (legacy Interest Plan API)
+                  value:
+                    code: EIBACC0083
+                    message: Interest Plan API - Interest plan not found
+                interestEnginePlanNotFound:
+                  summary: Interest plan not found (Interest Engine Plan API)
+                  value:
+                    code: EIBACC0225
+                    message: Interest Engine Plan API - Interest plan not found
         '422':
           description: Unprocessable Entity
           content:
@@ -3968,6 +4041,27 @@ paths:
                     message: >-
                       No penalty is configured for the product attached to this
                       account
+                externalAccountIdNotSupported:
+                  summary: External account ID is not supported in this environment
+                  value:
+                    code: EIBACC0395
+                    message: External account ID is not supported in this environment
+                interestRateNotConfigured:
+                  summary: >-
+                    Interest plan rate not configured for the penalty
+                    calculation
+                  value:
+                    code: EIBACC0197
+                    message: >-
+                      Interest Plan Interest Rate is not configured to process
+                      the penalty
+                benchmarkRateNotFound:
+                  summary: No applicable benchmark rate found for the withdrawal date
+                  value:
+                    code: EIBACC0277
+                    message: >-
+                      Benchmark Rate API - No applicable rate found for the
+                      current date
         '500':
           description: Internal Server Error
           content:
@@ -4227,7 +4321,7 @@ paths:
                   summary: Generic validation error
                   value:
                     code: EIBACC0008
-                    message: Bad Request
+                    message: Validation error
                 programLevelPenaltiesNotSupported:
                   summary: penalties not supported at program-level
                   value:
@@ -4606,7 +4700,9 @@ paths:
                   summary: Attachment is not active
                   value:
                     code: EIBACC0301
-                    message: Product attachment is not active
+                    message: >-
+                      Attachment is not active. Only active attachments can be
+                      updated
                 optimisticLock:
                   summary: Product attachment was modified concurrently
                   value:
@@ -4745,7 +4841,9 @@ paths:
                   summary: Attachment is not active
                   value:
                     code: EIBACC0301
-                    message: Product attachment is not active
+                    message: >-
+                      Attachment is not active. Only active attachments can be
+                      updated
                 optimisticLock:
                   summary: Product attachment was modified concurrently
                   value:
@@ -4844,6 +4942,21 @@ paths:
         account for that period. The calculation multiplies each unchanged
         balance by the number of days it remains constant, sums those values,
         and divides the total by the number of days in the selected range.<br>
+
+        The `begin_date_datetime` and `end_date_datetime` values are interpreted
+        in the account's time zone, determined in the following order: the
+        account's division, its parent division, the program, and finally UTC
+        when no time zone is available. Only the calendar date of each value is
+        considered. The calculation period begins at `00:00:00 `on the start
+        date and ends at `23:59:59` on the end date in the time zone. The period
+        cannot exceed 366 days, and the end date must have already passed in
+        that time zone; otherwise, the request is rejected with `HTTP 400`.
+
+        Requests for the same calendar days are treated as the same calculation,
+        regardless of the time of day provided. If a matching calculation
+        already exists, the request is rejected with `HTTP 409`, and the details
+        field contains the idempotency key of the existing calculation, which
+        can be used with the `GET` endpoint.<br>
 
         This endpoint generates the [Average balance
         calculated](https://developers.pismo.io/events/docs/average-balance-calculated-average-balance-1)
