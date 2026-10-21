@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io
-    description: API server for testing.
+    description: API server for testing
 tags:
   - name: Accounts
     description: Endpoints to manage accounts
@@ -25,11 +25,11 @@ tags:
   - name: Phones
     description: Endpoints to manage phones
   - name: Statuses and reasons
-    description: Endpoints to configure accounts, statuses, and reasons.
+    description: Endpoints to configure accounts, statuses, and reasons
   - name: Transfer account
     description: Endpoints dealing with account transfer
   - name: Migration
-    description: Endpoints to manage migration.
+    description: Endpoints to manage migration
 components:
   parameters:
     AccountIdPath:
@@ -339,6 +339,7 @@ components:
         Should the response list up to 3 levels of descendant account numbers
         (children, grandchildren, and great-grandchildren) in the `children`
         array? Default is `false`.
+
 
 
         Refer to the [Related accounts](doc:accounts-overview#related-accounts)
@@ -968,6 +969,8 @@ components:
           $ref: '#/components/schemas/OpenDueDate'
         current_cicle:
           $ref: '#/components/schemas/CurrentCycle'
+        postal_address_type:
+          $ref: '#/components/schemas/PostalAddressType'
         exchange_mode:
           $ref: '#/components/schemas/ExchangeMode'
         customer_id:
@@ -1109,6 +1112,20 @@ components:
           $ref: '#/components/schemas/EntityID2'
         program_id:
           $ref: '#/components/schemas/ProgramID'
+    AcquisitionResponseV3:
+      description: >-
+        v3 acquisition create response: the base AcquisitionResponse plus the
+        account creation timestamp returned by the v3.
+      allOf:
+        - $ref: '#/components/schemas/AcquisitionResponse'
+        - type: object
+          properties:
+            creation_datetime:
+              $ref: '#/components/schemas/CreationDatetime'
+              description: >-
+                Account creation timestamp in UTC. Format =
+                YYYY-MM-DDThr:mm:ss.000Z (ISO-8601). Returned only when the
+                request created an account (submit=true). Omitted otherwise.
     Activity:
       type: string
       description: Company's general field of activity
@@ -4491,7 +4508,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AcquisitionResponse'
+                $ref: '#/components/schemas/AcquisitionResponseV3'
               examples:
                 Application created:
                   value:
@@ -4502,6 +4519,7 @@ paths:
                     customer_id: 456
                     entity_id: 789
                     program_id: 100
+                    creation_datetime: '2025-02-01T22:07:58.000Z'
         '400':
           description: Bad request
           content:
