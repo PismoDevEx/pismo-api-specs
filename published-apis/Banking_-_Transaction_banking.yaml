@@ -2364,8 +2364,9 @@ components:
       maxLength: 36
       example: US
     DivisionDescription:
-      type: string
-      nullable: true
+      type:
+        - string
+        - 'null'
       maxLength: 80
       description: Division description
       example: NY - New York City
@@ -3110,6 +3111,8 @@ components:
           $ref: '#/components/schemas/DivisionName'
         division_id:
           $ref: '#/components/schemas/DivisionID'
+        division_code:
+          $ref: '#/components/schemas/DivisionCode2'
         administrative_division_id:
           $ref: '#/components/schemas/AdministrativeDivisionID'
         parent_code:
@@ -3189,8 +3192,11 @@ components:
                 $ref: '#/components/schemas/HierarchyID'
               name:
                 $ref: '#/components/schemas/HierarchyName'
-              level:
-                $ref: '#/components/schemas/Level'
+              levels:
+                type: array
+                description: List of hierarchy levels
+                items:
+                  $ref: '#/components/schemas/Level'
         pagination:
           $ref: '#/components/schemas/Pagination'
       required:
@@ -3449,7 +3455,7 @@ components:
       title: ListDormancyConfigResponse
       type: object
       properties:
-        dormancy_configs:
+        dormancy-configs:
           type: array
           description: List of dormancy configurations
           items:
@@ -3491,6 +3497,8 @@ components:
                 $ref: '#/components/schemas/DenyForcedTransactionReactivation'
               check_timezone_origin:
                 $ref: '#/components/schemas/CheckTimezoneOrigin'
+              reactivation_exceptions_config:
+                $ref: '#/components/schemas/ReactivationExceptionsConfig'
         pagination:
           $ref: '#/components/schemas/Pagination'
     ListEarmarksResponse:
@@ -5683,7 +5691,7 @@ components:
     TransactionStatusResponse:
       type: object
       properties:
-        authorizations_status:
+        authorization_status:
           $ref: '#/components/schemas/AuthorizationStatus'
         amount:
           $ref: '#/components/schemas/AmountValue'
@@ -5821,9 +5829,10 @@ components:
       description: Create public key payload request
       type: object
       example:
-        id: string
-        key_material: string
-        expires_at: string
+        id: b6cdccc4-f6bf-4218-9e5e-7fb8f66008e3
+        key_material: >-
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
+        expires_at: '2025-05-21T12:27:00Z'
       properties:
         id:
           $ref: '#/components/schemas/PublicKeyID'
@@ -6631,6 +6640,7 @@ paths:
                     level_id: 7d574f66-ebd0-4b83-85a1-98ce7569e5c3
                     name: NORAM
                     division_id: 6f8a456a-8b1a-4022-a2f8-7612595330b5
+                    division_code: NORAM
                     administrative_division_id: 13
                     parent_code: my-parent-division
                     description: North American regional division
@@ -6981,6 +6991,22 @@ paths:
                   value:
                     code: WCAC0005
                     message: 'currency_code: invalid currency code'
+                currency_code not resolved:
+                  value:
+                    code: WCAC0048
+                    message: >-
+                      currency_code was not provided and could not be resolved
+                      from the program or the org
+                program not found while resolving currency_code:
+                  value:
+                    code: WCAC0049
+                    message: >-
+                      currency_code was not provided and the program was not
+                      found
+                org not found while resolving currency_code:
+                  value:
+                    code: WCAC0050
+                    message: currency_code was not provided and the org was not found
                 Not mapped 400 error:
                   value:
                     code: WCAC0009
@@ -14781,7 +14807,7 @@ paths:
                 Example transactions list:
                   value:
                     items:
-                      - authorizations_status: DECLINED
+                      - authorization_status: DECLINED
                         amount: 1000
                         currency: USD
                         processing_code: '220035'
@@ -14792,7 +14818,7 @@ paths:
                         error:
                           code: WPMT0010
                           message: Insufficient funds
-                      - authorizations_status: APPROVED
+                      - authorization_status: APPROVED
                         amount: 1000
                         currency: USD
                         processing_code: '220035'
@@ -15101,7 +15127,7 @@ paths:
               examples:
                 Dormancy configuration:
                   value:
-                    dormancy_configs:
+                    dormancy-configs:
                       - id: 11bb6f64-15de-4d88-b77a-988f3e30dc55
                         check_time: '09:00:00'
                         target_type: DIVISION
