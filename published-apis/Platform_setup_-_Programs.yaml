@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
 tags:
   - name: Programs
     description: Create and manage programs
@@ -357,8 +357,8 @@ components:
           type: integer
           format: int64
           description: |
-            Brand ID. 
-        description:
+            Brand ID
+        name:
           type: string
           description: Program's card brand.  **REQUIRED** for card-issuing programs.
           enum:
@@ -381,9 +381,9 @@ components:
           type: integer
           format: int64
           description: >
-            Acquisition channel ID. ID of How the customer was referrred, such
-            as from a web page or mobile app. Acquisition channels are
-            configured at the program level.
+            Acquisition channel ID. ID of customer referral method, such as from
+            a web page or mobile app. Acquisition channels are configured at the
+            program level.
         name:
           type: string
           description: Customer-supplied acquistion channel name
@@ -707,7 +707,9 @@ components:
         id:
           $ref: '#/components/schemas/ProgramID'
         base_program_id:
-          $ref: '#/components/schemas/BaseProgramID'
+          anyOf:
+            - $ref: '#/components/schemas/BaseProgramID'
+            - type: 'null'
         initial_card_status:
           $ref: '#/components/schemas/InitialCardStatus'
         name:
@@ -748,7 +750,9 @@ components:
         id:
           $ref: '#/components/schemas/ProgramID'
         base_program_id:
-          $ref: '#/components/schemas/BaseProgramID'
+          anyOf:
+            - $ref: '#/components/schemas/BaseProgramID'
+            - type: 'null'
         initial_card_status:
           $ref: '#/components/schemas/InitialCardStatus'
         name:
@@ -1012,7 +1016,54 @@ components:
     ProgramItems:
       type: array
       items:
-        $ref: '#/components/schemas/Program'
+        $ref: '#/components/schemas/ProgramListItem'
+    ProgramListItem:
+      type: object
+      properties:
+        bin:
+          $ref: '#/components/schemas/Bin'
+        brand:
+          $ref: '#/components/schemas/Brand'
+        css:
+          $ref: '#/components/schemas/CSS'
+        id:
+          $ref: '#/components/schemas/ProgramID'
+        base_program_id:
+          anyOf:
+            - $ref: '#/components/schemas/BaseProgramID'
+            - type: 'null'
+        initial_card_status:
+          $ref: '#/components/schemas/InitialCardStatus'
+        name:
+          $ref: '#/components/schemas/ProgramName'
+        print_card:
+          $ref: '#/components/schemas/PrintCardBoolean'
+        provider:
+          $ref: '#/components/schemas/Provider'
+        type:
+          $ref: '#/components/schemas/ProgramType'
+        url_image:
+          $ref: '#/components/schemas/UrlImage'
+        currency_numeric_code:
+          $ref: '#/components/schemas/CurrencyNumericCode'
+        timezone:
+          $ref: '#/components/schemas/TimeZone'
+        country_code:
+          $ref: '#/components/schemas/CountryCode'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        status:
+          $ref: '#/components/schemas/ProgramStatus'
+        language:
+          $ref: '#/components/schemas/ProgramLanguage'
+        cycle_closing:
+          anyOf:
+            - $ref: '#/components/schemas/ProgramCycleClosing'
+            - type: 'null'
+        holiday_calendar_id:
+          anyOf:
+            - $ref: '#/components/schemas/ProgramHolidayCalendarId'
+            - type: 'null'
     ProgramName:
       type: string
       description: Program name
@@ -1023,14 +1074,22 @@ components:
       description: |
         Program Language:
 
-        * `en-US` - US English
-        * `pt-BR` - Brazilian Portuguese
+        * `en-US`—US English
+        * `pt-BR`—Brazilian Portuguese
 
         Default is `en-US`
       enum:
         - pt-BR
         - en-US
       example: en-US
+    ProgramHolidayCalendarId:
+      type: number
+      description: Program holiday calendar ID
+      example: 8675309
+    ProgramCycleClosing:
+      type: string
+      description: Cycle closing time. Format = hh:mm:ss.
+      example: '12:00:00'
     ProgramPage:
       type: object
       properties:
@@ -1867,6 +1926,18 @@ paths:
                   $ref: '#/components/examples/GenericErrorResponse'
                 generic-error-2:
                   $ref: '#/components/examples/GenericError2Response'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
   /programs/v2/programs/template:
     post:
       summary: Create program (async)
@@ -1979,6 +2050,18 @@ paths:
                   $ref: '#/components/examples/GenericErrorResponse'
                 generic-error-2:
                   $ref: '#/components/examples/GenericError2Response'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
   /programs/v1/programs/copy:
     post:
       summary: Copy program
@@ -2096,6 +2179,18 @@ paths:
                   $ref: '#/components/examples/GenericErrorResponse'
                 generic-error-2:
                   $ref: '#/components/examples/GenericError2Response'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
   /programs/v2/programs/copy:
     post:
       summary: Copy program (async)
@@ -2208,6 +2303,18 @@ paths:
                   $ref: '#/components/examples/GenericErrorResponse'
                 generic-error-2:
                   $ref: '#/components/examples/GenericError2Response'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
       x-codegen-request-body-name: programCopy
   /programs/v1/programs:
     get:
@@ -2584,6 +2691,18 @@ paths:
                 $ref: '#/components/schemas/ProgramExport'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
     get:
       summary: List exported programs
       description: >
@@ -2644,6 +2763,18 @@ paths:
                 $ref: '#/components/schemas/ProgramExportArray'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
   /programs/v1/programs/export/{id}:
     get:
       summary: Get program export record
@@ -2736,6 +2867,18 @@ paths:
                 $ref: '#/components/schemas/ProgramExport'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/handler.HTTPError'
     get:
       summary: List imported programs
       description: |
