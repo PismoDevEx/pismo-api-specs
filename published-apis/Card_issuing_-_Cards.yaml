@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
   - url: https://gw-pci.pismolabs.io
     description: Sandbox PCI API server for testing.
 security:
@@ -20,6 +20,8 @@ tags:
     description: Card management endpoints
   - name: Card reissue
     description: Card reissue endpoints
+  - name: Card renewal
+    description: Card renewal endpoints
   - name: Card status
     description: Card status endpoints
   - name: Card validity
@@ -631,8 +633,15 @@ components:
       properties:
         message:
           type: string
-          description: Physical card activated message
-          example: The card was successfully unblocked
+          description: |
+            Activation result message.
+
+               * `The card was successfully unblocked`—The card was activated and its status changed to `NORMAL`.
+
+               * `Expiration date successfully updated`—A scheduled expiration date renewal was applied and the card's status was kept unchanged.
+            enum:
+             - "The card was successfully unblocked"
+             - "Expiration date successfully updated"
     CardAlias:
       type: string
       description: >
@@ -648,6 +657,68 @@ components:
       minLength: 1
       maxLength: 50
       example: Vacation card
+    CardExpirationNewDate:
+      type: string
+      description: |
+        New card expiration date. Format = YYMM. 
+
+        **MUST** be later than the card's current `expiration_date`.
+      pattern: ^\d{4}$
+      example: '3112'
+    CardExpirationRenewBody:
+      type: object
+      description: Card expiration date renewal object
+      required:
+        - new_expiration_date
+      properties:
+        new_expiration_date:
+          $ref: '#/components/schemas/CardExpirationNewDate'
+    CardExpirationRenewalData:
+      type: object
+      description: >
+        Present only when the card has a pending expiration date renewal
+        (`status` = `WAITING`), scheduled through the [Renew card expiration
+        date](ref:patch-v2-card-expiration-renew) endpoint. 
+
+
+        Not returned when there is no pending renewal.
+      properties:
+        new_expiration_date:
+          $ref: '#/components/schemas/CardExpirationNewDate'
+        status:
+          type: string
+          description: >
+            Pending renewal status. Only renewals with status `WAITING` are
+            returned.
+          enum:
+            - WAITING
+            - APPLIED
+          example: WAITING
+        renewal_request_date:
+          type: string
+          format: date-time
+          description: Date and time the renewal was requested. RFC 3339 format.
+          example: '2026-10-05T17:23:18Z'
+    CardExpirationRenewResponse:
+      type: object
+      description: Card expiration date renewal response object
+      properties:
+        id:
+          $ref: '#/components/schemas/CardID2'
+        status:
+          $ref: '#/components/schemas/CardExpirationRenewStatus'
+        new_expiration_date:
+          $ref: '#/components/schemas/CardExpirationNewDate'
+    CardExpirationRenewStatus:
+      type: string
+      description: |
+        Expiration date renewal request status.
+          * `WAITING`—Renewal is scheduled to be applied when the card is [activated](ref:put-v1-card-activate).
+          * `APPLIED`—New expiration date was applied to the card.
+      enum:
+        - WAITING
+        - APPLIED
+      example: WAITING
     CardID:
       type: object
       description: Pismo card ID object
@@ -830,6 +901,8 @@ components:
           $ref: '#/components/schemas/ValidUntil2'
         metadata:
           $ref: '#/components/schemas/Metadata'
+        renewal_data:
+          $ref: '#/components/schemas/CardExpirationRenewalData'
     CardStatusListResponse:
       type: object
       description: Card status list response object
@@ -3128,15 +3201,22 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /wallet/v1/customers/{customerId}/accounts/{accountId}/cards/{cardId}/activate:
     put:
-      operationId: put-v1-card-activate
       summary: Activate physical card
       description: >
-        A physical card is initally blocked for transactions until activated. 
+        Activate a physical card.
+
+
+        A physical card is initially blocked for transactions until activated. 
         This prevents unauthorized use until the cardholder takes delivery. You
         do not have to activate a card to tokenize it for a digital wallet.
 
-        This endpoint generates a [Card
-        updated](https://developers.pismo.io/events/docs/cards-update-1) event.
+
+        **Notes**
+
+          * Besides activating a new card, you can use this endpoint to activate (renew) an old card with a new expiration date. For more information, refer to the [Card renewal](doc:card-renewal) guide.
+
+          * This endpoint generates a [Card updated](https://developers.pismo.io/events/docs/cards-update-1) event. For activation, `operation_type` =  `ACTIVATE`. For renewal,  `operation_type` = `EXPIRATION_DATE_RENEWED`.
+      operationId: put-v1-card-activate
       tags:
         - Cards
       parameters:
@@ -3146,7 +3226,7 @@ paths:
         - $ref: '#/components/parameters/customerIdHeader'
       responses:
         '200':
-          description: Card activated success response
+          description: Card activated or renewed success response
           content:
             application/json:
               schema:
@@ -3211,8 +3291,8 @@ paths:
         and additional cardholders, but only one owner.
 
 
-        **Note:** This endpoint takes an account token - an access token encoded
-        with a Pismo account ID.
+        **Note:** This endpoint requires an account token&mdash;an access token
+        encoded with a Pismo account ID.
       tags:
         - Cards
       parameters:
@@ -3247,7 +3327,7 @@ paths:
         Get card non-sensitive (non-PCI) information.
 
 
-        NOTE: This endpoint requires an account-specific access token - a token
+        **Note**: This endpoint requires an account token&mdash;an access token
         encoded with a Pismo account ID.
       tags:
         - Cards
@@ -3280,8 +3360,8 @@ paths:
         updated](https://developers.pismo.io/events/docs/cards-update-1) event.
 
 
-        **Note:** This endpoint takes an account token - an access token encoded
-        with a Pismo account ID.
+        **Note:** This endpoint requires an account token&mdash;an access token
+        encoded with a Pismo account ID.
       operationId: patch-v2-card
       tags:
         - Cards
@@ -3327,7 +3407,7 @@ paths:
 
         **Notes:** 
           * ATC reset only occurs on the Pismo platform. When a new transaction occurs, the ATC is synchronized with the chip's ATC.
-          * This endpoint takes an account token - an access token encoded with a Pismo account ID. For combo cards, whether the debit or credit ATC is reset depends on which account ID (credit or debit) is encoded with the access token.
+          * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. For combo cards, whether the debit or credit ATC is reset depends on which account ID (credit or debit) is encoded with the access token.
           
       operationId: post-v2-card-atc-reset
       tags:
@@ -3435,8 +3515,8 @@ paths:
         Get all possible card statuses, including those used for card reissuing.
 
 
-        **Note:** This endpoint takes an account token - an access token encoded
-        with a Pismo account ID.
+        **Note:** This endpoint requires an account token&mdash;an access token
+        encoded with a Pismo account ID.
       tags:
         - Card status
       responses:
@@ -3467,7 +3547,7 @@ paths:
 
           * Only cards with status changes after September/2022 are returned.
 
-          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
+          * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID.
 
         For more information, refer to [Card lifecycle and
         statuses](doc:card-lifecycle-and-statuses).
@@ -3535,8 +3615,8 @@ paths:
 
         * Currently, there is no way to transfer a card's PAN
 
-        * This endpoint takes an account token - an access token encoded with a
-        Pismo account ID.
+        * This endpoint requires an account token&mdash;an access token encoded
+        with a Pismo account ID.
       parameters:
         - $ref: '#/components/parameters/customerIdPath'
         - $ref: '#/components/parameters/accountIdPath'
@@ -3638,7 +3718,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -3839,7 +3919,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -4094,7 +4174,7 @@ paths:
         `UNBOUND` status, you will get a **409 Conflict** error. 
 
 
-        **Note:** This endpoint requires an account token - an access token
+        **Note:** This endpoint requires an account token&mdash;an access token
         encoded with a Pismo account ID.
       tags:
         - Noname
@@ -4172,7 +4252,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -4280,8 +4360,8 @@ paths:
         in the Cards overview guide.
 
 
-        **Note:** This endpoint takes an account token - an access token encoded
-        with a Pismo account ID.
+        **Note:** This endpoint requires an account token&mdash;an access token
+        encoded with a Pismo account ID.
       tags:
         - Modes
       parameters:
@@ -4615,7 +4695,7 @@ paths:
 
         **Notes:** 
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
-          * This endpoint requires an account token - an access token encoded with a Pismo account ID. Tokens can expire quickly, which can result in a **401 Unauthorized** error message. 
+          * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. Tokens can expire quickly, which can result in a **401 Unauthorized** error message. 
       tags:
         - Embossing data
       parameters:
@@ -4699,7 +4779,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -4904,7 +4984,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -5148,7 +5228,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -5226,7 +5306,7 @@ paths:
         **Notes:**
           * To use this endpoint, request it with a [Jira ticket](doc:opening-a-service-desk-ticket) with type = Settings and ask to use *ondemand* embossing.
           * If you call this endpoint, the [Change card password](ref:put-v2-card-password) endpoint will no longer add the card for embossing.
-          * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+          * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
         - Embossing
@@ -5411,7 +5491,7 @@ paths:
 
          **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -5508,7 +5588,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -5582,8 +5662,8 @@ paths:
         statuses](doc:card-lifecycle-and-statuses) guide.
 
 
-        **Note:** This endpoint takes an account token - an access token encoded
-        with a Pismo account ID.
+        **Note:** This endpoint requires an account token&mdash;an access token
+        encoded with a Pismo account ID.
       tags:
         - Cards
       parameters:
@@ -5719,7 +5799,7 @@ paths:
 
           * If the card's status is `NORMAL`, `REISSUED`, `BLOCKED`, `PENDING` or `WARNING`, the status remains the same. 
 
-        **Note:** This endpoint requires an account token - an access token
+        **Note:** This endpoint requires an account token&mdash;an access token
         encoded with a Pismo account ID. Tokens can expire quickly, which can
         result in a **401 Unauthorized** error message. 
       operationId: patch-v2-card-validity-renew
@@ -5776,7 +5856,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       tags:
@@ -5820,7 +5900,7 @@ paths:
 
          * To set up encryption for this endpoint, contact your Pismo representative.
          
-         * This endpoint takes an account token - an access token encoded with a Pismo account ID.
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID.
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
 
@@ -5944,7 +6024,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       operationId: post-generate-embossing
@@ -6065,7 +6145,7 @@ paths:
 
         **Notes:** 
 
-         * This endpoint requires an account token - an access token encoded with a Pismo account ID. 
+         * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. 
 
          * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
          
@@ -6434,7 +6514,7 @@ paths:
 
         **Notes:** 
 
-           * This endpoint **REQUIRES** an account token - an access token encoded with a Pismo account ID.
+           * This endpoint **REQUIRES** an account token&mdash;an access token encoded with a Pismo account ID.
 
            * For combination cards, this endpoint migrates the [card mode](doc:cards-overview-1#create-a-combination-card-with-card-modes) the card was originally created with. To migrate the secondary mode, call the [Migrate card mode](ref:patch-migrate-card-mode) endpoint.
       operationId: patch-migrate-card
@@ -6487,8 +6567,8 @@ paths:
         event. 
 
 
-        **Note:** This endpoint **REQUIRES** an account token - an access token
-        encoded with a Pismo account ID.
+        **Note:** This endpoint **REQUIRES** an account token&mdash;an access
+        token encoded with a Pismo account ID.
       operationId: patch-migrate-card-mode
       tags:
         - Migration
@@ -6818,7 +6898,7 @@ paths:
 
         **Notes**
 
-          * This endpoint takes an account token - an access token encoded with a Pismo account ID.
+          * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID.
 
           * This is a PCI endpoint, use the https://gw-pci.pismolabs.io environment.
       operationId: patch-v2-card-change-rotation
@@ -6864,8 +6944,8 @@ paths:
 
         **Notes**
 
-        * This endpoint takes an account token - an access token encoded with a
-        Pismo account ID.
+        * This endpoint requires an account token&mdash;an access token encoded
+        with a Pismo account ID.
 
         * This is a PCI endpoint, use the https://gw-pci.pismolabs.io
         environment.
@@ -7092,6 +7172,62 @@ paths:
       responses:
         '200':
           description: Success or failure
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServer'
+  /wallet/v2/cards/{cardId}/renew:
+    patch:
+      summary: Renew card expiration date
+      description: >
+        Renew a card via setting a new expiration date.
+
+
+        **Notes:**
+
+          * Renewal can be done for `PLASTIC` and `VIRTUAL` cards.
+          * Cards with status `UNNUMBERED`, `UNBOUND`, `CREATED`, or final status cannot be renewed.
+          * This endpoint generates a [Card updated](https://developers.pismo.io/events/docs/cards-update-1) event.
+          * This endpoint requires an account token&mdash;an access token encoded with a Pismo account ID. Tokens can expire quickly, which can result in a **401 Unauthorized** error message.
+
+        For more information, refer to the [Card renewal](doc:card-renewal)
+        guide.
+      operationId: patch-v2-card-expiration-renew
+      tags:
+        - Card renewal
+      parameters:
+        - $ref: '#/components/parameters/cardId'
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardExpirationRenewBody'
+      responses:
+        '200':
+          description: Card expiration date renewal was scheduled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardExpirationRenewResponse'
+        '400':
+          description: |
+            Bad request. Possible causes:
+
+              * `new_expiration_date` is missing or not in `YYMM` format.
+
+              * Month is not between `01` and `12`.
+
+              * `new_expiration_date` is not later than the card's current expiration date.
+
+              * Card type is not `PLASTIC` or `VIRTUAL`.
+
+              * Card status is `UNNUMBERED`, `UNBOUND`, `CREATED` or final status.
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
