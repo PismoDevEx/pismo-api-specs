@@ -271,8 +271,13 @@ components:
       maxLength: 50
       description: >
         Reversal description. If not passed, it is automatically set to "REV "
-        plus the `description` field.  For example, if `description` is
-        "Purchase", the reversal description will be "REV Purchase".
+        plus the `description` field. If `description` is between 47–50
+        characters, `reversal_description` is truncated from the end to fit 50
+        characters.
+
+
+        For example, if `description` is "Purchase", `reversal_description` is
+        set to "REV Purchase".
       example: Reversal description
     ReversalOrgsOperationCreateResponse:
       type: object
