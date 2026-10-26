@@ -766,6 +766,8 @@ components:
 
           `DICT` - Diretorio de Identificadores de Contas de Transação (Transaction accounts ID directory). Pix/DICT key is used for identification.
 
+          `STATIC_QRCODE` - Reusable code that contains only the data necessary to complete a transaction. When using static QR Code, the transaction amount must be provided manually.
+
           `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically. 
       example: DICT
     InitiatorDocumentNumber:
@@ -787,6 +789,21 @@ components:
         href="https://www.bcb.gov.br/en/financialstability/open_finance"
         target="_blank">Open Finance</a>. 
             
+        It is this field's presence, not the `initiation_type` that identifies
+        an Open Finance origin: when it is passed, `transaction_identification`
+        **MUST NOT** be passed.
+      example: '12345678912345'
+    InitiatorDocumentNumber2:
+      type: string
+      maxLength: 14
+      description: >
+        Payment initiator CNPJ, validated as a CNPJ.
+
+
+        Cadastro Nacional da Pessoa Jurídica (CNPJ) is Brazil's 14-character
+        federal taxpayer registration number for companies and legal entities.
+
+
         It is this field's presence, not the `initiation_type` that identifies
         an Open Finance origin: when it is passed, `transaction_identification`
         **MUST NOT** be passed.
@@ -2672,7 +2689,7 @@ components:
           maxLength: 6
           example: '500001'
         initiator_document_number:
-          $ref: '#/components/schemas/InitiatorDocumentNumber'
+          $ref: '#/components/schemas/InitiatorDocumentNumber2'
     scheduler.SchedulerRegisterResponse:
       type: object
       properties:
