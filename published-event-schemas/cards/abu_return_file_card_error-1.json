@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "ABU return file error by card",
+  "description": "Event that occurs during processing of the ABU return file. Specifies the card and error that occurred to it.",
+  "examples": [
+    {
+      "card_id": 12345,
+      "result_file_id": "70a12fc6-dbc1-47e1-808a-bc822b4ffcbc",
+      "result_file_name": "T275filename.txt",
+      "error_code": "101",
+      "error_message": "Old Account Number is not numeric",
+      "reason_code": "C",
+      "ica": "888888"
+    }
+  ],
+  "required": [
+    "card_id",
+    "result_file_id",
+    "error_code",
+    "error_message"
+  ],
+  "properties": {
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo Card ID.",
+      "examples": [
+        12345
+      ]
+    },
+    "result_file_id": {
+      "type": "string",
+      "title": "Result File ID",
+      "description": "References the historical record of the file.",
+      "examples": [
+        "70a12fc6-dbc1-47e1-808a-bc822b4ffcbc"
+      ]
+    },
+    "result_file_name": {
+      "type": "string",
+      "title": "Result Filename",
+      "description": "References record's filename.",
+      "examples": [
+        "T275filename.txt"
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error Code",
+      "description": "Error code sent by Mastercard: `100` = Account override for deletion request, but not on Mastercard files; `101` = Old Account Number is not numeric; `102` = Old Account Number is not valid length; `104` = New Account Number is not numeric; `105` = New Account Number not valid length; `107` = New Account Number is not in the issuer BIN range; `108` = Old Expiration Date is invalid; `109` = New Expiration Date invalid; `110` = Invalid Reason Code or Invalid Header or Detail Record ID; `113` = Old Account Number exists in Mastercard database; `114` = New Account Number exists in Mastercard database; `118` = Old Account Number is not in Mastercard database; `119` = New Account Number is not in Mastercard database; `120` = Old Account Number is not in the issuer BIN range for an Initial Load (I); `121` = Old Account Number and New Account Number are not the same for an Expiration Date change (E).",
+      "examples": [
+        "101"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error Message",
+      "description": "Error description sent by Mastercard. Each message corresponds to an `error_code` value. See `error_code` for the list of codes and messages.",
+      "examples": [
+        "Old Account Number is not numeric"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "title": "Reason Code",
+      "description": "Automatic updater reason code: `I` = initial load (Mastercard only); `N` = new account (Mastercard only); `C` = closed account; `R` = replacement when card is reissued (Mastercard only); `A` = replacement when card is reissued (Visa only); `E` = expiration date update; `O` = opt-out; `B` = opt back in (Visa only).",
+      "examples": [
+        "N"
+      ]
+    },
+    "ica": {
+      "type": "string",
+      "title": "Interbank Card Association (ICA) number",
+      "description": "Interbank Card Association (ICA) number. The issuer's sign-on ID. A four-digit number MasterCard assigns to a financial institution to identify the member.",
+      "examples": [
+        "888888"
+      ]
+    }
+  },
+  "definitions": {}
+}

@@ -1,0 +1,369 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Account balance changed",
+  "required": [
+    "id",
+    "account_id",
+    "operation_type",
+    "operation_amount",
+    "balance_update_datetime",
+    "business_date",
+    "external_account_id",
+    "ledger_balance",
+    "available_balance",
+    "debit_balance",
+    "credit_balance",
+    "earmarked_balance",
+    "uncleared_funds",
+    "overdraft_limit",
+    "posting_date",
+    "value_dated_balance",
+    "currency_code",
+    "future_dated_credits_balance",
+    "future_dated_debits_balance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Unique identifier",
+      "description": "Unique Balance Change Integrity identifier.",
+      "minLength": 1,
+      "maxLength": 36,
+      "examples": [
+        "744d9708-f217-4db2-8c9a-f211b5636370"
+      ]
+    },
+    "ledger_balance": {
+      "type": "number",
+      "title": "Ledger balance",
+      "description": "The effective account ledger balance.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        110.0
+      ]
+    },
+    "value_dated_balance": {
+      "type": "number",
+      "title": "Value dated balance",
+      "description": "Value dated balance results from recalculating credit or debit interest based on the back value date. By default, it is initialized with the book balance value. Because balance events are processed asynchronously and their order is not guaranteed, this balance can be temporarily negative until all related events are processed.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        70.0
+      ]
+    },
+    "available_balance": {
+      "type": "number",
+      "title": "Available balance",
+      "description": "The balance that is available for transactions, including credit balance and credit limit.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        50.0
+      ]
+    },
+    "uncleared_funds": {
+      "type": "number",
+      "title": "Uncleared funds",
+      "description": "The balance of funds that got posted on the account but haven't been cleared/confirmed.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        40.0
+      ]
+    },
+    "earmarked_balance": {
+      "type": "number",
+      "title": "Earmarked balance",
+      "description": "The credit balance on hold and thus removed from the available balance, but kept in the book balance. Because balance events are processed asynchronously and their order is not guaranteed, this balance can be temporarily negative until all related events are processed.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        20.0
+      ]
+    },
+    "credit_balance": {
+      "title": "Credit balance",
+      "description": "The balance of credit transactions posted into the account.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 18446744073709551617,
+      "examples": [
+        50.0
+      ]
+    },
+    "debit_balance": {
+      "title": "Debit balance",
+      "description": "The outstanding balance from debit transactions after all credit balance is used. (Values larger than zero imply usage of a credit limit).",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 18446744073709551617,
+      "examples": [
+        0.0
+      ]
+    },
+    "overdraft_limit": {
+      "type": "number",
+      "title": "Overdraft limit",
+      "description": "The value for maximum amount approved for overdraft spending on the account.",
+      "minimum": 0,
+      "maximum": 18446744073709551617,
+      "examples": [
+        0.0
+      ]
+    },
+    "operation_amount": {
+      "title": "Operation amount impacted in transaction",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 18446744073709551617,
+      "examples": [
+        10.7
+      ]
+    },
+    "balance_update_datetime": {
+      "type": "string",
+      "title": "Balance update datetime",
+      "description": "The balance integrity update datetime in UTC 0. Format = `YYYY-MM-DDThh:mm:ss.sssssssssZ`.",
+      "minLength": 1,
+      "maxLength": 30,
+      "examples": [
+        "2023-02-06T12:03:47.134188512Z"
+      ]
+    },
+    "posting_date": {
+      "type": "string",
+      "title": "Transaction posting balance date",
+      "description": "The business date of the balance. In the balance-change event, the `business_date` refers to the current business cycle date, it's the valid date determined by `cycle_closing_time config`. Note that the date may not be the same as the current date.\n\nthe balance-history event is used to check the updated balances from previous dates for backdated transactions, the balance-change event reflects the current account balance.",
+      "format": "date",
+      "examples": [
+        "2023-02-06"
+      ]
+    },
+    "business_date": {
+      "type": "string",
+      "title": "Balance business date",
+      "description": "The business date sent on the payment request. If not sent, it will be the same value as the posting_date.",
+      "format": "date",
+      "examples": [
+        "2023-02-06"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        10
+      ]
+    },
+    "external_account_id": {
+      "title": "External account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within your organization.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "5acb57cd-a99e-4de9-aea0-9f52021a945b"
+      ]
+    },
+    "operation_type": {
+      "title": "Operation type",
+      "description": "The type of operation that changed the account balance.\n\nIt can assume the values: \n\n`CREDIT`: When the change occurred because a credit was made. \n\n`DEBIT`: When the change occurred because a debit was made. \n\n`LIMIT_INCREASE`: When the overdraft limit for the account was increased. \n\n`LIMIT_DECREASE`: When the overdraft limit for the account was decreased. \n\n`ACCOUNT_CREATION`: When the account was created.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "examples": [
+        "CREDIT",
+        "DEBIT",
+        "LIMIT_INCREASE",
+        "LIMIT_DECREASE",
+        "ACCOUNT_CREATION"
+      ]
+    },
+    "currency_code": {
+      "type": "string",
+      "title": "Represents a 3-letter alphabetic code, conforming to the ISO 4217 standard, which corresponds to the currency utilized in the account balance",
+      "maxLength": 3,
+      "examples": [
+        "USD",
+        "GBP",
+        "BRL"
+      ]
+    },
+    "future_dated_credits_balance": {
+      "type": "number",
+      "title": "Future dated credits balance",
+      "description": "Balance for financial products that require a settlement on a future date after the posting date. The `book_balance` of the account is credited upon settlement. The value for `future_dated_credits_balance` increases when future-dated credits are posted using the <a href='https://developers.pismo.io/pismo-docs/reference/corporate-v2-post-payments'>Post payment</a> endpoint and decreases when such payments are settled or canceled. It is always a positive value.",
+      "minimum": 0,
+      "maximum": 9223372036854775807,
+      "examples": [
+        70.0
+      ]
+    },
+    "future_dated_debits_balance": {
+      "type": "number",
+      "title": "Future dated debits balance",
+      "description": "Balance for financial products that require a settlement on a future date after the posting date. The `book_balance` of the account is debited upon settlement. The value for `future_dated_debits_balance` increases when future-dated debits are posted using the <a href='https://developers.pismo.io/pismo-docs/reference/corporate-v2-post-payments'>Post payment</a> endpoint and decreases when such payments are settled or canceled. It is always a positive value.",
+      "minimum": 0,
+      "maximum": 9223372036854775807,
+      "examples": [
+        70.0
+      ]
+    },
+    "uncleared_checks_balance": {
+      "type": "number",
+      "title": "Uncleared checks balance",
+      "description": "Represents the total value of checks that have been posted but are not yet cleared. These funds are not considered available to the bank until they are settled on a future date following the posting date. Upon settlement, the cheque amount is credited to the account's book balance. Increases when cheques are posted in the uncleared format and decreases when such cheques are settled or canceled.",
+      "minimum": 0,
+      "maximum": 9223372036854775807,
+      "examples": [
+        80.0
+      ]
+    },
+    "restricted_funds": {
+      "type": "number",
+      "title": "Restricted Funds",
+      "description": "Funds temporarily held due to regulatory or operational restrictions, not available for transactions. Because balance events are processed asynchronously and their order is not guaranteed, this balance can be temporarily negative until all related events are processed.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        80.0
+      ]
+    },
+    "held_funds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Held Funds",
+      "description": "Funds temporarily held due to regulatory or operational restrictions, unavailable for transactions, representing the total of earmarked and restricted balances. Because balance events are processed asynchronously and their order is not guaranteed, this balance can be temporarily negative until all related events are processed.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        80.0
+      ]
+    },
+    "legal_holds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Legal holds",
+      "description": "Total amount of funds currently blocked due to judicial blocks (type = `JUDICIAL`), separate from other balances such as earmarked, restricted funds, or held funds. Because balance events are processed asynchronously and their order is not guaranteed, this balance can be temporarily negative until all related events are processed.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        80.0
+      ]
+    },
+    "held_checks_balance": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Held Checks",
+      "description": "Balance for checks that the bank treats as available but keeps on hold to earn interest. It increases when checks are posted as holds and decreases when those checks clear or are canceled. Because balance events are processed asynchronously and their order is not guaranteed, this balance can be temporarily negative until all related events are processed.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        80.0
+      ]
+    },
+    "remunerative_interest_accrued": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Remunerative Interest Accrued",
+      "description": "This balance represents the total interest that is pending capitalization. The amount increases as interest is accrued, and decreases when that interest is added to the principal balance.",
+      "minimum": 0,
+      "maximum": 9223372036854775807,
+      "examples": [
+        80.0
+      ]
+    },
+    "change_available_datetime": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Balance update datetime in ledger",
+      "description": "Datetime when ledger balances were updated in UTC 0. Format = `YYYY-MM-DDThh:mm:ss.sssssssssZ`.",
+      "format": "date-time",
+      "minLength": 20,
+      "maxLength": 30,
+      "example": [
+        "2025-04-15T20:34:06.802401028Z"
+      ]
+    },
+    "division_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division unique identifier",
+      "description": "Unique ID used to identify the division within your organization.",
+      "maxLength": 36,
+      "examples": [
+        "1d22e668-a857-4455-aee7-dbe888f4bf2b"
+      ]
+    },
+    "division_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division code unique identifier",
+      "description": "Code string that uniquely identifies the division within your organization.",
+      "maxLength": 36,
+      "examples": [
+        "division-code-123"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program unique identifier",
+      "description": "Program ID to which the account belongs within your organization.",
+      "examples": [
+        15
+      ]
+    },
+    "book_balance": {
+      "type": "number",
+      "title": "Book balance",
+      "description": "The effective account balance.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        70.0
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "title": "Tracking unique identifier",
+      "description": "A unique 50 character long identification for the transaction.",
+      "minLength": 1,
+      "maxLength": 75,
+      "examples": [
+        "UK1-ea6f491a-98a8-4f34-939c-44d704aa2119"
+      ]
+    },
+    "change_available_event_id": {
+      "title": "Change available event identifier",
+      "description": "Unique Available Integrity identifier. this UUID is generated by Ledger.",
+      "type": "string",
+      "format": "uuid",
+      "minLength": 1,
+      "maxLength": 36,
+      "examples": [
+        "744d9708-f217-4db2-8c9a-f211b5636370"
+      ]
+    }
+  }
+}

@@ -1,0 +1,493 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Scheduled payment table record (internal)",
+  "description": "This event is for internal Pismo use only. It represents a flattened DynamoDB table record for scheduled payments.",
+  "required": [
+    "pk",
+    "sk",
+    "id",
+    "account_id",
+    "org_id",
+    "status"
+  ],
+  "properties": {
+    "pk": {
+      "type": "string",
+      "title": "Partition Key",
+      "description": "DynamoDB partition key.",
+      "examples": [
+        "scheduler:TN-495f7976-7707-422a-8f1f-822cf279a26c:39657603"
+      ]
+    },
+    "sk": {
+      "type": "string",
+      "title": "Sort Key",
+      "description": "DynamoDB sort key.",
+      "examples": [
+        "da19bb6e-86fd-46a2-846b-5a18948c3145"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "title": "Schedule ID",
+      "description": "Schedule ID.",
+      "examples": [
+        "da19bb6e-86fd-46a2-846b-5a18948c3145"
+      ]
+    },
+    "lsi": {
+      "type": "integer",
+      "title": "Local Secondary Index",
+      "description": "Local secondary index timestamp.",
+      "examples": [
+        1750969355350685
+      ]
+    },
+    "updated_at": {
+      "type": "integer",
+      "title": "Updated At",
+      "description": "Timestamp when the record was last updated.",
+      "examples": [
+        1751054086887157
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "title": "Organization ID",
+      "description": "Organization ID.",
+      "examples": [
+        "TN-495f7976-7707-422a-8f1f-822cf279a26c"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        39657603,
+        100602614
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "Correlation ID for tracking.",
+      "examples": [
+        "b9c398f8-8d68-9c27-956d-fe003fe5526a"
+      ]
+    },
+    "aws_region": {
+      "type": "string",
+      "title": "AWS Region",
+      "description": "AWS region where the record is stored.",
+      "examples": [
+        "sa-east-1"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Schedule description",
+      "description": "Schedule description.",
+      "examples": [
+        "Monthly purchase",
+        "Daily purchase",
+        "Scraping Account"
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code used for authorization.",
+      "examples": [
+        "007700",
+        "009900",
+        "007200"
+      ]
+    },
+    "processing_codes_credit": {
+      "type": "string",
+      "title": "Processing code for credit",
+      "description": "Processing code used for credit operations.",
+      "examples": [
+        "110303"
+      ]
+    },
+    "processing_codes_debit": {
+      "type": "string",
+      "title": "Processing code for debit",
+      "description": "Processing code used for debit operations.",
+      "examples": [
+        "110300"
+      ]
+    },
+    "amount": {
+      "type": "string",
+      "title": "Amount",
+      "description": "Authorization amount.",
+      "examples": [
+        "100.00",
+        "20.10",
+        "50"
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "Three-letter currency code (ISO 4217).",
+      "examples": [
+        "CLP",
+        "USD",
+        "BRL"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Schedule type",
+      "description": "Schedule type: SINGLE, TRANSFERS, PRE, or SCRAPING.",
+      "enum": [
+        "SINGLE",
+        "TRANSFERS",
+        "PRE",
+        "SCRAPING"
+      ],
+      "examples": [
+        "SCRAPING"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Schedule status.",
+      "enum": [
+        "CREATED",
+        "UPDATED",
+        "IN_PROGRESS",
+        "CANCELED",
+        "SUSPENDED",
+        "COMPLETED"
+      ],
+      "examples": [
+        "IN_PROGRESS",
+        "CREATED"
+      ]
+    },
+    "details_type": {
+      "type": "string",
+      "title": "Details type",
+      "description": "Schedule details type.",
+      "enum": [
+        "ONCE",
+        "RECURRING"
+      ],
+      "examples": [
+        "RECURRING"
+      ]
+    },
+    "details_interval": {
+      "type": "string",
+      "title": "Details interval",
+      "description": "Schedule interval.",
+      "enum": [
+        "DAILY",
+        "WEEKLY",
+        "MONTHLY",
+        "YEARLY"
+      ],
+      "examples": [
+        "DAILY",
+        "MONTHLY"
+      ]
+    },
+    "details_start_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Details start date",
+      "description": "Start date of the schedule in UTC-0 (RFC3339) format.",
+      "examples": [
+        "2025-06-27T02:59:59.000Z",
+        "2024-01-01T00:00:00Z"
+      ]
+    },
+    "details_execution_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Details execution date",
+      "description": "Execution date of the schedule in UTC-0 (RFC3339) format.",
+      "examples": [
+        "2024-01-02T00:00:00Z"
+      ]
+    },
+    "details_end_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Details end date",
+      "description": "End date of the schedule in UTC-0 (RFC3339) format.",
+      "examples": [
+        "2045-06-27T02:59:59.000Z",
+        "2024-12-31T00:00:00Z"
+      ]
+    },
+    "details_day_type": {
+      "type": "string",
+      "title": "Details day type",
+      "description": "Schedule day type.",
+      "enum": [
+        "CALENDAR_DAY",
+        "BUSINESS_DAY"
+      ],
+      "examples": [
+        "CALENDAR_DAY",
+        "BUSINESS_DAY"
+      ]
+    },
+    "details_retries_number_of_attempts": {
+      "type": "integer",
+      "title": "Details retries number of attempts",
+      "description": "Number of times to attempt executing this scheduled payment if it doesn't execute successfully.",
+      "examples": [
+        3,
+        1,
+        2
+      ]
+    },
+    "details_retries_interval_recurrence": {
+      "type": "integer",
+      "title": "Details retries interval recurrence",
+      "description": "Time in minutes to perform the next attempt.",
+      "examples": [
+        7,
+        1,
+        2,
+        3
+      ]
+    },
+    "details_statement_id": {
+      "type": "integer",
+      "title": "Details statement ID",
+      "description": "Statement ID for pre-schedule.",
+      "examples": [
+        111222333,
+        100602614
+      ]
+    },
+    "details_allow_execution_after_day_change": {
+      "type": "boolean",
+      "title": "Details allow execution after day change",
+      "description": "Allow execution after day change flag.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "transfers": {
+      "type": "array",
+      "title": "List of transfers",
+      "description": "Array of transfer objects with flattened properties.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "main_processing_code": {
+            "type": "string",
+            "title": "Main processing code",
+            "description": "Processing code for the main account.",
+            "examples": [
+              "main-code"
+            ]
+          },
+          "child_account_id": {
+            "type": "integer",
+            "title": "Child account ID",
+            "description": "Account ID for the child account.",
+            "examples": [
+              222333444
+            ]
+          },
+          "child_processing_code": {
+            "type": "string",
+            "title": "Child processing code",
+            "description": "Processing code for the child account.",
+            "examples": [
+              "child-code"
+            ]
+          }
+        }
+      }
+    },
+    "restrictions_minimum_available": {
+      "type": "string",
+      "title": "Restrictions minimum available",
+      "description": "Execute the schedule if the available account limit is greater than or equal to this configured minimum value.",
+      "examples": [
+        "100",
+        "50.00",
+        "25.75"
+      ]
+    },
+    "restrictions_minimum_daily_available": {
+      "type": "string",
+      "title": "Restrictions minimum daily available",
+      "description": "Execute the schedule if the available account limit is greater than or equal to this configured minimum value.",
+      "examples": [
+        "10.00",
+        "25.75"
+      ]
+    },
+    "restrictions_minimum_monthly_average_available": {
+      "type": "string",
+      "title": "Restrictions minimum monthly average available",
+      "description": "Execute the schedule if the average of monthly account limits is greater than or equal to this configured value.",
+      "examples": [
+        "20.00",
+        "125.00"
+      ]
+    },
+    "restrictions_minimum_days_account_inactivity": {
+      "type": "integer",
+      "title": "Restrictions minimum days account inactivity",
+      "description": "Execute the schedule if the account doesn't have any financial activity within the number of configured days.",
+      "examples": [
+        5,
+        1,
+        2,
+        3
+      ]
+    },
+    "scraping_details_available_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Scraping details available date",
+      "description": "Date and time of the cut-off moment for account scraping in UTC-0 (RFC3339) format.",
+      "examples": [
+        "2025-06-27T02:59:59.000Z",
+        "2024-06-01T00:00:00Z"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Additional information relevant to the customer. Keys are dynamically flattened with metadata_ prefix.",
+      "patternProperties": {
+        "^.*$": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "key1": "value1",
+          "customer-data": {
+            "any": "fields"
+          }
+        }
+      ]
+    },
+    "strategy": {
+      "type": "string",
+      "title": "Strategy",
+      "description": "Schedule strategy: SWEEP or OVERDRAFT_SWEEP.",
+      "enum": [
+        "SWEEP",
+        "OVERDRAFT_SWEEP"
+      ],
+      "examples": [
+        "SWEEP"
+      ]
+    },
+    "migration_data_id": {
+      "type": "string",
+      "title": "Migration data ID",
+      "description": "Migration data ID.",
+      "examples": [
+        "migration-id"
+      ]
+    },
+    "migration_data_version_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Migration data version date",
+      "description": "Migration data version date.",
+      "examples": [
+        "2024-05-01T00:00:00Z"
+      ]
+    },
+    "migration_data_is_client_cancel_request": {
+      "type": "boolean",
+      "title": "Migration data is client cancel request",
+      "description": "Flag indicating if this is a client cancel request.",
+      "examples": [
+        false,
+        true
+      ]
+    },
+    "pismo_metadata": {
+      "type": "object",
+      "title": "Pismo Metadata",
+      "description": "Pismo-specific metadata. Keys are dynamically flattened with pismo_metadata_ prefix.",
+      "patternProperties": {
+        "^.*$": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "meta1": "data1"
+        }
+      ]
+    },
+    "internal_flow_for_first_execution": {
+      "type": "string",
+      "title": "Internal flow for first execution",
+      "description": "Internal flow ID for first execution.",
+      "examples": [
+        "df4ab6da-3944-4c8b-87c6-a674ac83ef4d",
+        "first-execution-id"
+      ]
+    },
+    "bank_slip_details_type": {
+      "type": "string",
+      "title": "Bank slip details type",
+      "description": "Bank slip type.",
+      "examples": [
+        "bank-slip-type"
+      ]
+    },
+    "bank_slip_details_barcode": {
+      "type": "string",
+      "title": "Bank slip details barcode",
+      "description": "Bank slip barcode.",
+      "examples": [
+        "12345678901234567890"
+      ]
+    },
+    "bank_slip_details_digitable_line": {
+      "type": "string",
+      "title": "Bank slip details digitable line",
+      "description": "Bank slip digitable line.",
+      "examples": [
+        "12345.67890 12345.678901 12345.678901 1 23456789012345"
+      ]
+    },
+    "bank_slip_details_external_authorization": {
+      "type": "string",
+      "title": "Bank slip details external authorization",
+      "description": "Bank slip external authorization.",
+      "examples": [
+        "auth-code"
+      ]
+    }
+  }
+}

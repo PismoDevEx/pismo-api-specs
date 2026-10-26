@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "corporate_account_rollback_completed-1.json",
+  "title": "Corporate Account Rollback Completed",
+  "description": "Event emitted when a corporate account migration rollback process completes.",
+  "type": "object",
+  "required": [
+    "account_id",
+    "migration_id",
+    "code",
+    "message",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        67890
+      ]
+    },
+    "migration_id": {
+      "type": "string",
+      "title": "Migration ID",
+      "description": "The unique identifier of the migration that was rolled back.",
+      "minLength": 1,
+      "maxLength": 100,
+      "examples": [
+        "MIG-2026-001"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "A code identifying the specific result or error of the rollback operation.",
+      "minLength": 0,
+      "maxLength": 50,
+      "examples": [
+        "ROLLBACK_COMPLETED",
+        "ROLLBACK_FAILED"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Message",
+      "description": "A human-readable message describing the result of the rollback operation.",
+      "minLength": 0,
+      "maxLength": 500,
+      "examples": [
+        "Account rollback completed successfully"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "The result status of the rollback operation.",
+      "enum": [
+        "SUCCESS",
+        "FAILURE"
+      ],
+      "minLength": 1,
+      "maxLength": 20,
+      "examples": [
+        "SUCCESS"
+      ]
+    },
+    "pismo_metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Pismo Metadata",
+      "description": "Additional metadata from Pismo related to the rollback operation.",
+      "additionalProperties": true,
+      "examples": [
+        {
+          "reason": "customer_request"
+        }
+      ]
+    }
+  }
+}

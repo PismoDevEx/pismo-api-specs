@@ -1,0 +1,289 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pismo.io/events/migration/balance_control_outgoing-1.json",
+  "type": "object",
+  "default": {},
+  "title": "Balance control migration completed",
+  "description": "Event generated when a balance control transaction is migrated.",
+  "required": [
+    "status",
+    "migration"
+  ],
+  "properties": {
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "Result of balance control migration",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Message of balance control migration result",
+      "examples": [
+        "Transaction migrated successfully"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "System code for migration message",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "Balance control migration operation type",
+      "enum": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "UPDATE",
+        "CREATION",
+        "UNKNOWN"
+      ]
+    },
+    "error_details": {
+      "$id": "#/properties/error_details",
+      "type": "array",
+      "title": "Error details",
+      "description": "List of errors details",
+      "examples": [
+        [
+          {
+            "property": "account_id",
+            "message": "account_id is required"
+          }
+        ]
+      ],
+      "additionalItems": true,
+      "items": {
+        "$id": "#/properties/error_details/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/error_details/items/anyOf/0",
+            "type": "object",
+            "title": "Detail",
+            "examples": [
+              {
+                "property": "account_id",
+                "message": "account_id is required"
+              }
+            ],
+            "properties": {
+              "property": {
+                "$id": "#/properties/error_details/items/anyOf/0/properties/property",
+                "type": "string",
+                "title": "Name of field that started the error",
+                "examples": [
+                  "account_id"
+                ]
+              },
+              "message": {
+                "$id": "#/properties/error_details/items/anyOf/0/properties/message",
+                "type": "string",
+                "title": "Error message",
+                "examples": [
+                  "account_id is required"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration identifiers object",
+      "description": "ID sent upon start of migration process",
+      "examples": [
+        {
+          "id": "migration-id",
+          "version_date": "2021-08-11T11:25:00.000Z",
+          "account_id": "an-account-id"
+        }
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "format": "date-time",
+          "title": "Version date of migration identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        },
+        "account_id": {
+          "$id": "#/properties/migration/properties/account_id",
+          "type": "string",
+          "description": "An external account ID provided for a balance control.",
+          "examples": [
+            "23368537-3"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Pismo-generated balance control information",
+      "properties": {
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "number",
+          "description": "Balance control account ID.",
+          "examples": [
+            127116016
+          ]
+        },
+        "calculate_retroactive_accruals": {
+          "$id": "#/properties/entity/properties/calculate_retroactive_accruals",
+          "type": "boolean",
+          "description": "Indicates if is required to calculate the retroactive accruals at Pismo platform.",
+          "examples": [
+            true
+          ]
+        },
+        "accrual_date_cutoff": {
+          "$id": "#/properties/entity/properties/accrual_date_cutoff",
+          "type": "string",
+          "description": "Indicates if is required to calculate the retroactive accruals at Pismo platform. Value must be a future date.",
+          "format": "date",
+          "examples": [
+            "2024-06-01"
+          ]
+        },
+        "balances": {
+          "$id": "#/properties/entity/properties/balances",
+          "type": "array",
+          "description": "Collection of balance types (accrual amount and type)",
+          "examples": [
+            [
+              {
+                "transaction_id": 2837694715,
+                "type": "ACCRUABLE_FINEABLE",
+                "amount": 1540.0
+              }
+            ]
+          ],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/entity/properties/balances/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/entity/properties/balances/items/anyOf/0",
+                "type": "object",
+                "examples": [
+                  {
+                    "transaction_id": 2837694715,
+                    "type": "ACCRUABLE_FINEABLE",
+                    "amount": 1540.0
+                  }
+                ],
+                "properties": {
+                  "transaction_id": {
+                    "$id": "#/properties/entity/properties/balances/items/anyOf/0/properties/transaction_id",
+                    "type": "number",
+                    "description": "Unique transaction ID for a balance control migration.",
+                    "examples": [
+                      0.0
+                    ]
+                  },
+                  "type": {
+                    "$id": "#/properties/entity/properties/balances/items/anyOf/0/properties/type",
+                    "type": "string",
+                    "description": "Categorized balance (accruable and fineable) that needs to be retroactively calculated.",
+                    "examples": [
+                      "ACCRUABLE_FINEABLE",
+                      "ACCRUABLE_NOTFINEABLE",
+                      "NOTACCRUABLE_NOTFINEABLE",
+                      "NOTACCRUABLE_FINEABLE",
+                      "CREDIT"
+                    ]
+                  },
+                  "amount": {
+                    "$id": "#/properties/entity/properties/balances/items/anyOf/0/properties/amount",
+                    "type": "number",
+                    "description": "The balance is a position depending on account's cycle closing date. Statements between the due date and closing date at the migration date: If the open statement is \"M\", the balance_amount should belong to the previous statement (M-1). Statements between the closing date and due date: If the open statement is \"M\" and the statement between the closing date and due date is \"M-1\", the balance_amount should belong to \"M-2\" statement",
+                    "examples": [
+                      1540.0
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "examples": [
+        {
+          "account_id": 148964725,
+          "calculate_retroactive_accruals": true,
+          "accrual_date_cutoff": "2024-06-01",
+          "balances": [
+            {
+              "transaction_id": 2837692249,
+              "type": "ACCRUABLE_FINEABLE",
+              "amount": 1540.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "TRNSMIG-0000",
+      "message": "Transaction was migrated successfully.",
+      "migration": {
+        "id": "fe0e6587-d6b5-4e56-a7e3-73137447bf8e_6901",
+        "version_date": "2023-05-12T12:55:00.000Z"
+      },
+      "entity": {
+        "account_id": 149101103,
+        "calculate_retroactive_accruals": true,
+        "accrual_date_cutoff": "2024-06-01",
+        "balances": [
+          {
+            "transaction_id": 2837694715,
+            "type": "ACCRUABLE_FINEABLE",
+            "amount": 1540.0
+          }
+        ]
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Account status change failure",
+  "description": "This event occurs when an account status change fails. \n More information: <a href='https://developers.pismo.io/pismo-docs/docs/accounts-overview#account-status'>Account status</a>",
+  "required": [
+    "account_id",
+    "error_message"
+  ],
+  "properties": {
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99999999999
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error Message",
+      "description": "Error message about the status change request",
+      "examples": [
+        "Account status cannot be changed because it is in final status"
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External account ID",
+      "description": "Client-defined external identifier of the account.",
+      "maxLength": 60,
+      "examples": [
+        "ext-abc-123"
+      ]
+    }
+  }
+}

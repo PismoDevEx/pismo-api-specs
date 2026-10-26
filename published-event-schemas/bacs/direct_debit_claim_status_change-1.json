@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BACS Direct Debit indemnity claim status change.",
+  "type": "object",
+  "description": "Bankers' Automated Clearing System (BACS) Direct Debit Indemnity Claim (DDIC) event data. <a href='https://www.bacs.co.uk/operating/indemnity-claims/' target = '_blank'>A DDIC</a> reclaims money incorrectly debited from a payer under the Direct Debit Guarantee. This event is emitted when a claim is created and on every subsequent status transition (`PROCESSING`, `CONFIRMED`, `FAILED`).",
+  "required": [
+    "id",
+    "org_id",
+    "account_id",
+    "status",
+    "reason_code",
+    "creation_date_time"
+  ],
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string",
+      "description": "Pismo claim ID. Use this ID to fetch or reference the claim in Pismo BACS claim APIs. To cross-reference the claim at the provider, use `claim_id`.",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "claim_id": {
+      "title": "Claim ID",
+      "type": "string",
+      "description": "Provider (Form3) claim ID. You can use this to link the claim in our system to the provider's claim. Absent until the claim is submitted to the scheme.",
+      "examples": [
+        "f3a1c2d4-5678-90ab-cdef-1234567890ab"
+      ]
+    },
+    "org_id": {
+      "title": "Org ID",
+      "type": "string",
+      "description": "Organization ID that owns the claim",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "type": "integer",
+      "description": "Claim account ID",
+      "examples": [
+        8675309
+      ]
+    },
+    "status": {
+      "title": "Status",
+      "type": "string",
+      "description": "Claim status. `CREATED` (persisted, awaiting submission), `PROCESSING` (submitted to the scheme via Form3), `CONFIRMED` (delivery confirmed, terminal), `FAILED` (rejected or failed validation/submission, terminal).",
+      "enum": [
+        "CREATED",
+        "PROCESSING",
+        "CONFIRMED",
+        "FAILED"
+      ],
+      "examples": [
+        "CONFIRMED"
+      ]
+    },
+    "reason_code": {
+      "title": "Reason code",
+      "type": "string",
+      "description": "Bacs DDIC reason code identifying why the indemnity claim was raised, as defined by the Bacs DDIC scheme rules. `1` - amount/date differs from advance notice; `2` - no advance notice received; `3` - DDI disputed / no valid mandate; `4` - payer cancelled the DDI with the service user; `5` - account holder deceased; `6` - payer cancelled the DDI with their bank; `7` - claim raised at the service user's request; `8` - service user name disputed.",
+      "enum": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "examples": [
+        "1"
+      ]
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string",
+      "description": "Free-text reason associated with the claim status, typically populated when a claim is `FAILED`.",
+      "examples": [
+        "Rejected by scheme"
+      ]
+    },
+    "creation_date_time": {
+      "title": "Creation date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Claim creation datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    },
+    "update_date_time": {
+      "title": "Update date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Claim updated datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    }
+  }
+}

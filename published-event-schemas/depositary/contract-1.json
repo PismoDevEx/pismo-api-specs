@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Contract applied",
+  "description": "Contract applied event. The <a href='https://developers.pismo.io/pismo-docs/reference/update' target='_blank'>Update receivable</a> endpoint generates this event.",
+  "required": [
+    "contract_id",
+    "registrar_document_number",
+    "operation_type"
+  ],
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "title": "Contract id",
+      "description": "Client-assigned contract_id to identify a contract",
+      "examples": [
+        "e0ec1a1c-982e-4887-bdaf-73b000751287"
+      ]
+    },
+    "registrar_document_number": {
+      "type": "string",
+      "title": "Registrar document number",
+      "description": "Registrar document number to identify to who this contract may be delivered",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Operation type to identify if it was a contract creation, update, etc",
+      "examples": [
+        "CREATE_UPDATE",
+        "CANCEL",
+        "EXTENSION",
+        "UPDATE_BANKING_DOMICILE"
+      ]
+    },
+    "request_control_id": {
+      "type": "string",
+      "title": "Request control id",
+      "description": "Client-assigned request_control_id identifier",
+      "examples": [
+        "4b52702e-516a-4efc-bebb-c15c5ea27525"
+      ]
+    },
+    "reception_control_id": {
+      "type": "string",
+      "title": "Reception control id",
+      "description": "Client-assigned reception_control_id identifier",
+      "examples": [
+        "4b52702e-516a-4efc-bebb-c15c5ea27525"
+      ]
+    },
+    "external_contract_id": {
+      "type": "string",
+      "title": "External contract id",
+      "description": "Client-assigned external_contract_id identifier",
+      "examples": [
+        "4b52702e-516a-4efc-bebb-c15c5ea27525"
+      ]
+    },
+    "batch_id": {
+      "type": "string",
+      "title": "Batch id",
+      "description": "Client-assigned batch_id identifier",
+      "examples": [
+        "4b52702e-516a-4efc-bebb-c15c5ea27525"
+      ]
+    },
+    "creditor_document_number": {
+      "type": "string",
+      "title": "Creditor document number",
+      "description": "Client-assigned creditor_document_number identifier",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "creation_date": {
+      "type": "string",
+      "title": "Creation date",
+      "description": "Client-assigned creation_date identifier",
+      "format": "date",
+      "examples": [
+        "2024-12-01"
+      ]
+    },
+    "reference_date": {
+      "type": "string",
+      "title": "Reference date",
+      "description": "Client-assigned reference_date identifier",
+      "format": "date",
+      "examples": [
+        "2024-12-01"
+      ]
+    },
+    "effects_count": {
+      "type": "number",
+      "title": "Number of effects applied",
+      "description": "Client-assigned reference_date identifier",
+      "examples": [
+        1
+      ]
+    },
+    "effects_group": {
+      "type": "array",
+      "title": "List of effects applied",
+      "items": {
+        "$ref": "#/definitions/effects_group"
+      }
+    }
+  },
+  "definitions": {
+    "effects_group": {
+      "type": "object",
+      "title": "Effects Group",
+      "required": [
+        "acquirer_document_number",
+        "commercial_establishment_document_number",
+        "owner_document_number",
+        "payment_arrangement"
+      ],
+      "description": "Effects linked to Contract",
+      "properties": {
+        "acquirer_document_number": {
+          "type": "string",
+          "title": "Acquirer Document Number",
+          "description": "Acquirer document number",
+          "examples": [
+            "20481714683595"
+          ]
+        },
+        "commercial_establishment_document_number": {
+          "type": "string",
+          "title": "Commercial Establishment Document Number",
+          "description": "Document number of commercial establishment",
+          "examples": [
+            "62543463000157"
+          ]
+        },
+        "owner_document_number": {
+          "type": "string",
+          "title": "Owner Document Number",
+          "description": "Document number of owner",
+          "examples": [
+            "20481714000176"
+          ]
+        },
+        "payment_arrangement": {
+          "type": "string",
+          "title": "Payment Arrangement",
+          "description": "Represents code of payment arrangement",
+          "examples": [
+            "MCC"
+          ]
+        }
+      }
+    }
+  }
+}

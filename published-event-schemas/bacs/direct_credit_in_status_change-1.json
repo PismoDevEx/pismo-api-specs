@@ -1,0 +1,414 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BACS direct credit inbound payment processed",
+  "type": "object",
+  "description": "Bankers' Automated Clearing System (BACS) transaction inbound transaction event data. <a href='https://www.moderntreasury.com/learn/what-is-bacs' target = '_blank'>BACS</a> is a UK service that facilitates electronic money transfers between banks within a 3-day settlement cycle \u2014 day 1 (submission), day 2 (processing), and day 3 (clearing/credit). The <a href ='https://developers.pismo.io/pismo-docs/reference/post-release-bacs-1'>Release BACS inbound transaction</a> and <a href ='https://developers.pismo.io/pismo-docs/reference/post-cancel-bacs-1'>Cancel BACS inbound transaction</a> endpoints generates this event.",
+  "required": [
+    "id",
+    "account_id",
+    "idempotency_key",
+    "scheme_payment_type",
+    "debtor_account",
+    "creditor_account",
+    "currency",
+    "status",
+    "creation_date_time",
+    "update_date_time"
+  ],
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string",
+      "description": "Transaction ID",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "type": "integer",
+      "description": "Transaction account ID",
+      "examples": [
+        8675309
+      ]
+    },
+    "idempotency_key": {
+      "title": "Idempotency key",
+      "type": "string",
+      "description": "UUID used for idempotency",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "external_id": {
+      "title": "External ID",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Provider transaction ID. You can use this to link the transaction in our system to the provider's transaction. Might be null in case of provider timeout",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000",
+        null
+      ]
+    },
+    "reference": {
+      "title": "Reference",
+      "type": "string",
+      "description": "Any relevant information about the transaction that you can use to store the provider's reference or any other information that can be useful for debugging or reconciliation purposes",
+      "examples": [
+        "TXN #1"
+      ]
+    },
+    "numeric_reference": {
+      "title": "Numeric reference",
+      "type": "string",
+      "description": "Numeric UK tax reference.",
+      "minLength": 4,
+      "maxLength": 4,
+      "pattern": "^[0-9]{4}$",
+      "examples": [
+        "0000"
+      ]
+    },
+    "settlement_tracking_id": {
+      "title": "Settlement tracking ID",
+      "type": "string",
+      "description": "Pismo ledger tracking ID used to make balance movements",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "scheme_unique_id": {
+      "title": "Scheme ID",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Internal BACS transaction ID. BACS does not guarantee this field is unique and warns the format is subject to change",
+      "examples": [
+        "8172939823",
+        null
+      ]
+    },
+    "scheme_payment_type": {
+      "title": "Scheme payment type",
+      "type": "string",
+      "description": "BACS payment type",
+      "enum": [
+        "CREDIT",
+        "AUTOMATED_SETTLEMENT",
+        "DIVIDEND",
+        "INTEREST",
+        "Credit"
+      ],
+      "examples": [
+        "CREDIT"
+      ]
+    },
+    "scheme_processing_date": {
+      "title": "Scheme processing date",
+      "type": "string",
+      "format": "date",
+      "description": "Scheme processed payment date - BACS day 2 cycle for inbound payments",
+      "examples": [
+        "2026-04-01"
+      ]
+    },
+    "processing_date": {
+      "title": "Processing date",
+      "type": "string",
+      "format": "date",
+      "description": "When funds were transferred data, BACS day 3 cycle for inbound payments",
+      "examples": [
+        "2026-04-01"
+      ]
+    },
+    "clearing_id": {
+      "title": "Clearing ID",
+      "type": "string",
+      "minLength": 6,
+      "description": "BACSS payment originator Service User Number (SUN) - numeric 6-digit value",
+      "maxLength": 6,
+      "pattern": "^[0-9]{6}$",
+      "examples": [
+        "123456"
+      ]
+    },
+    "debtor_account": {
+      "$ref": "#/definitions/DebtorAccount"
+    },
+    "creditor_account": {
+      "$ref": "#/definitions/CreditorAccount"
+    },
+    "currency": {
+      "$ref": "#/definitions/Currency"
+    },
+    "bacs_file_identification": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/FileIdentification"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Transaction status",
+      "enum": [
+        "CREATED",
+        "PROCESSING",
+        "SETTLED",
+        "HOLD",
+        "CANCELLED"
+      ],
+      "examples": [
+        "SETTLED"
+      ]
+    },
+    "status_reason": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/StatusReason"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Reason for transaction that has been `CANCELLED`."
+    },
+    "creation_date_time": {
+      "title": "Creation date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Trasaction creation datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    },
+    "update_date_time": {
+      "title": "Update date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Transaction updated datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    }
+  },
+  "definitions": {
+    "DebtorAccount": {
+      "type": "object",
+      "description": "Debtor account information",
+      "required": [
+        "name",
+        "scheme",
+        "identification"
+      ],
+      "properties": {
+        "name": {
+          "title": "Debtor name",
+          "type": "string",
+          "description": "Account owner name",
+          "examples": [
+            "Ben Gay"
+          ]
+        },
+        "scheme": {
+          "title": "Debtor scheme",
+          "type": "string",
+          "description": "User bank account scheme",
+          "enum": [
+            "uk-scan",
+            "bban",
+            "iban"
+          ],
+          "examples": [
+            "uk-scan"
+          ]
+        },
+        "identification": {
+          "title": "Debtor scheme ID",
+          "type": "string",
+          "description": "Scheme account number",
+          "examples": [
+            "2000001234567"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "name": "John Doe",
+          "scheme": "uk-scan",
+          "identification": "2000001234567"
+        }
+      ]
+    },
+    "CreditorAccount": {
+      "title": "Creditor account",
+      "type": "object",
+      "description": "Creditor account information",
+      "required": [
+        "name",
+        "scheme",
+        "identification"
+      ],
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "description": "Account owner name",
+          "examples": [
+            "Marsha Mellow"
+          ]
+        },
+        "scheme": {
+          "title": "Scheme",
+          "type": "string",
+          "description": "User bank account scheme",
+          "enum": [
+            "uk-scan",
+            "bban",
+            "iban"
+          ],
+          "examples": [
+            "uk-scan"
+          ]
+        },
+        "identification": {
+          "title": "Identification",
+          "type": "string",
+          "description": "Scheme account number",
+          "examples": [
+            "2000007654321"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "name": "Jane Smith",
+          "scheme": "uk-scan",
+          "identification": "2000007654321"
+        }
+      ]
+    },
+    "Currency": {
+      "type": "object",
+      "description": "Currency information",
+      "required": [
+        "amount",
+        "code"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number",
+          "description": "Transaction amount",
+          "examples": [
+            600
+          ]
+        },
+        "code": {
+          "type": "string",
+          "description": "Currency code",
+          "examples": [
+            "GBP"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "amount": 600,
+          "code": "GBP"
+        }
+      ]
+    },
+    "StatusReason": {
+      "title": "Status reason",
+      "type": "object",
+      "description": "Transaction status reason information",
+      "required": [
+        "description",
+        "code"
+      ],
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string",
+          "description": "Cancellation reason",
+          "examples": [
+            "Accounts - Not found [EBACS0018]",
+            "Account blocked or cancelled [EBACS0021]",
+            "P2P - API returned 4xx error [EBACS0025]",
+            "Date time can't be in the past [EBACS0050]",
+            "The amount passed is greater than the current balance [EBACS0073]",
+            "Transaction limit breached. Flex control not approved. [EBACS0087]",
+            "Received failed status from Form3 for BACS In [EBACS0090]"
+          ]
+        },
+        "code": {
+          "title": "Code",
+          "type": "string",
+          "description": "Cancellation code",
+          "examples": [
+            "EBACS0018",
+            "EBACS0021",
+            "EBACS0025",
+            "EBACS0050",
+            "EBACS0073",
+            "EBACS0087",
+            "EBACS0090"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "description": "Accounts - Not found [EBACS0018]",
+          "code": "EBACS0018"
+        },
+        {
+          "description": "Account blocked or cancelled [EBACS0021]",
+          "code": "EBACS0021"
+        },
+        {
+          "description": "P2P - API returned 4xx error [EBACS0025]",
+          "code": "EBACS0025"
+        },
+        {
+          "description": "Date time can't be in the past [EBACS0050]",
+          "code": "EBACS0050"
+        },
+        {
+          "description": "The amount passed is greater than the current balance [EBACS0073]",
+          "code": "EBACS0073"
+        },
+        {
+          "description": "Transaction limit breached. Flex control not approved. [EBACS0087]",
+          "code": "EBACS0087"
+        },
+        {
+          "description": "Received failed status from Form3 for BACS In [EBACS0090]",
+          "code": "EBACS0090"
+        }
+      ]
+    },
+    "FileIdentification": {
+      "title": "File identification",
+      "type": "object",
+      "description": "BACS file identification information",
+      "properties": {
+        "file_identifier": {
+          "title": "File ID",
+          "type": "string",
+          "description": "File identifier"
+        },
+        "file_number": {
+          "title": "File number",
+          "type": "string",
+          "description": "File number"
+        }
+      }
+    }
+  }
+}

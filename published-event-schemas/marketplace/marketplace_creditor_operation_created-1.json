@@ -1,0 +1,259 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Marketplace creditor operation created",
+  "required": [
+    "marketplace_creditors_operations_id",
+    "org_id",
+    "marketplace_id"
+  ],
+  "properties": {
+    "marketplace_creditors_operations_id": {
+      "$id": "#/properties/marketplace_creditors_operations_id",
+      "type": [
+        "integer"
+      ],
+      "title": "Marketplace creditor operation identifier",
+      "description": "This field contains the ID of created marketplace creditor operation.",
+      "examples": [
+        1,
+        1234
+      ]
+    },
+    "creditor_id": {
+      "$id": "#/properties/creditor_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Creditor identifier",
+      "description": "This field contains the creditor identifier related to the creditor operation.",
+      "examples": [
+        null,
+        "2",
+        "1234"
+      ]
+    },
+    "processing_code": {
+      "$id": "#/properties/processing_code",
+      "type": "string",
+      "title": "Processing code",
+      "description": "This field contains the processing code related to the operation.",
+      "examples": [
+        "0001234"
+      ]
+    },
+    "marketplace_id": {
+      "$id": "#/properties/marketplace_id",
+      "type": "integer",
+      "title": "Marketplace identifier",
+      "description": "This field identifies the marketplace related to the operation.",
+      "examples": [
+        4
+      ]
+    },
+    "operation_type_id": {
+      "$id": "#/properties/operation_type_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Operation type identifier",
+      "description": "This field contains the operation type identifier related to the operation.",
+      "examples": [
+        5
+      ]
+    },
+    "installments": {
+      "$id": "#/properties/installments",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Number of installments",
+      "description": "This field contains the number of installments for which this condition applies",
+      "examples": [
+        null,
+        1,
+        12
+      ]
+    },
+    "network": {
+      "$id": "#/properties/network",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Network",
+      "description": "This field contains the network for which this condition applies",
+      "examples": [
+        "Visa",
+        "Master",
+        "",
+        null
+      ]
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Tenant identifier",
+      "description": "This field identifies the tenant responsible for this operation.",
+      "examples": [
+        "x-tenant-uuid"
+      ]
+    },
+    "mdr": {
+      "$id": "#/properties/mdr",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "MDR percentage",
+      "description": "This field identifies the mdr percentage that will be applied to transactions using this condition. Values from 0 to 1",
+      "examples": [
+        null,
+        0.0,
+        0.02
+      ]
+    },
+    "first_installment_days_to_payment": {
+      "$id": "#/properties/first_installment_days_to_payment",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Number of days before the first payment",
+      "description": "This field contains the number of days between the purchase and the first payment. It will be applied for transactions that match this condition.",
+      "examples": [
+        null,
+        0,
+        15,
+        30
+      ]
+    },
+    "n_installment_days_to_payment": {
+      "$id": "#/properties/n_installment_days_to_payment",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Number of days between each payment",
+      "description": "This field contains the number of days between each payment that will be applied for transactions that match this condition.",
+      "examples": [
+        null,
+        15,
+        30
+      ]
+    },
+    "work_days": {
+      "$id": "#/properties/work_days",
+      "type": "boolean",
+      "default": "false",
+      "title": "Work days flag",
+      "description": "This flag indicates if the transaction will consider only work days when calculating the date of payment of the sale that match this condition.",
+      "examples": [
+        false,
+        true
+      ]
+    },
+    "transaction_fee": {
+      "$id": "#/properties/transaction_fee",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Transaction fee",
+      "description": "Is the fee applied in each transaction that use this condition.",
+      "examples": [
+        null,
+        10,
+        1.5,
+        2.38
+      ]
+    },
+    "matched_settlement": {
+      "$id": "#/properties/matched_settlement",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "title": "Matched settlement flag",
+      "description": "This flag indicates if the transaction will be splitted into different installments (true) or a single installment (false).",
+      "examples": [
+        null,
+        true,
+        false
+      ]
+    },
+    "matched_mdr": {
+      "$id": "#/properties/matched_mdr",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "title": "Matched MDR flag",
+      "description": "This flag indicates if the transaction MDR will be splitted into different installments (true) or paid in a single installment (false).",
+      "examples": [
+        null,
+        true,
+        false
+      ]
+    },
+    "card_not_present_allowed": {
+      "$id": "#/properties/card_not_present_allowed",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "title": "Card not present allowed flag",
+      "description": "Flag that indicates if it is possible to create a transaction without a card (true) or not (false)",
+      "examples": [
+        null,
+        true,
+        false
+      ]
+    },
+    "doc_number_allowed": {
+      "$id": "#/properties/doc_number_allowed",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "title": "Document number allowed flag",
+      "description": "If true, is possible to create a transaction only using a document number.",
+      "examples": [
+        null,
+        true,
+        false
+      ]
+    },
+    "merchant_id": {
+      "$id": "#/properties/merchant_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "The merchant identifier",
+      "description": "This field identifies the merchant related to the operation.",
+      "examples": [
+        4,
+        null
+      ]
+    },
+    "start_date": {
+      "$id": "#/properties/start_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "The date when this condition becomes active",
+      "description": "This field contains the date when this condition becomes active, used for creating campaigns.",
+      "examples": [
+        null,
+        "2023-01-01",
+        "2023-12-20"
+      ]
+    }
+  }
+}

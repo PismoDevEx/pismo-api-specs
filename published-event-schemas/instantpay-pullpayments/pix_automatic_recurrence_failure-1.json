@@ -1,0 +1,252 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Recurrence creation failed",
+  "description": "Recurrence creation failed event.",
+  "required": [
+    "account_id",
+    "idempotency_key",
+    "error"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "idempotency_key": {
+      "type": "string",
+      "title": "Idempotency key",
+      "description": "Idempotency key. Use this field when a payment order write action will continue asynchronously to match the `payment_order` on your side",
+      "examples": [
+        "3DBEAE82-FF35-48A3-97D9-BFB4B06C3E43"
+      ]
+    },
+    "contract_id": {
+      "type": "string",
+      "title": "Contract ID",
+      "description": "The contract identifier",
+      "examples": [
+        "00001"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Contract description",
+      "description": "The purpose of the contract",
+      "examples": [
+        "Gym Training bill payment"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Payment amount",
+      "description": "The payment amount",
+      "examples": [
+        "10.00"
+      ]
+    },
+    "min_payment_amount": {
+      "type": "number",
+      "title": "Minimal payment amount",
+      "description": "Payee-defined minimum payment amount for dynamic amount recurrences.",
+      "example": "10.01"
+    },
+    "dynamic_amount": {
+      "type": "boolean",
+      "title": "Dynamic amount",
+      "description": "Defines if this recurrence payment can be defined the min and max amounts",
+      "example": true
+    },
+    "frequency_type": {
+      "type": "string",
+      "title": "Frequency type",
+      "description": "WEEK MONTH QUARTER SEMESTER YEAR",
+      "example": "MONTH"
+    },
+    "allow_attempts_after_expiration": {
+      "type": "boolean",
+      "title": "Allow Attempts After the Expiration",
+      "description": "Defines if the payment order can be retried after the expiration date",
+      "example": true
+    },
+    "expiration_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expiration Date",
+      "description": "Maximum date for the Payer accept the authorization",
+      "example": "2025-11-14T17:54:40Z"
+    },
+    "first_payment_date": {
+      "type": "string",
+      "format": "date",
+      "title": "First payment date",
+      "description": "The first date of the payment to be payed by the Payer",
+      "example": "2025-11-14"
+    },
+    "last_payment_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Last payment date",
+      "description": "The final date (end of the contract) of the payment to be payed by the Payer",
+      "example": "2026-11-14"
+    },
+    "transaction_identification": {
+      "type": "string",
+      "title": "Recurrence transaction ID",
+      "description": "Recurrence transaction ID.",
+      "example": "1a84daf6-a61b-4aba-919a-a9943db7102e"
+    },
+    "debtor": {
+      "type": "object",
+      "required": [
+        "document_type",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "NATURAL_PERSON"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "27329425028"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Walter Melon"
+        }
+      }
+    },
+    "payer": {
+      "type": "object",
+      "required": [
+        "document_type",
+        "document_number",
+        "name",
+        "bank",
+        "branch",
+        "account_number"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "LEGAL_PERSON"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "27329425028"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Walter Melon"
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank code",
+          "description": "<a href=\"https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/\" target=\"_blank\">ISPB (Identifcador do Sistema de Pagamento Brazil)</a> - the Brazilian Payment System ID for the receiving bank, an 8-digit value.",
+          "example": "00000001"
+        },
+        "branch": {
+          "type": "string",
+          "title": "Bank branch",
+          "description": "This could be a bank-assigned branch ID or the branch's ISPB number.",
+          "example": "1001"
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account number",
+          "description": "Payer's account number.",
+          "example": "98765432"
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account type",
+          "description": "Payer's account type.",
+          "enum": [
+            "CACC",
+            "SLRY",
+            "SVGS",
+            "TRAN"
+          ],
+          "example": [
+            "CACC"
+          ]
+        },
+        "city_code": {
+          "type": "string",
+          "title": "City code",
+          "description": "The <a href='https://www.ibge.gov.br/explica/codigos-dos-municipios.php' target='_blank'>IBGE</a> (Instituto Brasileiro de Geografia e Estat\u00edstica) city code",
+          "example": "3550308"
+        }
+      }
+    },
+    "error": {
+      "type": "string",
+      "title": "Error",
+      "description": "The description of the error.",
+      "examples": [
+        "The first payment is out of date"
+      ]
+    }
+  },
+  "examples": [
+    {
+      "account_id": 254539210,
+      "idempotency_key": "0a013232-ef033a",
+      "contract_id": "00000000010",
+      "description": "Gym Training Payment",
+      "transaction_identification": "007f587d-01f9-41a6-b4a0-cd16b498a7d3",
+      "allow_attempts_after_expiration": false,
+      "amount": 10,
+      "min_payment_amount": 10.15,
+      "dynamic_amount": false,
+      "frequency_type": "MONTH",
+      "first_payment_date": "2025-05-21",
+      "last_payment_date": "2025-12-21",
+      "expiration_date": "2025-05-18T00:00:00Z",
+      "debtor": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe"
+      },
+      "payer": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe",
+        "bank": "00000341",
+        "branch": "2050",
+        "account_number": "9000003"
+      },
+      "error": "First payment date is incorrect"
+    }
+  ]
+}

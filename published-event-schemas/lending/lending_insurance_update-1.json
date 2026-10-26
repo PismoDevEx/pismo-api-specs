@@ -1,0 +1,287 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Insurance updated",
+  "description": "This event occurs when loan insurance is updated. For more information about the Lending API, refer to <a href='https://developers.pismo.io/pismo-docs/reference/getloanproductv2' target='_blank'>the Lending API reference</a>.",
+  "required": [
+    "cid",
+    "loan_id",
+    "insurance_id",
+    "org_id",
+    "account_id",
+    "currency",
+    "amount",
+    "previous_status",
+    "current_status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "cid": {
+      "$id": "#/properties/cid",
+      "type": "string",
+      "title": "CID",
+      "description": "Event ID",
+      "example": "7da3db3b-400d-4851-a362-2022dab27284"
+    },
+    "insurance_id": {
+      "$id": "#/properties/insurance_id",
+      "type": "string",
+      "title": "Insurance ID",
+      "description": "Insurance ID",
+      "example": "aaj98dkj-abc9-4769-b179-12y6665412r8"
+    },
+    "loan_id": {
+      "$id": "#/properties/loan_id",
+      "type": "string",
+      "title": "Loan ID",
+      "description": "Loan ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID associated with authorization",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "example": 12176
+    },
+    "product_id": {
+      "$id": "#/properties/product_id",
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID",
+      "example": "89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo platform program ID",
+      "example": 9000
+    },
+    "currency": {
+      "$id": "#/properties/currency",
+      "type": "string",
+      "title": "Currency",
+      "description": "ISO 4217 3-letter currency code for insurance",
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD"
+      ]
+    },
+    "amount": {
+      "$id": "#/properties/amount",
+      "type": "number",
+      "title": "Amount",
+      "description": "Insurance amount",
+      "example": 60.0
+    },
+    "contract_amount": {
+      "$id": "#/properties/contract_amount",
+      "type": "number",
+      "title": "Contract amount",
+      "description": "Loan contract amount",
+      "example": 18690.0
+    },
+    "principal_amount": {
+      "$id": "#/properties/principal_amount",
+      "type": "number",
+      "title": "Principal amount authorized",
+      "description": "Principal amount authorized without charges or taxes.",
+      "example": 336.66
+    },
+    "previous_status": {
+      "$id": "#/properties/previous_status",
+      "type": "string",
+      "title": "Previous status",
+      "description": "Insurance previous status",
+      "enums": [
+        "CREATING",
+        "PENDING",
+        "BOOKED",
+        "ACTIVE",
+        "CANCELED",
+        "PROCESSING",
+        "RENEGOTIATED",
+        "SETTLED",
+        "WRITTEN_OFF",
+        "ERROR"
+      ],
+      "example": "ACTIVE"
+    },
+    "current_status": {
+      "$id": "#/properties/current_status",
+      "type": "string",
+      "title": "Current status",
+      "description": "Insurance current status",
+      "enums": [
+        "CREATING",
+        "PENDING",
+        "BOOKED",
+        "ACTIVE",
+        "CANCELED",
+        "PROCESSING",
+        "RENEGOTIATED",
+        "SETTLED",
+        "WRITTEN_OFF",
+        "ERROR"
+      ],
+      "example": "CANCELED"
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": "string",
+      "title": "Updated date",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "example": "2020-12-29T19:48:25.000Z"
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "title": "Created date",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "example": "2020-12-29T19:48:25.000Z"
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization ID",
+      "description": "Authorization ID",
+      "example": 14123
+    },
+    "authorization_tracking_id": {
+      "$id": "#/properties/authorization_tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization tracking ID",
+      "description": "Authorization tracking ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "authorization_customer_id": {
+      "$id": "#/properties/authorization_customer_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization customer ID",
+      "description": "Authorization customer ID",
+      "example": 69332
+    },
+    "authorization_cancellation_id": {
+      "$id": "#/properties/authorization_cancellation_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization cancellation ID",
+      "description": "Authorization cancellation ID",
+      "example": 14123
+    },
+    "authorization_cancellation_tracking_id": {
+      "$id": "#/properties/authorization_cancellation_tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization cancellation tracking ID",
+      "description": "Authorization cancellation tracking ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "installments": {
+      "type": "array",
+      "title": "Installment schedule",
+      "properties": {
+        "items": {
+          "$ref": "#/definitions/installment"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "installment": {
+      "type": "object",
+      "title": "Installment",
+      "description": "Definition of an insurance installment",
+      "properties": {
+        "installment_id": {
+          "$id": "#/installment/properties/installment_id",
+          "type": "string",
+          "title": "Installment ID",
+          "description": "Installment ID",
+          "example": "7da3db3b-400d-4851-a362-2022dab27284"
+        },
+        "installment": {
+          "$id": "#/installment/properties/installment",
+          "type": "number",
+          "title": "Installment index ID",
+          "description": "Insurance installment index ID",
+          "example": 12
+        },
+        "due_date": {
+          "$id": "#/installment/properties/due_date",
+          "type": "string",
+          "title": "Due date",
+          "description": "ISO 8601 date format: YYYY-MM-DD",
+          "format": "date",
+          "example": "2023-07-01"
+        },
+        "amount": {
+          "$id": "#/installment/properties/amount",
+          "type": "number",
+          "title": "Amount",
+          "description": "Insurance installment amount",
+          "example": 1336.66
+        },
+        "previous_status": {
+          "$id": "#/installment/properties/previous_status",
+          "type": "string",
+          "title": "Previous status",
+          "description": "Insurance installment previous status",
+          "enum": [
+            "PENDING",
+            "PROCESSING",
+            "SCHEDULED",
+            "PAST_DUE",
+            "PAID",
+            "PENDING_PAYMENT",
+            "ACTIVE",
+            "CANCELED"
+          ],
+          "example": "SCHEDULED"
+        },
+        "current_status": {
+          "$id": "#/installment/properties/current_status",
+          "type": "string",
+          "title": "Current status",
+          "description": "Repayment current status",
+          "enum": [
+            "PENDING",
+            "PROCESSING",
+            "SCHEDULED",
+            "PAST_DUE",
+            "PAID",
+            "PENDING_PAYMENT",
+            "ACTIVE",
+            "CANCELED"
+          ],
+          "example": "PAID"
+        }
+      }
+    }
+  }
+}

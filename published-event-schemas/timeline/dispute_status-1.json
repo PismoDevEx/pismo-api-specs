@@ -1,0 +1,423 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Dispute status change timeline event added",
+  "description": "Event added to user's timeline for any new or updated dispute status. For more information, see [Timeline events overview](https://developers.pismo.io/pismo-docs/docs/timeline-overview).",
+  "required": [
+    "dispute_id",
+    "org_id",
+    "account_id",
+    "authorization_id",
+    "dispute_reason",
+    "modality",
+    "dispute_status",
+    "metadata",
+    "disputed_amount",
+    "created_at"
+  ],
+  "properties": {
+    "dispute_id": {
+      "type": "integer",
+      "title": "Dispute internal identifier.",
+      "examples": [
+        955
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "title": "Account organizational identifier",
+      "examples": [
+        "TN-9dd08b9e-38fd-4359-949f-b33c3ea0d950"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Internal account identifier.",
+      "examples": [
+        24141240
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Internal authorization identifier.",
+      "examples": [
+        3097642
+      ]
+    },
+    "comment": {
+      "type": "string",
+      "title": "Operator or network comments.",
+      "examples": [
+        "approved"
+      ]
+    },
+    "dispute_reason": {
+      "type": "object",
+      "title": "Network chargeback opening reason code.",
+      "required": [
+        "description",
+        "code",
+        "is_fraud"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "title": "Reason code description.",
+          "examples": [
+            "altera\u00e7\u00e3o/invas\u00e3o fraudulenta de device (app)"
+          ]
+        },
+        "code": {
+          "type": "integer",
+          "title": "Reason code number.",
+          "examples": [
+            1
+          ]
+        },
+        "is_fraud": {
+          "type": "boolean",
+          "title": "Reason code type is fraud.",
+          "examples": [
+            true
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "modality": {
+      "type": "object",
+      "title": "Internal validation response. Validates if dispute\u2019s reason code is correct.",
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "title": "Reason code number.",
+          "examples": [
+            0
+          ]
+        }
+      },
+      "is_fraud": {
+        "type": "boolean",
+        "title": "Reason code type is fraud.",
+        "examples": [
+          true
+        ]
+      },
+      "additionalProperties": true
+    },
+    "first_dispute_installment": {
+      "type": "object",
+      "title": "Json Schema of DisputeInstallment (API-DISPUTES)",
+      "examples": [
+        {
+          "id": 1,
+          "dispute_id": 2,
+          "installment": 1,
+          "arn": "teste-arn",
+          "chargeback_id": null,
+          "claim_id": null,
+          "installment_disputed_amount": 150,
+          "network_return_reason_code": null,
+          "reason_code": 4853,
+          "network_return_reject_reason": null,
+          "network_response_error": null,
+          "is_first_installment": true,
+          "network_return_reject_reason_code": null,
+          "dispute_status": {
+            "id": 4,
+            "description": "PENDING_DOCUMENT",
+            "type": "MASTERCARD_CARD",
+            "group": "OPEN"
+          }
+        }
+      ],
+      "required": [
+        "id",
+        "dispute_id",
+        "installment",
+        "arn",
+        "installment_disputed_amount",
+        "reason_code",
+        "is_first_installment",
+        "dispute_status"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/id",
+          "type": "integer",
+          "title": "The id schema",
+          "examples": [
+            1
+          ]
+        },
+        "dispute_id": {
+          "$id": "#/properties/dispute_id",
+          "type": "integer",
+          "title": "The dispute_id schema",
+          "examples": [
+            2
+          ]
+        },
+        "installment": {
+          "$id": "#/properties/installment",
+          "type": "integer",
+          "title": "The installment schema",
+          "examples": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "arn": {
+          "$id": "#/properties/arn",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The arn schema",
+          "examples": [
+            null,
+            "teste-arn"
+          ]
+        },
+        "chargeback_id": {
+          "$id": "#/properties/chargeback_id",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The chargeback_id schema"
+        },
+        "claim_id": {
+          "$id": "#/properties/claim_id",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The claim_id schema"
+        },
+        "installment_disputed_amount": {
+          "$id": "#/properties/installment_disputed_amount",
+          "type": "number",
+          "title": "The installment_disputed_amount schema",
+          "examples": [
+            150,
+            1234.56
+          ]
+        },
+        "network_return_reason_code": {
+          "$id": "#/properties/network_return_reason_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The network_return_reason_code schema",
+          "examples": [
+            null,
+            "422",
+            "2002",
+            "4853",
+            "CO1"
+          ]
+        },
+        "reason_code": {
+          "$id": "#/properties/reason_code",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "The reason_code schema",
+          "examples": [
+            null,
+            4837,
+            4850,
+            4808,
+            4853
+          ]
+        },
+        "network_return_reject_reason": {
+          "$id": "#/properties/network_return_reject_reason",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The network_return_reject_reason schema",
+          "examples": [
+            "null",
+            "Code1=0283(00):D0025/000;DE072=D0025\\4837\\\\",
+            "Code1=2226(00):D0002/000;Code2=0631(00):P0158/004;Code3=2220(00):D0003/000;DE072=D0002\\5214330278318136\\\\P0158\\          DE\\\\D0003\\000000\\\\",
+            "Code1=5001(00):D0025/000;DE072=D0025\\0000\\\\",
+            "Code1=5000(00):D0025/000;DE072=D0025\\0000\\\\"
+          ]
+        },
+        "network_response_error": {
+          "$id": "#/properties/network_response_error",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The network_response_error schema",
+          "examples": [
+            null,
+            "The network returned [This field has an invalid input length.], reasonCode [INVALID_INPUT_LENGTH] with the source [acquirerRefNumber]."
+          ]
+        },
+        "is_first_installment": {
+          "$id": "#/properties/is_first_installment",
+          "type": "boolean",
+          "title": "The is_first_installment schema",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "network_return_reject_reason_code": {
+          "$id": "#/properties/network_return_reject_reason_code",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "The network_return_reject_reason_code schema",
+          "examples": [
+            null,
+            283,
+            2226,
+            5001,
+            5000
+          ]
+        },
+        "dispute_status": {
+          "$id": "#/properties/dispute_status",
+          "type": "object",
+          "title": "The dispute_status schema",
+          "examples": [
+            {
+              "id": 4,
+              "description": "PENDING_DOCUMENT",
+              "type": "MASTERCARD_CARD",
+              "group": "OPEN"
+            }
+          ],
+          "required": [
+            "description",
+            "group"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/dispute_status/properties/id",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "title": "The id disputeStatus schema",
+              "examples": [
+                4
+              ]
+            },
+            "description": {
+              "$id": "#/properties/dispute_status/properties/description",
+              "type": "string",
+              "title": "The description disputeStatus schema",
+              "examples": [
+                "PENDING_DOCUMENT",
+                "OPEN",
+                "ANALYSING",
+                "CLOSED_APPROVED",
+                "CLOSED_DENIED",
+                "NETWORK_APPROVED",
+                "NETWORK_DENIED",
+                "REJECTED_CHARGEBACK_DEFINITE_CREDIT_SYSTEM_FRAUD"
+              ]
+            },
+            "type": {
+              "$id": "#/properties/dispute_status/properties/type",
+              "type": "string",
+              "title": "The type disputeStatus schema",
+              "examples": [
+                "MASTERCARD_CARD",
+                "TOK_PAG"
+              ]
+            },
+            "group": {
+              "$id": "#/properties/dispute_status/properties/group",
+              "type": "string",
+              "title": "The group disputeStatus schema",
+              "examples": [
+                "OPEN"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "dispute_status": {
+      "type": "object",
+      "title": "Dispute current status.",
+      "required": [
+        "description",
+        "group"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "title": "Dispute current status description.",
+          "examples": [
+            "PENDING"
+          ]
+        },
+        "group": {
+          "type": "string",
+          "title": "Dispute group current status.",
+          "examples": [
+            "OPEN"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "protocol": {
+      "type": "string",
+      "title": "Unique tracking ID for CRM operations.",
+      "examples": [
+        "24042020M416143"
+      ]
+    },
+    "metadata": {
+      "type": "string",
+      "title": "All information used to validate a dispute.",
+      "examples": [
+        "{\"treeAnswers\": {\"teste\": true, \"cbkInterval\": 2, \"countryCode\": \"BRA\"}}"
+      ]
+    },
+    "disputed_amount": {
+      "type": "number",
+      "title": "Disputed amount",
+      "examples": [
+        150,
+        1234.56
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Dispute creation date, UTC format (RFC 3339).",
+      "examples": [
+        "2020-10-20T19:12:15.000000000Z"
+      ]
+    },
+    "update_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Dispute update date, UTC format (RFC 3339).",
+      "examples": [
+        "2020-10-20T22:12:15.000000198Z"
+      ]
+    },
+    "additionalProperties": false
+  }
+}

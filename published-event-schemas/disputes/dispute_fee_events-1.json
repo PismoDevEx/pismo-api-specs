@@ -1,0 +1,480 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Dispute fee status created",
+  "description": "This event is generated when the <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-fee' target='_blank'>Create dispute fee</a> endpoint is called. For more information about dispute fees, see the <a href='https://developers.pismo.io/pismo-docs/docs/draft-disputes-overview#dispute-fees' target='blank'>Dispute fees</a> section in the Disputes overview guide.",
+  "examples": [
+    {
+      "tenant": "TN-87b1d861-2b07-4cdf-bd24-8a3b3c0354e9",
+      "account_id": 1234,
+      "network_brand_type": "Mastercard",
+      "arn": "1234",
+      "transaction_amount": 15.56,
+      "transaction_date": "2022-05-31",
+      "claim_id": "1234",
+      "card_id": "1234",
+      "card_acceptor_code": "Test1234",
+      "country_code": "USA",
+      "destination_member": "002083",
+      "fee_date": "2022-05-31",
+      "currency": "840",
+      "amount": 15.56,
+      "message": "This is a test message",
+      "reason_code": "7604",
+      "settlement_date": "2022-05-31",
+      "reply_fee_id": "300009520876",
+      "control_number": "1589457",
+      "credit_sender": false,
+      "credit_receiver": true,
+      "fee_type": "CREATE",
+      "dispute_fee_id": 9,
+      "network_fee_id": "300018439680",
+      "status": "PENDING",
+      "reject_reason": "Code1=0142(00):D0063/002;DE072=D0063\\\\8000000808\\\\\\\\",
+      "chargeback_ref_num": "9000000006",
+      "reconciliation_amount": "20.25",
+      "reconciliation_currency": "EUR",
+      "japan_common_merchant_code": "0410",
+      "installment_data": "1234567890",
+      "response_error": {
+        "http_status": 400,
+        "reason_code": "INVALID_REQUEST",
+        "message": "Create First Chargeback - Details provided in the request are invalid.",
+        "source": "SYSTEM"
+      }
+    }
+  ],
+  "required": [
+    "account_id",
+    "amount",
+    "arn",
+    "card_acceptor_code",
+    "card_id",
+    "claim_id",
+    "control_number",
+    "country_code",
+    "credit_receiver",
+    "credit_sender",
+    "currency",
+    "destination_member",
+    "dispute_fee_id",
+    "fee_date",
+    "fee_type",
+    "message",
+    "network_brand_type",
+    "network_fee_id",
+    "reason_code",
+    "reply_fee_id",
+    "settlement_date",
+    "status",
+    "tenant",
+    "transaction_amount",
+    "transaction_date"
+  ],
+  "properties": {
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        1234
+      ]
+    },
+    "amount": {
+      "$id": "#/properties/amount",
+      "type": "number",
+      "title": "Amount",
+      "description": "Fee amount",
+      "examples": [
+        15.56
+      ]
+    },
+    "arn": {
+      "$id": "#/properties/arn",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "ARN",
+      "description": "Acquirer reference number.",
+      "examples": [
+        "1234",
+        null
+      ]
+    },
+    "card_acceptor_code": {
+      "$id": "#/properties/card_acceptor_code",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Card acceptor code",
+      "description": "Merchant ID associated with this fee collection..if any.",
+      "examples": [
+        "Test1234",
+        null
+      ]
+    },
+    "card_id": {
+      "$id": "#/properties/card_id",
+      "type": "string",
+      "title": "Card ID",
+      "description": "Pismo card ID.",
+      "examples": [
+        "1234"
+      ]
+    },
+    "claim_id": {
+      "$id": "#/properties/claim_id",
+      "type": "string",
+      "title": "Claim ID",
+      "description": "ID of Claim this dispute is associated with.",
+      "examples": [
+        "1234"
+      ]
+    },
+    "control_number": {
+      "$id": "#/properties/control_number",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Control number",
+      "description": "Used in routing chargeback and retrieval documentation. It contains either a MasterCom endpoint suffix, in case of 2 characters, or a full MasterCom endpoint in case of 7 characters. When mastercom ControlNumber is present, it cannot be all spaces or all zeros.",
+      "examples": [
+        "1589457",
+        null
+      ]
+    },
+    "country_code": {
+      "$id": "#/properties/country_code",
+      "title": "Country code",
+      "description": "ISO country code",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "USA",
+        null
+      ]
+    },
+    "credit_receiver": {
+      "$id": "#/properties/credit_receiver",
+      "type": "boolean",
+      "title": "Credit receiver",
+      "description": "Credit the receiver flag.",
+      "enum": [
+        true,
+        false
+      ]
+    },
+    "credit_sender": {
+      "$id": "#/properties/credit_sender",
+      "type": "boolean",
+      "title": "Credit sender",
+      "description": "Credit the sender flag.",
+      "enum": [
+        true,
+        false
+      ]
+    },
+    "currency": {
+      "$id": "#/properties/currency",
+      "type": "string",
+      "title": "Currency",
+      "description": "ISO 4217 fee currency code.",
+      "examples": [
+        "840"
+      ]
+    },
+    "destination_member": {
+      "$id": "#/properties/destination_member",
+      "type": "string",
+      "title": "Destination member",
+      "description": "Destination member for the fee collection. This is an ID known to the network",
+      "examples": [
+        "002083"
+      ]
+    },
+    "dispute_fee_id": {
+      "$id": "#/properties/dispute_fee_id",
+      "type": "integer",
+      "title": "Dispute fee ID",
+      "description": "Pismo dispute fee ID.",
+      "examples": [
+        9
+      ]
+    },
+    "fee_date": {
+      "$id": "#/properties/fee_date",
+      "type": "string",
+      "title": "Fee Date",
+      "description": "Date the fee was attached to the claim.",
+      "examples": [
+        "2022-05-31"
+      ]
+    },
+    "fee_type": {
+      "$id": "#/properties/fee_type",
+      "type": "string",
+      "title": "Fee type",
+      "description": "Fee type - `CREATE` or `REPLY`.",
+      "enum": [
+        "CREATE",
+        "REPLY"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Message",
+      "description": "Message regarding fee.",
+      "examples": [
+        "This is a test message",
+        null
+      ]
+    },
+    "network_brand_type": {
+      "$id": "#/properties/network_brand_type",
+      "type": "string",
+      "title": "Network Brand.",
+      "description": "Network brand - i.e., Mastercard",
+      "examples": [
+        "Mastercard"
+      ]
+    },
+    "network_fee_id": {
+      "$id": "#/properties/network_fee_id",
+      "type": "string",
+      "title": "Network fee ID",
+      "description": "Network fee ID.",
+      "examples": [
+        "300018439680"
+      ]
+    },
+    "reason_code": {
+      "$id": "#/properties/reason_code",
+      "type": "string",
+      "title": "Reason Code",
+      "description": "Collection reason code. These codes can be found in Mastercard's <a href='https://pismoassets.pismo.io/pismo-docs/mc_gcms_rm.pdf' target='_blank'>Global Clearing Management System Reference Manual</a> starting on page 408.",
+      "examples": [
+        "7604"
+      ]
+    },
+    "reply_fee_id": {
+      "$id": "#/properties/reply_fee_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Reply Fee ID",
+      "description": "Fee identifier to be sent in reply to created Fee.",
+      "examples": [
+        "300009520876",
+        null
+      ]
+    },
+    "settlement_date": {
+      "$id": "#/properties/settlement_date",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Settlement date",
+      "description": "May not be prior to the current date or beyond 90 days from the current date.",
+      "examples": [
+        "2022-05-31",
+        null
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Status",
+      "description": "Fee status - `PENDING`, `PROCESSED`, or  `FAILED` .",
+      "enum": [
+        "PENDING",
+        "PROCESSED",
+        "FAILED"
+      ]
+    },
+    "tenant": {
+      "$id": "#/properties/tenant",
+      "type": "string",
+      "title": "Tenant",
+      "description": "Pismo organization/tenant ID.",
+      "examples": [
+        "TN-87b1d861-2b07-4cdf-bd24-8a3b3c0354e9"
+      ]
+    },
+    "transaction_amount": {
+      "$id": "#/properties/transaction_amount",
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Transaction amount",
+      "description": "Transaction amount.",
+      "examples": [
+        15.56,
+        null
+      ]
+    },
+    "transaction_date": {
+      "$id": "#/properties/transaction_date",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Transaction date",
+      "description": "Transaction date, format = yyyy-mm-dd",
+      "examples": [
+        "2022-05-31",
+        null
+      ]
+    },
+    "chargeback_ref_num": {
+      "$id": "#/properties/chargeback_ref_num",
+      "type": "string",
+      "title": "Chargeback reference number",
+      "description": "Contains card issuer reference data for a specific cardholder transaction.",
+      "examples": [
+        "9000000006",
+        null
+      ]
+    },
+    "installment_data": {
+      "$id": "#/properties/installment_data",
+      "type": "string",
+      "title": "Installment data",
+      "description": "Information about the installment payment option selected by the cardholder at the point of interaction.",
+      "examples": [
+        "1234567890",
+        null
+      ]
+    },
+    "japan_common_merchant_code": {
+      "$id": "#/properties/japan_common_merchant_code",
+      "type": "string",
+      "title": "Japan common merchant code",
+      "description": "Identifies the merchant's category in Japan, referred to as the Common Merchant Category Code (CMC).",
+      "examples": [
+        "0410",
+        null
+      ]
+    },
+    "reconciliation_amount": {
+      "$id": "#/properties/reconciliation_amount",
+      "type": "number",
+      "title": "Reconciliation amount",
+      "description": "Fee reconciliation amount.",
+      "examples": [
+        20.25,
+        null
+      ]
+    },
+    "reconciliation_currency": {
+      "$id": "#/properties/reconciliation_currency",
+      "type": "string",
+      "title": "Reconciliation currency",
+      "description": "ISO 4217 reconciliation fee currency.",
+      "examples": [
+        "EUR",
+        null
+      ]
+    },
+    "reject_reason": {
+      "$id": "#/properties/reject_reason",
+      "type": "string",
+      "title": "Reject Reason",
+      "description": "Fee reject reason.",
+      "examples": [
+        "Code1=0142(00):D0063/002;DE072=D0063\\\\8000000808\\\\\\\\",
+        null
+      ]
+    },
+    "response_error": {
+      "$id": "#/properties/response_error",
+      "type": "object",
+      "title": "Response error",
+      "description": "Response If an error has been returned.",
+      "examples": [
+        {
+          "http_status": 400,
+          "reason_code": "INVALID_REQUEST",
+          "message": "Create first chargeback - Details provided in the request are invalid.",
+          "source": "SYSTEM"
+        },
+        null
+      ],
+      "properties": {
+        "http_status": {
+          "$id": "#/properties/response_error/properties/http_status",
+          "type": [
+            "integer"
+          ],
+          "title": "HTTP status",
+          "description": "HTTP status returned from network API.",
+          "examples": [
+            400,
+            null
+          ]
+        },
+        "reason_code": {
+          "$id": "#/properties/response_error/properties/reason_code",
+          "type": [
+            "string"
+          ],
+          "title": "Reason code",
+          "description": "Reason code for error from network API.",
+          "examples": [
+            "INVALID_REQUEST",
+            null
+          ]
+        },
+        "message": {
+          "$id": "#/properties/response_error/properties/message",
+          "type": [
+            "string"
+          ],
+          "title": "Error message",
+          "description": "Error message returned from network API.",
+          "examples": [
+            "Create First Chargeback - Details provided in the request are invalid.",
+            null
+          ]
+        },
+        "source": {
+          "$id": "#/properties/response_error/properties/source",
+          "type": [
+            "string"
+          ],
+          "title": "Error message origin",
+          "description": "Origin for error message from network API.",
+          "examples": [
+            "SYSTEM",
+            null
+          ]
+        }
+      }
+    },
+    "source": {
+      "$id": "#/properties/source",
+      "type": "string",
+      "title": "Source",
+      "description": "Dispute source.",
+      "enum": [
+        "acquirer",
+        "issuer"
+      ],
+      "examples": [
+        "acquirer"
+      ]
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Balance account changed",
+  "description": "This event occurs when one of the following account properties changes: CurrentCycle, CollectionStatus, OpenDueDate, or ProgramDueDate",
+  "required": [
+    "account_id",
+    "current_cycle",
+    "collection_status",
+    "created_at"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        1010
+      ]
+    },
+    "program_due_date_id": {
+      "type": "integer",
+      "description": "Program Due Date ID",
+      "examples": [
+        1010
+      ]
+    },
+    "current_cycle": {
+      "type": "integer",
+      "description": "Current Cycle",
+      "examples": [
+        20
+      ]
+    },
+    "open_due_date": {
+      "type": "string",
+      "description": "Open Due Date",
+      "examples": [
+        "2023-07-01"
+      ]
+    },
+    "collection_status": {
+      "type": "string",
+      "description": "Account overdue status",
+      "examples": [
+        "NORMAL",
+        "OVERDUE"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Account creation date, format = yyyy-MM-ddTHH:mm:ss.fffZ",
+      "format": "datetime",
+      "examples": [
+        "2023-04-14T15:15:40.123Z"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "description": "Account update date, format = yyyy-MM-ddTHH:mm:ss.fffZ",
+      "format": "datetime",
+      "examples": [
+        "2023-04-14T16:30:22.123Z"
+      ]
+    }
+  }
+}

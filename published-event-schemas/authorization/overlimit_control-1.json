@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Over-limit control (internal)",
+  "description": "This event is for internal Pismo use only.",
+  "required": [
+    "account_id",
+    "operation_amount",
+    "available_credit_limit_amount",
+    "type",
+    "authorization",
+    "available_update_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        100602614
+      ]
+    },
+    "operation_amount": {
+      "type": "number",
+      "title": "Operation amount",
+      "description": "Amount of the operation.",
+      "examples": [
+        25.75,
+        125.0,
+        57.25
+      ]
+    },
+    "available_credit_limit_amount": {
+      "type": "number",
+      "title": "Available credit limit amount",
+      "description": "Available credit limit amount of the account.",
+      "examples": [
+        99.55,
+        -300.0,
+        -1.25
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Over limit type",
+      "description": "Over limit type.",
+      "enum": [
+        "EXIT_OVERLIMIT",
+        "ENTER_OVERLIMIT"
+      ],
+      "examples": [
+        "ENTER_OVERLIMIT"
+      ]
+    },
+    "available_update_datetime": {
+      "type": "string",
+      "title": "Available update datetime",
+      "format": "date-time",
+      "description": "Date-time when the account enters or exits the over-limit state, in UTC format.",
+      "examples": [
+        "2021-06-08T10:46:54.000000Z"
+      ]
+    },
+    "authorization": {
+      "type": "object",
+      "title": "Authorization object",
+      "description": "Object with authorization information.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Authorization ID.",
+          "description": "Pismo authorization ID.",
+          "examples": [
+            123,
+            456
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Authorization type",
+          "description": "Type of authorization.",
+          "enum": [
+            "NETWORK",
+            "PLATFORM"
+          ]
+        }
+      }
+    }
+  }
+}

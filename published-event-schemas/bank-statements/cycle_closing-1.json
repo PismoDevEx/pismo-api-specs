@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bank statement cycle closing completed",
+  "description": "This event indicates that the cycle closing has been completed for a specific target, such as an organization, program, or division.",
+  "required": [
+    "target_type",
+    "target_id",
+    "business_date",
+    "cycle_closing_datetime",
+    "next_business_date"
+  ],
+  "properties": {
+    "target_type": {
+      "type": "string",
+      "title": "Target Type",
+      "description": "Defines the hierarchical level to which the cycle closing applies.",
+      "enum": [
+        "ORGANIZATION",
+        "PROGRAM",
+        "DIVISION"
+      ],
+      "examples": [
+        "DIVISION"
+      ]
+    },
+    "target_id": {
+      "type": "string",
+      "title": "Target Identifier",
+      "description": "The target ID for the cycle closing.",
+      "minLength": 1,
+      "maxLength": 52,
+      "examples": [
+        "target-id-123"
+      ]
+    },
+    "business_date": {
+      "type": "string",
+      "title": "Cycle closing business date",
+      "description": "The business date when the cycle closing event was triggered.",
+      "format": "date",
+      "examples": [
+        "2025-04-26"
+      ]
+    },
+    "cycle_closing_datetime": {
+      "type": "string",
+      "title": "Cycle closing datetime",
+      "description": "The cycle closing datetime that indicates the moment the event was issued. Note that the time is displayed in UTC, regardless of the target's local time zone.",
+      "format": "datetime",
+      "minLength": 1,
+      "maxLength": 30,
+      "examples": [
+        "2025-04-27T21:59:59.000000000Z"
+      ]
+    },
+    "next_business_date": {
+      "type": "string",
+      "title": "Next business date",
+      "description": "The next business date is the cycle closing date",
+      "format": "date",
+      "examples": [
+        "2025-04-28"
+      ]
+    },
+    "division_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division code ID",
+      "description": "Code string that identifies the division within your organization.",
+      "maxLength": 36,
+      "examples": [
+        "division-code-123"
+      ]
+    },
+    "is_holiday": {
+      "type": "boolean",
+      "title": "Holiday indicator",
+      "description": "Indicates whether the business date is a holiday.",
+      "examples": [
+        true
+      ]
+    },
+    "is_weekend": {
+      "type": "boolean",
+      "title": "Weekend indicator",
+      "description": "Indicates whether the business date falls on a weekend.",
+      "examples": [
+        false
+      ]
+    }
+  }
+}

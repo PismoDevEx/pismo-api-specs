@@ -1,0 +1,175 @@
+{
+  "type": "object",
+  "title": "Dispute file uploaded",
+  "description": "This event is generated when a file has been uploaded for a dispute via the <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-disputes-disputeid-file' target='_blank'>Upload evidence file</a> endpoint. For more information about the dispute process, see the <a href='https://developers.pismo.io/pismo-docs/docs/disputes-overview' target='_blank'>Disputes overview</a>.",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "object"
+  ],
+  "examples": [
+    {
+      "method": "POST",
+      "uri": "/v1/disputes/{disputeId}/file",
+      "email": "mail@mail.com",
+      "object": {
+        "dispute_id": 64,
+        "path": "321/123/",
+        "file_name": "file.pdf",
+        "category": "OTHERS",
+        "created_at_utc": "2019-05-10 11:09:08",
+        "dispute_file_id": 1,
+        "file_extension": "pdf",
+        "dispute_installment_id": 92,
+        "status": "PENDING",
+        "updated_at": "2019-05-20 13:05:07"
+      }
+    }
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "REST method for dispute creation operation, ie POST",
+      "description": "REST method for dispute creation operation, ie POST",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "Dispute endpoint URI",
+      "description": "URI for dispute creation operation",
+      "examples": [
+        "/v1/disputes/{disputeId}/file"
+      ]
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Operator email",
+      "description": "Operator email for dispute creation operation",
+      "examples": [
+        "pismo@pismo.com"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "Upload file",
+      "description": "Upload file for disputes object",
+      "required": [
+        "dispute_id",
+        "path",
+        "file_name",
+        "category",
+        "created_at_utc"
+      ],
+      "properties": {
+        "dispute_id": {
+          "type": "integer",
+          "title": "Dispute ID",
+          "description": "Dispute ID",
+          "examples": [
+            617
+          ]
+        },
+        "path": {
+          "type": "string",
+          "title": "Saved file path",
+          "description": "Saved file path",
+          "examples": [
+            "24176311/617/"
+          ]
+        },
+        "file_name": {
+          "type": "string",
+          "title": "File name",
+          "description": "File name",
+          "examples": [
+            "fileName2"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "title": "File category",
+          "description": "File category",
+          "enum": [
+            "PERSONAL",
+            "FILE",
+            "OTHERS",
+            "PRE_ARBITRATION",
+            "CARD"
+          ],
+          "examples": [
+            "OTHERS"
+          ]
+        },
+        "created_at_utc": {
+          "type": "string",
+          "title": "Upload file creation date/time",
+          "description": "Upload file creation date in UTC format (RFC 3339)",
+          "examples": [
+            "2020-07-21T18:06:38.000000752Z"
+          ]
+        },
+        "dispute_file_id": {
+          "type": "integer",
+          "title": "Dispute file ID ",
+          "description": "Dispute file ID ",
+          "examples": [
+            617
+          ]
+        },
+        "file_extension": {
+          "type": "string",
+          "title": "File extension",
+          "description": "Upload file extension",
+          "enum": [
+            "jpeg",
+            "tif",
+            "tiff",
+            "pdf",
+            "zip"
+          ],
+          "examples": [
+            "jpeg"
+          ]
+        },
+        "dispute_installment_id": {
+          "type": "integer",
+          "title": "Dispute Installment ID",
+          "description": "Dispute Installment ID",
+          "examples": [
+            897
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "File status",
+          "description": "File status",
+          "enum": [
+            "PENDING",
+            "FAILED",
+            "PROCESSED"
+          ],
+          "examples": [
+            "PENDING"
+          ]
+        },
+        "updated_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Updated file date/time",
+          "description": "Dispute file updated date in UTC format (RFC 3339)",
+          "examples": [
+            "2024-04-19 14:53:43"
+          ]
+        }
+      }
+    }
+  }
+}

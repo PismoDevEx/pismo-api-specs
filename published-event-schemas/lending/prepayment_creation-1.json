@@ -1,0 +1,168 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Group payment created",
+  "description": "This event signals when a group payment has been created or when a payment changes status. Customers can make installment payments early, called prepayments, to avoid interest charges or get a discounted price.",
+  "required": [
+    "org_id",
+    "account_id",
+    "prepayment_id",
+    "status",
+    "prepayment_amount",
+    "repayment_ids"
+  ],
+  "properties": {
+    "org_id": {
+      "title": "Org/tenant ID",
+      "description": "Pismo organization/tenant ID",
+      "type": "string",
+      "examples": [
+        "TN-99999999-1234-4321-5678-123456789012"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": "integer",
+      "examples": [
+        15500,
+        1000
+      ]
+    },
+    "prepayment_id": {
+      "title": "Prepayment ID",
+      "description": "System-generated unique prepayment ID",
+      "type": "string",
+      "examples": [
+        "797fe9a4-32c2-47a8-b6ce-c7fd088ceff9"
+      ]
+    },
+    "status": {
+      "title": "Prepayment status",
+      "description": "Prepayment operation status",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "PENDING",
+        "CONFIRMED",
+        "EXPIRED",
+        "CANCELED"
+      ]
+    },
+    "prepayment_amount": {
+      "title": "Prepayment amount",
+      "description": "Prepayment sum reported in the request",
+      "type": "number",
+      "examples": [
+        101.07
+      ]
+    },
+    "repayment_ids": {
+      "title": "Repayments",
+      "description": "Included prepayment installments",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "loan_id": {
+            "title": "Loan ID",
+            "description": "Loan ID",
+            "type": "string",
+            "examples": [
+              "33475853-a91f-442d-89f9-97b32cfc860b"
+            ]
+          },
+          "repayment_id": {
+            "title": "Repayment ID",
+            "description": "Repayment ID",
+            "type": "string",
+            "examples": [
+              "073c1fbe-0693-4d98-955a-1da396cd5b55"
+            ]
+          }
+        }
+      }
+    },
+    "insurance_information": {
+      "title": "Insurance information",
+      "description": "Insurance prepayment details. Present only when the group payment includes insurance installments; the field is omitted otherwise.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prepayment_id": {
+          "title": "Insurance prepayment ID",
+          "description": "System-generated unique prepayment ID for the insurance installments",
+          "type": "string",
+          "examples": [
+            "b7d0e2f1-9c3a-4a2b-8f5d-2e6c1a4b9f70"
+          ]
+        },
+        "amount": {
+          "title": "Insurance prepayment amount",
+          "description": "Total insurance prepayment amount",
+          "type": "number",
+          "examples": [
+            15.5
+          ]
+        }
+      }
+    },
+    "idempotency_key": {
+      "title": "Idempotency key",
+      "description": "Ensures idempotency of the operation.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "48704d83-0412-431f-816a-50ba81451148"
+      ]
+    },
+    "expiration_date": {
+      "title": "Expiration date",
+      "description": "ISO 8601 date format: YYYY-MM-DD",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "examples": [
+        "2025-01-01"
+      ]
+    },
+    "reference_date": {
+      "title": "Reference date",
+      "description": "ISO 8601 date format: YYYY-MM-DD",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "examples": [
+        "2025-01-01"
+      ]
+    },
+    "metadata": {
+      "title": "Pismo metadata",
+      "description": "JSON object containing additional details or custom information",
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "created_at": {
+      "title": "DateTime creation in UTC",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2020-01-01T10:10:00.000Z"
+      ]
+    }
+  }
+}

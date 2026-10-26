@@ -1,0 +1,400 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/dispute_outgoing-1.json",
+  "type": "object",
+  "title": "Dispute migration completed",
+  "description": "Event generated when a dispute migration finished and the result is reported, whether it is a success or a failure",
+  "examples": [
+    {
+      "operation": "UPDATE",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Dispute migrated successfully",
+      "migration": {
+        "id": "migration-id",
+        "version_date": "2021-08-11T11:25:00.000Z"
+      },
+      "entity": {
+        "dispute_id": 1233,
+        "account_id": 1234,
+        "dispute_installment_id": 1235,
+        "authorization_id": 2469,
+        "modality": 30,
+        "disputed_amount": 50.0,
+        "network_brand_type": "Elo",
+        "is_partial": true,
+        "comment": "",
+        "installment_number": 2,
+        "installment_disputed_amount": 10.0,
+        "airport_tax": true,
+        "airport_tax_partial": true,
+        "airport_tax_amount": 20.0,
+        "arn": "123456",
+        "transaction_date": "2024-05-25",
+        "transaction_amount": 20.0,
+        "authorization_code": "012344",
+        "status": "SECOND_PRESENTMENT",
+        "pre_arb_is_partial": true,
+        "pre_arb_amount": 2
+      }
+    },
+    {
+      "operation": "CREATION",
+      "status": "FAIL",
+      "code": "MIGR-0001",
+      "message": "Error migrating dispute",
+      "migration": {
+        "id": "migration-id",
+        "version_date": "2021-08-11T11:25:00.000Z"
+      },
+      "error_details": [
+        {
+          "message": "This is a business error message."
+        }
+      ]
+    }
+  ],
+  "required": [
+    "status",
+    "code",
+    "message",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "Whether the Statement migration is a creation or update",
+      "enum": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "UPDATE",
+        "CREATION"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the migration was a success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "A standardized error or success code for the migration. Similar errors may have the same code even if individual error messages differ",
+      "examples": [
+        "MIGR-0001",
+        "MIGR-0400",
+        "MIGR-0500"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "Migration result message",
+      "description": "A freeform message describing the migration result",
+      "examples": [
+        "Dispute migrated successfully",
+        "Error migrating dispute"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "description": "Data that identifies the dispute migration.",
+      "examples": [
+        {
+          "id": "dispute-id-1234",
+          "version_date": "2021-08-27T16:45:07.750936Z"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "description": "A unique identifier for the migration.",
+          "examples": [
+            "card-external-10"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "Version Timestamp of the migration, used to determine whether to update an existing migration with the same migration ID.",
+          "examples": [
+            "2021-08-27T16:45:07.750936Z"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Data pertaining to the migrated dispute",
+      "examples": [
+        {
+          "dispute_id": 1233,
+          "account_id": 1234,
+          "dispute_installment_id": 1235,
+          "authorization_id": 2469,
+          "modality": 30,
+          "disputed_amount": 50.0,
+          "network_brand_type": "Elo",
+          "is_partial": true,
+          "comment": "",
+          "installment_number": 2,
+          "installment_disputed_amount": 10.0,
+          "airport_tax": true,
+          "airport_tax_partial": true,
+          "airport_tax_amount": 20.0,
+          "arn": "123456",
+          "transaction_date": "2024-05-25",
+          "transaction_amount": 20.0,
+          "authorization_code": "012344",
+          "card_hash": "a-card-hash",
+          "status": "SECOND_PRESENTMENT",
+          "pre_arb_is_partial": true,
+          "pre_arb_amount": 2
+        }
+      ],
+      "properties": {
+        "dispute_id": {
+          "$id": "#/properties/entity/properties/dispute_id",
+          "type": "integer",
+          "description": "The platform id for the migrated dispute, for a successful migration",
+          "examples": [
+            10,
+            72,
+            4853
+          ]
+        },
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "integer",
+          "description": "The platform identifier for the account associated with the dispute",
+          "examples": [
+            10,
+            72,
+            4853
+          ]
+        },
+        "dispute_installment_id": {
+          "$id": "#/properties/entity/properties/dispute_installment_id",
+          "type": "integer",
+          "description": "The platform identifier for the installment dispute, when the dispute is associated with an installment transaction",
+          "examples": [
+            10,
+            72,
+            4853
+          ]
+        },
+        "authorization_id": {
+          "$id": "#/properties/entity/properties/authorization_id",
+          "type": "integer",
+          "description": "The platform identifier for the authorization associated with the dispute",
+          "examples": [
+            10,
+            72,
+            4853
+          ]
+        },
+        "modality": {
+          "$id": "#/properties/entity/properties/modality",
+          "type": "integer",
+          "description": "The reason code for the dispute, as defined by the card network",
+          "examples": [
+            10,
+            72,
+            4853
+          ]
+        },
+        "disputed_amount": {
+          "$id": "#/properties/entity/properties/disputed_amount",
+          "type": "number",
+          "description": "The amount value being disputed",
+          "examples": [
+            10.0,
+            72.54,
+            4853.92
+          ]
+        },
+        "network_brand_type": {
+          "$id": "#/properties/entity/properties/network_brand_type",
+          "type": "string",
+          "description": "The network brand in which the transaction under dispute occurred",
+          "examples": [
+            "Visa",
+            "Mastercard",
+            "Elo"
+          ]
+        },
+        "is_partial": {
+          "$id": "#/properties/entity/properties/is_partial",
+          "type": "boolean",
+          "description": "Whether this dispute is a partial one",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "comment": {
+          "$id": "#/properties/entity/properties/comment",
+          "type": "string",
+          "description": "A client-defined custom freeform comment for the dispute",
+          "examples": [
+            "A custom comment explaining why the dispute is partial."
+          ]
+        },
+        "installment_number": {
+          "$id": "#/properties/entity/properties/installment_number",
+          "type": "integer",
+          "description": "Required for disputes associated with an installment transaction. Which installment is the dispute associated to, if applicable",
+          "examples": [
+            1,
+            3,
+            12
+          ]
+        },
+        "installment_disputed_amount": {
+          "$id": "#/properties/entity/properties/installment_disputed_amount",
+          "type": "number",
+          "description": "Required for disputes associated with an installment transaction. The installment amount under dispute",
+          "examples": [
+            1.43,
+            3.01,
+            12.13
+          ]
+        },
+        "airport_tax": {
+          "$id": "#/properties/entity/properties/airport_tax",
+          "type": "boolean",
+          "description": "Whether a dispute for airport tax should be created.",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "airport_tax_partial": {
+          "$id": "#/properties/entity/properties/airport_tax_partial",
+          "type": "boolean",
+          "description": "Whether the airport tax dispute being migrated is partial, if applicable",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "airport_tax_amount": {
+          "$id": "#/properties/entity/properties/airport_tax_amount",
+          "type": "number",
+          "description": "The disputed amount for the airport tax dispute, in case it is partial",
+          "examples": [
+            20.0,
+            20.21
+          ]
+        },
+        "arn": {
+          "$id": "#/properties/entity/properties/arn",
+          "type": "string",
+          "description": "Acquirer reference number",
+          "examples": [
+            "0000000000539598"
+          ]
+        },
+        "transaction_date": {
+          "$id": "#/properties/entity/properties/transaction_date",
+          "type": "string",
+          "description": "Transaction date, in yyyy-MM-dd format",
+          "examples": [
+            "2024-05-25"
+          ]
+        },
+        "transaction_amount": {
+          "$id": "#/properties/entity/properties/transaction_amount",
+          "type": "number",
+          "description": "Transaction amount",
+          "examples": [
+            20.0
+          ]
+        },
+        "card_hash": {
+          "$id": "#/properties/entity/properties/card_hash",
+          "type": "string",
+          "description": "Card hash generated by pismo.",
+          "examples": [
+            "a-card-hash"
+          ]
+        },
+        "authorization_code": {
+          "$id": "#/properties/entity/properties/authorization_code",
+          "type": "string",
+          "description": "Authorization code associated with the transaction under dispute",
+          "examples": [
+            "012344"
+          ]
+        },
+        "status": {
+          "$id": "#/properties/entity/properties/status",
+          "type": "string",
+          "description": "Dispute status. Check the Disputes Overview guide for definitions and valid values",
+          "examples": [
+            "SECOND_PRESENTMENT"
+          ]
+        },
+        "pre_arb_is_partial": {
+          "$id": "#/properties/entity/properties/pre_arb_is_partial",
+          "type": "boolean",
+          "description": "Pre-arbitration is for a partial amount dispute represented by pre_arb_amount. Optional field and if empty disputes will be created as full amount (false).",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "pre_arb_amount": {
+          "$id": "#/properties/entity/properties/pre_arb_amount",
+          "type": "boolean",
+          "description": "Pre-arbitration amount being disputed. Required when pre_arb_is_partial is true.",
+          "examples": [
+            30.0,
+            1.99
+          ]
+        },
+        "additionalProperties": true
+      }
+    },
+    "error_details": {
+      "$id": "#/properties/error_details",
+      "description": "List of error causes for an unsuccessful migration",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$id": "#/properties/error_details/items/properties/message",
+            "type": "string",
+            "description": "A freeform error message detailing a migration failure"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

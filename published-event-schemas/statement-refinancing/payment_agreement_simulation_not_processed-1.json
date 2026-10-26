@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Payment agreement simulation not processed",
+  "description": "Event generated when a payment agreement simulation is not processed.",
+  "required": [
+    "payment_agreement_simulation_id",
+    "account_id",
+    "created_at",
+    "payment_date",
+    "type",
+    "status",
+    "error_code",
+    "error_message"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Event ID",
+      "examples": [
+        "event-id-xxx"
+      ]
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Event type",
+      "examples": [
+        "payment-agreement-simulation-not-processed"
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Org ID",
+      "examples": [
+        "org-id-xxxx"
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "description": "Correlation ID used to link related API requests and events",
+      "examples": [
+        "cid-xxx"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp in ISO 8601. Format = YYYY-MM-DDThhmmss.ssssssssZ.",
+      "examples": [
+        "2025-07-22T13:34:36.77806097Z"
+      ]
+    },
+    "payment_agreement_simulation_id": {
+      "type": "integer",
+      "description": "The payment agreement simulation identifier",
+      "examples": [
+        2365
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        242840308
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation date of the simulation in ISO 8601. Format = YYYY-MM-DDThhmmss.sssssssss.",
+      "examples": [
+        "2025-06-17T15:22:51.978005295"
+      ]
+    },
+    "plan_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of plan IDs",
+      "examples": [
+        [
+          "5",
+          "6",
+          "7"
+        ]
+      ]
+    },
+    "first_installment_as_down_payment": {
+      "type": "boolean",
+      "description": "Is the first installment used as a down payment?",
+      "examples": [
+        false
+      ]
+    },
+    "down_payment": {
+      "type": "number",
+      "description": "Down payment amount",
+      "examples": [
+        500.99
+      ]
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Payment date",
+      "examples": [
+        "2025-06-20"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "description": "Payment agreement type",
+      "enum": [
+        "STATEMENT_AGREEMENT",
+        "STATEMENT_INSTALLMENT",
+        "STATEMENT_INSTALLMENT_COMPULSORY"
+      ],
+      "examples": [
+        "STATEMENT_INSTALLMENT"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the simulation processing",
+      "enum": [
+        "PENDING",
+        "PROCESSED",
+        "ERROR"
+      ],
+      "examples": [
+        "ERROR"
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "description": "Error code",
+      "examples": [
+        "002"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message",
+      "examples": [
+        "Current balance should be greater than zero."
+      ]
+    }
+  }
+}

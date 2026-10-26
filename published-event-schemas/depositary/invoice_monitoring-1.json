@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Event that represents a successful invoice monitoring request",
+  "type": "object",
+  "properties": {
+    "access_key": {
+      "type": "string",
+      "title": "Access key",
+      "description": "Access Key invoice identifier",
+      "examples": [
+        "access-key"
+      ]
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Document number",
+      "description": "Document number",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "b3_response": {
+      "type": "array",
+      "title": "Items referring to B3 response",
+      "examples": [
+        "[{\"op\":\"op\",\"path\":\"/path\",\"value\":0.00}]"
+      ]
+    }
+  }
+}

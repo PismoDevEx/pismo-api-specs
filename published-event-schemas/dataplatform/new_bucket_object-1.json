@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "New file available in bucket",
+  "description": "When a file is uploaded to tenant's bucket, this event is created to notify client about it. So, an event-based consumer can be implemented to download files from Pismo.",
+  "required": [
+    "bucket_name",
+    "object_name",
+    "object_size"
+  ],
+  "properties": {
+    "bucket_name": {
+      "type": "string",
+      "title": "Bucket name where file was updloaded to",
+      "examples": [
+        "pismo-dataplatform-tn-343f2b55-29f7-4c1d-8dd7-474681f178df"
+      ]
+    },
+    "object_name": {
+      "type": "string",
+      "title": "Full path from object uploaded",
+      "examples": [
+        "some/full_path/to/object.txt",
+        "reports/report_name/type=daily/year=2020/month=4/day=1/some_file.parquet",
+        "main_stream/2020/4/1/23/some_file_name"
+      ]
+    },
+    "object_size": {
+      "type": "number",
+      "format": "int",
+      "title": "Object size (in bytes)",
+      "examples": [
+        3,
+        5293,
+        1029382
+      ]
+    }
+  }
+}

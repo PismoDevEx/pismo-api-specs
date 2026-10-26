@@ -1,0 +1,359 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/example.json",
+  "title": "Protection Bulletin card updated",
+  "description": "This event occurs when a Protection Bulletin card is updated.<br><br>The Protection Bulletin is used before a transaction takes place in cases where the issuer is temporarily offline and unable to provide an authorization. In a process known as <i>stand-in</i>, the card network authorizes the transaction to avoid creating problems for the cardholder and merchant. Once the issuer is back online, the card network lets them know what was authorized while they were down.",
+  "examples": [
+    {
+      "card_id": 10203040,
+      "org_id": "TN-123XXX-XXXXXX-XXXXXXX",
+      "program_id": 1010,
+      "network_brand_type": "ELO",
+      "created_at": "2025-04-29 20:37:59",
+      "updated_at": "2025-04-29 20:38:59",
+      "network_track_number": "TN-123XXX-XXXXXX-XXXXXXX::1a2b3c4d",
+      "state": "BLOCKED",
+      "status": "SUCCESS",
+      "histories": [
+        {
+          "event": "POST",
+          "event_date": "2025-04-29 20:37:59",
+          "status": "PENDING",
+          "network_track_number": "TN-123XXX-XXXXXX-XXXXXXX::1a2b3c4d",
+          "was_automatically_purged": false,
+          "network_response_data": "null",
+          "card_track_number": 0
+        },
+        {
+          "event": "UPDATE",
+          "event_date": "2025-04-29 20:38:59",
+          "status": "SUCCESS",
+          "network_track_number": "TN-123XXX-XXXXXX-XXXXXXX::1a2b3c4d",
+          "was_automatically_purged": false,
+          "network_response_data": "{\"network\": \"response\"}",
+          "card_track_number": 0
+        }
+      ]
+    }
+  ],
+  "type": "object",
+  "required": [
+    "card_id",
+    "org_id",
+    "program_id",
+    "network_brand_type",
+    "network_track_number",
+    "status",
+    "created_at",
+    "histories"
+  ],
+  "properties": {
+    "card_id": {
+      "$id": "#/properties/card_id",
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID.",
+      "examples": [
+        10203040
+      ]
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Organization/tenant ID",
+      "description": "Organization/tenant ID on the Pismo platform",
+      "examples": [
+        "TN-123XXX-XXXXXX-XXXXXXX"
+      ]
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo program ID.",
+      "examples": [
+        1010
+      ]
+    },
+    "network_brand_type": {
+      "$id": "#/properties/network_brand_type",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "ELO",
+        "MASTERCARD",
+        "VISA"
+      ],
+      "title": "Network Brand",
+      "description": "Card network brand. For example: ELO, MASTERCARD, VISA",
+      "examples": [
+        "ELO",
+        "MASTERCARD",
+        "VISA"
+      ]
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "title": "Bulletin card creation time.",
+      "description": "Date and time when the Protection Bulletin was created. A ISO 8601 value.",
+      "example": "2023-04-12 23:20:50"
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Bulletin card updated time",
+      "description": "Date and time when the Protection Bulletin was updated. A ISO 8601 value.",
+      "example": "2023-04-12 23:20:50"
+    },
+    "purge_date": {
+      "$id": "#/properties/purge_date",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Purge date",
+      "description": "Date when the card will be removed from the Protection Bulletin in the network brand. Format = yyyy-mm-dd.",
+      "example": "2023-04-12"
+    },
+    "network_track_number": {
+      "$id": "#/properties/network_track_number",
+      "type": "string",
+      "title": "Network Track Number",
+      "description": "Created in the internal system to track the card's event history. This is a combination between the tenant and the truncated random uuid.",
+      "examples": [
+        "TN-123XXX-XXXXXX-XXXXXXX::1a2b3c4d"
+      ]
+    },
+    "state": {
+      "$id": "#/properties/state",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "BLOCKED",
+        "UNBLOCKED"
+      ],
+      "title": "State",
+      "description": "Is card blocked or not in the network brand? When the state is empty, it means the network brand did not successfully receive any action.",
+      "examples": [
+        "BLOCKED",
+        "UNBLOCKED"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "PENDING",
+        "SUCCESS",
+        "FAILED"
+      ],
+      "title": "Status",
+      "description": "Request processing status. For example: PENDING, SUCCESS, FAILED",
+      "examples": [
+        "PENDING",
+        "SUCCESS",
+        "FAILED"
+      ]
+    },
+    "was_automatically_purged": {
+      "$id": "#/properties/was_automatically_purged",
+      "type": "boolean",
+      "title": "Was Automatically Purged",
+      "description": "Was card removed from the network brand on the purge date?",
+      "default": false,
+      "enum": [
+        true,
+        false
+      ]
+    },
+    "card_track_number": {
+      "$id": "#/properties/card_track_number",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Pismo card track number",
+      "description": "Pismo card track number.",
+      "examples": [
+        0,
+        1,
+        2
+      ]
+    },
+    "region_code": {
+      "$id": "#/properties/region_code",
+      "title": "Region Code",
+      "description": "Region code contains one or more Account Screen Authorization File (ASAF) region codes that define the distribution of a Visa cardholder account number in Card Recovery Bulletin Service files.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "string"
+        ],
+        "enum": [
+          "0",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ]
+      }
+    },
+    "histories": {
+      "$id": "#/properties/histories",
+      "title": "Histories",
+      "description": "Bulletin Card history associated with a specific network_track_number.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "event": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Event",
+            "description": "Event performed in the request. For example: POST, UPDATE, DELETE",
+            "examples": [
+              "POST",
+              "UPDATE",
+              "DELETE"
+            ]
+          },
+          "event_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bulletin card request time.",
+            "description": "Date and time when the request was received in the Protection Bulletin. A ISO 8601 value",
+            "example": "2023-04-12 23:20:50"
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Status",
+            "description": "Request processing status. For example: PENDING, SUCCESS, FAILED",
+            "examples": [
+              "PENDING",
+              "SUCCESS",
+              "FAILED"
+            ]
+          },
+          "network_track_number": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Network Track Number",
+            "description": "Created in the internal system to track the card's event history. This is a combination between the tenant and the truncated random uuid.",
+            "examples": [
+              "TN-123XXX-XXXXXX-XXXXXXX::1a2b3c4d"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Reason",
+            "description": "Reason that indicates why the card was added to the Protection Bulletin. Elo brand doesn't have this field.",
+            "examples": [
+              "L",
+              "O",
+              "04",
+              "05"
+            ]
+          },
+          "purge_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Purge date",
+            "description": "Date when the card will be removed from the Protection Bulletin in the network brand. Format = yyyy-mm-dd.",
+            "example": "2023-04-12"
+          },
+          "was_automatically_purged": {
+            "type": "boolean",
+            "title": "Was Automatically Purged",
+            "description": "Was card removed from the network brand on the purge date?",
+            "default": false,
+            "enum": [
+              true,
+              false
+            ]
+          },
+          "network_response_data": {
+            "title": "Network Response Data",
+            "description": "Response JSON data received from the network brand.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "examples": [
+              "null",
+              "{\"network\": \"response\"}"
+            ]
+          },
+          "card_track_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "title": "Pismo card track number",
+            "description": "Pismo card track number.",
+            "examples": [
+              0,
+              1,
+              2
+            ]
+          },
+          "region_code": {
+            "title": "Region Code",
+            "description": "Region code contains one or more Account Screen Authorization File (ASAF) region codes that define the distribution of a Visa cardholder account number in Card Recovery Bulletin Service files.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string"
+              ],
+              "enum": [
+                "0",
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

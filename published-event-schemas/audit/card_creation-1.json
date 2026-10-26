@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card created",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of address register operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of address register operation",
+      "examples": [
+        "/v2/cards"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator that registered address",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "The roles of operator that registered address",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of address register operation",
+      "examples": [
+        "APP",
+        "CRM"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The object that represents the address register requested",
+      "required": [
+        "account_id",
+        "card_id",
+        "program_id",
+        "status",
+        "date"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "User's account ID at Pismo Platform",
+          "examples": [
+            12345678
+          ]
+        },
+        "program_id": {
+          "type": [
+            "integer"
+          ],
+          "title": "Card's program ID at Pismo Platform",
+          "default": 0,
+          "examples": [
+            12345678
+          ]
+        },
+        "card_id": {
+          "type": [
+            "integer"
+          ],
+          "title": "Card identifier created on the Pismo platform",
+          "examples": [
+            12345678
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "Status of card",
+          "description": "Created status is used for cards of type Plastic and the Normal status is used for other types",
+          "examples": [
+            "NORMAL",
+            "CREATED"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "title": "The card creation date",
+          "examples": [
+            "2019-10-18T18:26:28"
+          ]
+        }
+      }
+    }
+  }
+}

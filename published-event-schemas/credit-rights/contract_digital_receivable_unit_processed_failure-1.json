@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Digital receivable unit processing failed",
+  "description": "Emitted as the contract_digital_receivable_unit_processed_failure event type when a contract operation cannot be applied to a digital receivable unit (Brazil-only): applying a created or included contract, unlinking a contract on exclusion or termination, or moving the unit to the destination contract on renegotiation. One event is emitted per unit that failed. Consumers can use error_code and error_details to understand why the unit was not updated.",
+  "required": [
+    "error_code"
+  ],
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "title": "Contract ID",
+      "description": "Pismo-generated identifier of the contract the operation tried to apply to or unlink from the unit. Absent when the contract is not known at the time of the failure.",
+      "examples": [
+        "019682bc-0b39-7e98-ab22-fa2dd1c908c0",
+        "019682bd-0797-7440-922e-72d967f71dc9"
+      ]
+    },
+    "contract_operation_id": {
+      "type": "string",
+      "title": "Contract operation ID",
+      "description": "Operation identifier of the contract, as informed when the contract was created. Absent when the contract is not known at the time of the failure.",
+      "examples": [
+        "aec93861-ccc6-41c4-aa80-3fe2e416d34e"
+      ]
+    },
+    "lender_document_number": {
+      "type": "string",
+      "title": "Lender document number",
+      "description": "Document number (CPF or CNPJ) of the lender of the digital receivables grouped in the unit; together with debtor_document_number and maturity_date it identifies the unit. Absent on renegotiation failures, which are reported per contract and not per unit.",
+      "examples": [
+        "00000000000191",
+        "00000000000"
+      ]
+    },
+    "debtor_document_number": {
+      "type": "string",
+      "title": "Debtor document number",
+      "description": "Document number (CPF or CNPJ) of the debtor of the digital receivables grouped in the unit; together with lender_document_number and maturity_date it identifies the unit. Absent on renegotiation failures, which are reported per contract and not per unit.",
+      "examples": [
+        "00000000000191",
+        "00000000000"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Maturity date",
+      "description": "Maturity date shared by the digital receivables grouped in the unit, formatted as yyyy-MM-dd. Absent on renegotiation failures.",
+      "examples": [
+        "2027-12-25"
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error code",
+      "description": "Legacy business error code that explains why the operation failed for the unit, taken from the first validation error. The same codes are returned by the credit rights APIs.",
+      "examples": [
+        "107027",
+        "108011",
+        "101103"
+      ]
+    },
+    "error_details": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Error details",
+      "description": "Structured error with the new 6-digit error code and its description. Present only when the legacy error_code has an equivalent in the new error dictionary; absent otherwise.",
+      "required": [
+        "code",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Error code (new format)",
+          "description": "Error code from the new error dictionary, 6 digits in the [MM][O][nnn] format (module, operation and sequence).",
+          "examples": [
+            "134026",
+            "115001",
+            "132007"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Error description",
+          "description": "Human-readable description of the error in the new error dictionary.",
+          "examples": [
+            "Digital Receivable Unit not found",
+            "contract not found"
+          ]
+        }
+      }
+    },
+    "feature_type": {
+      "type": "string",
+      "title": "Feature type",
+      "description": "Domain operation that triggered the event, taken from the originating contract command. CREATE_CONTRACT: Contract creation. UPDATE_CONTRACT: Contract update, including inclusion, change, exclusion and renegotiation. DELETE_CONTRACT: Contract termination. CREATE_INSTRUMENT_ACT: Negotiable instrument act creation. UPDATE_INSTRUMENT_ACT: Negotiable instrument act update. DELETE_INSTRUMENT_ACT: Negotiable instrument act termination.",
+      "enum": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT",
+        "DELETE_CONTRACT",
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT",
+        "DELETE_INSTRUMENT_ACT"
+      ],
+      "examples": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT",
+        "DELETE_CONTRACT"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Specialization of feature_type, serialized from the OperationType enum. Contract flows use CREATE_CONTRACT on creation, UPDATE_CONTRACT_INCL, UPDATE_CONTRACT_ALTE or UPDATE_CONTRACT_EXCL on update (exclusion and renegotiation use UPDATE_CONTRACT_EXCL), and CANCELLATION_ERROR, CLOSING, CLOSING_DJUD or CLOSING_RNGC on termination according to the termination reason.",
+      "examples": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT_EXCL",
+        "CLOSING"
+      ]
+    }
+  }
+}

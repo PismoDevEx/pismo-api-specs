@@ -1,0 +1,1473 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Network authorization received",
+  "description": "This event represents an authorization action. All actions (authorize, decline, confirm, cancel, partially cancel, and so on) generate this event. The Pismo platform issues this event after it processes the message from the card network and determines a decision about which action to take. This event is for Full balance and Zero balance issuers. Zero balance issuers receive this authorization event and they get the raw message as part of what is sent when the platform calls the issuer's webhook. For more information, refer to the <a href='https://developers.pismo.io/pismo-docs/docs/authorization-events'>Authorization events</a> guide. Also refer to <a href='https://developers.pismo.io/pismo-docs/docs/linking-events-in-an-authorization-workflow' target='_blank'>Linking events in an authorization</a>.<br/><br/><b>Note</b>: The settlement or reconciliation date (clearing - Base II) is something you need to calculate. You should consider <code>conciliation_information.processing_julian_date</code> which is the acquirer-assigned settlement date plus the number of days related to the product. For example, for Visa, the calculation is D+1 (debit) or D+27 (credit).<br/><br/>Also note that this does not apply to balance inquiry authorizations or transactions. Balance inquiries do not generate a Network authorization event.",
+  "required": [
+    "authorization_category",
+    "authorization_type",
+    "org_id",
+    "unique_cid",
+    "cid"
+  ],
+  "properties": {
+    "authorization_category": {
+      "title": "Event category",
+      "description": "Authorization category field indicates what type of action on an authorization generated that event. In base 1, the category is `AUTHORIZATION`, in base 2, it is `CONFIRMATION`. Each message processed by the Pismo platform, whether from the online flow or clearing, emits a Network authorization received event with the corresponding category. `AUTHORIZATION` is for online approvals. `CONFIRMATION` is for clearing confirmations.",
+      "type": "string",
+      "enum": [
+        "AUTHORIZATION",
+        "CONFIRMATION",
+        "DECLINED",
+        "CANCELLATION",
+        "PARTIAL_CANCELLATION",
+        "INSTALLMENT",
+        "AIRPORT_TAX",
+        "REPLACEMENT",
+        "INCREMENTAL",
+        "CANCELLATION_REVERSAL",
+        "REVERSAL_PARTIAL_CANCELLATION"
+      ]
+    },
+    "authorization_type": {
+      "title": "Authorization type",
+      "description": "Type of authorization. Currently, this event is only issued for authorizations coming from the Card Network, so this field is a constant value."
+    },
+    "org_id": {
+      "title": "Org/tenant ID",
+      "description": "Pismo organization/tenant ID",
+      "type": "string",
+      "examples": [
+        "TN-99999999-1234-4321-5678-123456789012"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID. This information is fetched using the Card used in the authorization. If no card is found, this information will not be present in the DECLINED event.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        15500,
+        1000
+      ]
+    },
+    "acquirer_bin": {
+      "title": "Acquirer Identifier",
+      "description": "Identifies the acquiring institution (for example, merchant bank) or its agent. This field represents the value received in field 32 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "12345"
+      ]
+    },
+    "advice_detail_code": {
+      "title": "Advice detail code",
+      "description": "Identifies the detail why the card network issued this advice. This field is only used for Mastercard requests and it represents the value received in the DE60 subfield 2 of the specification, if it is present in the card network message.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "0043",
+        "0045"
+      ]
+    },
+    "advice_reason_code": {
+      "title": "Advice reason code",
+      "description": "Why the card network issued this advice. For messages other than advices, this field is null. In Mastercard requests this field represents the value received in the DE60 subfield 1 of the specification. For Visa requests, this field represents the value received in the F63.4 of the specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "120",
+        "9020"
+      ]
+    },
+    "airport_tax": {
+      "title": "Airport tax amount",
+      "description": "This field is populated only in the `CONFIRMATION` event. The actual airport tax value (in the cardholder's currency) appears exclusively when `authorization_category` is `CONFIRMATION`. In all other categories, including `AIRPORT_TAX` and `AUTHORIZATION`, this field is null.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "examples": [
+        100.0
+      ]
+    },
+    "anti_fraud_execution_time": {
+      "title": "Anti-fraud API response time",
+      "description": "Time in milliseconds between the anti-fraud API call and its response",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        2000,
+        156
+      ]
+    },
+    "arqc_present": {
+      "title": "ARQC present flag",
+      "description": "Authorization Request Cryptogram. Indicates whether the authorization request was performed and the cryptogram information (field 55 of the Card Network specification) was present in the message.",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "examples": [
+        true
+      ]
+    },
+    "atc": {
+      "title": "Application transaction counter",
+      "description": "The ATC (application transaction counter) is a counter, maintained by the chip card application (incremented by the chip), that provides a sequential reference to each transaction.  This field is the ATC value for this card  on this authorization. Only authorization requests with cryptogram information contain this counter.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        100,
+        null
+      ]
+    },
+    "authorization_code": {
+      "title": "Authorization request authorization code",
+      "description": "An alphanumeric 6-digit code generated for an authorization request that can be used to relate this event to other events associated with the same authorization. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/linking-events-in-an-authorization-workflow' target='_blank'>Linking authorization events</a> guide.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "ABC123"
+      ]
+    },
+    "authorization_date_hour": {
+      "title": "Authorization UTC-3 date/time",
+      "description": "Datetime Pismo platform received the authorization (Base 1) or, for Base 2, the clearing datetime, in Brazil (GMT-3).",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2020-01-01T10:10:00"
+      ]
+    },
+    "authorization_id": {
+      "title": "Authorization unique ID",
+      "description": "Authorization internal ID. This ID is unique and must be the same in all events related to the same authorization. It can be used to relate the current event with other events of the same authorization. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/linking-events-in-an-authorization-workflow' target='_blank'>Linking authorization events</a> guide.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        100000,
+        125677
+      ]
+    },
+    "authorization_response_code": {
+      "title": "Authorization response code ",
+      "description": "Response code the authorization platform assigns to the authorization request. Indicates whether it was declined or not.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "00",
+        "14"
+      ]
+    },
+    "authorization_status": {
+      "title": "Authorization status",
+      "description": "Authorization internal status code. Current authorization status for the action which issued this event. (1- Pending, 2- Confirmed, 3- Declined, 4- Cancelled, 5- Dropped).",
+      "type": "integer",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "authorization_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization URL",
+      "description": "Authorization API URL configured per program. Present when core-banking operations are made in our client's side.",
+      "examples": [
+        "our.authorization.customer/my/path"
+      ]
+    },
+    "caller": {
+      "title": "Card network",
+      "description": "Card network generating the authorization request.",
+      "type": "string",
+      "examples": [
+        "Mastercard",
+        "Visa",
+        "tecban"
+      ]
+    },
+    "cancelled_by_elapsed_time": {
+      "type": [
+        "boolean"
+      ],
+      "title": "Cancelled by elapsed time flag",
+      "description": "Was an authorization cancelled due to elapsed time without a confirmation message flag.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "card_acceptor_id": {
+      "title": "Card acceptor ID",
+      "description": "Identifies the card acceptor defining the transaction point in both local and interchange environments. This field represents the value received in field 42 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "000055551111009"
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "Pismo card ID. If no card is found, based on the PAN received, this information will not be present in the DECLINED event.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        10222,
+        8899
+      ]
+    },
+    "cardholder_currency_code": {
+      "title": "Currency Code of the Cardholder",
+      "description": "Cardholder ISO4217 currency code for currency used to bill the account. The final authorization amount is calculated in this currency.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "986"
+      ]
+    },
+    "cardholder_currency_code_literal": {
+      "title": "Currency Code of the Cardholder as Literal",
+      "description": "Field represent Cardholder ISO4217 currency code for currency used to bill the account as literal.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "BRL"
+      ]
+    },
+    "cid": {
+      "title": "Authorizaton correlation ID",
+      "description": "Authorization correlation ID . Along with the `authorization_id`, you can use this field to relate it to other events associated with this authorization. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/linking-events-in-an-authorization-workflow' target='_blank'>Linking authorization events</a> guide.",
+      "type": "string",
+      "examples": [
+        "dc123453-4444-1111-9999-53699d123456"
+      ]
+    },
+    "conciliation_information": {
+      "title": "Conciliation information",
+      "description": "Information regarding the conciliation message being processed for this authorization.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "acquirer_reference_number": {
+          "title": "Acquirer reference number",
+          "description": "Acquirer-supplied data in an acquirer-originated message. An issuer may be required to return this data in a subsequent message to the acquirer.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "22223021032000000000680"
+          ]
+        },
+        "installment_number": {
+          "title": "Installment current number",
+          "description": "Indicates the installment number in the concilation message being processed.",
+          "type": [
+            "number",
+            "null"
+          ],
+          "examples": [
+            2,
+            10
+          ]
+        },
+        "interchange_fee_amount": {
+          "title": "Interchange fee amount",
+          "description": "Interchange fee amount received in the conciliation message. Every time a retailer processes a credit card or debit card payment, the merchant pays an interchange fee. This fee, often called a 'swipe fee,' is designed to cover the costs associated with accepting, processing and authorizing card transactions.",
+          "type": [
+            "number",
+            "null"
+          ],
+          "examples": [
+            0.0082,
+            1.1657
+          ]
+        },
+        "interchange_fee_indicator": {
+          "title": "Credit or debit fee indicator",
+          "description": "Indicates if the interchange fee amount is a debit or a credit.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "CREDIT",
+            "DEBIT",
+            "NOT_APPLICABLE",
+            null
+          ]
+        },
+        "message_number": {
+          "title": "Conciliation message number",
+          "description": "Card network assigned number in the conciliation file for this conciliation message.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "9920",
+            "0001"
+          ]
+        },
+        "processing_julian_date": {
+          "title": "Assigned Julian date",
+          "description": "Julian processing date the acquirer assigns for this settlement. This field has the format YDDD (Julian format. Ex: 4242, where 4 is the last digit of the year 2024 and 242 is the Julian day corresponding to today, 08/29).",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "0350",
+            "1220"
+          ]
+        },
+        "file_path": {
+          "title": "Conciliation file path",
+          "description": "Path to the conciliation file containing this message.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "/files/clearing/2024/08/29/base2_file.txt"
+          ]
+        },
+        "is_first_confirmation": {
+          "title": "First confirmation flag",
+          "description": "Indicates whether this is the first confirmation message for this authorization.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "examples": [
+            true,
+            false
+          ]
+        }
+      }
+    },
+    "conciliation_type": {
+      "title": "Program conciliation type",
+      "description": "Type of conciliation used for this authorization. Single message for authorizations which create transactions from Base I messages, Dual message for authorizations which create transactions from Base II messages.",
+      "type": "string",
+      "enum": [
+        "SINGLE_MESSAGE",
+        "DUAL_MESSAGE",
+        "UNDEFINED"
+      ]
+    },
+    "contract_amount": {
+      "title": "Authorization contract amount",
+      "description": "Calculated authorization amount, including taxes or fees, in the cardholder's currency. For Declined transactions this field may be null, since no calculation was performed.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "examples": [
+        110.0
+      ]
+    },
+    "created_from_authorization_not_found": {
+      "type": [
+        "boolean"
+      ],
+      "title": "Created from authorization not found flag",
+      "description": "Indicates whether an authorization was created in the clearing flow for scenarios where we didn't find a corresponding Base1 Authorization.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "custom_response_code": {
+      "title": "Internal denial Code",
+      "description": "Internal custom code generated in authorization flow for declined requests. Indicates the reason the request was declined. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/validation-codes-for-authorization-events' target='_blank'>Validation codes for authorization events</a>  guide",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "BND",
+        "810",
+        "FR2"
+      ]
+    },
+    "customer_id": {
+      "title": "Customer ID",
+      "description": "ID of customer holding card used in this authorization. If no card is found, this information will be null in the DECLINED event.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        10222,
+        8899
+      ]
+    },
+    "cvv_present": {
+      "title": "CVV present flag",
+      "description": "Indicates whether the authorization request was performed and the card's CVV2 (card verification value) was present.",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "event_date_hour": {
+      "title": "Received message date/time",
+      "description": "Datetime purchase took place at the merchant. Timezone may vary based on purchase location. If these values are present, they are used without validations and since the network only sends the day and month, the current year is assumed. If they are not present, the current time of the authorization (base 1) is used (UTC-3). The values could potentially be incorrect, since this is what the acquirer entered without alteration. This field is present for both authorization (base 1) and clearing (base 2).",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2020-01-01T10:10:00"
+      ]
+    },
+    "event_date_hour_utc": {
+      "title": "DateTime in UTC",
+      "description": "Datetime when Pismo platform received the authorization (base 1), or, for Base 2, the clearing datetime, in UTC-0.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2020-01-01T10:10:00Z"
+      ]
+    },
+    "file_date": {
+      "title": "File processing date",
+      "description": "Date when issuer processed the Base II file.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "2020-01-01"
+      ]
+    },
+    "incoming_authorization_code": {
+      "title": "Authorization code ",
+      "description": "Authorization code from the card network in field 38 of the message request. If the request was approved in the Stand-In flow, this field indicates the authorization code assigned to this message.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "ABC123",
+        "123456"
+      ]
+    },
+    "incoming_response_code": {
+      "title": "Network response code",
+      "description": "Any response code from the Card Network in  field 39 of the message request. It indicates whether the request was approved in the Stand-In flow.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "0043",
+        "0045"
+      ]
+    },
+    "installment_amount": {
+      "title": "Calculated authorization installment amount",
+      "description": "Calculated amount of each installment in the authorization in the cardholder's currency. For authorizations without installments, this field will be the same as the total authorization amount. For Declined transactions this field may be null, since no calculation was performed.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "examples": [
+        55.0
+      ]
+    },
+    "installments_information": {
+      "title": "Installment information",
+      "description": "Details about all installments and their amounts.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "installment_amount": {
+            "title": "Total installment amount",
+            "description": "Calculated total amount for all installments.",
+            "type": [
+              "number"
+            ],
+            "examples": [
+              100.0
+            ]
+          },
+          "number": {
+            "title": "Installment number",
+            "description": "Identifies which installment this object is about.",
+            "type": [
+              "number"
+            ],
+            "examples": [
+              1,
+              2,
+              3
+            ]
+          },
+          "postings": {
+            "title": "Installment fees and taxes.",
+            "description": "Taxes and fees calculated for this installment.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "amortization": {
+                "title": "Installment amortization amount",
+                "description": "Calculated amortization amount for this installment when calculating a purchase with installments and interest.",
+                "type": "number",
+                "examples": [
+                  10.0
+                ]
+              },
+              "daily_iof_amount": {
+                "title": "Daily IOF (Brazilian tax) amount",
+                "description": "Calculated installment's daily IOF (Brazilian tax) amount in the cardholder's currency.",
+                "type": "number",
+                "examples": [
+                  0.45
+                ]
+              },
+              "fixed_iof_amount": {
+                "title": "Fixed IOF (Brazilian tax) amount",
+                "description": "Calculated installment's daily fixed IOF (Brazilian tax) in the cardholder's currency. The calculated fixed amount is always set to the first installment.",
+                "type": "number",
+                "examples": [
+                  0.78
+                ]
+              },
+              "interest_amount": {
+                "title": "Interest amount",
+                "description": "Calculated installment interest in the cardholder's currency.",
+                "type": "number",
+                "examples": [
+                  1.37
+                ]
+              },
+              "iof_amount": {
+                "title": "IOF (Brazilian tax) amount",
+                "description": "Calculated installment IOF (Brazilian tax) in the cardholder's currency. This field sums the installment's daily and fixed IOF amount",
+                "type": "number",
+                "examples": [
+                  0.45
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "title": "Authorization Labels",
+      "description": "List with all labels related to this authorization. Each label identifies an authorization characteristic. DCC = Dynamic currency conversion, ATC = Application transaction counter",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "DCC",
+          "INCREMENT_ATC",
+          "INCREMENT_PASSWORD_TRIES",
+          "INCREMENT_NUMBER_OF_TRANSACTIONS",
+          "BLOCK_CARD",
+          "CLEAR_PASSWORD_TRIES",
+          "HANDOVER",
+          "REFERRAL"
+        ]
+      }
+    },
+    "ledger_update_id": {
+      "title": "Ledger update ID",
+      "description": "ID from Ledger API indicating the account limit impact. This field may be null since some authorizations don't have any financial impact.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "dc123453-4444-1111-9999-53699d123456"
+      ]
+    },
+    "local_amount": {
+      "title": "Authorization local amount",
+      "description": "Amount in local currency where the authorization was requested. The value received in field 4 of the Card Network Specification.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "examples": [
+        100.0
+      ]
+    },
+    "local_currency_code": {
+      "title": "Local amount currency code",
+      "description": "Currency code of the place where the authorization was requested. The value received in field 49 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "986",
+        "840"
+      ]
+    },
+    "local_currency_code_literal": {
+      "title": "Local amount currency code as literal",
+      "description": "Currency code of the place where the authorization was requested as literal.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "BRL",
+        "USD"
+      ]
+    },
+    "merchant_category_id": {
+      "title": "Merchant category code",
+      "description": "Merchant category code based on the merchant's type of business or service. This field represents the value received in field 18 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "5199",
+        "3040"
+      ]
+    },
+    "merchant_city": {
+      "title": "Card acceptor (merchant) city",
+      "description": "Merchant's city. This field represents the value received in field 43, subfield 2, of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "Sao Paulo"
+      ]
+    },
+    "merchant_denial_code": {
+      "title": "Merchant denial code",
+      "description": "Merchant denial code communicates the reason for declining authorizations and the course of action that merchants can take.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "03"
+      ]
+    },
+    "merchant_name": {
+      "title": "Card acceptor (merchant) name",
+      "description": "Merchant's 'doing business as' name. This field represents the value received in field 43, subfield 1, of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "Acme Dry Goods"
+      ]
+    },
+    "merchant_state_or_country": {
+      "title": "Card acceptor (merchant) country/state",
+      "description": "Merchant's country/state. This field represents the value received in field 43, subfield 3, of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "BRA"
+      ]
+    },
+    "merchant_zip_code": {
+      "title": "Card acceptor (merchant) postal code",
+      "description": "Postal code of merchant where the transaction took place.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "12345999"
+      ]
+    },
+    "merchant_terminal": {
+      "title": "Merchant terminal",
+      "description": "Code used to identify the merchant terminal.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "A123X"
+      ]
+    },
+    "metadata": {
+      "title": "Anti-fraud metadata",
+      "description": "Any valid JSON sent in the response from the anti-fraud request. This information is saved and sent in this event as it was received by the platform, without any further processing.",
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "mti": {
+      "title": "Message type indicator",
+      "description": "Message type indicator - Card Network request type. Can be used to identify whether the request is an Advice (Standin flow) or not. For more information, see <a href='https://en.wikipedia.org/wiki/ISO_8583#Message_type_indicator_(MTI)' target='_blank'>MTI</a>",
+      "type": "string",
+      "examples": [
+        "0100",
+        "0120"
+      ]
+    },
+    "nsu": {
+      "title": "Message initiator ID",
+      "description": "Message initiator assigned ID that uniquely identifies a transaction. This field contains the value received in the authorization message in field 11 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "999000"
+      ]
+    },
+    "number_of_installments": {
+      "title": "Authorization number of installments",
+      "description": "In purchases with installments, this field represents the number of installments for which the authorization was requested. For any operation other than purchase with installments, this value should be 1.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        3
+      ]
+    },
+    "org_operation_id": {
+      "title": "Operation unique ID",
+      "description": "Internal identifier of the operation performed on this authorization. This information is related to the Processing Code (field 3 in the Card Network Specification) of the authorization. If the Operation is not allowed for that program or the Processing Code is not mapped, this field will not be present in the DECLINED event.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        10,
+        145
+      ]
+    },
+    "origin": {
+      "title": "Transaction origin",
+      "description": "Identifies where one transaction was issued, if it is from STRIKER('Rebatedor') or migrated from historical data",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "STRIKER",
+        "MIGRATION",
+        "",
+        "ONUS",
+        null
+      ]
+    },
+    "original_authorization_date_hour": {
+      "title": "Original authorization UTC-3 date/time",
+      "description": "UTC-3 sate and time of the original authorization. Indicates the time when the platform received the request that creates the authorization from the Network. No field in the Card Network message is considered. If this is the authorization request, the value of this field will be the same as the `authorization_date_hour`. For other requests such as cancellation and confirmation, this field's value will be the date when the authorization was first requested.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2020-01-01T10:10:00"
+      ]
+    },
+    "original_event_date_hour_utc": {
+      "title": "Original authorization UTC-0 date/timeDate",
+      "description": "UTC-0 date and time of the original authorization. Indicates when the platform received the request that creates the authorization from the network. No field in the Card Network message is considered. If this is the authorization request, the value of this field will be the same as the `event_date_hour_utc`. For other requests such as cancellation and confirmation, the value of this field will be the date when the authorization was first requested.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2020-01-01T10:10:00Z"
+      ]
+    },
+    "pan": {
+      "title": "Primary account number hash",
+      "description": "Hashed PAN (Primary Account Number). This hash is generated from the PAN and is unique inside the platform. You can use it to identify a card together with the `card_id` field.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "nabcdef5432111abcde6543217abcdefGHHHZZZZfGZ119292999g=="
+      ]
+    },
+    "password_present": {
+      "title": "Password present flag",
+      "description": "Indicates whether the authorization request was performed and the card's password is present.",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "point_of_sale": {
+      "title": "Point of sale (POS) information",
+      "description": "Information regarding the POS.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "entry_mode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Authorization entry mode",
+          "description": "The method used for PAN entry to initiate a transaction and the PIN entry capabilities. This field represents the value received in field 22 of the Card Network Specification.",
+          "examples": [
+            "010",
+            "051"
+          ]
+        }
+      }
+    },
+    "postings": {
+      "description": "Authorization taxes and fees.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "cash_back_amount": {
+          "title": "Cash back amount",
+          "description": "In purchase with cash back or POS withdrawal, this is the amount related to the withdrawal/cash back. The principal amount is the sum of this amount with the purchase amount.",
+          "type": "number",
+          "examples": [
+            200.0
+          ]
+        },
+        "fee_amount": {
+          "title": "Fee amount",
+          "description": "Calculated fee for this authorization in the cardholder's currency.",
+          "type": "number",
+          "examples": [
+            15.0
+          ]
+        },
+        "interest_amount": {
+          "title": "Interest rate",
+          "description": "Calculated amount of interest rate for this authorization in the cardholder's currency.",
+          "type": "number",
+          "examples": [
+            10.0
+          ]
+        },
+        "iof_amount": {
+          "title": "IOF amount",
+          "description": "Calculated amount of IOF (Brazilian tax) for this authorization in the cardholder's currency.",
+          "type": "number",
+          "examples": [
+            6.38
+          ]
+        },
+        "purchase_amount": {
+          "title": "Purchase amount",
+          "description": "In a purchase with cash back or POS withdrawal, this is the amount related to the purchase itself. The principal amount is the sum of this amount with the cash back amount.",
+          "type": "number",
+          "examples": [
+            200.0
+          ]
+        }
+      }
+    },
+    "principal_amount": {
+      "title": "Principal authorization amount",
+      "description": "Calculated amount of the authorization without taxes or fees in the cardholder's currency. For Declined transactions this field may be null, since no calculation was performed.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "examples": [
+        100.0
+      ]
+    },
+    "processing_code": {
+      "title": "Processing code",
+      "description": "Type of request being processed, like purchase, withdrawal, purchase with installments, credit return and so on. See <a href='https://developers.pismo.io/pismo-docs/docs/processing-codes-and-transaction-types' target='_blank'>Processing codes and transaction types</a> for more information",
+      "type": "string",
+      "examples": [
+        "00",
+        "01"
+      ]
+    },
+    "program_id": {
+      "title": "Program ID",
+      "description": "Internal identifier of the card's program used for this authorization. If no card is found, this information will not be present in the DECLINED event.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        100,
+        500
+      ]
+    },
+    "rates": {
+      "description": "Contains the rates used to calculate the amounts of this authorization.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "cardholder_conversion_rate": {
+          "title": "Cardholder conversion rate",
+          "description": "Calculated conversion rate from local currency into cardholder currency.",
+          "type": "number",
+          "examples": [
+            5.3456
+          ]
+        },
+        "settlement_conversion_rate": {
+          "title": "Settlement conversion rate",
+          "description": "Calculated conversion rate from local currency into settlement currency.",
+          "type": "number",
+          "examples": [
+            5.3456
+          ]
+        },
+        "conversion_rate": {
+          "title": "Conversion rate",
+          "description": "Calculated conversion rate from settlement currency into cardholder currency.",
+          "type": "number",
+          "examples": [
+            5.3456
+          ]
+        },
+        "daily_iof_rate": {
+          "title": "Daily IOF rate",
+          "description": "Rate of the daily IOF (Brazilian tax) used to calculate this authorization.",
+          "type": "number",
+          "examples": [
+            0.0082
+          ]
+        },
+        "fixed_iof_rate": {
+          "title": "Fixed IOF rate",
+          "description": "Rate of the fixed IOF (Brazilian tax) used to calculate this authorization.",
+          "type": "number",
+          "examples": [
+            0.38
+          ]
+        },
+        "interest_rate": {
+          "title": "Interest rate",
+          "description": "Interest rate used to calculate this authorization.",
+          "type": "number",
+          "examples": [
+            9.9
+          ]
+        },
+        "international_iof_rate": {
+          "title": "International IOF rate",
+          "description": "Rate of the international IOF (Brazilian tax) used to calculate this authorization.",
+          "type": "number",
+          "examples": [
+            6.38
+          ]
+        }
+      }
+    },
+    "retrieval_reference_number": {
+      "title": "Retrieval reference number",
+      "description": "The value received in the authorization message in field 37 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "000001119999"
+      ]
+    },
+    "settlement_amount": {
+      "title": "Settlement amount",
+      "description": "Amount of funds to be transferred between the acquirer and the issuer equal to the transaction amount in the settlement currency. This field represents the amount received in field 5 of the Card Network Specification.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "examples": [
+        100.0
+      ]
+    },
+    "settlement_currency_code": {
+      "title": "Settlement amount currency code",
+      "description": "Currency code of the settlement amount received in the authorization message - the value received in field 50 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "986",
+        "840"
+      ]
+    },
+    "settlement_currency_code_literal": {
+      "title": "Settlement amount currency code as literal",
+      "description": "Currency code of the settlement amount received in the authorization message as literal.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "BRL",
+        "EUR"
+      ]
+    },
+    "soft_descriptor": {
+      "title": "Merchant descriptor",
+      "description": "The merchant's name, city, and country concatenated.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "MERCHANT NAME         SAO PAULO      BRA"
+      ]
+    },
+    "tid": {
+      "title": "Transaction ID",
+      "description": "Transaction ID. Card network generated ID. It will be null in cases where the card network doesn't send this value. This field represents the value received in Field 62 subfield 2 for Visa requests and the DE63, subfield 2 for Mastercard requests.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "10119031908214800419",
+        "ABC123"
+      ]
+    },
+    "token_information": {
+      "title": "Token information",
+      "description": "Information about token used to authenticate authorization.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "id": {
+          "title": "Pismo-created token ID",
+          "description": "Automatically generated sequential internal identifier.",
+          "type": [
+            "null",
+            "integer"
+          ],
+          "examples": [
+            17084,
+            17085
+          ]
+        },
+        "network_token": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Network Token",
+          "description": "Token identifier coming from the network. For Visa requests, this field represents the value received in the F123, Usage 2, Dataset ID 68 (Token Data), Tag 01. For Mastercard requests, it is DE48, SE 33 PanMappingFileInformation, SF2 Account Number.",
+          "examples": [
+            "17084",
+            "17085"
+          ]
+        },
+        "network_requestor_id": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Network requestor ID",
+          "description": "Wallet which requested the token provisioning, as coming from the network. For Visa requests, this field represents the value received in the F123, Usage 2, Dataset ID 68 (Token Data), Tag 03. For Mastercard requests, it is DE48, SE 33 PanMappingFileInformation, SF6 Token Requestor ID.",
+          "examples": [
+            "40010043095",
+            "40010083219"
+          ]
+        },
+        "requestor_id": {
+          "title": "Requestor ID",
+          "description": "Wallet which requested the token provisioning.",
+          "type": [
+            "null",
+            "string"
+          ],
+          "examples": [
+            "APPLE_PAY",
+            "GOOGLE_PAY"
+          ]
+        },
+        "type": {
+          "title": "Token type",
+          "description": "Token type",
+          "type": [
+            "null",
+            "string"
+          ],
+          "examples": [
+            "CARD_ON_FILE",
+            "EMBEDDED_SECURE_ELEMENT"
+          ]
+        }
+      }
+    },
+    "track1_present": {
+      "title": "Track1 present flag",
+      "description": "Indicates whether the authorization request was performed and the track1 (field 45 of the Card Network specification) was present in the message.",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "track2_present": {
+      "title": "Track2 present flag",
+      "description": "Indicates whether the authorization request was performed and the track2 (field 35 of the Card Network specification) was present in the message.",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "transaction_status": {
+      "title": "Authorization purpose Identifier",
+      "description": "The authorization request's purpose or status. For Visa request, it indicates if the authorization is a Normal Request or a Pre Authorized Request. For Mastercard requests, it represents the value of the DE61, subfield 7 that contains the same information as the Visa but can have some other purpose identifiers.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "NORMAL_REQUEST",
+        "PRE_AUTHORIZED_REQUEST",
+        "SECURE_CODE_PHONE_ORDER",
+        "ATM_INSTALLMENT_INQUIRY",
+        "ATC_UPDATE",
+        "ACCOUNT_STATUS_INQUIRY_SERVICE",
+        "TOKENIZATION_REQUEST_OR_NOTIFICATION",
+        null
+      ]
+    },
+    "type": {
+      "title": "Event type",
+      "description": "Type of event. Currently, this event is only issued for authorizations so the value is a constant.",
+      "const": "AUTH_EVENT"
+    },
+    "unique_cid": {
+      "title": "Unique correlation ID",
+      "description": "Unique correlation ID generated for each authorization action. In cancellation or confirmation, this CID is unique.",
+      "type": "string",
+      "examples": [
+        "dc123453-4444-1111-9999-53699d123456"
+      ]
+    },
+    "validation_results": {
+      "title": "Validation results",
+      "description": "All executed validations with details for each result.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "additional_data": {
+            "title": "Additional data",
+            "description": "Additional information relevant to identify how the validation was performed. Every validation will have its own additional data, so please refer to the Pismo Developers Guide to identify every possibility.",
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "description": {
+            "title": "Description",
+            "description": "Detailed information about the validation result.",
+            "type": [
+              "string"
+            ],
+            "examples": [
+              "TERMINAL_CAPABILITY_VALID",
+              "PIN_AND_CVV_VALID"
+            ]
+          },
+          "name": {
+            "title": "Validation name",
+            "description": "Validation name.",
+            "type": [
+              "string"
+            ],
+            "examples": [
+              "CVV2_INVALID",
+              "EXPIRATION_DATE_INVALID",
+              "ARQC_SIGNATURE_VALID"
+            ]
+          },
+          "reason": {
+            "title": "Validation reason",
+            "description": "Validation result reason.",
+            "type": [
+              "null",
+              "string"
+            ],
+            "examples": [
+              "TERMINAL_CAPABILITY_VALID",
+              "PIN_AND_CVV_VALID"
+            ]
+          },
+          "status": {
+            "title": "Validation status",
+            "description": "Validation result status.",
+            "type": [
+              "string"
+            ],
+            "enum": [
+              "SKIPPED",
+              "APPROVED",
+              "REJECTED"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "status",
+          "reason",
+          "description"
+        ]
+      }
+    },
+    "three_domain_security": {
+      "title": "Three Domain Security",
+      "description": "Information regarding the 3D Secure",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "service_indicator": {
+          "title": "Service indicator",
+          "description": "Service indicator ID, corresponding to DE48 SE71 on Mastercard or F126 S20 on Visa.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "electronic_commerce_indicator": {
+          "title": "Electronic commerce indicator",
+          "description": "Electronic commerce indicator ID, corresponding to DE48 SE42 on Mastercard or F60 S08 on Visa.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cardholder_authentication": {
+          "title": "Cardholder authentication",
+          "description": "Cardholder authentication method, corresponding to DE48 SE43 on Mastercard or F44 S13 on Visa.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "authentication_data": {
+          "title": "Authetication data",
+          "description": "Cardholder authentication method, corresponding to DE48 SE66 on Mastercard or F126 S09 on Visa.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "related_accounts": {
+      "title": "The Related Accounts object is used during authorization in operations with shared limits.",
+      "description": "The Related Accounts object lists all the accounts within an account hierarchy in an authorization of a shared limit among these accounts.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "title": "Account Id.",
+            "description": "Identifier of the account returned when searching the account hierarchy.",
+            "type": [
+              "integer"
+            ],
+            "examples": [
+              87326467823
+            ]
+          },
+          "is_centralizer": {
+            "title": " Is Centralizer.",
+            "description": "It indicates whether the account is the centralizing account within the hierarchy. The centralizing account will group the debits of the accounts within the hierarchy.",
+            "type": [
+              "boolean"
+            ],
+            "examples": [
+              true
+            ]
+          },
+          "level": {
+            "title": "Level.",
+            "description": "Represents the level of connection between the account returned in the object and the account used during authorization.",
+            "type": [
+              "integer"
+            ],
+            "examples": [
+              0
+            ]
+          },
+          "parent_account_id": {
+            "title": "Parent Account Id.",
+            "description": "Identifier of the parent account of the account returned in the object.",
+            "type": [
+              "integer",
+              "null"
+            ],
+            "examples": [
+              92384378223
+            ]
+          }
+        }
+      }
+    },
+    "ledger_impact_accounts": {
+      "title": "Ledger Impact Accounts.",
+      "description": "Information regarding impacts in ledger domain.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "title": "Account id",
+            "description": "Account Id Impacted.",
+            "type": [
+              "integer"
+            ],
+            "examples": [
+              87326467823
+            ]
+          },
+          "ledger_update_id": {
+            "title": "Ledger Update Id.",
+            "description": "ID from Ledger API indicating the account limit impact for each account impacted. This field may be null since some authorizations don't have any financial impact.",
+            "type": [
+              "string"
+            ],
+            "examples": [
+              "308a05b3-c5dd-4168-b259-a45f1cdf80f2"
+            ]
+          },
+          "available_update_datetime": {
+            "title": "Available Update Datetime.",
+            "description": "Available update datetime.",
+            "type": [
+              "string"
+            ],
+            "examples": [
+              "2025-03-28T19:55:09.489008397Z"
+            ]
+          }
+        }
+      }
+    },
+    "network_dcc_indicator": {
+      "title": "Network Dynamic Currency Conversion Indicator",
+      "description": "Dynamic Currency Conversion indicator (field 126.19 of the Card Network specification) as provided by the network. The platform never recomputes this value; it is propagated exactly as received. Absent in the message defaults to false.",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "single_tap_indicator": {
+      "title": "Single Tap Indicator",
+      "description": "Single Tap indicator as provided by the network. The platform never recomputes this value; it is propagated exactly as received. Absent in the message defaults to false.",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "examples": [
+        true,
+        false
+      ]
+    }
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/merchants_transactions_incoming-1.json",
+  "type": "object",
+  "title": "Merchant Transaction migration started",
+  "description": "Event generated when an merchant transaction migration is started.",
+  "examples": [
+    {
+      "origin": "API",
+      "entity": {
+        "marketplace_id": 101010,
+        "terminal_id": "1010321",
+        "processing_code": "00",
+        "transaction_amount": 56.78,
+        "mdr_amount": 50.0,
+        "installment": 1,
+        "number_of_installments": 10,
+        "event_date": "2023-10-20T15:01:00.000Z",
+        "scheduled_payment_date": "2023-10-20",
+        "transaction_status": "PENDING",
+        "type": "SALE",
+        "transaction_fee": 0.25,
+        "mdr_tax": 0.25,
+        "migration": {
+          "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+          "version_date": "2023-10-20T15:01:00.000Z",
+          "merchant_id": "176432",
+          "authorization_id": "8934712321",
+          "parent_authorization_id": "3313"
+        }
+      },
+      "metadata": {
+        "merchant_form_on_us": false,
+        "key2": "value2"
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents a merchant transaction.",
+      "examples": [
+        {
+          "origin": "FILE",
+          "entity": {
+            "marketplace_id": 101010,
+            "terminal_id": "1010321",
+            "processing_code": "1010321",
+            "transaction_amount": 56.78,
+            "mdr_amount": 50.0,
+            "installment": 1,
+            "number_of_installments": 10,
+            "event_date": "2023-10-20T15:01:00.000Z",
+            "scheduled_payment_date": "2023-10-20",
+            "transaction_status": "PENDING",
+            "type": "SALE",
+            "transaction_fee": 0.25,
+            "mdr_tax": 0.25,
+            "migration": {
+              "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+              "version_date": "2023-10-20T15:01:00.000Z",
+              "merchant_id": "176432",
+              "authorization_id": "8934712321",
+              "parent_authorization_id": "3313"
+            }
+          },
+          "metadata": {
+            "key1": "value1",
+            "key2": "value2"
+          }
+        }
+      ],
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "origin": {
+          "$id": "#/properties/entity/properties/origin",
+          "type": "string",
+          "description": "The migration origin.",
+          "enum": [
+            "FILE",
+            "API"
+          ],
+          "examples": [
+            "API"
+          ]
+        },
+        "marketplace_id": {
+          "$id": "#/properties/entity/properties/marketplace_id",
+          "type": "integer",
+          "description": "Marketplace ID from Pismo Console.",
+          "default": 0,
+          "examples": [
+            101010
+          ]
+        },
+        "terminal_id": {
+          "$id": "#/properties/entity/properties/terminal_id",
+          "type": "string",
+          "description": "The external Merchant terminal ID previously saved on the Pismo platform (terminal flow).",
+          "examples": [
+            "101010"
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "Predefined Pismo processing code.",
+          "examples": [
+            "00"
+          ]
+        },
+        "transaction_amount": {
+          "$id": "#/properties/entity/properties/transaction_amount",
+          "type": "number",
+          "description": "Transaction amount.",
+          "examples": [
+            100.0
+          ]
+        },
+        "mdr_amount": {
+          "$id": "#/properties/entity/properties/mdr_amount",
+          "type": "number",
+          "description": "Tax amount. Default is 0.",
+          "examples": [
+            "87321"
+          ]
+        },
+        "installment": {
+          "$id": "#/properties/entity/properties/installment",
+          "type": "integer",
+          "description": "Current installment.",
+          "examples": [
+            1
+          ]
+        },
+        "number_of_installments": {
+          "$id": "#/properties/entity/properties/email",
+          "type": "integer",
+          "description": "Total number of installments.",
+          "examples": [
+            10
+          ]
+        },
+        "event_date": {
+          "$id": "#/properties/entity/properties/event_date",
+          "type": "string",
+          "description": "The event date hour in UTC.",
+          "format": "date-time",
+          "examples": [
+            "2021-09-21T12:00:00Z"
+          ]
+        },
+        "scheduled_payment_date": {
+          "$id": "#/properties/entity/properties/scheduled_payment_date",
+          "type": "string",
+          "description": "Scheduled date to settle the transaction. Setting a future date and the status to PENDING schedules the transaction. For settlements that already occurred, the status is PAID.",
+          "format": "date",
+          "examples": [
+            "2021-09-21"
+          ]
+        },
+        "transaction_status": {
+          "$id": "#/properties/entity/properties/transaction_status",
+          "type": "string",
+          "description": "Transaction status. Default is PENDING.",
+          "enum": [
+            "PENDING",
+            "SCHEDULED",
+            "SETTLED",
+            "PAID",
+            "CANCELED"
+          ],
+          "examples": [
+            "SETTLED"
+          ]
+        },
+        "type": {
+          "$id": "#/properties/entity/properties/type",
+          "type": "string",
+          "description": "Transaction type.",
+          "enum": [
+            "SALE",
+            "CANCEL"
+          ],
+          "examples": [
+            "SALE"
+          ]
+        },
+        "transaction_fee": {
+          "$id": "#/properties/entity/properties/transaction_fee",
+          "type": "number",
+          "description": "Transaction fee. Default is 0.",
+          "examples": [
+            0.25
+          ]
+        },
+        "mdr_tax": {
+          "$id": "#/properties/entity/properties/mdr_tax",
+          "type": "number",
+          "description": "Additional tax value. Default is 0.",
+          "examples": [
+            "0.25"
+          ]
+        },
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "The migration merchant transaction information.",
+          "examples": [
+            {
+              "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+              "version_date": "2023-10-20T15:01:00.000Z",
+              "merchant_id": "176432",
+              "authorization_id": "8934712321",
+              "parent_authorization_id": "3313"
+            }
+          ],
+          "required": [
+            "id",
+            "version_date",
+            "merchant_id",
+            "authorization_id"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "A record identifier for migration purposes.",
+              "examples": [
+                "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/version_date",
+              "type": "string",
+              "description": "A record identifier for update data. Valid format (yyyy-MM-ddTHH:mm:ss.sssZ).",
+              "format": "date-time",
+              "examples": [
+                "2021-07-19T09:55:00.000Z"
+              ]
+            },
+            "merchant_id": {
+              "$id": "#/properties/entity/properties/migration/merchant_id",
+              "type": "string",
+              "description": "A record identifier for the merchant.",
+              "examples": [
+                "321764"
+              ]
+            },
+            "authorization_id": {
+              "$id": "#/properties/entity/properties/migration/authorization_id",
+              "type": "string",
+              "description": "A record identifier for an on-us authorization migration.",
+              "examples": [
+                "75439"
+              ]
+            },
+            "original_authorization_id": {
+              "$id": "#/properties/entity/properties/migration/original_authorization_id",
+              "type": "string",
+              "description": "A record identifier for a original on-us authorization migration. Using to cancel the transaction.",
+              "examples": [
+                "75439"
+              ]
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "metadata": {
+        "$id": "#/properties/entity/properties/entity/properties/metadata",
+        "type": "object",
+        "description": "Account metadata",
+        "examples": [
+          {
+            "merchant_form_on_us": false,
+            "key2": "value2"
+          }
+        ],
+        "additionalProperties": true
+      },
+      "additionalProperties": true
+    }
+  }
+}

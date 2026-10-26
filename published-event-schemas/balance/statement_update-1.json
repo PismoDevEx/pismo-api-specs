@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Statement Update",
+  "description": "This event is generated when a statement is updated.",
+  "required": [
+    "account_id",
+    "statement_id",
+    "status",
+    "cycle",
+    "previous_balance",
+    "debits",
+    "credits",
+    "current_balance",
+    "minimum_payment",
+    "evolve_to_delinquency",
+    "calendar",
+    "updated_at"
+  ],
+  "properties": {
+    "account_id": {
+      "title": "Account ID",
+      "description": "Account ID",
+      "type": "integer",
+      "examples": [
+        100000,
+        200000
+      ]
+    },
+    "statement_id": {
+      "type": "integer",
+      "description": "Updated statement ID",
+      "examples": [
+        100002556
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Statement status",
+      "examples": [
+        "CLOSED",
+        "CLOSED_NOT_DUE",
+        "OPEN",
+        "FUTURE"
+      ]
+    },
+    "cycle": {
+      "type": "integer",
+      "description": "Statement cycle",
+      "examples": [
+        3
+      ]
+    },
+    "previous_balance": {
+      "type": "string",
+      "description": "Previous balance of the statement",
+      "examples": [
+        118.9
+      ]
+    },
+    "debits": {
+      "type": "string",
+      "description": "Total debits of the statement",
+      "examples": [
+        118.9
+      ]
+    },
+    "credits": {
+      "type": "string",
+      "description": "Total credits of the statement",
+      "examples": [
+        118.9
+      ]
+    },
+    "current_balance": {
+      "type": "string",
+      "description": "Current balance of the statement",
+      "format": "double",
+      "examples": [
+        210.0
+      ]
+    },
+    "minimum_payment": {
+      "type": "string",
+      "description": "Minimum amount due of the statement",
+      "format": "double",
+      "examples": [
+        210.0
+      ]
+    },
+    "evolve_to_delinquency": {
+      "type": "boolean",
+      "description": "Indicates whether the statement evolves to delinquency",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "calendar": {
+      "type": "object",
+      "title": "Statement calendar",
+      "description": "Statement calendar details",
+      "required": [
+        "calendar_id",
+        "program_id",
+        "cycle_closing_date",
+        "due_date"
+      ],
+      "properties": {
+        "calendar_id": {
+          "type": "integer",
+          "description": "Statement calendar ID",
+          "examples": [
+            919265
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Statement program ID",
+          "examples": [
+            9832195123
+          ]
+        },
+        "program_due_date_id": {
+          "type": "integer",
+          "description": "Statement program due date ID",
+          "examples": [
+            9832195123
+          ]
+        },
+        "cycle_closing_date": {
+          "type": "string",
+          "description": "Statement cycle closing date",
+          "format": "date",
+          "examples": [
+            "2021-06-21"
+          ]
+        },
+        "due_date": {
+          "type": "string",
+          "description": "Statement due date",
+          "format": "date",
+          "examples": [
+            "2021-06-21"
+          ]
+        },
+        "real_due_date": {
+          "type": "string",
+          "description": "Statement real due date",
+          "format": "date",
+          "examples": [
+            "2021-06-21"
+          ]
+        }
+      }
+    },
+    "updated_at": {
+      "type": "string",
+      "description": "Statement update date, format = yyyy-MM-ddTHH:mm:ss.fffZ",
+      "format": "date-time",
+      "examples": [
+        "2023-04-14T16:30:22.123Z"
+      ]
+    }
+  }
+}

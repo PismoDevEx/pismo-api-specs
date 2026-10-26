@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/merchants_outgoing-1.json",
+  "type": "object",
+  "title": "Merchant migration completed",
+  "description": "Event generated when an merchants migration finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Merchants migrated with success",
+      "migration": {
+        "id": "5165",
+        "version_date": "2023-05-30T16:22:29.000Z"
+      },
+      "entity": {
+        "processed_at": "2023-07-07T19:55:49.294Z",
+        "merchant_id": 39094
+      }
+    }
+  ],
+  "required": [
+    "operation",
+    "status",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "If the Merchants migration is a creation or update",
+      "enum": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "UPDATE"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the result of account migration was success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "The code of message for systems",
+      "default": "",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Message of merchants migration result",
+      "default": "",
+      "examples": [
+        "Merchants migrated with success"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Identifiers Object",
+      "description": "Identifier sent on start of migration process",
+      "examples": [
+        {
+          "id": "migration-id",
+          "version_date": "2021-08-11T11:25:00.000Z"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "title": "Version Date of Migration Identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Pismo generated merchants information",
+      "examples": [
+        {
+          "merchant_id": "12321",
+          "processed_at": "2023-07-07T19:55:49.294Z"
+        }
+      ],
+      "required": [
+        "merchant_id",
+        "processed_at"
+      ],
+      "properties": {
+        "merchant_id": {
+          "$id": "#/properties/entity/properties/merchant_id",
+          "type": "integer",
+          "title": "Merchant Id",
+          "description": "Merchant Id",
+          "examples": [
+            39093
+          ]
+        },
+        "processed_at": {
+          "$id": "#/properties/entity/properties/processed_at",
+          "type": "string",
+          "title": "Processing date",
+          "description": "Processing date",
+          "examples": [
+            "2023-07-07T19:55:49.294Z"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

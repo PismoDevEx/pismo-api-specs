@@ -1,0 +1,214 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Loan repayment updated",
+  "description": "This event occurs when a loan repayment is updated.",
+  "required": [
+    "repayment_id",
+    "loan_id",
+    "org_id",
+    "installment",
+    "currency",
+    "current_status",
+    "principal_amount",
+    "amount",
+    "due_date",
+    "updated_at",
+    "account_id"
+  ],
+  "properties": {
+    "repayment_id": {
+      "$id": "#/properties/repayment_id",
+      "type": "string",
+      "title": "Repayment ID",
+      "description": "Repayment ID",
+      "example": "7da3db3b-400d-4851-a362-2022dab27284"
+    },
+    "loan_id": {
+      "$id": "#/properties/loan_id",
+      "type": "string",
+      "title": "Loan ID",
+      "description": "Repayment loan ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID for the organization associated with the repayment",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "installment": {
+      "$id": "#/properties/installment",
+      "type": "number",
+      "title": "Installment ID",
+      "description": "Loan installment index ID",
+      "example": 12
+    },
+    "currency": {
+      "$id": "#/properties/currency",
+      "type": "string",
+      "title": "Currency",
+      "description": "ISO 4217 3-letter currency code for repayment",
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD"
+      ]
+    },
+    "current_status": {
+      "$id": "#/properties/current_status",
+      "type": "string",
+      "title": "Current status",
+      "description": "Repayment current status",
+      "enum": [
+        "PENDING",
+        "PROCESSING",
+        "DONE",
+        "SCHEDULED",
+        "PAST_DUE",
+        "PAID",
+        "PARTIALLY_PAID",
+        "CANCELED",
+        "PENDING_PAYMENT",
+        "PAST_DUE_PENDING_PAYMENT",
+        "ACTIVE",
+        "OVERDUE",
+        "OVERDUE_PENDING_PAYMENT",
+        "IN_GRACE_PERIOD",
+        "IN_GRACE_PERIOD_PENDING_PAYMENT",
+        "PARTIALLY_PAID_IN_GRACE_PERIOD",
+        "PAID_WITHIN_GRACE",
+        "PARTIALLY_PAID_PENDING_PAYMENT",
+        "PAST_DUE_PARTIALLY_PAID",
+        "OVERDUE_PARTIALLY_PAID"
+      ],
+      "example": "PAST_DUE"
+    },
+    "previous_status": {
+      "$id": "#/properties/previous_status",
+      "type": "string",
+      "title": "Previous status",
+      "description": "Repayment previous status",
+      "enum": [
+        "PENDING",
+        "PROCESSING",
+        "DONE",
+        "SCHEDULED",
+        "PAST_DUE",
+        "PAID",
+        "PARTIALLY_PAID",
+        "CANCELED",
+        "PENDING_PAYMENT",
+        "PAST_DUE_PENDING_PAYMENT",
+        "ACTIVE",
+        "OVERDUE",
+        "OVERDUE_PENDING_PAYMENT",
+        "IN_GRACE_PERIOD",
+        "IN_GRACE_PERIOD_PENDING_PAYMENT",
+        "PARTIALLY_PAID_IN_GRACE_PERIOD",
+        "PAID_WITHIN_GRACE",
+        "PARTIALLY_PAID_PENDING_PAYMENT",
+        "PAST_DUE_PARTIALLY_PAID",
+        "OVERDUE_PARTIALLY_PAID"
+      ],
+      "example": "DONE"
+    },
+    "principal_amount": {
+      "$id": "#/properties/principal_amount",
+      "type": "number",
+      "title": "Principal amount authorized",
+      "description": "Principal amount authorized without charges or taxes",
+      "example": 336.66
+    },
+    "interest_amount": {
+      "$id": "#/properties/interest_amount",
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Interest amount",
+      "description": "Repayment interest amount",
+      "example": 336.66
+    },
+    "penalty_amount": {
+      "$id": "#/properties/penalty_amount",
+      "type": "number",
+      "title": "Penalty amount",
+      "description": "Repayment penalty amount.",
+      "example": 336.66
+    },
+    "fee_amount": {
+      "$id": "#/properties/fee_amount",
+      "type": "number",
+      "title": "Fee amount",
+      "description": "Repayment fee amount",
+      "example": 336.66
+    },
+    "charge_amount": {
+      "$id": "#/properties/charge_amount",
+      "type": "number",
+      "title": "Charge amount",
+      "description": "Repayment charge amount",
+      "example": 336.66
+    },
+    "tax_amount": {
+      "$id": "#/properties/tax_amount",
+      "type": "number",
+      "title": "Tax amount",
+      "description": "Repayment tax amount",
+      "example": 36.66
+    },
+    "amount": {
+      "$id": "#/properties/amount",
+      "type": "number",
+      "title": "Amount",
+      "description": "Repayment paid amount",
+      "example": 1336.66
+    },
+    "due_date": {
+      "$id": "#/properties/due_date",
+      "type": "string",
+      "title": "Due date",
+      "description": "ISO 8601 date format: YYYY-MM-DD",
+      "format": "date",
+      "example": "2023-07-01"
+    },
+    "real_due_date": {
+      "$id": "#/properties/real_due_date",
+      "type": "string",
+      "title": "Real due date",
+      "description": "ISO 8601 date format: YYYY-MM-DD",
+      "format": "date",
+      "example": "2023-07-01"
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": "string",
+      "title": "Updated date",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "example": "2020-12-29T19:48:25.000Z"
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "example": 12176
+    },
+    "transactions_ids": {
+      "$id": "#/properties/transactions_ids",
+      "title": "Repayment transactions IDs",
+      "type": "array",
+      "description": "Transactions IDs associated with a repayment",
+      "items": {
+        "type": "number",
+        "examples": [
+          "42069",
+          "2123"
+        ]
+      }
+    }
+  }
+}

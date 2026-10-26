@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Maturity notice sent",
+  "description": "Advance deposit\u2011maturity notice. This event is sent when a deposit nears its maturity date and is issued for each account attachment once product\u2011level advance notices are enabled. The `external_account_id`, a`ccount_creation_datetime`, `current_term, and renewal_term` fields are populated at dispatch time.",
+  "required": [
+    "account_id",
+    "product_id",
+    "maturity_date",
+    "days_until_maturity"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123456
+      ]
+    },
+    "product_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Product ID",
+      "description": "Product ID. Format is UUID v4.",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Maturity date",
+      "description": "Deposit maturity date. Displayed in RFC3339 format.",
+      "examples": [
+        "2030-10-15"
+      ]
+    },
+    "days_until_maturity": {
+      "type": "number",
+      "title": "Days until maturity",
+      "description": "Number of days until the deposit reaches maturity",
+      "examples": [
+        30
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Description text for the maturity configuration",
+      "examples": [
+        "30-day advance notice"
+      ]
+    },
+    "auto_renewal": {
+      "type": "boolean",
+      "title": "Auto renewal",
+      "description": "Does the deposit auto-renew at maturity?",
+      "examples": [
+        true
+      ]
+    },
+    "grace_period_days": {
+      "type": "number",
+      "title": "Grace period days",
+      "description": "Number of days in the grace period after the maturity date",
+      "examples": [
+        15
+      ]
+    },
+    "external_account_id": {
+      "type": "string",
+      "title": "External account ID",
+      "description": "The client-facing external account ID, resolved from the transaction banking account when the event is dispatched.",
+      "examples": [
+        "ext-acct-001"
+      ]
+    },
+    "account_creation_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Account creation date time",
+      "description": "Timestamp showing when the account was created, resolved from the transaction banking account at dispatch time. Presented in RFC3339 format..",
+      "examples": [
+        "2024-01-04T10:25:30.000Z"
+      ]
+    },
+    "current_term": {
+      "type": "object",
+      "title": "Current term",
+      "description": "The maturity period for the active account attachment, resolved at dispatch time and always present.",
+      "required": [
+        "unit",
+        "value"
+      ],
+      "properties": {
+        "unit": {
+          "type": "string",
+          "title": "Term unit",
+          "description": "The unit used for the term period",
+          "enum": [
+            "DAYS",
+            "WEEKS",
+            "MONTHS",
+            "YEARS"
+          ],
+          "examples": [
+            "MONTHS"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "title": "Term value",
+          "description": "The number of units in the term period",
+          "examples": [
+            6
+          ]
+        }
+      }
+    },
+    "renewal_term": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Renewal term",
+      "description": "The renewal term configured for the account attachment, resolved at dispatch time from the attachment override or, if absent, from the program\u2011level override. Set to `null` when no renewal term exists at either level.",
+      "required": [
+        "unit",
+        "value"
+      ],
+      "properties": {
+        "unit": {
+          "type": "string",
+          "title": "Term unit",
+          "description": "The unit used for the term period",
+          "enum": [
+            "DAYS",
+            "WEEKS",
+            "MONTHS",
+            "YEARS"
+          ],
+          "examples": [
+            "MONTHS"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "title": "Term value",
+          "description": "The number of units in the term period",
+          "examples": [
+            6
+          ]
+        }
+      }
+    }
+  }
+}

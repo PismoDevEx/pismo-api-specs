@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Commercial establishment processed successfully",
+  "description": "Per-item success outcome of a Tangara commercial establishment batch registration/update. One event is emitted per processed item to the commercial_establishment_processed_success event type.",
+  "required": [
+    "key",
+    "debtor",
+    "documentNumber",
+    "documentType",
+    "paymentSchemes",
+    "enabled",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "Client-provided identifier of the commercial establishment item within the batch",
+      "examples": [
+        "EC-8860"
+      ]
+    },
+    "reference": {
+      "type": "string",
+      "title": "Reference",
+      "description": "Client-assigned reference for the commercial establishment. Present only when supplied on creation",
+      "examples": [
+        "REFERENCE-0001"
+      ]
+    },
+    "debtor": {
+      "type": "string",
+      "title": "Debtor document number",
+      "description": "Debtor (acquirer) document number that owns the commercial establishment",
+      "examples": [
+        "01816783000149"
+      ]
+    },
+    "documentNumber": {
+      "type": "string",
+      "title": "Document number",
+      "description": "Commercial establishment document number",
+      "examples": [
+        "94740799000104"
+      ]
+    },
+    "documentType": {
+      "type": "string",
+      "title": "Document type",
+      "description": "Document type derived from the commercial establishment document number. [CPF] [CNPJ]",
+      "examples": [
+        "CNPJ",
+        "CPF"
+      ]
+    },
+    "paymentSchemes": {
+      "type": "array",
+      "title": "Payment schemes",
+      "description": "Payment arrangement identifiers registered for the commercial establishment",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        [
+          "AVC",
+          "BCD"
+        ]
+      ]
+    },
+    "bankAccount": {
+      "type": "object",
+      "title": "Bank account",
+      "description": "Bank domicile of the commercial establishment. Present only when supplied on creation/update",
+      "properties": {
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Bank branch number",
+          "examples": [
+            "0910"
+          ]
+        },
+        "account": {
+          "type": "string",
+          "title": "Account",
+          "description": "Bank account number",
+          "examples": [
+            "093962"
+          ]
+        },
+        "accountDigit": {
+          "type": "string",
+          "title": "Account digit",
+          "description": "Bank account check digit",
+          "examples": [
+            "2"
+          ]
+        },
+        "accountType": {
+          "type": "string",
+          "title": "Account type",
+          "description": "Bank account type",
+          "examples": [
+            "CHECKING_ACCOUNT",
+            "SAVINGS_ACCOUNT"
+          ]
+        },
+        "ispb": {
+          "type": "string",
+          "title": "ISPB",
+          "description": "Brazilian Payment System Identifier (ISPB) of the bank, zero-padded to 8 digits",
+          "examples": [
+            "60701190"
+          ]
+        },
+        "documentNumber": {
+          "type": "string",
+          "title": "Document number",
+          "description": "Document number of the bank account holder",
+          "examples": [
+            "94740799000104"
+          ]
+        },
+        "documentType": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type derived from the bank account holder document number. [CPF] [CNPJ]",
+          "examples": [
+            "CNPJ",
+            "CPF"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "title": "Bank account created at",
+          "description": "Timestamp of the first persistence of the bank domicile. Set only when the bank account is present in the payload",
+          "format": "date-time",
+          "examples": [
+            "2026-08-01T09:15:03.221000"
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "title": "Bank account updated at",
+          "description": "Timestamp of the last update of the bank domicile. Set whenever the bank account is created or updated in the payload",
+          "format": "date-time",
+          "examples": [
+            "2026-08-10T14:23:10.987654"
+          ]
+        }
+      }
+    },
+    "enabled": {
+      "type": "boolean",
+      "title": "Enabled",
+      "description": "Whether the commercial establishment is active",
+      "examples": [
+        true
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "title": "Created at",
+      "description": "Timestamp of the first persistence of the commercial establishment",
+      "format": "date-time",
+      "examples": [
+        "2026-08-01T09:15:03.221000"
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "title": "Updated at",
+      "description": "Timestamp of the last update of the commercial establishment",
+      "format": "date-time",
+      "examples": [
+        "2026-08-10T14:23:10.987654"
+      ]
+    }
+  }
+}

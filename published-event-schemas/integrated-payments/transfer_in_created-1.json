@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Transfer-in created",
+  "description": "Cash-in event. This event is generated when Pismo is notified of an external transfer to a Pismo account.",
+  "required": [
+    "account",
+    "authorization",
+    "status",
+    "amount",
+    "credit_party",
+    "debit_party",
+    "transaction_datetime"
+  ],
+  "properties": {
+    "account": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        31700
+      ]
+    },
+    "authorization": {
+      "type": "integer",
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID",
+      "examples": [
+        123
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Transaction status",
+      "description": "Transaction status",
+      "enum": [
+        "PROCESSING",
+        "SETTLED",
+        "CANCELLED",
+        "ERROR"
+      ],
+      "examples": [
+        "PROCESSING"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Transaction amount",
+      "description": "Transaction amount",
+      "examples": [
+        20.15
+      ]
+    },
+    "credit_party": {
+      "description": "Credit party's account information.",
+      "$ref": "#/definitions/account"
+    },
+    "debit_party": {
+      "description": "Debit party's account information.",
+      "$ref": "#/definitions/account"
+    },
+    "transaction_datetime": {
+      "title": "Transaction datetime",
+      "type": "string",
+      "format": "date-time",
+      "description": "Transaction created UTC datetime.",
+      "examples": [
+        "2023-01-01T10:10:00Z"
+      ]
+    }
+  },
+  "definitions": {
+    "account": {
+      "type": "object",
+      "title": "Account object",
+      "description": "Account information object",
+      "required": [
+        "bank",
+        "bank_branch",
+        "account_number",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "title": "Bank ID",
+          "description": "Bank ID. In Brazil, this is the bank's ISPB number, an 8-digit value.",
+          "examples": [
+            "30306294"
+          ]
+        },
+        "bank_branch": {
+          "type": "string",
+          "title": "Bank branch",
+          "description": "Bank branch ID.",
+          "examples": [
+            "3094"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account ID",
+          "description": "Bank account number.",
+          "examples": [
+            "98765432"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Client ID",
+          "description": "Client's government document number.",
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Client name",
+          "description": "Client's name.",
+          "examples": [
+            "Jenny Sayqwah"
+          ]
+        }
+      }
+    }
+  }
+}

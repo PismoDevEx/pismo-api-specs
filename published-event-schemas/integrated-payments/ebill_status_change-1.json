@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "eBill registration status updated",
+  "description": "This event occurs when an eBill registration status changes on the Pismo platform. The post eBill registration endpoint generates this event.",
+  "required": [
+    "external_id",
+    "document_number"
+  ],
+  "properties": {
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "The external ID for eBill registration.",
+      "example": "12345"
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Document number",
+      "description": "Client's document number",
+      "examples": [
+        "8675309123456"
+      ]
+    },
+    "new_status": {
+      "type": "string",
+      "title": "New eBill registration status",
+      "description": "The new eBill registration.",
+      "enum": [
+        "PROCESSING",
+        "ACTIVE",
+        "INACTIVE",
+        "ERROR"
+      ],
+      "example": "ACTIVE"
+    },
+    "old_status": {
+      "type": "string",
+      "title": "Old eBill registration status",
+      "description": "Previous status of the eBill registration.",
+      "enum": [
+        "PROCESSING",
+        "ACTIVE",
+        "INACTIVE",
+        "ERROR"
+      ],
+      "example": "INACTIVE"
+    },
+    "update_datetime": {
+      "type": "string",
+      "title": "Update datetime",
+      "description": "The date and time that an eBill registration was updated.",
+      "format": "date-time",
+      "examples": [
+        "2022-09-26T00:00:00Z"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "The error message indicating registration error.",
+      "examples": [
+        "[CDDA101] There is already a pending registration request for this document"
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Custom fields",
+      "description": "A key-value pair for additional metadata.",
+      "examples": [
+        {
+          "custom_info": "value"
+        }
+      ]
+    }
+  }
+}

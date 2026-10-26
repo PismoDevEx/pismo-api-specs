@@ -1,0 +1,954 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Account detached",
+  "required": [
+    "account_id",
+    "deposit",
+    "detach_tracking_id",
+    "detach_datetime",
+    "attach_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123456
+      ]
+    },
+    "deposit": {
+      "$ref": "#/definitions/deposit"
+    },
+    "detach_tracking_id": {
+      "type": "string",
+      "title": "Tracking ID",
+      "description": "Tracking ID of the detach request.",
+      "examples": [
+        "1b0bf**************************e63d2"
+      ]
+    },
+    "detach_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Detach Date",
+      "description": "The date and time when the account was detached.",
+      "examples": [
+        "2023-10-01T12:00:00Z"
+      ]
+    },
+    "attach_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Attach date",
+      "description": "Date and time when the account was attached",
+      "examples": [
+        "2023-10-01T12:00:00Z"
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Custom fields",
+      "description": "This field is used to propagate all information not directly related to the transactional flow. This  is presented as a key-value pair and is not handles at Pismo",
+      "examples": [
+        {
+          "custom_info": "value"
+        }
+      ]
+    },
+    "maturity_period": {
+      "$ref": "#/definitions/maturity_period"
+    },
+    "effective_date": {
+      "type": "string",
+      "title": "Effective Date",
+      "description": "The effective date of the attachment. The format is `YYYY-MM-DD`.",
+      "examples": [
+        "2026-05-28"
+      ]
+    },
+    "interest_capitalization_mode": {
+      "type": "string",
+      "enum": [
+        "PAYOUT",
+        "REINVEST"
+      ],
+      "title": "Interest Capitalization Mode",
+      "description": "Capitalization mode the attachment carried at detach time. `REINVEST` (default) or `PAYOUT`.",
+      "examples": [
+        "REINVEST"
+      ]
+    },
+    "overrides": {
+      "$ref": "#/definitions/overrides"
+    },
+    "external_account_id": {
+      "title": "External account ID",
+      "description": "A custom account ID string that uniquely identifies the account within your organization",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "5acb5**************************a945b"
+      ]
+    }
+  },
+  "definitions": {
+    "maturity_instructions": {
+      "type": "object",
+      "title": "Maturity Instructions",
+      "description": "Instructions for what to do with funds once maturity date is reached",
+      "properties": {
+        "principal": {
+          "type": "string",
+          "title": "Principal",
+          "description": "How principal (initial investment) funds are processed once the maturity date is reached, it can be either `PAY` or `ROLLOVER`",
+          "enum": [
+            "PAY",
+            "ROLLOVER"
+          ],
+          "examples": [
+            "PAY",
+            "ROLLOVER"
+          ]
+        },
+        "interest": {
+          "type": "string",
+          "title": "Interest",
+          "description": "How interest funds are processed once the maturity date is reached, it can be either `PAY` or `ROLLOVER`",
+          "enum": [
+            "PAY",
+            "ROLLOVER"
+          ],
+          "examples": [
+            "PAY",
+            "ROLLOVER"
+          ]
+        }
+      },
+      "required": [
+        "principal",
+        "interest"
+      ]
+    },
+    "processing_codes": {
+      "type": "object",
+      "title": "Processing Codes",
+      "description": "Processing codes used for accounting",
+      "properties": {
+        "interest_processing_code": {
+          "type": "string",
+          "title": "Interest Processing Code",
+          "description": "Processing code for interest processing",
+          "examples": [
+            "202526"
+          ]
+        },
+        "detach_processing_code": {
+          "type": "string",
+          "title": "Detach Processing Code",
+          "description": "Processing code for detach processing",
+          "examples": [
+            "202528"
+          ]
+        }
+      },
+      "required": [
+        "interest_processing_code",
+        "detach_processing_code"
+      ]
+    },
+    "deposit": {
+      "type": "object",
+      "title": "Deposit product",
+      "description": "Deposit product information",
+      "required": [
+        "product_id",
+        "name",
+        "interest_plan_id",
+        "term_type",
+        "maturity_instructions",
+        "processing_codes",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "title": "Product Identifier",
+          "description": "Product identifier in the pismo platform. UUID v4 format",
+          "examples": [
+            "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Product Name",
+          "description": "Name given to the product by the customer",
+          "examples": [
+            "My product"
+          ]
+        },
+        "interest_plan_id": {
+          "type": "string",
+          "title": "Interest Plan Identifier",
+          "description": "Interest plan identifier in the pismo platform. UUID v4 format",
+          "examples": [
+            "b935acaf-886c-4817-8f7c-c2cc3ce4d509"
+          ]
+        },
+        "term_type": {
+          "type": "string",
+          "title": "Term Type",
+          "description": "Type of deposit product term. Can be FIXED or FLEXIBLE",
+          "examples": [
+            "FIXED",
+            "FLEXIBLE"
+          ]
+        },
+        "maturity_instructions": {
+          "$ref": "#/definitions/maturity_instructions"
+        },
+        "processing_codes": {
+          "$ref": "#/definitions/processing_codes"
+        },
+        "status": {
+          "type": "string",
+          "title": "Status",
+          "description": "Deposit product status",
+          "examples": [
+            "ACTIVE"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "title": "Creation datetime",
+          "description": "Deposit product creation date time. Represented as a RFC3339 timestamp.",
+          "examples": [
+            "2024-01-23T13:26:25Z"
+          ]
+        },
+        "min_term": {
+          "type": "integer",
+          "title": "Minimum Term",
+          "description": "Minimum term duration, in days",
+          "examples": [
+            5
+          ]
+        },
+        "max_term": {
+          "type": "integer",
+          "title": "Maximum Term",
+          "description": "Maximum term duration, in days",
+          "examples": [
+            10
+          ]
+        },
+        "min_amount": {
+          "type": "number",
+          "title": "Minimum Amount",
+          "description": "Minimum deposit amount",
+          "examples": [
+            10.2,
+            20
+          ]
+        },
+        "max_amount": {
+          "type": "number",
+          "title": "Maximum Amount",
+          "description": "Maximum deposit amount",
+          "examples": [
+            20.7,
+            30
+          ]
+        },
+        "cool_off_period": {
+          "type": "integer",
+          "title": "Cool Off Period",
+          "description": "Period in days during which withdrawals are allowed without penalties",
+          "examples": [
+            3
+          ]
+        },
+        "funding_duration": {
+          "type": "integer",
+          "title": "Funding Duration",
+          "description": "Period in days during which funds can be deposited into the account before operations are blocked",
+          "examples": [
+            5
+          ]
+        },
+        "product_type": {
+          "type": "string",
+          "title": "Product Type",
+          "description": "Type of the product.",
+          "examples": [
+            "DEPOSIT"
+          ]
+        },
+        "penalties": {
+          "$ref": "#/definitions/deposit_penalties"
+        },
+        "notices": {
+          "$ref": "#/definitions/notices"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Update Datetime",
+          "description": "Deposit product last update date time. Represented as a RFC3339 timestamp",
+          "examples": [
+            "2024-01-24T10:15:00Z"
+          ]
+        },
+        "start_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Start Date",
+          "description": "Deposit product start date. The format is `YYYY-MM-DD`.",
+          "examples": [
+            "2024-01-23"
+          ]
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date",
+          "title": "End Date",
+          "description": "Deposit product end date. The format is `YYYY-MM-DD`.",
+          "examples": [
+            "2025-01-23"
+          ]
+        },
+        "metadata": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "title": "Custom fields",
+          "description": "Key-value pair metadata field.",
+          "examples": [
+            {
+              "custom_info": "value"
+            }
+          ]
+        }
+      }
+    },
+    "maturity_period": {
+      "type": "object",
+      "title": "Maturity period",
+      "description": "Resolved maturity period for the attachment. The event always includes the fully resolved state (unit, value, and `calendar_maturity_date`). When the request omits maturity data, IBA\u2011API applies the product default, so this object is always populated.",
+      "properties": {
+        "unit": {
+          "type": "string",
+          "title": "Unit",
+          "description": "Time unit of the maturity period. Used internally for rollover.",
+          "enum": [
+            "DAYS",
+            "WEEKS",
+            "MONTHS",
+            "YEARS"
+          ],
+          "examples": [
+            "DAYS",
+            "MONTHS"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "title": "Value",
+          "description": "Number of time units until maturity (>= 1). Used internally for rollover.",
+          "minimum": 1,
+          "examples": [
+            365,
+            6
+          ]
+        },
+        "calendar_maturity_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Calendar maturity date",
+          "description": "Effective maturity date. The format is `YYYY-MM-DD`.",
+          "examples": [
+            "2026-05-28"
+          ]
+        }
+      },
+      "required": [
+        "unit",
+        "value",
+        "calendar_maturity_date"
+      ]
+    },
+    "overrides": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Attachment overrides",
+      "description": "A saved record of the per\u2011attachment overrides applied on top of the product defaults. This object appears only when at least one override was provided, and each field is included only if it was explicitly set.",
+      "properties": {
+        "maturity_instructions": {
+          "$ref": "#/definitions/maturity_instructions_override"
+        },
+        "renewal_term": {
+          "$ref": "#/definitions/renewal_term_override"
+        },
+        "penalties": {
+          "$ref": "#/definitions/penalties_override"
+        }
+      }
+    },
+    "maturity_instructions_override": {
+      "type": "object",
+      "title": "Maturity instructions override",
+      "description": "Override that controls the deposit's behavior at maturity. Any field you omit follows the normal fallback sequence, moving from the account level to the program and then to the product defaults.",
+      "properties": {
+        "principal": {
+          "type": "string",
+          "title": "Principal",
+          "description": "Specifies how the principal is handled once the deposit matures.",
+          "enum": [
+            "ROLLOVER",
+            "PAY"
+          ],
+          "examples": [
+            "ROLLOVER"
+          ]
+        },
+        "interest": {
+          "type": "string",
+          "title": "Interest",
+          "description": "Specifies how the interest is handled once the deposit matures.",
+          "enum": [
+            "ROLLOVER",
+            "PAY"
+          ],
+          "examples": [
+            "PAY"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "title": "Reason",
+          "description": "Optional audit-trail reason.",
+          "maxLength": 100,
+          "examples": [
+            "Customer preference at onboarding"
+          ]
+        }
+      }
+    },
+    "renewal_term_override": {
+      "type": "object",
+      "title": "Renewal term override",
+      "description": "Recurring rollover term, not the same as the initial `maturity_period`. The response reflects the structure of the request. If the client supplies `unit` and `value`, those fields appear in the response. If the client supplies `renewal_calendar_maturity_date`, the response returns that date as a string.",
+      "properties": {
+        "unit": {
+          "type": "string",
+          "title": "Unit",
+          "description": "Time unit of the renewal term.",
+          "enum": [
+            "DAYS",
+            "WEEKS",
+            "MONTHS",
+            "YEARS"
+          ],
+          "examples": [
+            "MONTHS"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "title": "Value",
+          "description": "Number of units (>= 1).",
+          "minimum": 1,
+          "examples": [
+            6
+          ]
+        },
+        "renewal_calendar_maturity_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Renewal calendar maturity date",
+          "description": "Returned only when the request uses the calendar format. Format = `YYYY-MM-DD`.",
+          "examples": [
+            "2027-05-22"
+          ]
+        }
+      }
+    },
+    "penalties_override": {
+      "type": "object",
+      "title": "Penalties override",
+      "description": "Saved overrides for each penalty type. Only types with configured overrides appear. Each entry includes waived, the relevant type\u2011specific fields, and an optional `valid_until` used for scheduled rollback.",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "title": "Reason",
+          "description": "Optional audit-trail reason for the entire penalties block.",
+          "maxLength": 100,
+          "examples": [
+            "Q4 2026 VIP retention package"
+          ]
+        },
+        "grace_period": {
+          "$ref": "#/definitions/grace_period_override"
+        },
+        "early_withdrawal_after_opening": {
+          "$ref": "#/definitions/early_withdrawal_after_opening_override"
+        },
+        "withdrawal_fee": {
+          "$ref": "#/definitions/withdrawal_fee_override"
+        },
+        "tiered_interest_forfeiture": {
+          "$ref": "#/definitions/tiered_interest_forfeiture_override"
+        },
+        "subsequent_withdrawals": {
+          "$ref": "#/definitions/subsequent_withdrawals_override"
+        }
+      }
+    },
+    "grace_period_override": {
+      "type": "object",
+      "title": "Grace period override",
+      "description": "Grace\u2011period override. Type\u2011specific fields are optional, and any field you omit follows the normal fallback sequence.",
+      "required": [
+        "waived"
+      ],
+      "properties": {
+        "waived": {
+          "type": "boolean",
+          "title": "Waived",
+          "description": "`true` = fully exempt; `false` = penalty active (customized via the fields below)."
+        },
+        "duration_days": {
+          "type": "integer",
+          "title": "Duration days",
+          "description": "Grace period duration, in days.",
+          "minimum": 0,
+          "examples": [
+            7
+          ]
+        },
+        "penalty_interest_days": {
+          "type": "integer",
+          "title": "Penalty interest days",
+          "description": "Number of interest days to forfeit as penalty.",
+          "minimum": 0,
+          "examples": [
+            30
+          ]
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Valid until",
+          "description": "Future ISO 8601 datetime. Schedules the revert of this override via EventBridge.",
+          "examples": [
+            "2026-12-31T23:59:59Z"
+          ]
+        }
+      }
+    },
+    "early_withdrawal_after_opening_override": {
+      "type": "object",
+      "title": "Early withdrawal after opening override",
+      "description": "Early withdrawal after opening override.",
+      "required": [
+        "waived"
+      ],
+      "properties": {
+        "waived": {
+          "type": "boolean",
+          "title": "Waived",
+          "description": "`true` = fully exempt; `false` = penalty active."
+        },
+        "applicable_within_days": {
+          "type": "integer",
+          "title": "Applicable within days",
+          "description": "Defines how many days after opening the penalty becomes applicable.",
+          "minimum": 0,
+          "examples": [
+            30
+          ]
+        },
+        "penalty_interest_days": {
+          "type": "integer",
+          "title": "Penalty interest days",
+          "description": "Number of days multiplied by the applicable interest rate to determine the penalty.",
+          "minimum": 0,
+          "examples": [
+            90
+          ]
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Valid until",
+          "description": "Schedules the revert of this override. This value must be a future date and follows the ISO 8601 standard.",
+          "examples": [
+            "2026-12-31T23:59:59Z"
+          ]
+        }
+      }
+    },
+    "withdrawal_fee_override": {
+      "type": "object",
+      "title": "Withdrawal fee override",
+      "description": "Withdrawal fee override.",
+      "required": [
+        "waived"
+      ],
+      "properties": {
+        "waived": {
+          "type": "boolean",
+          "title": "Waived",
+          "description": "`true` = fully exempt; `false` = penalty active."
+        },
+        "type": {
+          "type": "string",
+          "title": "Type",
+          "description": "Withdrawal fee type.",
+          "enum": [
+            "PERCENTAGE",
+            "FIXED"
+          ],
+          "examples": [
+            "PERCENTAGE"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "title": "Value",
+          "description": "Withdrawal fee value. Must be greater than 0.",
+          "examples": [
+            1.5
+          ]
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Valid until",
+          "description": "Schedules the revert of this override. This value must be a future date and follows the ISO 8601 standard.",
+          "examples": [
+            "2026-12-31T23:59:59Z"
+          ]
+        }
+      }
+    },
+    "tiered_interest_forfeiture_override": {
+      "type": "object",
+      "title": "Tiered interest forfeiture override",
+      "description": "Tiered interest forfeiture override. Tiers replace the product's tiers when provided.",
+      "required": [
+        "waived"
+      ],
+      "properties": {
+        "waived": {
+          "type": "boolean",
+          "title": "Waived",
+          "description": "`true` = fully exempt; `false` = penalty active."
+        },
+        "tiers": {
+          "type": "array",
+          "title": "Tiers",
+          "description": "List of tier definitions. Each tier replaces the product's tier configuration.",
+          "items": {
+            "$ref": "#/definitions/tiered_interest_forfeiture_tier"
+          }
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Valid until",
+          "description": "Schedules the revert of this override. This value must be a future date and follows the ISO 8601 standard.",
+          "examples": [
+            "2026-12-31T23:59:59Z"
+          ]
+        }
+      }
+    },
+    "tiered_interest_forfeiture_tier": {
+      "type": "object",
+      "title": "Tiered interest forfeiture tier",
+      "description": "Single tier in a tiered interest forfeiture override.",
+      "required": [
+        "min_days_held",
+        "forfeited_interest_days"
+      ],
+      "properties": {
+        "min_days_held": {
+          "type": "integer",
+          "title": "Min days held",
+          "description": "Minimum number of days the deposit must be held for this tier to apply.",
+          "minimum": 0,
+          "examples": [
+            1
+          ]
+        },
+        "forfeited_interest_days": {
+          "type": "integer",
+          "title": "Forfeited interest days",
+          "description": "Number of interest days to forfeit as penalty for this tier",
+          "minimum": 0,
+          "examples": [
+            30
+          ]
+        },
+        "max_days_held": {
+          "type": "integer",
+          "title": "Max days held",
+          "description": "Maximum number of days the deposit can remain in this tier. If omitted, the tier has no maximum duration.",
+          "minimum": 0,
+          "examples": [
+            90
+          ]
+        }
+      }
+    },
+    "subsequent_withdrawals_override": {
+      "type": "object",
+      "title": "Subsequent withdrawals override",
+      "description": "Subsequent withdrawals (Regulation D) override.",
+      "required": [
+        "waived"
+      ],
+      "properties": {
+        "waived": {
+          "type": "boolean",
+          "title": "Waived",
+          "description": "`true` = fully exempt; `false` = penalty active."
+        },
+        "applicable_within_days": {
+          "type": "integer",
+          "title": "Applicable within days",
+          "description": "Specifies how many days after a withdrawal the Pismo platform continues to treat a new withdrawal as penalty\u2011eligible.",
+          "minimum": 1,
+          "examples": [
+            30
+          ]
+        },
+        "penalty_interest_days": {
+          "type": "integer",
+          "title": "Penalty interest days",
+          "description": "Number of interest days to forfeit as the penalty amount.",
+          "minimum": 1,
+          "examples": [
+            7
+          ]
+        },
+        "window_behavior": {
+          "type": "string",
+          "title": "Window behavior",
+          "description": "Controls how the penalty window behaves after each withdrawal. `ROLLING` resets the window on every withdrawal, and `FIXED` sets it on the first withdrawal and keeps it unchanged.",
+          "enum": [
+            "ROLLING",
+            "FIXED"
+          ],
+          "examples": [
+            "ROLLING"
+          ]
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Valid until",
+          "description": "Schedules the revert of this override. This value must be a future date and follows the ISO 8601 standard.",
+          "examples": [
+            "2026-12-31T23:59:59Z"
+          ]
+        }
+      }
+    },
+    "deposit_penalties": {
+      "type": "object",
+      "title": "Penalties",
+      "description": "Product-level penalty configuration.",
+      "properties": {
+        "withdrawal_fee": {
+          "type": "object",
+          "title": "Withdrawal fee",
+          "description": "Fee applied on withdrawal.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "description": "Withdrawal fee type.",
+              "enum": [
+                "PERCENTAGE",
+                "FIXED"
+              ],
+              "examples": [
+                "PERCENTAGE"
+              ]
+            },
+            "value": {
+              "type": "number",
+              "title": "Value",
+              "description": "Withdrawal fee value.",
+              "examples": [
+                1.5
+              ]
+            }
+          }
+        },
+        "early_withdrawal_after_opening": {
+          "type": "object",
+          "title": "Early withdrawal after opening",
+          "description": "Penalty applied when withdrawing shortly after opening.",
+          "properties": {
+            "applicable_within_days": {
+              "type": "integer",
+              "title": "Applicable within days",
+              "description": "How many days after opening the penalty becomes applicable.",
+              "examples": [
+                30
+              ]
+            },
+            "penalty_interest_days": {
+              "type": "integer",
+              "title": "Penalty interest days",
+              "description": "Number of interest days to forfeit as penalty.",
+              "examples": [
+                90
+              ]
+            }
+          }
+        },
+        "grace_period": {
+          "type": "object",
+          "title": "Grace period",
+          "description": "Grace period configuration.",
+          "properties": {
+            "duration_days": {
+              "type": "integer",
+              "title": "Duration days",
+              "description": "Grace period duration, in days.",
+              "examples": [
+                7
+              ]
+            },
+            "penalty_interest_days": {
+              "type": "integer",
+              "title": "Penalty interest days",
+              "description": "Number of interest days to forfeit as penalty.",
+              "examples": [
+                30
+              ]
+            }
+          }
+        },
+        "tiered_interest_forfeiture": {
+          "type": "array",
+          "title": "Tiered interest forfeiture",
+          "description": "List of tier definitions for interest forfeiture.",
+          "items": {
+            "$ref": "#/definitions/deposit_tiered_interest_forfeiture_tier"
+          }
+        },
+        "subsequent_withdrawals": {
+          "type": "object",
+          "title": "Subsequent withdrawals",
+          "description": "Subsequent withdrawals (Regulation D) configuration.",
+          "properties": {
+            "applicable_within_days": {
+              "type": "integer",
+              "title": "Applicable within days",
+              "description": "How many days after a withdrawal a new withdrawal is treated as penalty-eligible.",
+              "examples": [
+                30
+              ]
+            },
+            "penalty_interest_days": {
+              "type": "integer",
+              "title": "Penalty interest days",
+              "description": "Number of interest days to forfeit as the penalty amount.",
+              "examples": [
+                7
+              ]
+            },
+            "window_behavior": {
+              "type": "string",
+              "title": "Window behavior",
+              "description": "Controls how the penalty window behaves after each withdrawal.",
+              "enum": [
+                "ROLLING",
+                "FIXED"
+              ],
+              "examples": [
+                "ROLLING"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "deposit_tiered_interest_forfeiture_tier": {
+      "type": "object",
+      "title": "Tiered interest forfeiture tier",
+      "description": "Single tier in the product-level tiered interest forfeiture configuration.",
+      "properties": {
+        "min_days_held": {
+          "type": "integer",
+          "title": "Min days held",
+          "description": "Minimum number of days the deposit must be held for this tier to apply.",
+          "examples": [
+            1
+          ]
+        },
+        "max_days_held": {
+          "type": "integer",
+          "title": "Max days held",
+          "description": "Maximum number of days the deposit can remain in this tier.",
+          "examples": [
+            90
+          ]
+        },
+        "forfeited_interest_days": {
+          "type": "integer",
+          "title": "Forfeited interest days",
+          "description": "Number of interest days to forfeit as penalty for this tier.",
+          "examples": [
+            30
+          ]
+        }
+      }
+    },
+    "notices": {
+      "type": "array",
+      "title": "Notices",
+      "description": "Maturity notices configured for the product.",
+      "items": {
+        "type": "object",
+        "title": "Notice",
+        "description": "A single maturity notice.",
+        "required": [
+          "days_before_maturity"
+        ],
+        "properties": {
+          "days_before_maturity": {
+            "type": "integer",
+            "title": "Days before maturity",
+            "description": "Number of days before maturity when the notice is emitted.",
+            "examples": [
+              5
+            ]
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Description of the notice.",
+            "examples": [
+              "Maturity approaching"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

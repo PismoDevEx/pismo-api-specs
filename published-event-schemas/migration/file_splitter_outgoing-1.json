@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/file_splitter_outgoing-1.json",
+  "type": "object",
+  "title": "File split outgoing migration status reported",
+  "description": "Event reporting the status of the migration: `SUCCESS`, `FAIL`. More than one event can be generated while splitting a file.",
+  "examples": [
+    {
+      "type": "transaction",
+      "file_name": "closedTransactions/pismo.csv",
+      "file_id": "01_XXXX",
+      "bucket": "test_bucket",
+      "line_number": 0,
+      "layout_type": "TRANSACTION_BILLED_ITAU",
+      "total_lines": 13,
+      "line_text": null,
+      "status": "SUCCESS",
+      "message": "File Successfully Split"
+    },
+    {
+      "type": "transaction",
+      "file_name": "closedTransactionsStatements/pismo.csv",
+      "file_id": "UNKNOWN",
+      "bucket": "test_bucket",
+      "line_number": 2,
+      "layout_type": "TRANSACTION_BILLED_ITAU",
+      "total_lines": 1,
+      "line_text": "04,0000000718749072020057,2021-11-06 12:46:45,000000071874907,004,,,",
+      "status": "FAIL",
+      "message": "Line does not match expected (10 or 11) pattern for row: 2"
+    },
+    {
+      "type": "statement",
+      "file_name": "statements/pismo.csv",
+      "file_id": "02_XXXX",
+      "bucket": "test_bucket",
+      "line_number": 0,
+      "layout_type": "STATEMENT_ITAU",
+      "total_lines": 5,
+      "line_text": null,
+      "status": "SUCCESS",
+      "message": "File Successfully Split"
+    }
+  ],
+  "required": [
+    "type",
+    "file_id",
+    "file_name",
+    "bucket",
+    "layout_type",
+    "status",
+    "message",
+    "line_number",
+    "total_lines"
+  ],
+  "properties": {
+    "type": {
+      "$id": "#/properties/data/properties/type",
+      "type": "string",
+      "description": "This is the type of the outgoing entity sent to client",
+      "examples": [
+        "transaction",
+        "statement"
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/data/properties/file_id",
+      "type": "string",
+      "description": "This field is the unique identifier of the file that originated the event",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        "UNKNOWN"
+      ]
+    },
+    "file_name": {
+      "$id": "#/properties/data/properties/file_name",
+      "type": "string",
+      "description": "This field identifies the s3 key which includes the file name and the file path of either the original file during failure or the new file after success",
+      "examples": [
+        "statements/pismo.csv"
+      ]
+    },
+    "bucket": {
+      "$id": "#/properties/data/properties/bucket",
+      "type": "string",
+      "description": "This field identifies the s3 bucket name where the original file or the split files are uploaded",
+      "examples": [
+        "test_bucket"
+      ]
+    },
+    "layout_type": {
+      "$id": "#/properties/data/properties/layout_type",
+      "type": "string",
+      "description": "This field identifies the layout type of file.",
+      "examples": [
+        "TRANSACTION_BILLED_ITAU",
+        "STATEMENT_ITAU"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/data/properties/status",
+      "type": "string",
+      "description": "This field identifies the status of the split file.",
+      "enum": [
+        "FAIL",
+        "SUCCESS"
+      ],
+      "examples": [
+        "FAIL",
+        "SUCCESS"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/data/properties/message",
+      "type": "string",
+      "description": "This field contains success or error details of the split file process.",
+      "examples": [
+        "File Successfully Split",
+        "File Failed to Split: `...`",
+        "Line does not match expected (10 or 11) pattern for row: 4"
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/data/properties/line_number",
+      "type": "integer",
+      "default": 0,
+      "description": "This field identifies the line number in the file that was not included in the newly split file because of an error related to that line. For all successful file splits this value is always 0.",
+      "examples": [
+        0,
+        12
+      ]
+    },
+    "total_lines": {
+      "$id": "#/properties/data/properties/total_lines",
+      "type": "integer",
+      "default": 1,
+      "description": "This field identifies the total count of lines added to the newly split file. It is always 1 during an unparsable-line error when an invalid line number is present in the original file.",
+      "examples": [
+        1,
+        10,
+        999
+      ]
+    },
+    "line_text": {
+      "$id": "#/properties/data/properties/line_text",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field always contains the excluded line data that is not included in the newly split file due to an invalid line number.",
+      "examples": [
+        "04,0000000718749072020057,2021-11-06 12:46:45,000000071874907,004,,,",
+        null
+      ]
+    }
+  },
+  "additionalProperties": true
+}

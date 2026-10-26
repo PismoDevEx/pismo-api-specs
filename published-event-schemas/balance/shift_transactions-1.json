@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Transactions shifted",
+  "description": "When a request is made to shift one or more transactions to another statement, this event is generated after all the specified transactions have been shifted.",
+  "required": [
+    "transaction_statement_shift_id",
+    "created_at",
+    "tracking_id",
+    "account_id",
+    "shifts"
+  ],
+  "properties": {
+    "transaction_statement_shift_id": {
+      "type": "integer",
+      "description": "Transaction Statement Shift ID",
+      "examples": [
+        1010
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Accrual created at, format = yyyy-MM-ddTHH:mm",
+      "format": "datetime",
+      "examples": [
+        "2023-04-14T15:15:40.123Z"
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "description": "Tracking ID",
+      "examples": [
+        "68725dec-326e-49be-9162-e8817cd492cc"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        1010
+      ]
+    },
+    "shifts": {
+      "type": "array",
+      "title": "Shift Transactions array",
+      "items": {
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "new_statement_id",
+          "old_statement_id"
+        ],
+        "properties": {
+          "transaction_id": {
+            "type": "integer",
+            "description": "Transaction ID",
+            "examples": [
+              123123
+            ]
+          },
+          "new_statement_id": {
+            "type": "integer",
+            "description": "New statement ID",
+            "examples": [
+              298741321
+            ]
+          },
+          "old_statement_id": {
+            "type": "integer",
+            "description": "Old statement ID",
+            "examples": [
+              298741322
+            ]
+          },
+          "desired_cycle_date": {
+            "type": "string",
+            "description": "Desired Cycle Date, format = yyyy-mm-dd",
+            "format": "date",
+            "examples": [
+              "2021-06-21"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

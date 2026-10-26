@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix funds recovery operation failed",
+  "description": "Pix funds recovery operation failed ",
+  "required": [
+    "funds_recovery_id",
+    "status",
+    "operation",
+    "error_code",
+    "message",
+    "failed_at"
+  ],
+  "properties": {
+    "funds_recovery_id": {
+      "type": "string",
+      "title": "Funds recovery ID",
+      "description": "Funds recovery ID",
+      "examples": [
+        "+550e8400-e29b-41d4-a716-446655440000"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Funds recovery status",
+      "description": "Funds recovery status",
+      "enum": [
+        "CREATED",
+        "AWAITING_ANALYSIS",
+        "TRACKED",
+        "ANALYSED",
+        "REFUNDING",
+        "COMPLETED",
+        "CANCELLED",
+        ""
+      ]
+    },
+    "operation": {
+      "type": "string",
+      "title": "Funds recovery operation",
+      "description": "Funds recovery operation that failed",
+      "enum": [
+        "CREATE_TRACKING_GRAPH",
+        "CREATE_FUNDS_RECOVERY",
+        "BLOCK_FUNDS_RECOVERY",
+        "REFUND_FUNDS_RECOVERY",
+        "CANCEL_FUNDS_RECOVERY",
+        "REGISTER"
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error code",
+      "description": "Funds recovery operation that failed",
+      "enum": [
+        "INVALID_STATUS_PROGRESSION",
+        "PROCESSOR_ERROR"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Failure message",
+      "examples": [
+        "Cannot create tracking graph: recovery is already in AWAITING_ANALYSIS status"
+      ]
+    },
+    "root_transaction_id": {
+      "type": "string",
+      "title": "Root transaction ID",
+      "description": "Root transaction ID. Fraudulent transaction end-to-end-id",
+      "examples": [
+        "E1234567890123456789012345678901"
+      ]
+    },
+    "failed_at": {
+      "type": "string",
+      "title": "Failed at datetime",
+      "description": "Failed at datetime",
+      "examples": [
+        "2025-10-23T10:00:00Z"
+      ]
+    }
+  }
+}

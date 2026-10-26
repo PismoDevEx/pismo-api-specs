@@ -1,0 +1,294 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix refund status changed ",
+  "description": "A Pix reversal (refund) status change event. The following endpoints generate this event: <a href='https://developers.pismo.io/pismo-docs/reference/post-register-dict-refund'>Create refund request</a>, <a href='https://developers.pismo.io/pismo-docs/reference/post-cancel-dict-refund'>Cancel refund</a>, and <a href='https://developers.pismo.io/pismo-docs/reference/post-close-dict-refund'>Close refund</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events'>Pix payments data events</a> guide. <br><br>The Special Return Mechanism - Mecanismo Especial de Devolu\u00e7\u00e3o (MED) - the Pix refund mechanism, is responsible for this event.",
+  "required": [
+    "contested_participant",
+    "creation_date_time",
+    "id",
+    "last_modified",
+    "refund_reason",
+    "requesting_participant",
+    "status",
+    "transaction_id"
+  ],
+  "properties": {
+    "contested_participant": {
+      "type": "string",
+      "title": "Contested participant",
+      "description": "Participant's ISPB (Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier, an 8-digit value.",
+      "maxLength": 8,
+      "examples": [
+        "99999011"
+      ]
+    },
+    "creation_date_time": {
+      "type": "string",
+      "title": "Creation date time",
+      "description": "Infraction report creation datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-15T16:59:06.389Z"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "title": "Refund Id",
+      "description": "Pix refund ID.",
+      "examples": [
+        "cfdff46e-5d58-45b8-b7aa-591a65f7760d"
+      ]
+    },
+    "last_modified": {
+      "type": "string",
+      "title": "Last modified",
+      "description": "Last status update datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-15T16:59:06.389Z"
+      ]
+    },
+    "refund_reason": {
+      "type": "string",
+      "title": "Refund Reason",
+      "description": "Return request reason.",
+      "maxLength": 16,
+      "enum": [
+        "FRAUD",
+        "OPERATIONAL_FLAW",
+        "REFUND_CANCELLED"
+      ],
+      "example": "FRAUD"
+    },
+    "requesting_participant": {
+      "type": "string",
+      "title": "Requesting participant",
+      "description": "Requesting participant's ISPB (Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier, an 8-digit value.",
+      "maxLength": 8,
+      "examples": [
+        "40867163"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Refund status",
+      "maxLength": 9,
+      "enum": [
+        "OPEN",
+        "CLOSED",
+        "CANCELLED"
+      ],
+      "example": "OPEN"
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction Id",
+      "description": "ID of transaction being contested.",
+      "examples": [
+        "E30306294202110041316KL5BCD0OHEM"
+      ]
+    },
+    "analysis_details": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Analysis details",
+      "description": "Details of the return request analysis explaining  result.",
+      "maxLength": 2000
+    },
+    "analysis_result": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Analysis result",
+      "description": "Refund request analysis",
+      "maxLength": 18,
+      "enum": [
+        "TOTALLY_ACCEPTED",
+        "PARTIALLY_ACCEPTED",
+        "REJECTED",
+        ""
+      ],
+      "example": "REJECTED"
+    },
+    "correlation_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Correlation Id",
+      "description": "The correlation ID (CID) field is used to link related API requests and events. The CID can help the Pismo engineering team track everything related to a call. You can find the CID field in the response header from an API endpoint call.",
+      "examples": [
+        "B20211015233837f151ffe5060723e26"
+      ]
+    },
+    "infraction_report_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Infraction report ID",
+      "description": "Infraction report referene in case of fraud refund.",
+      "examples": [
+        "cfdff46e-5d58-45b8-b7aa-591a65f74444"
+      ]
+    },
+    "refund_amount": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Refund amount",
+      "description": "Amount requested for return.",
+      "examples": [
+        0.1
+      ]
+    },
+    "refund_details": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Refund details",
+      "description": "Brief description of the reason for requesting a return.",
+      "maxLength": 2000
+    },
+    "refund_rejection_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Refund rejection reason",
+      "description": "Reason for rejecting the refund request.",
+      "maxLength": 15,
+      "enum": [
+        "NO_BALANCE",
+        "ACCOUNT_CLOSURE",
+        "CANNOT_REFUND",
+        "INVALID_REQUEST",
+        "OTHER"
+      ],
+      "example": "NO_BALANCE"
+    },
+    "refund_transaction_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Refund transaction ID",
+      "description": "Refund transaction end to end ID (full or partial).",
+      "examples": [
+        "D0000000202110041316KL5BCD0O111"
+      ]
+    },
+    "fund_recovery_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Fund recovery ID",
+      "description": "Fund recovery transaction end-to-end ID (full or partial).",
+      "examples": [
+        "D0000000202110041316KL5BCD0O111"
+      ]
+    },
+    "refund_account": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Refund account",
+      "description": "Details of the Pix provider's account used for refund.",
+      "properties": {
+        "account_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Account Number",
+          "description": "Pix provider's account number including verifier.",
+          "examples": [
+            "98765432"
+          ]
+        },
+        "participant": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Bank",
+          "description": "Pix provider's bank code (ISPB), an 8-digit identifier from the Brazilian Payment System.",
+          "maxLength": 8,
+          "examples": [
+            "30306294"
+          ]
+        },
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Branch",
+          "description": "Pix provider's branch code without digit.",
+          "maxLength": 4,
+          "examples": [
+            "1234"
+          ]
+        },
+        "tax_id_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Pix provider's document number",
+          "description": "Federal document number of the Pix provider. This may be a government-issued identifier, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas (CPF) number (Brazil). Must be numeric and contain between 11 and 14 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "account_type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Refund account type",
+          "description": "Pix provider's account type.",
+          "examples": [
+            "TRAN"
+          ]
+        }
+      }
+    },
+    "monitor_account": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Monitor account",
+      "description": "Indicates whether the account should be monitored for suspicious activity."
+    },
+    "effective_refunded_amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Effective refunded amount",
+      "description": "Actual amount refunded to the user.",
+      "examples": [
+        0.1
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    }
+  }
+}

@@ -1,0 +1,355 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Payment methods multiple transfers completed",
+  "description": "This event occurs when a multiple transfer process is completed. Multiple transfers allow moving funds between multiple accounts in a single atomic operation.",
+  "required": [
+    "process",
+    "request_id",
+    "status",
+    "transfers"
+  ],
+  "properties": {
+    "process": {
+      "title": "Process status",
+      "description": "Status of the multiple transfer process. Always `COMPLETED` when this event is emitted.",
+      "type": "string",
+      "enum": [
+        "COMPLETED"
+      ]
+    },
+    "request_id": {
+      "title": "Request ID",
+      "description": "Unique ID for the multiple transfer request",
+      "type": "string",
+      "format": "uuid",
+      "examples": [
+        "05043d2a-e1c1-4db7-a818-6f96315a648a",
+        "7a244c1e-b48c-47eb-84b8-49c4a1130853"
+      ]
+    },
+    "status": {
+      "title": "Overall status",
+      "description": "Overall status of the multiple transfer operation. `SUCCESS` indicates all transfers were processed successfully, `FAILED` indicates at least one transfer failed.",
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "FAILED"
+      ]
+    },
+    "strategy": {
+      "title": "Transfer strategy",
+      "description": "Strategy used to execute the multiple transfers. `SWEEP` moves all available funds. `OVERDRAFT_SWEEP` moves funds from a source account to the target account to cover a negative balance in the target account, ensuring its balance is non-negative. Can be empty string if no specific strategy was used.",
+      "type": "string",
+      "enum": [
+        "SWEEP",
+        "OVERDRAFT_SWEEP",
+        ""
+      ]
+    },
+    "transfers": {
+      "title": "Transfers",
+      "description": "Array of individual transfer operations executed as part of this multiple transfer request. Minimum of 2 transfers required.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/definitions/transfer"
+      }
+    }
+  },
+  "definitions": {
+    "transfer": {
+      "type": "object",
+      "title": "Transfer",
+      "description": "Individual transfer operation between two accounts",
+      "required": [
+        "amount",
+        "tracking_id",
+        "from",
+        "to"
+      ],
+      "properties": {
+        "amount": {
+          "title": "Transfer amount",
+          "description": "Amount transferred in the account's currency. Can be 0 if the transfer was skipped.",
+          "type": "number",
+          "minimum": 0,
+          "examples": [
+            6000,
+            10067.5,
+            0
+          ]
+        },
+        "tracking_id": {
+          "title": "Transfer tracking ID",
+          "description": "Unique tracking ID for this individual transfer",
+          "type": "string",
+          "format": "uuid",
+          "examples": [
+            "eee3fda6-7d1a-4f90-90e4-3f611ba4c1fb",
+            "68eef742-725d-432c-bea0-35494bf2da64"
+          ]
+        },
+        "authorization_code": {
+          "title": "Authorization code",
+          "description": "Alphanumeric code generated for the transfer authorization. Only present if the transfer was processed.",
+          "type": "string",
+          "examples": [
+            "RBZZ56",
+            "W35HAM",
+            "OAPDQN"
+          ]
+        },
+        "response_code": {
+          "title": "Response code",
+          "description": "Response code indicating the result of the transfer. Only present if the transfer was processed.",
+          "type": "string",
+          "examples": [
+            "00",
+            "57"
+          ]
+        },
+        "denial_code": {
+          "title": "Denial code",
+          "description": "Code indicating the reason for transfer denial. Only present if the transfer was denied.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10,
+          "examples": [
+            "AU001",
+            "AU002",
+            "PA001",
+            "PA002",
+            "IAD",
+            "ECE"
+          ]
+        },
+        "datetime_utc": {
+          "title": "Transfer datetime UTC",
+          "description": "Date and time when the transfer was executed in the UTC-0 (RFC3339) format. Only present if the transfer was processed.",
+          "type": "string",
+          "format": "date-time",
+          "examples": [
+            "2025-11-20T17:09:02.452Z",
+            "2025-11-20T17:09:03.137Z"
+          ]
+        },
+        "description": {
+          "title": "Transfer description",
+          "description": "Optional description for the transfer.",
+          "type": "string",
+          "examples": [
+            "Transfer 1",
+            "Transfer 2"
+          ]
+        },
+        "payment_datetime": {
+          "title": "Payment datetime",
+          "description": "Date and time of the payment in the UTC-0 (RFC3339) format.",
+          "type": "string",
+          "format": "date-time",
+          "examples": [
+            "2024-01-15T10:30:00.000Z"
+          ]
+        },
+        "metadata": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "title": "Metadata",
+          "description": "Any additional information relevant to the caller",
+          "examples": [
+            {
+              "customer-data": {
+                "any": "fields"
+              }
+            }
+          ],
+          "additionalProperties": true
+        },
+        "cancelled": {
+          "title": "Cancelled flag",
+          "description": "Indicates whether the transfer was subsequently cancelled after being approved. Happens because the entire process is atomic and in case a transfer fails, all the approved ones will be cancelled.",
+          "type": "boolean",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "cancellation_tracking_id": {
+          "title": "Cancellation tracking ID",
+          "description": "Tracking ID of the cancellation operation. Only present when `cancelled` is `true`.",
+          "type": "string",
+          "format": "uuid",
+          "examples": [
+            "c92fa7bb-0f0c-5f94-9558-90d2dd7f5438",
+            "6ed6f513-8c5a-52b7-a9af-227f03d1d06b"
+          ]
+        },
+        "from": {
+          "title": "Source account",
+          "description": "Account from which the funds are transferred.",
+          "type": "object",
+          "required": [
+            "account_id",
+            "processing_code",
+            "validation_results"
+          ],
+          "properties": {
+            "account_id": {
+              "title": "Source account ID",
+              "description": "Pismo ID of the source account",
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                254533034,
+                313779228,
+                2417
+              ]
+            },
+            "processing_code": {
+              "title": "Processing code",
+              "description": "Processing code used for the source account operation",
+              "type": "string",
+              "examples": [
+                "00",
+                "007400"
+              ]
+            },
+            "validation_results": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "title": "Validation results",
+              "description": "All executed validations with details for each result. For a complete documentation of all possible validations, refer to <a href='https://developers.pismo.io/pismo-docs/docs/authorization-validation-rules-for-platform-operations' target='_blank'>Authorization validation rules for platform operations</a>.",
+              "items": {
+                "$ref": "#/definitions/validation_result"
+              }
+            }
+          }
+        },
+        "to": {
+          "title": "Destination account",
+          "description": "Account to which the funds are transferred",
+          "type": "object",
+          "required": [
+            "account_id",
+            "processing_code",
+            "validation_results"
+          ],
+          "properties": {
+            "account_id": {
+              "title": "Destination account ID",
+              "description": "Pismo ID of the destination account",
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                2417,
+                243078969,
+                254533034
+              ]
+            },
+            "processing_code": {
+              "title": "Processing code",
+              "description": "Processing code used for the destination account operation",
+              "type": "string",
+              "examples": [
+                "007400",
+                "00"
+              ]
+            },
+            "validation_results": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "title": "Validation results",
+              "description": "All executed validations with details for each result. For a complete documentation of all possible validations, refer to <a href='https://developers.pismo.io/pismo-docs/docs/authorization-validation-rules-for-platform-operations' target='_blank'>Authorization validation rules for platform operations</a>.",
+              "items": {
+                "$ref": "#/definitions/validation_result"
+              }
+            }
+          }
+        }
+      }
+    },
+    "validation_result": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Validation result",
+      "description": "Executed validation with details for its result",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "status",
+        "reason",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "Validation name",
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 21,
+          "examples": [
+            "PROCESSING_CODE",
+            "FLEX_CONTROLS",
+            "ANTI_FRAUD",
+            "AUTHORIZATION"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Validation status",
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 8,
+          "enum": [
+            "APPROVED",
+            "REJECTED",
+            "SKIPPED"
+          ]
+        },
+        "reason": {
+          "title": "Reason",
+          "description": "Validation reason",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "examples": [
+            "PROCESSING_CODE_NOT_FOUND",
+            "FLEX_CONTROLS_APPROVED",
+            "ANTI_FRAUD_APPROVED",
+            "AUTHORIZATION_ERROR"
+          ]
+        },
+        "description": {
+          "title": "Description",
+          "description": "Validation description",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 153,
+          "examples": [
+            "The processing code was not found.",
+            "The authorization passed flex control evaluation.",
+            "The authorization passed anti-fraud evaluation.",
+            "There was an internal error creating the authorization."
+          ]
+        },
+        "additional_data": {
+          "title": "Additional data",
+          "description": "Contains additional information that is relevant to identify how the validation was performed. Every type of validation has its own additional data.",
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

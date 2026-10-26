@@ -1,0 +1,248 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix key status changed",
+  "description": "Pix key created or status changed event. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-keys-create' >Create key entry</a>, <a href='https://developers.pismo.io/pismo-docs/reference/patch-v2-pix-keys' >Update key entry</a> and <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-keys-delete' >Delete key</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments' >Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events' >Pix payments data events</a> guide.",
+  "examples": [
+    {
+      "domain": "pix-dict",
+      "event_type": "key_status_change",
+      "schema_version": 1,
+      "org_id": "2accfe38-4794-43ae-bf51-e55093a82999",
+      "cid": "51011dc9-5ecf-49c9-9fe4-1a7b13dfaf74",
+      "timestamp": "2023-10-26T18:39:33Z",
+      "data": {
+        "key": "someguy@gmail.com",
+        "key_type": "EMAIL",
+        "status": "ACTIVE",
+        "reason": "USER_REQUESTED",
+        "creation_datetime": "2023-08-26T18:32:33Z",
+        "ownership_datetime": "2023-08-26T16:39:33Z",
+        "bank_account": {
+          "participant": "12345678",
+          "account_number": "4995793",
+          "account_type": "TRAN",
+          "branch": "99398888",
+          "opening_datetime": "0001-01-01T00:00:00Z"
+        },
+        "owner": null,
+        "account_id": 123456,
+        "content_id": "4a46173b40f861f769ea00ef14aea3d3b7e12f730a7caba61c7fbbe437c1da65",
+        "correlation_id": "51011dc9-5ecf-49c9-9fe4-1a7b13dfaf7"
+      }
+    }
+  ],
+  "required": [
+    "content_id",
+    "correlation_id",
+    "creation_datetime",
+    "key_type",
+    "owner",
+    "reason",
+    "status"
+  ],
+  "properties": {
+    "bank_accounts": {
+      "type": "object",
+      "title": "Bank account details",
+      "required": [
+        "account_number",
+        "account_type",
+        "branch",
+        "opening_datetime"
+      ],
+      "properties": {
+        "account_number": {
+          "type": "string",
+          "title": "Bank account number",
+          "description": "Bank account number (only digits)",
+          "examples": [
+            "102442061"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Bank account type",
+          "description": "Bank account type. `CACC` - Checking account, `SVGS` - Savings account, `TRAN` - Transactional account (Brazil only). Also known as 'conta corrente' in Portuguese, this is bank account type designed for everyday financial transactions and is the most common type individuals and businesses use for day-to-day banking., `SLRY` - Salary account. Employer deposits a fixed amount every month.",
+          "enum": [
+            "CACC",
+            "SLRY",
+            "SVGS",
+            "TRAN"
+          ],
+          "examples": [
+            "CACC"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Bank account branch",
+          "description": "Numeric code representing the account's bank branch",
+          "examples": [
+            "0001"
+          ]
+        },
+        "opening_datetime": {
+          "type": "string",
+          "title": "Bank account opening date/time.",
+          "description": "Bank account opening date/time on the Pismo platform. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+          "examples": [
+            "2021-11-26T20:42:02.838575Z"
+          ]
+        }
+      }
+    },
+    "content_id": {
+      "type": "string",
+      "title": "Content ID",
+      "description": "Content ID. This is a hashed value created from a number of key-related fields in the Pismo database. This is meant for you to store and send to Pismo in case there is any problem with the key.",
+      "examples": [
+        "4a46173b40f861f769ea00ef14aea3d3b7e12f730a7caba61c7fbbe437c1da65"
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "The correlation ID (CID) field is used to link related API requests and events. The CID can help the Pismo engineering team track everything related to a call. You can find the CID field in the response header from an API endpoint call",
+      "examples": [
+        "B20220921145635222303062944CA66F"
+      ]
+    },
+    "creation_datetime": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Creation date/time",
+      "description": "Pix key creation datetime on Pismo Platform. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "examples": [
+        "2022-02-21T20:22:39.191Z"
+      ]
+    },
+    "key": {
+      "type": "string",
+      "title": "Key value",
+      "description": "Key value of key type. For example: someguy@gmail.com (`EMAIL` key type)",
+      "examples": [
+        "12345678901",
+        "12345678901234",
+        "+5511912345678",
+        "email@email.com",
+        "fe8de11a-6d5e-4133-a4ec-7583a6e7182a"
+      ]
+    },
+    "key_type": {
+      "type": "string",
+      "title": "Key type",
+      "description": "Pix registered key type: `CPF` - Cadastro de Pessoas Fisicas (Indiviual Taxpayer Registry) number. Similar to a Social Security number in the US., `CNPJ` - Cadastro Nacional de Pessoa Juridica (National Registry of Legal Entities) number. Unique ID for legal entities, such as companies and organizations, in Brazil, `EMAIL` - Email, `PHONE` - Phone number, `EVP` - Endereco de pagamento virtual (virtual payment address). A randomly-generated UUID number.",
+      "enum": [
+        "CPF",
+        "CNPJ",
+        "PHONE",
+        "EMAIL",
+        "EVP"
+      ]
+    },
+    "owner": {
+      "type": "object",
+      "title": "Owner details",
+      "required": [
+        "document_number",
+        "name",
+        "type"
+      ],
+      "properties": {
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "Owner document number. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "examples": [
+            "87986686090"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Owner full name",
+          "description": "Owner's full name",
+          "examples": [
+            "Liv Long"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Owner type",
+          "description": "Owner type: `LEGAL_PERSON` - An actual person with legal rights. `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "NATURAL_PERSON",
+            "LEGAL_PERSON",
+            ""
+          ],
+          "examples": [
+            "LEGAL_PERSON"
+          ]
+        },
+        "trade_name": {
+          "type": "string",
+          "title": "Owner trade name",
+          "description": "Trade name - only avaiable for `LEGAL_PERSON`.",
+          "examples": [
+            "Dewey, Cheetum & Howe"
+          ]
+        }
+      }
+    },
+    "reason": {
+      "type": "string",
+      "title": "Key change reason",
+      "description": "Key change reason",
+      "enum": [
+        "USER_REQUESTED",
+        "ACCOUNT_CLOSURE",
+        "BRANCH_TRANSFER",
+        "RECONCILIATION",
+        "FRAUD",
+        "RFB_VALIDATION",
+        ""
+      ],
+      "examples": [
+        "RECONCILIATION"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Key status",
+      "description": "Current status of Pix key on the Pismo Platform",
+      "enum": [
+        "ACTIVE",
+        "DELETED",
+        "CANCELLED",
+        "FAILURE"
+      ],
+      "examples": [
+        "ACTIVE"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Account Id",
+      "description": "Pismo account ID",
+      "examples": [
+        1234567890
+      ]
+    },
+    "ownership_datetime": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Ownership date/time",
+      "description": "Datetime when the current account was linked to the Pix key. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "examples": [
+        "2022-02-21T20:22:39.191Z"
+      ]
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Token provisioning request received",
+  "description": "All network calls to Pismo for tokenization (usually originating from a payment app such as Apple Pay), generate an event, allowing you to track token provisioning through creation to deletion. See the <a href='https://developers.pismo.io/pismo-docs/docs/card-tokenization-flow-and-events' target='_blank'>Cards tokenization flow and events</a> guide for more information.",
+  "properties": {
+    "account_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Accound ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        24146066
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo program ID.",
+      "examples": [
+        12
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "type": "integer",
+      "examples": [
+        42488842
+      ]
+    },
+    "network_call_method": {
+      "title": "Network call method",
+      "description": "Network outbound method identifier, serves to parse raw message from network_data",
+      "type": "string",
+      "enum": [
+        "RUPAY_TOKEN_CREATED",
+        "RUPAY_TOKEN_UPDATED",
+        "VTS_STATUS_UPDATED_TOKEN_DEACTIVATED",
+        "VTS_STATUS_UPDATED_TOKEN_SUSPEND",
+        "VTS_STATUS_UPDATED_TOKEN_RESUME",
+        "VTS_STATUS_UPDATED_OTP_VERIFICATION_RESULT",
+        "VTS_STATUS_UPDATED_TOKEN_DEVICE_BINDING_REMOVED",
+        "VTS_STATUS_UPDATED_CALL_CENTER_ACTIVATION",
+        "VTS_STATUS_UPDATED_CARDHOLDER_STEPUP_RESULT",
+        "VTS_STATUS_UPDATED_LUK_REPLENISHMENT",
+        "VTS_STATUS_UPDATED_DEVICE_PROVISIONING_RESULT",
+        "VTS_TOKEN_ACTIVATION_STIP",
+        "VTS_TOKEN_CREATED",
+        "VTS_APPROVE_PROVISIONING",
+        "VTS_APPROVE_PROVISIONING_ISO",
+        "VTS_GET_CVM",
+        "VTS_DEVICE_BINDING",
+        "VTS_PASSCODE",
+        "TE",
+        "TA",
+        "AC",
+        "TC",
+        "TV",
+        "",
+        "VTS_EXPIRY_UPDATED_TOKEN"
+      ]
+    },
+    "network_data": {
+      "title": "Network data",
+      "description": "Raw data from network. Varies according to flow and network brand",
+      "type": "object"
+    },
+    "network_event_out_of_order": {
+      "title": "Out-of-Order Network Event",
+      "description": "Set to true if the event, as received from the Network, is out of the expected sequence; this condition may impact the token provisioning flow.",
+      "type": "boolean",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "token_id": {
+      "title": "Token ID",
+      "description": "Pismo-created token ID.",
+      "type": "integer",
+      "examples": [
+        42488842,
+        93827266
+      ]
+    },
+    "token_status": {
+      "title": "Token Status",
+      "description": "Status of current token.",
+      "type": "string",
+      "enum": [
+        "INACTIVE",
+        "FAILED",
+        "ACTIVE",
+        "SUSPENDED",
+        "DEACTIVATED",
+        ""
+      ]
+    },
+    "token": {
+      "title": "Token",
+      "description": "Network token associated with card tokenization.",
+      "type": "string",
+      "examples": [
+        "4761739001010010"
+      ]
+    },
+    "bin": {
+      "title": "BIN",
+      "description": "Card BIN associated with the tokenized card.",
+      "type": "string",
+      "examples": [
+        "476173"
+      ]
+    },
+    "token_requestor_id": {
+      "title": "Token Requestor ID",
+      "description": "Identifier of the token requestor in the network.",
+      "type": "string",
+      "examples": [
+        "40010030273"
+      ]
+    },
+    "token_unique_reference": {
+      "title": "Token Unique Reference",
+      "description": "Network-provided unique reference for the token.",
+      "type": "string",
+      "examples": [
+        "A1B2C3D4E5F6G7H8I9J0"
+      ]
+    },
+    "send_challenge": {
+      "title": "Send Challenge",
+      "description": "The object should be present when issuer it is responsible for sending OTP challenge to issuer.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "otp_value": {
+          "title": "The OTP value",
+          "description": "issuer must send this value to cardholder using the chosen otp_method",
+          "type": "string",
+          "examples": [
+            "123456"
+          ]
+        },
+        "otp_method": {
+          "title": "One time passcode method",
+          "description": "OTP (one-time passcode) challenge customer selected for token provisioning.",
+          "type": "string",
+          "examples": [
+            "OTPSMS",
+            "OTPEMAIL"
+          ]
+        }
+      }
+    },
+    "pismo_response": {
+      "title": "Pismo response",
+      "description": "Pismo response to payment network. Response depends on network payment and `network_call_method`. Logs the final response from Pismo to the network payment. Should be null in async network calls that expect null values.",
+      "additionalProperties": true,
+      "type": [
+        "object",
+        "null"
+      ],
+      "examples": [
+        {
+          "actionCode": "85",
+          "cvv2ResultsCode": "M"
+        }
+      ]
+    }
+  },
+  "required": [
+    "account_id",
+    "program_id",
+    "token_status",
+    "card_id",
+    "network_call_method",
+    "network_data"
+  ]
+}

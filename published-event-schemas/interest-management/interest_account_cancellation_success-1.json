@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest account cancellation succeeded",
+  "description": "This event occurs when an account cancellation is successfully processed with product interest management.",
+  "required": [
+    "external_account_cancellation_id",
+    "program_id",
+    "account_id",
+    "cancellation_date",
+    "net_withdrawn_amount",
+    "gross_withdrawn_amount",
+    "withdrawn_units",
+    "taxes"
+  ],
+  "properties": {
+    "external_account_cancellation_id": {
+      "type": "string",
+      "title": "External account cancellation ID",
+      "description": "Customer-defined identifier for account cancellation operation",
+      "examples": [
+        "6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Unique ID used to identify the program in the Pismo platform APIs.",
+      "examples": [
+        "1234"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        "123"
+      ]
+    },
+    "document_number": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Customer document number",
+      "description": "Number of asset quota owner's legal document",
+      "examples": [
+        "00000000012"
+      ]
+    },
+    "cancellation_date": {
+      "type": "string",
+      "title": "Cancellation date",
+      "description": "Date when account was cancelled by client",
+      "format": "date",
+      "examples": [
+        "2025-01-01"
+      ]
+    },
+    "net_withdrawn_amount": {
+      "type": "number",
+      "title": "Net Amount Redeemed",
+      "description": "Net Value redeemed from account due to account cancellation request",
+      "format": "double",
+      "examples": [
+        506.8
+      ]
+    },
+    "gross_withdrawn_amount": {
+      "type": "number",
+      "title": "Gross Amount Redeemed",
+      "description": "Gross Value redeemed from account due to account cancellation request",
+      "format": "double",
+      "examples": [
+        508.81
+      ]
+    },
+    "withdrawn_units": {
+      "type": "number",
+      "title": "Redeemed quota units",
+      "description": "Number of quota units redeemed from account due to account cancellation request",
+      "format": "double",
+      "examples": [
+        30000
+      ]
+    },
+    "taxes": {
+      "type": "array",
+      "title": "List of taxes",
+      "items": {
+        "$ref": "#/definitions/taxes"
+      }
+    },
+    "metadata": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "List of metadata fields"
+    }
+  },
+  "definitions": {
+    "taxes": {
+      "type": "object",
+      "title": "Taxes attributes",
+      "required": [
+        "name",
+        "amount"
+      ],
+      "description": "Taxes applied to redemptions",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Tax Name",
+          "description": "Tax Name.",
+          "examples": [
+            "IR",
+            "IOF"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tax Amount",
+          "description": "Tax Amount.",
+          "format": "double",
+          "examples": [
+            0.15
+          ]
+        }
+      }
+    }
+  }
+}

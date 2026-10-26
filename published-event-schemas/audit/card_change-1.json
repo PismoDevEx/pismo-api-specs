@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card updated",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of address register operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of address register operation",
+      "examples": [
+        "/v2/cards"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator that registered address",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "The roles of operator that registered address",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of address register operation",
+      "examples": [
+        "APP",
+        "CRM"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The object that represents the address register requested",
+      "required": [
+        "account_id",
+        "card_id",
+        "program_id",
+        "status",
+        "date"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "User's account ID at Pismo Platform",
+          "examples": [
+            12345678
+          ]
+        },
+        "program_id": {
+          "type": [
+            "integer"
+          ],
+          "title": "Card's program ID at Pismo Platform",
+          "default": 0,
+          "examples": [
+            12345678
+          ]
+        },
+        "card_id": {
+          "type": [
+            "integer"
+          ],
+          "title": "Card identifier on the Pismo platform",
+          "examples": [
+            12345678
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "Status of card",
+          "examples": [
+            "NORMAL",
+            "CANCELED",
+            "FRAUD",
+            "DAMAGED",
+            "EXPIRED",
+            "LOST",
+            "ROBBED",
+            "DELETED",
+            "BROKEN",
+            "RENAME",
+            "CLIENT_ORDER",
+            "SHAVED",
+            "RELIEF_LOSS",
+            "THEFT",
+            "UNRECEIVED",
+            "DEFECT",
+            "INCORRECT_NAME",
+            "INOPERATIVE",
+            "BLOCKED",
+            "PENDING",
+            "WARNING"
+          ]
+        },
+        "previous_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Previous status of card, when status is changed",
+          "examples": [
+            "CREATED",
+            "NORMAL",
+            "CANCELED",
+            "FRAUD",
+            "DAMAGED",
+            "EXPIRED",
+            "LOST",
+            "ROBBED",
+            "DELETED",
+            "BROKEN",
+            "RENAME",
+            "CLIENT_ORDER",
+            "SHAVED",
+            "RELIEF_LOSS",
+            "THEFT",
+            "UNRECEIVED",
+            "DEFECT",
+            "INCORRECT_NAME",
+            "INOPERATIVE",
+            "BLOCKED",
+            "PENDING",
+            "WARNING"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "title": "The card change date",
+          "examples": [
+            "2019-10-18T18:26:28"
+          ]
+        }
+      }
+    }
+  }
+}

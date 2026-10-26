@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Over-limit created",
+  "description": "This event occurs asynchronously when a cash-out operation causes account balance to go over the available limit. This event applies both to card network and platform operations.",
+  "required": [
+    "account_id",
+    "over_limit_operation_amount",
+    "over_limit_available_credit_limit_amount",
+    "authorization"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        100602614
+      ]
+    },
+    "over_limit_operation_amount": {
+      "type": "number",
+      "title": "Operation amount",
+      "description": "Amount of the operation that caused the over-limit.",
+      "examples": [
+        25.75,
+        125.0,
+        57.25
+      ]
+    },
+    "over_limit_available_credit_limit_amount": {
+      "type": "number",
+      "title": "Available credit limit amount",
+      "description": "Available credit limit amount of the account that went into over-limit.",
+      "examples": [
+        -99.55,
+        -300.0,
+        -1.25
+      ]
+    },
+    "authorization": {
+      "$ref": "#/definitions/authorization"
+    }
+  },
+  "definitions": {
+    "authorization": {
+      "type": "object",
+      "title": "Authorization object",
+      "description": "Object with authorization information.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Authorization ID.",
+          "description": "Pismo authorization ID.",
+          "examples": [
+            123,
+            456
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Authorization type",
+          "description": "Type of authorization.",
+          "enum": [
+            "NETWORK",
+            "PLATFORM"
+          ]
+        }
+      }
+    }
+  }
+}

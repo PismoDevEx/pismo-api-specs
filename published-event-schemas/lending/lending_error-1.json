@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Lending error",
+  "description": "The lending service has reported an error. It contains an ID for the event, the organization, the error code, and error message. For more information about the Lending API, refer to <a href='https://developers.pismo.io/pismo-docs/reference/getloanproductv2' target='_blank'>the Lending API reference</a>.",
+  "required": [
+    "cid",
+    "org_id",
+    "error_code",
+    "error_message"
+  ],
+  "properties": {
+    "cid": {
+      "$id": "#/properties/cid",
+      "type": "string",
+      "title": "CID",
+      "description": "Event ID",
+      "example": "7da3db3b-400d-4851-a362-2022dab27284"
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID associated with authorization",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "error_code": {
+      "$id": "#/properties/error_code",
+      "type": "string",
+      "title": "Error code",
+      "description": "Indicates the error code explaining the reason for the failure of the lending operation.",
+      "example": "101052"
+    },
+    "error_message": {
+      "$id": "#/properties/error_message",
+      "type": "string",
+      "title": "Error message",
+      "description": "Short error title indicating the type of failure in the lending operation",
+      "example": "Loan not found."
+    },
+    "error_description": {
+      "$id": "#/properties/error_description",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error description",
+      "description": "Detailed error description with contextual information about the failure",
+      "example": "Payment PAY-123 amount does not match. Expected: 100.00, Actual: 50.00."
+    },
+    "processing_code": {
+      "$id": "#/properties/processing_code",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Processing code",
+      "description": "The processing code associated with the authorization that triggered the error",
+      "example": "003000"
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Program ID",
+      "description": "Pismo platform program ID",
+      "example": 9000
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "example": 12176
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization ID",
+      "description": "Authorization ID",
+      "example": 14123
+    },
+    "original_authorization_id": {
+      "$id": "#/properties/original_authorization_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Original authorization ID",
+      "description": "Original authorization ID",
+      "examples": [
+        null,
+        "339920"
+      ]
+    },
+    "loan_id": {
+      "$id": "#/properties/loan_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Loan ID",
+      "description": "Loan ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "insurance_id": {
+      "$id": "#/properties/insurance_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Insurance ID",
+      "description": "Insurance ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "payment_id": {
+      "$id": "#/properties/payment_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Payment ID",
+      "description": "Payment ID",
+      "example": "gag913af-abc9-4769-b179-068ed6171ec6"
+    },
+    "loan_product_id": {
+      "$id": "#/properties/loan_product_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Loan Product ID",
+      "description": "Loan Product ID",
+      "example": "aad913af-afc9-6769-c179-068ed6199ec5"
+    },
+    "installment_id": {
+      "$id": "#/properties/installment_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Installment ID",
+      "description": "Installment ID",
+      "example": "b8e2a1c4-5f3d-4e7a-9b2e-1a2b3c4d5e6f"
+    },
+    "authorization_tracking_id": {
+      "$id": "#/properties/authorization_tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization tracking ID",
+      "description": "Authorization tracking ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "origin_id": {
+      "$id": "#/properties/origin_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Origin ID",
+      "description": "Origin ID associated with the error",
+      "example": "origin-123"
+    }
+  }
+}

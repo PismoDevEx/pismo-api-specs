@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant settlement not settled",
+  "required": [
+    "merchant_id",
+    "settlement_date",
+    "net_amount",
+    "gross_amount",
+    "reason"
+  ],
+  "properties": {
+    "merchant_id": {
+      "$id": "#/properties/merchant_id",
+      "type": "integer",
+      "title": "The merchant identifier",
+      "description": "This field identifies the merchant related to transaction.",
+      "examples": [
+        4
+      ]
+    },
+    "settlement_date": {
+      "$id": "#/properties/settlement_date",
+      "type": "string",
+      "format": "date",
+      "title": "The date of settlement",
+      "description": "This field identifies the date on which settlement would occur.",
+      "examples": [
+        "2021-03-25"
+      ]
+    },
+    "net_amount": {
+      "$id": "#/properties/net_amount",
+      "type": "number",
+      "title": "The net amount of the settlement",
+      "description": "This field identifies the settlement net amount.",
+      "examples": [
+        100.0
+      ]
+    },
+    "gross_amount": {
+      "$id": "#/properties/gross_amount",
+      "type": "number",
+      "title": "The gross amount of the settlement",
+      "description": "This field identifies the settlement gross amount.",
+      "examples": [
+        100.0
+      ]
+    },
+    "mdr_amount": {
+      "$id": "#/properties/mdr_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The total MDR amount of the settlement",
+      "description": "This field identifies the amount of MDR payed in this settlement.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "mdr_tax": {
+      "$id": "#/properties/mdr_tax",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The total MDR tax of the settlement",
+      "description": "This field identifies the MDR tax payed in this settlement.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "reason": {
+      "$id": "#/properties/reason",
+      "type": "string",
+      "title": "The reason for the merchant not being settled.",
+      "description": "This field identifies the reason for the merchant not being settled.",
+      "examples": [
+        "ZERO_AMOUNT",
+        "NEGATIVE_AMOUNT"
+      ]
+    }
+  }
+}

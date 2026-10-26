@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Clearing processing non-financial message received",
+  "description": "A Clearing raw event.  This event has the same purpose as an iso8583 event, as it represents a raw message received from the card network. The Pismo platform issues a Clearing raw event regardless of message processing. You can use a Clearing event to verify all non-sensitive data received for Clearing messages.",
+  "additionalProperties": true,
+  "required": [
+    "raw_message",
+    "network",
+    "type"
+  ],
+  "properties": {
+    "raw_message": {
+      "type": "object",
+      "description": "Contains the ISO8583 message in JSON format. This is different for every network."
+    },
+    "network": {
+      "title": "Network Identifier",
+      "description": "Network that originated this clearing raw message.",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "Mastercard",
+        "Visa",
+        "Tecban",
+        "Rupay"
+      ]
+    },
+    "type": {
+      "title": "Transaction Type",
+      "description": "Type of the transaction being delivered",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "TC10",
+        "TC20",
+        "TC33",
+        "TC46",
+        "TC56"
+      ]
+    }
+  }
+}

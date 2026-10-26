@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Reversal accrual created",
+  "description": "Event generated when a reversal accrual is created.",
+  "required": [
+    "program_id",
+    "account_id",
+    "statement_id",
+    "transaction_id",
+    "accrual_type",
+    "status",
+    "accrual_value",
+    "accrual_date",
+    "created_at",
+    "credit_transaction_id"
+  ],
+  "properties": {
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID",
+      "examples": [
+        1010
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        1010
+      ]
+    },
+    "statement_id": {
+      "type": "integer",
+      "description": "Statement ID",
+      "examples": [
+        1010
+      ]
+    },
+    "transaction_id": {
+      "type": "integer",
+      "description": "Transaction ID",
+      "examples": [
+        1010
+      ]
+    },
+    "accrual_type": {
+      "type": "string",
+      "description": "Accrual type.",
+      "examples": [
+        "REFINANCING",
+        "OVERDUE",
+        "DAILY_IOF",
+        "FINE",
+        "DEFAULT_INTEREST",
+        "FIXED_IOF"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Status",
+      "examples": [
+        "PENDING",
+        "PROCESSED"
+      ]
+    },
+    "accrual_value": {
+      "type": "number",
+      "description": "Accrual value",
+      "examples": [
+        -1.2
+      ]
+    },
+    "accrual_date": {
+      "type": "string",
+      "description": "The reference date of the accrual. It may be in the future for projection. Format = yyyy-mm-dd",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Accrual created at, format = yyyy-MM-ddTHH:mm:ss.fffZ",
+      "format": "datetime",
+      "examples": [
+        "2023-04-14T15:15:40.123Z"
+      ]
+    },
+    "credit_transaction_id": {
+      "type": "integer",
+      "description": "Credit transaction ID",
+      "examples": [
+        1010
+      ]
+    },
+    "additional_info": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "properties": {
+        "account_financial_classification": {
+          "type": "integer",
+          "description": "Customer-defined number representing the financial classification of the account. (Default: 0)",
+          "examples": [
+            2
+          ]
+        }
+      }
+    }
+  }
+}

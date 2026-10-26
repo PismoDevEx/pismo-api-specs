@@ -1,0 +1,454 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Deposit product created",
+  "description": "Create an organization's time deposit accounts. The <a href='https://developers.pismo.io/pismo-docs/reference/interest-bearing-v1-create-deposit-product' target='_blank'>Create deposit product</a> endpoint generates this event.",
+  "required": [
+    "product_id",
+    "name",
+    "interest_plan_id",
+    "term_type",
+    "processing_codes",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID in the pismo platform. UUID v4 format.",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "title": "Product name",
+      "description": "Name given to the product by the customer.",
+      "examples": [
+        "My product"
+      ]
+    },
+    "interest_plan_id": {
+      "type": "string",
+      "title": "Interest plan ID",
+      "description": "Interest plan ID in the pismo platform. UUID v4 format.",
+      "examples": [
+        "b935a**************************d509"
+      ]
+    },
+    "term_type": {
+      "type": "string",
+      "title": "Term type",
+      "description": "Type of term used for the deposit product. Can be `FIXED` or `FLEXIBLE`.",
+      "enum": [
+        "FIXED",
+        "FLEXIBLE"
+      ],
+      "examples": [
+        "FIXED",
+        "FLEXIBLE"
+      ]
+    },
+    "processing_codes": {
+      "$ref": "#/definitions/processing_codes"
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Deposit product status. A new product's status is always \"CREATED\".",
+      "examples": [
+        "CREATED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Creation datetime",
+      "description": "Deposit product creation datetime. Represented as an RFC3339 timestamp.",
+      "examples": [
+        "2024-01-23T13:26:25Z"
+      ]
+    },
+    "maturity_instructions": {
+      "$ref": "#/definitions/maturity_instructions"
+    },
+    "cool_off_period": {
+      "type": "integer",
+      "title": "Cool off period",
+      "description": "Period to withdraw without a fine being applied, in days.",
+      "examples": [
+        3
+      ]
+    },
+    "funding_duration": {
+      "type": "integer",
+      "title": "Funding duration",
+      "description": "Period to deposit funds into the account before operations are blocked, in days.",
+      "examples": [
+        5
+      ]
+    },
+    "max_amount": {
+      "type": "number",
+      "title": "Maximum amount",
+      "description": "Maximum deposit amount.",
+      "examples": [
+        20.7,
+        30
+      ]
+    },
+    "max_term": {
+      "type": "integer",
+      "title": "Maximum term",
+      "description": "Maximum term duration, in days.",
+      "examples": [
+        10
+      ]
+    },
+    "min_amount": {
+      "type": "number",
+      "title": "Minimum amount",
+      "description": "Minimum deposit amount.",
+      "examples": [
+        10.2,
+        20
+      ]
+    },
+    "min_term": {
+      "type": "integer",
+      "title": "Minimum term",
+      "description": "Minimum term duration, in days.",
+      "examples": [
+        5
+      ]
+    },
+    "penalties": {
+      "$ref": "#/definitions/penalties"
+    },
+    "product_type": {
+      "type": "string",
+      "title": "Product type",
+      "description": "Type of the product.",
+      "examples": [
+        "DEPOSIT"
+      ]
+    },
+    "notices": {
+      "$ref": "#/definitions/notices"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Update datetime",
+      "description": "Deposit product last update datetime. Represented as an RFC3339 timestamp.",
+      "examples": [
+        "2024-01-24T10:15:00Z"
+      ]
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Start date",
+      "description": "Deposit product start date. The format is `YYYY-MM-DD`.",
+      "examples": [
+        "2024-01-23"
+      ]
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "title": "End date",
+      "description": "Deposit product end date. The format is `YYYY-MM-DD`.",
+      "examples": [
+        "2025-01-23"
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Custom fields",
+      "description": "Key-value pair metadata field.",
+      "examples": [
+        {
+          "custom_info": "value"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "maturity_instructions": {
+      "type": "object",
+      "title": "Maturity instructions",
+      "description": "Instructions for what to do with funds once maturity date is reached",
+      "properties": {
+        "principal": {
+          "type": "string",
+          "title": "Principal",
+          "description": "How principal (initial investment) funds  are processed once the maturity date is reached. This can be either `NO_ACTION` or `ROLLOVER`",
+          "examples": [
+            "NO_ACTION",
+            "ROLLOVER"
+          ]
+        },
+        "interest": {
+          "type": "string",
+          "title": "Interest",
+          "description": "How interest funds are processed once the maturity date is reached. This can be either `PAY` or `ROLLOVER`",
+          "examples": [
+            "PAY",
+            "ROLLOVER"
+          ]
+        }
+      },
+      "required": [
+        "principal",
+        "interest"
+      ]
+    },
+    "processing_codes": {
+      "type": "object",
+      "title": "Processing codes",
+      "description": "Processing codes used for accounting.",
+      "properties": {
+        "interest_processing_code": {
+          "type": "string",
+          "title": "Interest Processing Code",
+          "description": "Processing code for interest processing.",
+          "examples": [
+            "202526"
+          ]
+        },
+        "detach_processing_code": {
+          "type": "string",
+          "title": "Detach Processing Code",
+          "description": "Processing code for detach processing.",
+          "examples": [
+            "202528"
+          ]
+        }
+      },
+      "required": [
+        "interest_processing_code",
+        "detach_processing_code"
+      ]
+    },
+    "penalties": {
+      "type": "object",
+      "title": "Penalties",
+      "description": "Defines penalties that apply for early withdrawals or other conditions",
+      "properties": {
+        "early_withdrawal_after_opening": {
+          "$ref": "#/definitions/early_withdrawal_after_opening"
+        },
+        "grace_period": {
+          "$ref": "#/definitions/grace_period"
+        },
+        "tiered_interest_forfeiture": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tiered_interest_forfeiture_tier"
+          },
+          "title": "Tiered interest forfeiture",
+          "description": "Defines tiered interest forfeiture based on how many days the deposit was held in the account"
+        },
+        "withdrawal_fee": {
+          "$ref": "#/definitions/withdrawal_fee"
+        },
+        "subsequent_withdrawals": {
+          "$ref": "#/definitions/subsequent_withdrawals"
+        }
+      }
+    },
+    "subsequent_withdrawals": {
+      "type": "object",
+      "title": "Subsequent withdrawals",
+      "description": "Subsequent withdrawals (Regulation D) penalty configuration.",
+      "properties": {
+        "applicable_within_days": {
+          "type": "integer",
+          "title": "Applicable within days",
+          "description": "How many days after a withdrawal a new withdrawal is treated as penalty-eligible.",
+          "examples": [
+            30
+          ]
+        },
+        "penalty_interest_days": {
+          "type": "integer",
+          "title": "Penalty interest days",
+          "description": "Number of interest days to forfeit as the penalty amount.",
+          "examples": [
+            7
+          ]
+        },
+        "window_behavior": {
+          "type": "string",
+          "title": "Window behavior",
+          "description": "Controls how the penalty window behaves after each withdrawal.",
+          "enum": [
+            "ROLLING",
+            "FIXED"
+          ],
+          "examples": [
+            "ROLLING"
+          ]
+        }
+      }
+    },
+    "notices": {
+      "type": "array",
+      "title": "Notices",
+      "description": "Maturity notices configured for the product.",
+      "items": {
+        "type": "object",
+        "title": "Notice",
+        "description": "A single maturity notice.",
+        "required": [
+          "days_before_maturity"
+        ],
+        "properties": {
+          "days_before_maturity": {
+            "type": "integer",
+            "title": "Days before maturity",
+            "description": "Number of days before maturity when the notice is emitted.",
+            "examples": [
+              5
+            ]
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Description of the notice.",
+            "examples": [
+              "Maturity approaching"
+            ]
+          }
+        }
+      }
+    },
+    "early_withdrawal_after_opening": {
+      "type": "object",
+      "title": "Early withdrawal after opening",
+      "description": "Penalty structure for early withdrawal after opening an account",
+      "required": [
+        "applicable_within_days",
+        "penalty_interest_days"
+      ],
+      "properties": {
+        "applicable_within_days": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Days when penalty applies",
+          "description": "Number of days after opening when the penalty applies",
+          "examples": [
+            30
+          ]
+        },
+        "penalty_interest_days": {
+          "type": "integer",
+          "title": "Days for interest penalty",
+          "description": "Number of interest days to calculate forfeiture penalty",
+          "examples": [
+            90
+          ]
+        }
+      }
+    },
+    "grace_period": {
+      "type": "object",
+      "title": "Grace period",
+      "description": "Defines grace period for withdrawal penalties",
+      "required": [
+        "duration_days",
+        "penalty_interest_days"
+      ],
+      "properties": {
+        "duration_days": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Days of grace period",
+          "description": "Duration of the grace period in days",
+          "examples": [
+            7
+          ]
+        },
+        "penalty_interest_days": {
+          "type": "integer",
+          "title": "Days of interest penalty",
+          "description": "Number of interest days to calculate forfeiture penalty",
+          "examples": [
+            30
+          ]
+        }
+      }
+    },
+    "tiered_interest_forfeiture_tier": {
+      "type": "object",
+      "title": "Interest forfeiture tier definition",
+      "description": "Defines tiers of interest forfeiture based on deposit holding period",
+      "required": [
+        "min_days_held",
+        "max_days_held",
+        "forfeited_interest_days"
+      ],
+      "properties": {
+        "min_days_held": {
+          "type": "integer",
+          "title": "Minimum days held",
+          "description": "Minimum number of days the deposit must be held",
+          "examples": [
+            1
+          ]
+        },
+        "max_days_held": {
+          "type": "integer",
+          "title": "Maximum days held",
+          "description": "Maximum number of days the deposit can be held",
+          "examples": [
+            90
+          ]
+        },
+        "forfeited_interest_days": {
+          "type": "integer",
+          "title": "Days to calculate forfeited interest",
+          "description": "Number of interest days to forfeit as penalty",
+          "examples": [
+            30
+          ]
+        }
+      }
+    },
+    "withdrawal_fee": {
+      "type": "object",
+      "title": "Withdrawal fee",
+      "description": "Fee structure for withdrawals",
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "PERCENTAGE",
+            "FIXED"
+          ],
+          "title": "Fee type",
+          "description": "Type of withdrawal fee",
+          "examples": [
+            "PERCENTAGE"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "title": "Fee value",
+          "description": "Value of the withdrawal fee",
+          "examples": [
+            1.5
+          ]
+        }
+      }
+    }
+  }
+}

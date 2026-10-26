@@ -1,0 +1,323 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Fraud report updated",
+  "description": "This event is generated when a fraud report is updated. The [Update fraud report](https://developers.pismo.io/pismo-docs/reference/put-v2-fraud-report) endpoint generates this event.",
+  "required": [
+    "org_id",
+    "report_type",
+    "report",
+    "status",
+    "network",
+    "fraud_report_id"
+  ],
+  "properties": {
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Organization/tenant ID",
+      "description": "Pismo organization/tenant ID",
+      "examples": [
+        "TN-123"
+      ]
+    },
+    "report_type": {
+      "$id": "#/properties/report_type",
+      "type": [
+        "string"
+      ],
+      "title": "Fraud report type",
+      "description": "Fraud report type",
+      "enum": [
+        "elo",
+        "elo_international",
+        "mastercard",
+        "visa",
+        "visa_card"
+      ],
+      "example": "visa"
+    },
+    "report": {
+      "$id": "#/properties/report",
+      "type": [
+        "object"
+      ],
+      "description": "Fraud report form content. See [Create fraud report](https://developers.pismo.io/pismo-docs/reference/post-v2-fraud-report) endpoint for specific content.",
+      "additionalProperties": true
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "title": "Status",
+      "description": "Fraud report status.",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "PENDING",
+        "PROCESSED",
+        "FAILED"
+      ],
+      "example": "PENDING"
+    },
+    "network": {
+      "$id": "#/properties/network",
+      "title": "Network brand",
+      "description": "Card network brand",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "Elo",
+        "Mastercard",
+        "Visa"
+      ],
+      "example": "Elo"
+    },
+    "fraud_report_id": {
+      "$id": "#/properties/fraud_report_id",
+      "type": "integer",
+      "title": "Fraud report ID",
+      "description": "Pismo fraud report ID",
+      "examples": [
+        10
+      ]
+    },
+    "dispute_id": {
+      "title": "Dispute ID",
+      "description": "Pismo dispute ID",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        null,
+        10
+      ]
+    },
+    "dispute_installment_id": {
+      "title": "Dispute installment ID",
+      "description": "Pismo dispute installment ID",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        null,
+        10
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        null,
+        37589
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        null,
+        89940
+      ]
+    },
+    "customer_id": {
+      "$id": "#/properties/customer_id",
+      "title": "Customer ID",
+      "description": "Pismo customer ID",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        null,
+        89345
+      ]
+    },
+    "network_authorization_id": {
+      "title": "Network authorization ID",
+      "description": "Pismo network authorization ID",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        null,
+        10
+      ]
+    },
+    "authorization_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization code",
+      "description": "Authorization code",
+      "examples": [
+        null,
+        "A1B2C3",
+        "123456"
+      ]
+    },
+    "created_at": {
+      "title": "Created at datetime",
+      "description": "Report creation datetime, ISO 8601 format.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": "2024-10-01 13:19:28"
+    },
+    "updated_at": {
+      "title": "Updated at date/time",
+      "description": "Report updated datetime. ISO 8601 format.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "2024-10-01 13:19:28",
+        "null"
+      ]
+    },
+    "case_number": {
+      "title": "Case number",
+      "description": "Card network ID field for fraud report. For example: Mastercard is `ClaimID`. Visa is `VisaCaseNumber`.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": "ClaimID"
+    },
+    "fraud_report_network_id": {
+      "title": "Card network fraud report ID",
+      "description": "Card network ID for fraud report.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": "AJK455LL"
+    },
+    "network_response": {
+      "title": "Network response",
+      "description": "Card network information in case of error.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "null",
+        "The network returned [Error to create Fraud Report, invalid field], reasonCode [E-90000000] with the source [NETWORK_EXCEPTION]."
+      ]
+    }
+  },
+  "examples": [
+    {
+      "account_id": 123,
+      "authorization_code": "123456",
+      "card_id": 456,
+      "created_at": "2024-10-01 13:19:28",
+      "fraud_report_id": 10,
+      "network": "Elo",
+      "network_authorization_id": 102030,
+      "org_id": "org_id",
+      "report": {
+        "acct_status": "ACCT_IS_OPEN",
+        "authorization_origin_indicator": "Y",
+        "card_service_code": "C",
+        "chgbk_indicator": "0",
+        "exchange_indicator": "Y",
+        "exchange_value": 9.99,
+        "fraud_type": "00",
+        "notification_code": 1
+      },
+      "report_type": "elo",
+      "status": "PENDING"
+    },
+    {
+      "account_id": 123,
+      "authorization_code": "123456",
+      "card_id": 456,
+      "created_at": "2024-10-01 13:39:33",
+      "fraud_report_id": 10,
+      "network": "Elo",
+      "network_authorization_id": 102030,
+      "org_id": "org_id",
+      "report": {
+        "primary_reason": "CA",
+        "secondary_reason": "BT"
+      },
+      "report_type": "elo_international",
+      "status": "PROCESSED"
+    },
+    {
+      "account_id": 123,
+      "authorization_code": "ABC123",
+      "card_id": 456,
+      "created_at": "2024-10-01 13:49:48",
+      "fraud_report_id": 10,
+      "network": "Mastercard",
+      "network_authorization_id": 102030,
+      "org_id": "org_id",
+      "report": {
+        "acct_status": "ACCT_IS_OPEN",
+        "chgbk_indicator": "0",
+        "cvc_invalid_indicator": "Y",
+        "device_type": "1",
+        "fraud_type": "00",
+        "sub_type": "K"
+      },
+      "report_type": "mastercard",
+      "status": "FAILED",
+      "case_number": "10203040",
+      "fraud_report_network_id": "30405060",
+      "network_response": "The network returned error."
+    },
+    {
+      "account_id": 123,
+      "authorization_code": "123456",
+      "card_id": 456,
+      "created_at": "2024-10-01 13:57:56",
+      "fraud_report_id": 10,
+      "network": "Visa",
+      "network_authorization_id": 102030,
+      "org_id": "org_id",
+      "report": {
+        "close_fraud_case_ind": false,
+        "fraud_type": "1",
+        "fraud_type_category": "CARDTXN",
+        "notification_cd": 1
+      },
+      "report_type": "visa",
+      "status": "PROCESSED",
+      "case_number": "10203040",
+      "fraud_report_network_id": "30405060"
+    },
+    {
+      "account_id": 123,
+      "card_id": 456,
+      "created_at": "2024-10-01 14:07:47",
+      "fraud_report_id": 10,
+      "network": "Visa",
+      "org_id": "org_id",
+      "report": {
+        "close_fraud_case_ind": false,
+        "fraud_type": "1",
+        "fraud_type_category": "CARDTXN",
+        "notification_cd": 1
+      },
+      "report_type": "visa_card",
+      "status": "PENDING"
+    }
+  ],
+  "additionalProperties": false
+}

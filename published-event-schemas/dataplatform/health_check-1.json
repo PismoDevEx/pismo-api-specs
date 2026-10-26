@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Sign of health status",
+  "description": "At each given time this event is created to notify client so that the client can know that the platform is available.",
+  "required": [
+    "status_summary"
+  ],
+  "properties": {
+    "status_summary": {
+      "type": "string",
+      "title": "General status",
+      "description": "Summary of the status of all resources in the data platform.",
+      "enum": [
+        "OK",
+        "DOWN"
+      ]
+    }
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/merchants_incoming-1.json",
+  "type": "object",
+  "title": "Merchant migration started",
+  "description": "Event generated when an merchants migration is started. Contains the payload with the data to be migrated.",
+  "examples": [
+    {
+      "migration": {
+        "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+        "version_date": "2022-06-23T15:01:00.000Z"
+      },
+      "entity": {
+        "marketplace_id": 101010,
+        "document_number": "1010321",
+        "name": "1010321",
+        "brand_name": "1010321",
+        "municipal_registration": "1010321",
+        "contact": "31988376831",
+        "email": "test@gmail.com",
+        "zip_code": "1010321",
+        "address": "Street test",
+        "complementary_address": "Apartment 500",
+        "neighborhood": "Castle",
+        "state": "MG",
+        "city": "Belo Horizonte",
+        "city_code": "312098321",
+        "country": "Brazil",
+        "number": 9783216,
+        "area_code": "3124",
+        "phone": "99845767",
+        "additional_area_code": "55",
+        "additional_phone": "31987766546",
+        "program_id": 321,
+        "external_code": "123",
+        "creditor": {
+          "crediting_method": "ACCOUNT",
+          "name": "test name",
+          "advancement_fee": 15.4,
+          "discount_rate": 11.4,
+          "maximum_advancement_percentage": 16.4
+        }
+      },
+      "metadata": {
+        "key1": "value1",
+        "key2": "value2"
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents an account.",
+      "examples": [
+        {
+          "marketplace_id": 101010,
+          "document_number": "1010321",
+          "name": "1010321",
+          "brand_name": "1010321",
+          "municipal_registration": "1010321",
+          "contact": "31988376831",
+          "email": "test@gmail.com",
+          "zip_code": "1010321",
+          "address": "Street test",
+          "complementary_address": "Apartment 500",
+          "neighborhood": "Castle",
+          "state": "MG",
+          "city": "Belo Horizonte",
+          "city_code": "312098321",
+          "country": "Brazil",
+          "number": 9783216,
+          "area_code": "3124",
+          "phone": "99845767",
+          "additional_area_code": "55",
+          "additional_phone": "31987766546",
+          "program_id": 321,
+          "external_code": "123",
+          "creditor": {
+            "crediting_method": "ACCOUNT",
+            "name": "test name",
+            "advancement_fee": 15.4,
+            "discount_rate": 11.4,
+            "maximum_advancement_percentage": 16.4
+          },
+          "migration": {
+            "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+            "version_date": "2021-07-19T09:55:00.000Z"
+          }
+        }
+      ],
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "marketplace_id": {
+          "$id": "#/properties/entity/properties/marketplace_id",
+          "type": "integer",
+          "description": "The marketplace id",
+          "default": 0,
+          "examples": [
+            101010
+          ]
+        },
+        "document_number": {
+          "$id": "#/properties/entity/properties/document_number",
+          "type": "string",
+          "description": "Document number of merchant.",
+          "examples": [
+            "101010"
+          ]
+        },
+        "name": {
+          "$id": "#/properties/entity/properties/name",
+          "type": "string",
+          "description": "Name of merchant.",
+          "examples": [
+            "test Name"
+          ]
+        },
+        "brand_name": {
+          "$id": "#/properties/entity/properties/brand_name",
+          "type": "string",
+          "description": "Brand of merchant.",
+          "examples": [
+            "test brand name"
+          ]
+        },
+        "municipal_registration": {
+          "$id": "#/properties/entity/properties/municipal_registration",
+          "type": "string",
+          "description": "Municipal registration of merchant.",
+          "examples": [
+            "87321"
+          ]
+        },
+        "contact": {
+          "$id": "#/properties/entity/properties/contact",
+          "type": "string",
+          "description": "Contact of merchant.",
+          "examples": [
+            "31987387463"
+          ]
+        },
+        "email": {
+          "$id": "#/properties/entity/properties/email",
+          "type": "string",
+          "description": "E-mail of merchant.",
+          "examples": [
+            "test@gmail.com"
+          ]
+        },
+        "zip_code": {
+          "$id": "#/properties/entity/properties/zip_code",
+          "type": "string",
+          "description": "Zip Code of merchant.",
+          "examples": [
+            "9321874"
+          ]
+        },
+        "address": {
+          "$id": "#/properties/entity/properties/address",
+          "type": "string",
+          "description": "Address of merchant.",
+          "examples": [
+            "Avenue test"
+          ]
+        },
+        "complementary_address": {
+          "$id": "#/properties/entity/properties/complementary_address",
+          "type": "string",
+          "description": "Complementary address of merchant.",
+          "examples": [
+            "Apartment 504"
+          ]
+        },
+        "neighborhood": {
+          "$id": "#/properties/entity/properties/neighborhood",
+          "type": "string",
+          "description": "Neighborhood of merchant.",
+          "examples": [
+            "Castle"
+          ]
+        },
+        "state": {
+          "$id": "#/properties/entity/properties/state",
+          "type": "string",
+          "description": "State of merchant.",
+          "examples": [
+            "MG"
+          ]
+        },
+        "city": {
+          "$id": "#/properties/entity/properties/city",
+          "type": "string",
+          "description": "City of merchant.",
+          "examples": [
+            "Belo Horizonte"
+          ]
+        },
+        "city_code": {
+          "$id": "#/properties/entity/properties/city_code",
+          "type": "string",
+          "description": "City code of merchant.",
+          "examples": [
+            "87321"
+          ]
+        },
+        "country": {
+          "$id": "#/properties/entity/properties/country",
+          "type": "string",
+          "description": "Country of merchant.",
+          "examples": [
+            "Brazil"
+          ]
+        },
+        "number": {
+          "$id": "#/properties/entity/properties/number",
+          "type": "integer",
+          "description": "Address number of merchant.",
+          "examples": [
+            "743"
+          ]
+        },
+        "area_code": {
+          "$id": "#/properties/entity/properties/area_code",
+          "type": "string",
+          "description": "Area code of merchant.",
+          "examples": [
+            "7431"
+          ]
+        },
+        "phone": {
+          "$id": "#/properties/entity/properties/phone",
+          "type": "string",
+          "description": "Phone of merchant.",
+          "examples": [
+            "987657786"
+          ]
+        },
+        "additional_area_code": {
+          "$id": "#/properties/entity/properties/additional_area_code",
+          "type": "string",
+          "description": "Additional area code of merchant.",
+          "examples": [
+            "3651"
+          ]
+        },
+        "additional_phone": {
+          "$id": "#/properties/entity/properties/additional_phone",
+          "type": "string",
+          "description": "Additional Phone of merchant.",
+          "examples": [
+            "987657786"
+          ]
+        },
+        "program_id": {
+          "$id": "#/properties/entity/properties/program_id",
+          "type": "integer",
+          "description": "Program ID of merchant.",
+          "examples": [
+            321
+          ]
+        },
+        "external_code": {
+          "$id": "#/properties/entity/properties/external_code",
+          "type": "string",
+          "description": "Merchant external code.",
+          "examples": [
+            "321"
+          ]
+        },
+        "creditor": {
+          "$id": "#/properties/entity/properties/creditor",
+          "type": "object",
+          "description": "Creditor of Merchant",
+          "examples": [
+            {
+              "crediting_method": "ACCOUNT",
+              "name": "test name",
+              "advancement_fee": 10.5,
+              "discount_rate": 11.5,
+              "maximum_advancement_percentage": 12.5
+            }
+          ]
+        },
+        "migration": {
+          "$id": "#/properties/entity/properties/applicant/properties/migration",
+          "type": "object",
+          "description": "The applicant's migration extra information.",
+          "examples": [
+            {
+              "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+              "version_date": "2021-07-19T09:55:00.000Z"
+            }
+          ],
+          "required": [
+            "id",
+            "version_date"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/applicant/properties/migration/properties/id",
+              "type": "string",
+              "description": "A record identifier for migration purposes.",
+              "examples": [
+                "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/applicant/properties/migration/properties/version_date",
+              "type": "string",
+              "description": "A record identifier for update data. Valid format (yyyy-MM-ddTHH:mm:ss.sssZ).",
+              "format": "date-time",
+              "examples": [
+                "2021-07-19T09:55:00.000Z"
+              ]
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "metadata": {
+        "$id": "#/properties/entity/properties/entity/properties/metadata",
+        "type": "object",
+        "description": "Account metadata",
+        "examples": [
+          {
+            "key1": "value1",
+            "key2": "value2"
+          }
+        ],
+        "additionalProperties": true
+      },
+      "additionalProperties": true
+    }
+  }
+}

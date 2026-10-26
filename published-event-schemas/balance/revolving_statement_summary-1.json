@@ -1,0 +1,203 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Revolving statement summary",
+  "description": "Event generated when a revolving statement summary request processed via API request or cycle closing events.",
+  "required": [
+    "revolving_statement_summary_id",
+    "cycle",
+    "origin",
+    "message",
+    "revolving_statements_summary"
+  ],
+  "properties": {
+    "revolving_statement_summary_id": {
+      "type": "integer",
+      "description": "Revolving statement summary ID",
+      "examples": [
+        101
+      ]
+    },
+    "cycle": {
+      "type": "integer",
+      "description": "Cycle number",
+      "examples": [
+        4
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        101
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID",
+      "examples": [
+        101
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "description": "Origin of the event",
+      "examples": [
+        "api",
+        "cycle_closing"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "description": "Message describing the result of the revolving statement summary request",
+      "examples": [
+        "Request processed successfully.",
+        "No statement found."
+      ]
+    },
+    "revolving_statements_summary": {
+      "type": "array",
+      "description": "List of statement wise accrual summary",
+      "items": {
+        "type": "object",
+        "required": [
+          "statement_id",
+          "cycle",
+          "amount_due"
+        ],
+        "properties": {
+          "statement_id": {
+            "type": "integer",
+            "description": "Statement ID",
+            "examples": [
+              10002
+            ]
+          },
+          "cycle": {
+            "type": "integer",
+            "description": "Cycle number for the statement",
+            "examples": [
+              2
+            ]
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Due date for the statement",
+            "examples": [
+              "2023-11-01"
+            ]
+          },
+          "real_due_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Real due date for the statement",
+            "examples": [
+              "2023-11-02"
+            ]
+          },
+          "cycle_closing_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Cycle closing date for the statement",
+            "examples": [
+              "2023-10-20"
+            ]
+          },
+          "current_balance": {
+            "type": "number",
+            "description": "Current balance for the statement",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "debits": {
+            "type": "number",
+            "description": "Total debits for the statement",
+            "format": "double",
+            "examples": [
+              10.0
+            ]
+          },
+          "credits": {
+            "type": "number",
+            "description": "Total credits for the statement",
+            "format": "double",
+            "examples": [
+              30.1
+            ]
+          },
+          "amount_due": {
+            "type": "number",
+            "description": "Total amount due for the statement",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "amount_paid_until_due_date": {
+            "type": "number",
+            "description": "Total amount paid until the due date for the statement",
+            "format": "double",
+            "examples": [
+              10.0
+            ]
+          },
+          "amount_paid_after_due_date": {
+            "type": "number",
+            "description": "Total amount paid after the due date for the statement",
+            "format": "double",
+            "examples": [
+              30.1
+            ]
+          },
+          "other_credits_until_due_date": {
+            "type": "number",
+            "description": "Total other credits until the due date for the statement",
+            "format": "double",
+            "examples": [
+              0.5
+            ]
+          },
+          "other_credits_after_due_date": {
+            "type": "number",
+            "description": "Total other credits after the due date for the statement",
+            "format": "double",
+            "examples": [
+              1.0
+            ]
+          },
+          "accrued_values": {
+            "type": "array",
+            "description": "List of accrued values summary for the statement",
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "amount"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Transaction type description",
+                  "examples": [
+                    "CASH WITHDRAWAL TT"
+                  ]
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Summarized Accrued amount for the transaction type",
+                  "format": "double",
+                  "examples": [
+                    5.0
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Token Requestor DB stream event",
+  "description": "Event happens for every database change.",
+  "properties": {
+    "changelog": {
+      "type": "array",
+      "title": "The changelog list",
+      "items": {
+        "type": "object",
+        "title": "The changelog schema",
+        "required": [
+          "from",
+          "path",
+          "to",
+          "type"
+        ],
+        "properties": {
+          "from": {
+            "description": "The previous value",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "path": {
+            "type": "array",
+            "title": "The path of the data that changed",
+            "items": {
+              "type": "string"
+            }
+          },
+          "to": {
+            "description": "The new value",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "type": {
+            "description": "Describes the operation applied to the previous and new values",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "event_name": {
+      "title": "Event name",
+      "description": "The event name",
+      "type": "string"
+    },
+    "table_name": {
+      "title": "Table name",
+      "description": "The table name",
+      "type": "string"
+    },
+    "new_image": {
+      "$ref": "#/definitions/images",
+      "description": "The new table values"
+    },
+    "old_image": {
+      "description": "The previous table values",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/images"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "images": {
+      "type": "object",
+      "properties": {
+        "cid": {
+          "type": "string"
+        },
+        "org_id": {
+          "description": "The tenant ID",
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "vpan_enrollment_id": {
+          "type": "string"
+        },
+        "vprovisioned_token_id": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "changelog",
+    "event_name",
+    "table_name"
+  ]
+}

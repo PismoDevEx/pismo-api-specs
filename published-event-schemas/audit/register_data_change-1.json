@@ -1,0 +1,111 @@
+{
+  "type": "object",
+  "title": "p2m register data updated",
+  "required": [
+    "method",
+    "uri",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "Method",
+      "description": "The HTTP Method of contract data change operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "URI",
+      "description": "The URI of contract data change operation",
+      "examples": [
+        "/v1/clientes/:merchantDocument/contratos/:contractCode",
+        null
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "E-mail",
+      "description": "The operator email of contract data change operation",
+      "examples": [
+        "pismo@pismo.com",
+        null
+      ]
+    },
+    "operator_profile": {
+      "type": "string",
+      "title": "Operator profile",
+      "description": "The operator profile of contract data change operation",
+      "examples": [
+        "pismo@pismo.com",
+        null
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The object that represents the register data change operation",
+      "required": [
+        "register_code",
+        "merchant_document",
+        "old_description",
+        "new_description",
+        "old_status",
+        "new_status"
+      ],
+      "properties": {
+        "register_code": {
+          "type": "string",
+          "title": "Register code",
+          "description": "The identifier of the register",
+          "examples": [
+            "7405aa2c-eb79-4eef-acac-52093bb2d344"
+          ]
+        },
+        "merchant_document": {
+          "type": "string",
+          "title": "Merchant document",
+          "description": "The merchant reference document",
+          "examples": [
+            "99999999999999",
+            "99999999999"
+          ]
+        },
+        "old_description": {
+          "type": "string",
+          "title": "Old description",
+          "description": "The old register description",
+          "examples": [
+            "Some old description"
+          ]
+        },
+        "new_description": {
+          "type": "string",
+          "title": "New description",
+          "description": "The new register description",
+          "examples": [
+            "Some new description"
+          ]
+        },
+        "old_status": {
+          "type": "string",
+          "title": "Old register status",
+          "description": "The old register status",
+          "examples": [
+            "Ativo",
+            "Inativo"
+          ]
+        },
+        "new_status": {
+          "type": "string",
+          "title": "New register status",
+          "description": "The new register status",
+          "examples": [
+            "Ativo",
+            "Inativo"
+          ]
+        }
+      }
+    }
+  }
+}

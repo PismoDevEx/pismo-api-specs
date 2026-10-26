@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Payment Agreement Rollback",
+  "description": "When a migrated account has its payment agreements rolled back, the created payment agreements are removed from that account.",
+  "required": [
+    "imported_payment_agreement_ids",
+    "payment_agreement_ids"
+  ],
+  "properties": {
+    "payment_agreement_ids": {
+      "type": "array",
+      "title": "Payment agreement IDs",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "imported_payment_agreement_ids": {
+      "type": "array",
+      "title": "Imported payment agreement IDs",
+      "items": {
+        "type": "integer"
+      }
+    }
+  }
+}

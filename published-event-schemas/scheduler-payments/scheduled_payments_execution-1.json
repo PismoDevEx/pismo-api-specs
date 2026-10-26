@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Scheduled payment executed",
+  "description": "This event occurs any time the platform executes a scheduled payment. <br><br>More information: <a href='https://developers.pismo.io/pismo-docs/docs/payment-scheduler' target='_blank'>Payment scheduler</a>",
+  "required": [
+    "account_id",
+    "execution_id",
+    "execution_status",
+    "schedule_id"
+  ],
+  "if": {
+    "properties": {
+      "execution_status": {
+        "const": "EXECUTED"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "authorizations"
+    ]
+  },
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        100602614
+      ]
+    },
+    "execution_id": {
+      "type": "string",
+      "title": "Execution ID",
+      "description": "Execution ID",
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "execution_status": {
+      "type": "string",
+      "title": "Execution status",
+      "description": "Execution status",
+      "enum": [
+        "EXECUTED",
+        "EXECUTED_WITH_RESTRICTIONS",
+        "EXECUTED_WITHOUT_SCRAPING"
+      ],
+      "examples": [
+        "EXECUTED"
+      ]
+    },
+    "schedule_id": {
+      "type": "string",
+      "title": "Schedule ID",
+      "description": "Schedule ID",
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "authorizations": {
+      "$ref": "#/definitions/authorizations"
+    }
+  },
+  "definitions": {
+    "authorizations": {
+      "type": "array",
+      "title": "List of authorizations",
+      "items": {
+        "$ref": "#/definitions/authorization"
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "title": "Authorization",
+      "description": "Information about the authorization",
+      "required": [
+        "tracking_id",
+        "account_id",
+        "payment_date"
+      ],
+      "if": {
+        "properties": {
+          "response_code": {
+            "not": {
+              "enum": [
+                "00"
+              ]
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "denial_code"
+        ]
+      },
+      "properties": {
+        "tracking_id": {
+          "type": "string",
+          "title": "Tracking ID",
+          "description": "Tracking ID of the authorization",
+          "minLength": 1,
+          "maxLength": 50,
+          "examples": [
+            "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+          ]
+        },
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Pismo account ID",
+          "examples": [
+            100602614
+          ]
+        },
+        "payment_date": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Payment date",
+          "description": "Date and time of the authorization that was performed in UTC-0 (RFC3339) format: yyyy-MM-ddThh:mm:ss.SSSZ",
+          "examples": [
+            "2024-01-01T00:00:00.000Z"
+          ]
+        },
+        "response_code": {
+          "type": "string",
+          "title": "Response code",
+          "description": "Response code assigned to the new authorization. Indicates successful authorization or reasons for authorization denial.",
+          "examples": [
+            "00",
+            "55",
+            "99"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Validation status of authorization",
+          "type": "string",
+          "enum": [
+            "APPROVED",
+            "DENIED"
+          ],
+          "examples": [
+            "APPROVED"
+          ]
+        },
+        "denial_code": {
+          "type": "string",
+          "title": "Denial code",
+          "description": "Code generated for denied authorizations, which indicates the reason the request was denied",
+          "examples": [
+            "AU001",
+            "AU002",
+            "PA001",
+            "PA002",
+            "IAD",
+            "ECE"
+          ]
+        }
+      }
+    }
+  }
+}

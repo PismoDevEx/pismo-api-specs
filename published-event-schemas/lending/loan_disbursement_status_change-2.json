@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Loan disbursement status changed",
+  "description": "This event occurs when a loan disbursement status changes.",
+  "required": [
+    "loan_id",
+    "disbursement_account"
+  ],
+  "properties": {
+    "loan_id": {
+      "$id": "#/properties/loan_id",
+      "type": "string",
+      "title": "Loan ID",
+      "description": "ID of loan associated with disbursement.",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID. Organization that owns the loan associated with disbursement.",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "disbursement_id": {
+      "$id": "#/properties/disbursement_id",
+      "type": "string",
+      "title": "Disbursement ID",
+      "description": "ID of disbursement associated with loan.",
+      "example": "89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "idempotency_key": {
+      "title": "Idempotency key",
+      "description": "Key that ensures idempotency of the operation",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "48704d83-0412-431f-816a-50ba81451148"
+      ]
+    },
+    "currency": {
+      "$id": "#/properties/currency",
+      "type": "string",
+      "title": "Currency",
+      "description": "Currency code for the disbursement amount in ISO 4217 format",
+      "examples": [
+        "USD",
+        "BRL"
+      ]
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "format": "date-time",
+      "title": "Created at",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "example": "2022-10-24T21:34:47.000Z"
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated at",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "example": "2022-10-24T21:34:47.000Z"
+    },
+    "previous_disbursement_status": {
+      "$id": "#/properties/previous_disbursement_status",
+      "type": "string",
+      "title": "Previous disbursement status",
+      "description": "Previous disbursement status.",
+      "enum": [
+        "SCHEDULED",
+        "PROCESSING",
+        "CANCELED",
+        "EXPIRED",
+        "PAID"
+      ],
+      "example": "SCHEDULED"
+    },
+    "current_disbursement_status": {
+      "$id": "#/properties/current_disbursement_status",
+      "type": "string",
+      "title": "Current disbursement status",
+      "description": "Current disbursement status.",
+      "enum": [
+        "SCHEDULED",
+        "PROCESSING",
+        "CANCELED",
+        "EXPIRED",
+        "PAID"
+      ],
+      "example": "PROCESSING"
+    },
+    "disbursement_amount": {
+      "$id": "#/properties/disbursement_amount",
+      "type": "number",
+      "title": "Disbursement Amount",
+      "description": "Disbursement amount.",
+      "example": 1234.56
+    },
+    "disbursement_account": {
+      "$id": "#/properties/disbursement_account",
+      "type": "object",
+      "title": "Disbursement account",
+      "description": "Account associated with disbursement",
+      "required": [
+        "account_type"
+      ],
+      "properties": {
+        "account_type": {
+          "$id": "#/properties/account_type",
+          "type": "string",
+          "title": "Account type",
+          "description": "Disbursement account type",
+          "enum": [
+            "INTERNAL",
+            "EXTERNAL"
+          ],
+          "example": "INTERNAL"
+        },
+        "account_id": {
+          "$id": "#/properties/account_id",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Account ID",
+          "description": "ID of account associated with disbursement",
+          "example": 221123
+        }
+      }
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": "number",
+      "title": "Authorization Id",
+      "description": "Authorization id.",
+      "example": 1231231
+    },
+    "authorization_tracking_id": {
+      "$id": "#/properties/authorization_tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization Tracking ID",
+      "description": "Authorization tracking id.",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "disbursement_date": {
+      "$id": "#/properties/disbursement_date",
+      "type": "string",
+      "format": "date",
+      "title": "Disbursement Date",
+      "description": "ISO 8601 date format: YYYY-MM-DD",
+      "example": "2022-10-24"
+    }
+  }
+}

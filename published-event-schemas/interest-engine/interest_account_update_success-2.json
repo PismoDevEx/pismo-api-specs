@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest account update succeeded [Beta]",
+  "description": "This event occurs when an interest account configuration is successfully updated with product interest engine.",
+  "required": [
+    "account_id",
+    "updated_at"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        "123456"
+      ]
+    },
+    "external_account_id": {
+      "type": "string",
+      "title": "External account ID",
+      "description": "Client-provided external account ID used for external system integration",
+      "examples": [
+        "account-xyz-987"
+      ]
+    },
+    "benchmark": {
+      "type": "string",
+      "title": "Benchmark",
+      "description": "Market index used to measure the interest a value will have over time",
+      "examples": [
+        "DI",
+        "FED",
+        "FIXED"
+      ]
+    },
+    "fixed_interest_rate": {
+      "type": "number",
+      "title": "Fixed interest rate",
+      "description": "Unchanging rate to be paid over the investments or deposits made. This means that from the moment the clients invest or deposit their money, they know exactly how much they will receive after the maturity date.",
+      "format": "double",
+      "examples": [
+        0.05
+      ]
+    },
+    "margin_rate": {
+      "type": "number",
+      "title": "Margin rate",
+      "description": "Rate linked to your benchmark rate (for example: 103% DI, 100% BOE, 90% RBI/RBA). Margin rates are in bold.",
+      "format": "double",
+      "examples": [
+        1.03
+      ]
+    },
+    "margin": {
+      "type": "number",
+      "title": "Margin",
+      "description": "Also known as spread, this is an incremental rate the clients receive over the investments or deposits made.",
+      "format": "double",
+      "examples": [
+        1.1
+      ]
+    },
+    "capitalization_frequency": {
+      "type": "string",
+      "title": "Capitalization frequency",
+      "description": "This determines when the clients will have their interest paid. It can be daily, monthly, quarterly, half yearly, yearly or at maturity.",
+      "enum": [
+        "DAILY",
+        "MONTHLY",
+        "QUARTERLY",
+        "HALF_YEARLY",
+        "YEARLY",
+        "MATURITY"
+      ],
+      "examples": [
+        "DAILY",
+        "MONTHLY"
+      ]
+    },
+    "interest_by_tiers": {
+      "type": "object",
+      "title": "Interest by tiers",
+      "description": "Configuration for tiered interest calculation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Tier type",
+          "description": "Type of tier calculation",
+          "enum": [
+            "AMOUNT",
+            "TERM"
+          ],
+          "examples": [
+            "AMOUNT",
+            "TERM"
+          ]
+        },
+        "tier_calculation": {
+          "type": "string",
+          "title": "Tier calculation method",
+          "description": "Method used for tier calculation",
+          "enum": [
+            "RETROACTIVE",
+            "NON-RETROACTIVE"
+          ],
+          "examples": [
+            "RETROACTIVE",
+            "NON-RETROACTIVE"
+          ]
+        },
+        "tiers": {
+          "type": "array",
+          "title": "Tiers",
+          "description": "Array of tier configurations",
+          "items": {
+            "$ref": "#/definitions/tier"
+          }
+        }
+      }
+    },
+    "taxes_exemption": {
+      "type": "boolean",
+      "title": "Taxes exemption",
+      "description": "Indicates if the account is exempt from taxes",
+      "examples": [
+        false
+      ]
+    },
+    "tax_withholding": {
+      "type": "object",
+      "title": "Tax withholding",
+      "description": "Configuration for tax withholding rules",
+      "properties": {
+        "withholding_moment": {
+          "type": "string",
+          "title": "Withholding moment",
+          "description": "When tax withholding occurs",
+          "enum": [
+            "ACCRUAL",
+            "CAPITALIZATION"
+          ],
+          "examples": [
+            "ACCRUAL",
+            "CAPITALIZATION"
+          ]
+        },
+        "fee_processing_code": {
+          "type": "string",
+          "title": "Fee processing code",
+          "description": "Processing code configured in the fee model in order to charge a tax, penalty or fee",
+          "maxLength": 128,
+          "examples": [
+            "123456"
+          ]
+        },
+        "tax_rules": {
+          "type": "array",
+          "title": "Tax rules",
+          "description": "Array of tax rule configurations",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/definitions/tax_rule"
+          }
+        }
+      }
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Updated at",
+      "description": "Timestamp when the interest account configuration was successfully updated",
+      "format": "date-time",
+      "examples": [
+        "2024-01-15T14:32:00Z"
+      ]
+    },
+    "effective_date": {
+      "type": "string",
+      "title": "Effective date",
+      "description": "First date the configuration change applies. Populated for configuration changes made through PATCH. Format = YYYY-MM-DD.",
+      "format": "date",
+      "examples": [
+        "2026-10-28"
+      ]
+    },
+    "end_date": {
+      "type": "string",
+      "title": "End date",
+      "description": "Last date (inclusive) the configuration change applies. Present only when supplied in the request. Format = YYYY-MM-DD.",
+      "format": "date",
+      "examples": [
+        "2026-11-28"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Client-provided metadata object, up to 4096 serialized UTF-8 bytes. Empty object when omitted in the PATCH request.",
+      "examples": [
+        {
+          "change_reference": "EXAMPLE-001"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "tier": {
+      "type": "object",
+      "title": "Tier",
+      "description": "Individual tier configuration for tiered interest calculation",
+      "properties": {
+        "days": {
+          "type": "integer",
+          "title": "Days",
+          "description": "Number of days for this tier",
+          "format": "int32",
+          "examples": [
+            30
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tier amount",
+          "description": "Amount threshold for this tier",
+          "format": "double",
+          "examples": [
+            1000
+          ]
+        },
+        "fixed_interest_rate": {
+          "type": "number",
+          "title": "Fixed interest rate",
+          "description": "Fixed interest rate for this tier",
+          "format": "double",
+          "examples": [
+            0.05
+          ]
+        },
+        "margin_rate": {
+          "type": "number",
+          "title": "Margin rate",
+          "description": "Margin rate for this tier",
+          "format": "double",
+          "examples": [
+            1.5
+          ]
+        }
+      }
+    },
+    "tax_rule": {
+      "type": "object",
+      "title": "Tax rule",
+      "description": "Individual tax rule configuration",
+      "properties": {
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Description of the tax rule",
+          "maxLength": 128,
+          "examples": [
+            "Federal Tax",
+            "Tax Above Threshold"
+          ]
+        },
+        "fixed_percentage": {
+          "type": "number",
+          "title": "Fixed percentage",
+          "description": "Fixed percentage rate for this tax rule",
+          "format": "double",
+          "examples": [
+            0.05
+          ]
+        },
+        "threshold_amount": {
+          "type": "number",
+          "title": "Threshold amount",
+          "description": "Amount threshold above which this tax rule applies",
+          "format": "double",
+          "examples": [
+            1500.0
+          ]
+        }
+      }
+    }
+  }
+}

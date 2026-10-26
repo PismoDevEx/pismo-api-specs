@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Savings account product updated",
+  "required": [
+    "product_id",
+    "status",
+    "previous_status",
+    "updated_at"
+  ],
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "title": "Product Identifier",
+      "description": "Product identifier in the pismo platform. UUID v4 format",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Savings Account product updated status. Can be ACTIVE or INACTIVE",
+      "examples": [
+        "ACTIVE",
+        "INACTIVE"
+      ]
+    },
+    "previous_status": {
+      "type": "string",
+      "title": "Previous Status",
+      "description": "Updated savings account product's previous status. Can be CREATED, ACTIVE or INACTIVE",
+      "examples": [
+        "CREATED",
+        "ACTIVE",
+        "INACTIVE"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Update Datetime",
+      "description": "Savings Account product update datetime. Represented as a RFC3339 timestamp",
+      "examples": [
+        "2024-01-23T18:26:25Z"
+      ]
+    }
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "External accounting entry created",
+  "required": [
+    "method",
+    "uri",
+    "tracking_id",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "Method",
+      "description": "The operation HTTP method",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "URI",
+      "description": "The API operation URI",
+      "examples": [
+        "/v1/accounting-entry"
+      ]
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "E-mail",
+      "description": "The operator email",
+      "examples": [
+        "backoffice-operator@pismo.com.br"
+      ]
+    },
+    "roles": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Roles",
+      "description": "The operator roles",
+      "items": {
+        "type": "string",
+        "title": "Itens",
+        "description": "The roles",
+        "examples": [
+          "backoffice-operator",
+          "crm-operator",
+          "treasury-operator"
+        ]
+      }
+    },
+    "tracking_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Tracking ID",
+      "description": "Tracking ID of AccountingEntry",
+      "examples": [
+        "75f845de-b135-4cbf-8498-7d76aaa3a29a"
+      ]
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Created At",
+      "description": "Creation date and time in ISO 8601",
+      "examples": [
+        "2019-09-16T18:57:30"
+      ]
+    },
+    "object": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Object",
+      "description": "The audit data message",
+      "required": [
+        "event_date",
+        "program_id",
+        "amount",
+        "debit_account",
+        "credit_account",
+        "entry_type_id",
+        "tracking_id"
+      ],
+      "properties": {
+        "transaction_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Transaction id of the accountingEntry",
+          "examples": [
+            15335085
+          ]
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Account id of the accountingEntry",
+          "examples": [
+            1000001
+          ]
+        },
+        "event_date": {
+          "type": "string",
+          "title": "Event date",
+          "description": "The event date",
+          "examples": [
+            "2019-09-16"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "description": "Total amount of the accounting entry",
+          "examples": [
+            240.48
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "description": "Program id of the accountingEntry",
+          "examples": [
+            252
+          ]
+        },
+        "debit_account": {
+          "type": "string",
+          "description": "Debit account of the accountingEntry",
+          "examples": [
+            1000002
+          ]
+        },
+        "credit_account": {
+          "type": "string",
+          "description": "Credit account of the accountingEntry",
+          "examples": [
+            1000003
+          ]
+        },
+        "entry_type_id": {
+          "type": "integer",
+          "description": "Entry type of the accountingEntry",
+          "examples": [
+            999
+          ]
+        },
+        "tracking_id": {
+          "type": "string",
+          "description": "A unique 36 character long identification for the operation.",
+          "examples": [
+            "6af8d777-5c18-4fd3-8018-665cc792bfa6"
+          ]
+        }
+      }
+    }
+  }
+}

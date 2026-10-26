@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Current scheduled payment status displayed",
+  "required": [
+    "account_id",
+    "id",
+    "status"
+  ],
+  "properties": {
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        5501
+      ]
+    },
+    "id": {
+      "title": "Scheduled execution identifier",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 36,
+      "examples": [
+        "626d0a8e-b68a-4557-9002-dd24abb8508b"
+      ]
+    },
+    "status": {
+      "title": "Current schedule status",
+      "description": "\n\nIt only accepts the following values:\n\n`ACTIVE`: When the shceduled payment is active.\n\n`COMPLETED`: When the scheduled payment has completed.\n\n`FAILED`: When the scheduled payment has failed.\n\n`ABORTED`: When the scheduled payment has aborted execution.\n\n",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "enum": [
+        "ACTIVE",
+        "COMPLETED",
+        "FAILED",
+        "ABORTED"
+      ],
+      "examples": [
+        "ACTIVE"
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External Account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within your organization.",
+      "examples": [
+        "UK1-2e6e6817-92b2-4ab8-a23e-a50e2f0e6d90"
+      ]
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/fee_model_account_incoming-1.json",
+  "type": "object",
+  "title": "Fee model account migration started",
+  "description": "Event generated when a fee model account migration is started. Contains the payload with the data to be migrated.",
+  "additionalProperties": true,
+  "examples": [
+    {
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "1",
+      "line_number": 1,
+      "entity": {
+        "migration": {
+          "id": "5c3dc9f1-a39a-4a18-a10b-70ebf9112aab",
+          "account_ids": [
+            "57707e82-cc0e-427f-8423-dff96285ec3d",
+            "2f595d02-bcc2-48ea-8b86-f49fcdbaa6fc"
+          ]
+        },
+        "fee_model_id": "c60a0f6d-9f8d-4a2a-98a1-4c8571d3a5fc"
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents a fee model being associated to a set of migrating accounts.",
+      "required": [
+        "migration",
+        "fee_model_id"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "This field contains data that identifies the migration's related entities.",
+          "examples": [
+            {
+              "id": "426a4eea-fc6c-45db-bd18-af9d13546b39",
+              "account_ids": [
+                "00046429504363683042022"
+              ]
+            }
+          ],
+          "required": [
+            "id",
+            "account_ids"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "Unique identifier for the migration",
+              "examples": [
+                "a-unique-id"
+              ]
+            },
+            "account_ids": {
+              "$id": "#/properties/entity/properties/migration/properties/account_ids",
+              "type": "array",
+              "description": "List of migration identifiers of the accounts being associated with the provided fee model id",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "00046429504363683042022",
+                  "00046429504363683042023"
+                ]
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "fee_model_id": {
+          "$id": "#/properties/entity/properties/fee_model_id",
+          "type": "string",
+          "description": "Id of a fee model created on the Pismo platform (not a migration id), being associated with the migrating accounts.",
+          "examples": [
+            "379fd9e4-4303-435c-8c3f-a6c3b5fd8607",
+            "afcb6a96-8b09-420a-8695-9b65241475f3"
+          ]
+        }
+      }
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Identifies the file that originated this migration, in case the migration is done via file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the file size, in bytes.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "integer",
+      "description": "This field identifies the line of the file that originated the event (can be 0 when origin is API).",
+      "examples": [
+        0,
+        2,
+        11
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "FILE",
+        "API"
+      ],
+      "examples": [
+        "FILE"
+      ]
+    }
+  }
+}

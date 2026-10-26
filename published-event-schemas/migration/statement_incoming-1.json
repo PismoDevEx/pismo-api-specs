@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/statement_incoming-1.json",
+  "type": "object",
+  "title": "Statement migration started",
+  "description": "Event generated when a statement migration is started. Contains the payload with the data to be migrated.",
+  "examples": [
+    {
+      "file_id": "accounts-1234",
+      "line_number": "2",
+      "origin": "FILE",
+      "entity": {
+        "metadata": {
+          "key1": "value1",
+          "key2": "value2"
+        },
+        "debits": 50,
+        "origin": "FILE",
+        "due_date": "2018-03-25",
+        "previous_balance": 180.52,
+        "real_due_date": "2018-03-25",
+        "credits": 50,
+        "line_number": "2",
+        "cycle_closing_date": "2018-03-15",
+        "file_id": "accounts-1234",
+        "migration": {
+          "id": "2021-10-27+01-statement",
+          "account_id": "2021-10-27+01",
+          "version_date": "2021-09-13T19:54:41Z"
+        },
+        "minimum_payment": 20,
+        "current_balance": 190.52,
+        "best_transaction_day": "2018-03-16",
+        "posted_date": "2021-10-25T19:54:41Z"
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Statement's Entity",
+      "examples": [
+        {
+          "metadata": {
+            "key1": "value1",
+            "key2": "value2"
+          },
+          "debits": 50.0,
+          "due_date": "2018-03-25",
+          "previous_balance": 180.52,
+          "real_due_date": "2018-03-25",
+          "credits": 50.0,
+          "cycle_closing_date": "2018-03-15",
+          "migration": {
+            "id": "2021-10-27+01-statement",
+            "account_id": "2021-10-27+01",
+            "version_date": "2021-09-13T19:54:41Z"
+          },
+          "minimum_payment": 20.0,
+          "current_balance": 190.52,
+          "best_transaction_day": "2018-03-16",
+          "posted_date": "2021-10-25T19:54:41Z"
+        }
+      ],
+      "required": [
+        "due_date",
+        "migration"
+      ],
+      "properties": {
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "Statement's metadata",
+          "examples": [
+            {
+              "key1": "value1",
+              "key2": "value2"
+            }
+          ],
+          "additionalProperties": true
+        },
+        "debits": {
+          "$id": "#/properties/entity/properties/debits",
+          "type": "number",
+          "description": "Statement's Debits",
+          "examples": [
+            50.0
+          ]
+        },
+        "due_date": {
+          "$id": "#/properties/entity/properties/due_date",
+          "type": "string",
+          "format": "date",
+          "description": "Statement's Due Date",
+          "examples": [
+            "2018-03-25"
+          ]
+        },
+        "previous_balance": {
+          "$id": "#/properties/entity/properties/previous_balance",
+          "type": "number",
+          "description": "Statement's Previous Balance",
+          "examples": [
+            180.52
+          ]
+        },
+        "real_due_date": {
+          "$id": "#/properties/entity/properties/real_due_date",
+          "type": "string",
+          "format": "date",
+          "description": "Statement's Real Due Date",
+          "examples": [
+            "2018-03-25"
+          ]
+        },
+        "credits": {
+          "$id": "#/properties/entity/properties/credits",
+          "type": "number",
+          "description": "Statement's Credits",
+          "examples": [
+            50.0
+          ]
+        },
+        "cycle_closing_date": {
+          "$id": "#/properties/entity/properties/cycle_closing_date",
+          "type": "string",
+          "format": "date",
+          "description": "Statment's Cycle Closing Date",
+          "examples": [
+            "2018-03-15"
+          ]
+        },
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "The Statement's Migration Data",
+          "examples": [
+            {
+              "id": "2021-10-27+01-statement",
+              "account_id": "2021-10-27+01",
+              "version_date": "2021-09-13T19:54:41Z"
+            }
+          ],
+          "required": [
+            "id",
+            "account_id",
+            "version_date"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "Statement's Migration Identifier",
+              "examples": [
+                "2021-10-27+01-statement"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "Statement's Account Migration Identifier",
+              "examples": [
+                "2021-10-27+01"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "Statement's Migration's Version",
+              "examples": [
+                "2021-09-13T19:54:41Z"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "minimum_payment": {
+          "$id": "#/properties/entity/properties/minimum_payment",
+          "type": "number",
+          "description": "Statement's Minimum Payment",
+          "examples": [
+            20.0
+          ]
+        },
+        "current_balance": {
+          "$id": "#/properties/entity/properties/current_balance",
+          "type": "number",
+          "description": "Statement's Migration Current Balance",
+          "examples": [
+            190.52
+          ]
+        },
+        "best_transaction_day": {
+          "$id": "#/properties/entity/properties/best_transaction_day",
+          "type": "string",
+          "format": "date",
+          "description": "Statement's Best Transaction Day",
+          "examples": [
+            "2018-03-16"
+          ]
+        },
+        "posted_date": {
+          "$id": "#/properties/entity/properties/posted_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "Statement's Posted Date",
+          "examples": [
+            "2021-10-25T19:54:41Z"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": "string",
+      "description": "The file identificator in case is using a batch file import",
+      "examples": [
+        "accounts-1234"
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "string",
+      "description": "The file line number in case is using a batch file import",
+      "examples": [
+        "2"
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "The migration origin (FILE or API)",
+      "enum": [
+        "FILE",
+        "API"
+      ],
+      "examples": [
+        "FILE"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

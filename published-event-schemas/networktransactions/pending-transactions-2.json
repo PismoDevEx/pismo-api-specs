@@ -1,0 +1,250 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Pending transactions sent",
+  "description": "This event sends pending transactions so you can analyze them. The transactions in question are raw clearings that have not been processed for some reason, requiring review and analysis to ensure proper resolution. \n More information: <a href='https://developers.pismo.io/pismo-docs/docs/authorization-events' target='_blank'>Authorization events</a> guide.",
+  "additionalProperties": true,
+  "required": [
+    "reason",
+    "message"
+  ],
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "Contains the Clearing/Base II message in JSON format. This is different for every network."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Contains the reason the message was not processed.",
+      "examples": [
+        "CANCELLATION_AMOUNT_EXCEEDS_AUTHORIZED",
+        "NOT_PERMITTED_OPERATION",
+        "INVALID_JULIAN_DATE",
+        "NOT_REFUNDABLE_AUTHORIZATION",
+        "ACCEPTANCE_NOT_FOUND",
+        "DIFFERENT_PROCESSING_CODE",
+        "CLEARING_WITH_ZERO_AMOUNT"
+      ]
+    },
+    "caller": {
+      "title": "Card network",
+      "description": "The card network responsible for generating the authorization.",
+      "type": "string",
+      "examples": [
+        "Mastercard",
+        "Visa"
+      ]
+    },
+    "orgId": {
+      "title": "Org/tenant ID",
+      "description": "Pismo organization/tenant ID",
+      "type": "string",
+      "examples": [
+        "TN-99999999-1234-4321-5678-123456789012"
+      ]
+    },
+    "authorizationTransactionAmount": {
+      "title": "Persisted authorization transaction amount.",
+      "description": "Authorization transaction amount regarding persisted authorization.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "110.00"
+      ]
+    },
+    "authorizationCode": {
+      "title": "Authorization code regarding persisted authorization.",
+      "description": "An alphanumeric 6-digit present in persisted authorization.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "ABC123"
+      ]
+    },
+    "authorizationCid": {
+      "title": "Authorization correlation ID regarding persisted authorization.",
+      "description": "Authorization correlation ID . Along with the `authorization_id`, you can use this field to relate it to other events associated with this authorization.",
+      "type": "string",
+      "examples": [
+        "dc123453-4444-1111-9999-53699d123456"
+      ]
+    },
+    "authorizationStatus": {
+      "title": "Authorization status regarding persisted authorization.",
+      "description": "Persisted Authorization status code. Current authorization status for the action which issued this event. (1- Pending, 2- Confirmed, 3- Declined, 4- Cancelled, 5- Dropped).",
+      "type": "string",
+      "examples": [
+        "PENDING",
+        "CONFIRMED",
+        "DECLINED",
+        "CANCELLED",
+        "DROPPED"
+      ]
+    },
+    "authorizationProcessingCode": {
+      "title": "Authorization processing code regarding persisted authorization.",
+      "description": "Type of request being processed, like purchase, withdrawal, purchase with installments, credit return and so on.",
+      "type": "string",
+      "examples": [
+        "00",
+        "20"
+      ]
+    },
+    "authorizationRetrievalReferenceNumber": {
+      "title": "Retrieval reference number present in persisted authorization.",
+      "description": "The value received in the authorization message in field 37 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "000001119999"
+      ]
+    },
+    "clearingAuthorizationCode": {
+      "title": "Authorization Code present in the clearing message.",
+      "description": "An numeric/alphanumeric 6-digit present in the clearing message.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "123456",
+        "ABC123"
+      ]
+    },
+    "clearingProcessingCode": {
+      "title": "Processing code present in the clearing message.",
+      "description": "Type of request being processed, like purchase, withdrawal, purchase with installments, credit return and so on.",
+      "type": "string",
+      "examples": [
+        "00",
+        "20"
+      ]
+    },
+    "clearingTransactionAmount": {
+      "title": "Clearing transaction amount.",
+      "description": "Calculated clearing amount.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "110.00"
+      ]
+    },
+    "clearingRetrievalReferenceNumber": {
+      "title": "Retrieval reference number present in the clearing message.",
+      "description": "The value received in the authorization message in field 37 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "000001119999"
+      ]
+    },
+    "clearingAuthorizationTid": {
+      "title": "Authorization TID present in the clearing message.",
+      "description": "The value received in the authorization message in field 42 of the Card Network Specification.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "000001119999"
+      ]
+    },
+    "arn": {
+      "title": "Acquirer Reference Number",
+      "description": "Acquirer Reference Number for transaction correlation. Mastercard: concatenate mixedUse + acquirersBin + julianProcessingDate + acquirersSequenceNumber + checkDigitNumeric. Visa: use tcr00Data.acquirerReferenceNumber.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "05480876035554315780278"
+      ]
+    },
+    "tid": {
+      "title": "Transaction Identifier",
+      "description": "Transaction Identifier for Visa transactions. Populated from tcr05Data.transactionIdentifier.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "123456789012345"
+      ]
+    },
+    "accountId": {
+      "title": "Account ID",
+      "description": "Unique identifier for the account associated with the transaction. Uses internal account id.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "2289374823"
+      ]
+    },
+    "cardId": {
+      "title": "Card ID",
+      "description": "Unique identifier for the card linked to the transaction. Uses card id of the transaction.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "191203182"
+      ]
+    },
+    "accountStatus": {
+      "title": "Account Status",
+      "description": "Current status of the account at event creation time.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "NORMAL",
+        "BLOCKED",
+        "CANCELLED",
+        "UNKNOWN"
+      ]
+    },
+    "cardStatus": {
+      "title": "Card Status",
+      "description": "Current status of the card at event creation time.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "BLOCKED",
+        "BROKEN",
+        "CANCELED",
+        "CREATED",
+        "DEFECT",
+        "DELETED",
+        "DAMAGED",
+        "EXPIRED",
+        "LOST",
+        "NORMAL",
+        "PENDING",
+        "UNRECEIVED",
+        "REISSUED",
+        "WARNING",
+        "CLIENTORDER",
+        "FRAUD",
+        "ROBBED",
+        "THEFT",
+        "INOPERATIVE"
+      ]
+    }
+  }
+}

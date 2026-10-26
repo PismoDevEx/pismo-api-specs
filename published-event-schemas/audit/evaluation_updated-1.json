@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Evaluation updated",
+  "description": "This event occurs when the platform successfully updates the amount of a flex control evaluation. The event contains the original and updated amounts for audit purposes.<br>More information: <a href='https://developers.pismo.io/pismo-docs/docs/flex-controls' target='_blank'>Flexible transaction controls</a>",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of evaluation amount update operation",
+      "examples": [
+        "PATCH"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of evaluation update operation",
+      "examples": [
+        "/v1/evaluation/:evaluationId"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator that updated evaluation",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "The roles of operator that updated evaluation",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of evaluation update operation",
+      "examples": [
+        "P2P",
+        "PAYMENTS"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The object that represents the evaluation update",
+      "required": [
+        "evaluation_id",
+        "original_amount",
+        "updated_amount",
+        "timestamp"
+      ],
+      "properties": {
+        "evaluation_id": {
+          "type": "string",
+          "title": "Unique identifier of the evaluation",
+          "examples": [
+            "7ce8e003-5aaf-45c3-8c89-dbb9fa8c991c"
+          ]
+        },
+        "original_amount": {
+          "type": "number",
+          "title": "Amount before the update",
+          "examples": [
+            2000
+          ]
+        },
+        "updated_amount": {
+          "type": "number",
+          "title": "Amount after the update",
+          "examples": [
+            1500
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "title": "ISO 8601 datetime of when the update occurred",
+          "examples": [
+            "2025-12-16T13:45:00Z"
+          ]
+        },
+        "updated_by": {
+          "type": "string",
+          "title": "Identifier of the requester or application that performed the update",
+          "examples": [
+            "service-authorization"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Minimum total payment delta applied",
+  "description": "This event occurs when a minimum total payment delta is applied as principal reduction to a loan",
+  "required": [
+    "org_id",
+    "program_id",
+    "account_id",
+    "loan_id",
+    "authorization_id",
+    "tracking_id",
+    "delta_amount",
+    "currency"
+  ],
+  "properties": {
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID. Organization associated with authorization.",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo platform program ID",
+      "examples": [
+        540
+      ]
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "example": 12176
+    },
+    "loan_id": {
+      "$id": "#/properties/loan_id",
+      "type": "string",
+      "title": "Loan ID",
+      "description": "Loan ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": "integer",
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID that triggered this payment",
+      "example": 10006530945
+    },
+    "tracking_id": {
+      "$id": "#/properties/tracking_id",
+      "type": "string",
+      "title": "Tracking ID",
+      "description": "Authorization tracking ID that triggered this payment",
+      "example": "5a6b08d0-83ba-46ee-9f62-72a6a5d404aa"
+    },
+    "delta_amount": {
+      "$id": "#/properties/delta_amount",
+      "type": "number",
+      "title": "Delta Amount",
+      "description": "Minimum total payment delta applied as additional principal reduction",
+      "example": 66.52
+    },
+    "currency": {
+      "$id": "#/properties/currency",
+      "type": "string",
+      "title": "Currency",
+      "description": "ISO 4217 3-digit numeric currency code",
+      "maxLength": 3,
+      "examples": [
+        "986",
+        "840"
+      ]
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Program attachment updated",
+  "description": "Generated after updating program\u2011level attachment overrides via the `PATCH /v1/deposits/programs/{programId}/attachment` endpoint. The update applies to all inheriting accounts. Consumers should regard the emitted state as the authoritative program\u2011level configuration.",
+  "required": [
+    "program_id",
+    "product_id",
+    "updated_at"
+  ],
+  "properties": {
+    "program_id": {
+      "type": "integer",
+      "title": "Program Identifier",
+      "description": "Program identifier in the pismo platform.",
+      "examples": [
+        789
+      ]
+    },
+    "product_id": {
+      "type": "string",
+      "title": "Product Identifier",
+      "description": "Deposit product identifier currently attached to the program. UUID v4 format.",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At",
+      "description": "Timestamp of the override update. the value must be RFC3339-compliant.",
+      "examples": [
+        "2026-05-21T16:30:00Z"
+      ]
+    },
+    "interest_capitalization_mode": {
+      "type": "string",
+      "enum": [
+        "PAYOUT",
+        "REINVEST"
+      ],
+      "title": "Interest Capitalization Mode",
+      "description": "Program-level capitalization mode inherited by attached accounts. Emitted at top level. `REINVEST` (default) or `PAYOUT`.",
+      "examples": [
+        "REINVEST"
+      ]
+    },
+    "overrides": {
+      "$ref": "#/definitions/overrides"
+    }
+  },
+  "definitions": {
+    "overrides": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Attachment overrides",
+      "description": "Contains the persisted per\u2011attachment overrides applied on top of the product defaults. The field is omitted when all overrides are cleared by the `PATCH` request. At program level, only `renewal_term` is permitted. `maturity_instructions` and penalties are not accepted by IBA\u2011API and therefore never included.",
+      "properties": {
+        "renewal_term": {
+          "$ref": "#/definitions/renewal_term_override"
+        }
+      }
+    },
+    "renewal_term_override": {
+      "type": "object",
+      "title": "Renewal term override",
+      "description": "Term applied on each rollover. The Amazon Simple Notification Service (SNS) event renders the normalized persisted form, consisting of `unit` and `value`.",
+      "properties": {
+        "unit": {
+          "type": "string",
+          "title": "Unit",
+          "description": "Time unit of the renewal term.",
+          "enum": [
+            "DAYS",
+            "WEEKS",
+            "MONTHS",
+            "YEARS"
+          ],
+          "examples": [
+            "MONTHS"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "title": "Value",
+          "description": "Number of units (>= 1).",
+          "minimum": 1,
+          "examples": [
+            6
+          ]
+        },
+        "renewal_calendar_maturity_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Renewal calendar maturity date",
+          "description": "Returned only when the request uses the calendar format. Format = `YYYY-MM-DD`.",
+          "examples": [
+            "2027-05-22"
+          ]
+        }
+      }
+    }
+  }
+}

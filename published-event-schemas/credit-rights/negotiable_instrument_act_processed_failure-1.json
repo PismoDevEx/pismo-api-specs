@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Negotiable instrument act processing failed",
+  "description": "Emitted as the negotiable_instrument_act_processed_failure event type once per request when an asynchronous create (CREATE_INSTRUMENT_ACT), update (UPDATE_INSTRUMENT_ACT) or termination (DELETE_INSTRUMENT_ACT) requested through the negotiable instrument act API is rejected by a business rule, and also by the instrument act callback flow when a created act is rejected after the maximum number of attempts to link it to digital receivables. Consumers can use error_code and error_details to tell the client why the operation was not applied.",
+  "required": [
+    "error_code"
+  ],
+  "properties": {
+    "requester_document_number": {
+      "type": "string",
+      "title": "Requester document number",
+      "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the participant that requested the operation, taken from the request. Omitted in failures produced by the instrument act callback flow.",
+      "examples": [
+        "00000000000",
+        "00000000000191"
+      ]
+    },
+    "negotiable_instrument_act_id": {
+      "type": "string",
+      "title": "Negotiable instrument act ID",
+      "description": "Client-provided identifier of the negotiable instrument act targeted by the failed operation, up to 45 characters.",
+      "examples": [
+        "aec93861-ccc6-41c4-aa80-3fe2e416d34e"
+      ]
+    },
+    "operation_number": {
+      "type": "string",
+      "title": "Operation number",
+      "description": "Client-provided operation identification code of the act, up to 36 characters, assigned by the signatory responsible for controlling the negotiable instrument act.",
+      "examples": [
+        "aec93861-ccc6-41c4-aa80-3fe2e416d34e"
+      ]
+    },
+    "feature_type": {
+      "type": "string",
+      "title": "Feature type",
+      "description": "Operation group that failed, serialized from the FeatureType enum. CREATE_CONTRACT: contract creation (not used by this event). UPDATE_CONTRACT: contract update (not used by this event). DELETE_CONTRACT: contract deletion (not used by this event). CREATE_INSTRUMENT_ACT: negotiable instrument act creation. UPDATE_INSTRUMENT_ACT: negotiable instrument act update. DELETE_INSTRUMENT_ACT: negotiable instrument act termination.",
+      "enum": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT",
+        "DELETE_CONTRACT",
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT",
+        "DELETE_INSTRUMENT_ACT"
+      ],
+      "examples": [
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT",
+        "DELETE_INSTRUMENT_ACT"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Detailed operation that failed, serialized from the OperationType enum. CREATE_INSTRUMENT_ACT for creation; UPDATE_INSTRUMENT_ACT_INCL, UPDATE_INSTRUMENT_ACT_ALTE or UPDATE_INSTRUMENT_ACT_EXCL for an inclusion, alteration or exclusion update; CANCELLATION_ERROR, CLOSING_ENEP, CLOSING_ENEM, CLOSING_ENES or CLOSING_DJUD for a termination, mapped from the termination reason CNOP, ENEP, ENEM, ENES or DJUD.",
+      "examples": [
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT_EXCL",
+        "CANCELLATION_ERROR"
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error code",
+      "description": "Legacy business error code returned by the API that explains why the operation failed, as listed in the producer StatusCodeError enum. For example, 114103 means an act with this negotiable_instrument_act_id already exists, 114111 means the act was not found and 114123 means the act was rejected by the callback flow.",
+      "examples": [
+        "114103",
+        "114111",
+        "114123"
+      ]
+    },
+    "error_details": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Error details",
+      "description": "Error in the new error dictionary format, with a 6-digit code and a human-readable description. Omitted when the legacy error_code has no mapping to the new dictionary.",
+      "required": [
+        "code",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Error code (new format)",
+          "description": "Business error code from the new error dictionary, 6 digits following [MM][O][nnn] (module, operation and sequence). For example, 121094 means the act already exists, 125001 means it was not found and 123002 means it was rejected.",
+          "examples": [
+            "121094",
+            "125001",
+            "123002"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Error description",
+          "description": "Human-readable message that explains the error code; it can change over time and must not be used as a technical key.",
+          "examples": [
+            "there's already a negotiable instrument act registered with this negotiable_instrument_act_id",
+            "negotiable instrument act not found"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Statement Rollback",
+  "description": "When an migrated account has its statements rollback, the created statements are removed from that account.",
+  "required": [
+    "imported_statement_ids",
+    "statement_ids"
+  ],
+  "properties": {
+    "imported_statement_ids": {
+      "type": "array",
+      "title": "Imported Statement Ids Array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "statement_ids": {
+      "type": "array",
+      "title": "Statement Ids Array",
+      "items": {
+        "type": "integer"
+      }
+    }
+  }
+}

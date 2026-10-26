@@ -1,0 +1,497 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card network authorization return sent",
+  "description": "This event represents the response the Pismo platform sends to the card network in the online workflow for one operation. The platform issues it immediately before it sends the same response to the network. You can use it to verify that the authorization event emitted for this operation has the same result as the one sent to the network. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/authorization-events' target='_blank'>Authorization events</a> guide.",
+  "properties": {
+    "mti": {
+      "type": "string",
+      "title": "Message type ID",
+      "description": "Card network request type. Can be used to identify whether the request is an Advice (Standin flow) or not. For more information, see <a href='https://en.wikipedia.org/wiki/ISO_8583#Message_type_indicator_(MTI)' target='_blank'>MTI</a>",
+      "examples": [
+        "0100",
+        "0110",
+        "0200"
+      ]
+    },
+    "network": {
+      "type": "string",
+      "title": "Network",
+      "description": "Card brand",
+      "enum": [
+        "mastercard",
+        "visa",
+        "visa_vcc",
+        "tecban",
+        "elo",
+        "rupay"
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "title": "Org/tenant ID",
+      "description": "Issuer org/tenant ID",
+      "examples": [
+        "TN-example"
+      ]
+    },
+    "account_type": {
+      "type": "string",
+      "title": "Account type",
+      "description": "Authorization account type",
+      "examples": [
+        "10",
+        "20",
+        "30"
+      ]
+    },
+    "acquirer_id": {
+      "type": "string",
+      "title": "Acquirer ID",
+      "description": "Purchase acquirer ID",
+      "examples": [
+        "122212121"
+      ]
+    },
+    "advice_detail_code": {
+      "type": "string",
+      "title": "Advice detail code",
+      "description": "Details why the card network issued this advice. This field is only used for Mastercard requests and it represents the value received in DE60 subfield 2 of the specification, if it is present in the card network message.",
+      "examples": [
+        "2222"
+      ]
+    },
+    "advice_reason_code": {
+      "type": "string",
+      "title": "Advice reason code",
+      "description": "Why the card network issued this advice. For messages other than advices, this field is null. In Mastercard requests this field represents the value received in the DE60 subfield 1 of the specification. For Visa requests, this field represents the value received in the F63.4 of the specification.",
+      "examples": [
+        "111",
+        "9020"
+      ]
+    },
+    "anti_fraud_http_status_code": {
+      "title": "Anti-fraud HTTP status code",
+      "description": "Status code returned from anti-fraud API endpoint",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "500"
+      ]
+    },
+    "arqc_presence": {
+      "type": "boolean",
+      "title": "ARQC (Authorization Request Cryptogram) present flag",
+      "description": "Authorization Request Cryptogram. Indicates whether the authorization request was performed and the cryptogram information (field 55 of the Card Network specification) was present in the message.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "authorization_code": {
+      "type": "string",
+      "title": "Authorization request authorization code",
+      "description": "An alphanumeric 6-digit code generated for an authorization request that can be used to relate this event to other events associated with the same authorization. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/linking-events-in-an-authorization-workflow' target='_blank'>Linking authorization events</a> guide.",
+      "examples": [
+        "11111",
+        "ABCD1"
+      ]
+    },
+    "authorization_region": {
+      "type": "string",
+      "title": "Authorization region",
+      "description": "AWS region of the connector that processed the authorization event.",
+      "examples": [
+        "us-east-1",
+        "sa-east-1"
+      ]
+    },
+    "bin": {
+      "type": "string",
+      "title": "Bank identification number (BIN)",
+      "description": "The first 6 or 8  digits of the PAN for the card used in the purchase",
+      "examples": [
+        "999999",
+        "55555555"
+      ]
+    },
+    "card_hash": {
+      "type": "string",
+      "title": "Card PAN hash",
+      "description": "Hash of card used in the authorization",
+      "examples": [
+        "abcde999999aaaaaa/abcde999999aaaaaaxxMXhKHHHHASS999abcde999999aaaaaaxxASYsssa=="
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "title": "Authorizaton correlation ID",
+      "description": "Pismo generated authorization correlation ID.",
+      "examples": [
+        "abcde999999aaaaaaxxMXhK"
+      ]
+    },
+    "cvv2_presence": {
+      "type": "boolean",
+      "title": "CVV2 present flag",
+      "description": "CVV2 present in the purchase flag",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "denial_code": {
+      "type": "string",
+      "title": "Denial code",
+      "description": "Pismo custom error code, this code identifies which stateless or stateful rule denied the authorization. See <a href='https://developers.pismo.io/pismo-docs/docs/validation-codes-for-authorization-events' target='_blank'>Validation codes for authorization events</a> for more information",
+      "examples": [
+        "FR1"
+      ]
+    },
+    "duration_ms": {
+      "type": "number",
+      "title": "Process duration",
+      "description": "Time, in miliseconds, spent to finish the authorization process",
+      "examples": [
+        "99875"
+      ]
+    },
+    "entry_mode": {
+      "type": "string",
+      "title": "Entry mode",
+      "description": "Purchase entry mode",
+      "examples": [
+        "81",
+        "05"
+      ]
+    },
+    "error": {
+      "type": "string",
+      "title": "Error",
+      "description": "Error that happened when trying to call our distributor API.",
+      "examples": [
+        "Unavailable desc.",
+        "Timeout occured error"
+      ]
+    },
+    "host_connected": {
+      "type": "string",
+      "title": "Connected host IP",
+      "description": "Source IP address for network authorization",
+      "examples": [
+        "192.168.0.0"
+      ]
+    },
+    "ica": {
+      "type": "string",
+      "title": "Interbank Card Association (ICA) number",
+      "description": "Interbank Card Association (ICA) number. The issuer's sign-on ID. An Interbank Card Association Number (ICA) is a four-digit number MasterCard assigns to a financial institution, third party processor, or other member to identify the member in transactions.",
+      "examples": [
+        "9222"
+      ]
+    },
+    "incoming_authorization_code": {
+      "type": "string",
+      "title": "Incoming authorization code",
+      "description": "Incoming authorization code from acquirer.",
+      "examples": [
+        "11111",
+        "ABCD1"
+      ]
+    },
+    "incoming_response_code": {
+      "type": "string",
+      "title": "Incoming response code",
+      "description": "Incoming response code from the acquirer",
+      "examples": [
+        "00",
+        "20"
+      ]
+    },
+    "installment_data": {
+      "type": "string",
+      "title": "Installment data",
+      "description": "Number of installments of the purchase - Mastercard only",
+      "examples": [
+        "02"
+      ]
+    },
+    "local_amount": {
+      "type": "string",
+      "title": "Local amount",
+      "description": "Local purchase amount",
+      "examples": [
+        "1000"
+      ]
+    },
+    "local_currency": {
+      "type": "string",
+      "title": "Local currency",
+      "description": "Local currency of the purchase",
+      "examples": [
+        "986"
+      ]
+    },
+    "mdes_message_type": {
+      "type": "string",
+      "title": "MDES message type",
+      "description": "MDES (Mastercard Digital Enablement Service) message type - Mastercard only.",
+      "examples": [
+        "TA",
+        "AC",
+        "TC"
+      ]
+    },
+    "merchant_denial_code": {
+      "type": "string",
+      "title": "Merchant denial code",
+      "description": "Merchant denial code",
+      "examples": [
+        "02"
+      ]
+    },
+    "merchant_city": {
+      "type": "string",
+      "title": "Merchant city",
+      "description": "Merchant city",
+      "examples": [
+        "SAO PAULO"
+      ]
+    },
+    "merchant_country": {
+      "type": "string",
+      "title": "Merchant country",
+      "description": "Merchant country or state (for usa/can)",
+      "examples": [
+        "SP"
+      ]
+    },
+    "merchant_name": {
+      "type": "string",
+      "title": "Merchant name",
+      "description": "Merchant name.",
+      "examples": [
+        "Acme Dry Goods"
+      ]
+    },
+    "merchant_type": {
+      "type": "string",
+      "title": "Merchant type",
+      "description": "Merchant category code ID",
+      "examples": [
+        "1200"
+      ]
+    },
+    "network_code": {
+      "type": "string",
+      "title": "Network code",
+      "description": "Type of card used in purchase - Mastercard only",
+      "examples": [
+        "MBK",
+        "MPL"
+      ]
+    },
+    "network_tid": {
+      "type": "string",
+      "title": "Network transaction ID",
+      "description": "Network transaction ID",
+      "examples": [
+        "ABCD111",
+        "123131231313131"
+      ]
+    },
+    "origin": {
+      "title": "Transaction origin",
+      "description": "Identify from where one transaction was issued, if it is from STRIKER('Rebatedor') or migrated from historical data",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "STRIKER",
+        "MIGRATION"
+      ]
+    },
+    "pin_presence": {
+      "type": "boolean",
+      "title": "PIN present flag",
+      "description": "Was PIN used in purchase",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "pin_terminal_capability": {
+      "type": "string",
+      "title": "PIN terminal capability",
+      "description": "Terminal PIN presence capability - Mastercard only",
+      "examples": [
+        "1",
+        "0"
+      ]
+    },
+    "pos_cardholder_presence": {
+      "type": "string",
+      "title": "POS cardholder presence",
+      "description": "Cardholder presence at POS - Mastercard only ",
+      "examples": [
+        "1"
+      ]
+    },
+    "pos_postal_code": {
+      "type": "string",
+      "title": "POS postal code",
+      "description": "POS postal code - Mastercard only",
+      "examples": [
+        "221222"
+      ]
+    },
+    "pos_transaction_status": {
+      "type": "string",
+      "title": "POS transaction status",
+      "description": "POS transaction status type - Mastercard only",
+      "examples": [
+        "4"
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Transaction procssing code. See <a href='https://developers.pismo.io/pismo-docs/docs/processing-codes-and-transaction-types' target='_blank'>Processing codes and transaction types</a> for more information",
+      "examples": [
+        "00",
+        "20"
+      ]
+    },
+    "replacement_amount": {
+      "type": "string",
+      "title": "Replacement amount",
+      "description": "Original purchase value. This field is used for partial cancellations - VISA only.",
+      "examples": [
+        "000000000816000000000000000000000000000000"
+      ]
+    },
+    "response_code": {
+      "type": "string",
+      "title": "Response code",
+      "description": "Response code returned to the network",
+      "examples": [
+        "00",
+        "51"
+      ]
+    },
+    "response_raw": {
+      "title": "Raw response",
+      "description": "Response JSON without sensitive data",
+      "type": "string",
+      "examples": [
+        "{\"header\":{\"header_length\":\"16\",\"header_format\":\"01\",\"total_message_length\":\"0140\",\"destination_id\":\"000000\",\"source_id\":\"000000\",\"text_format\":\"02\",\"roundtrip_control_info\":\"00\",\"base1_flags\":\"0000\",\"message_status_flag\":\"000000\",\"batch_number_not_used\":\"00\",\"reserved_for_visa\":\"000000\",\"user_info\":\"00\"},\"mti\":\"0110\",\"caller\":\"Visa\",\"correlation_id\":\"2142d420-a3fc-4b71-9427-b1041365217d\",\"f3_processing_code\":\"000000\",\"f4_amount_transaction\":\"000000000000\",\"f6_amount_cardholder_billing\":\"000000000000\",\"f7_transmission_date_and_time\":\"0429181936\",\"f10_conversion_rate_cardholder_billing\":\"61000000\",\"f11_stan\":\"000636\",\"f12_time_local_transaction\":\"181936\",\"f13_date_local_transaction\":\"0429\",\"f14_date_expiration\":\"2612\",\"f18_merchant_type\":\"4111\",\"f19_acquiring_institution_country_code\":\"0076\",\"f22_pos_entry_mode\":\"0510\",\"f23_card_sequence_number\":\"0000\",\"f25_pos_condition_code\":\"51\",\"f28_amount_transaction_fee\":\"D00000000\",\"f32_acquiring_institution_id_code\":\"012345678901\",\"f37_retrieval_reference_number\":\"211918000636\",\"f38_authorization_id_response\":\"O1HTMF\",\"f39_response_code\":\"82\",\"f41_card_acceptor_terminal_id\":\"TERMID01\",\"f42_card_acceptor_id_code\":\"CARDACCEPTOR\",\"f43_card_acceptor_location\":\"ACQUIRERNAMECITYNAMEBR\",\"f48_additional_data_private\":{},\"f49_currency_code_transaction\":\"0986\",\"f51_currency_code_cardholder_billing\":\"0986\",\"f53_security_related_control_information\":\"2001010100000000\",\"f55_integrated_circuit_card\":{\"sf3_issuer_application_data\":\"06020A03A02000\",\"sf5_terminal_verification_result\":\"8000010000\",\"sf6_transaction_date\":\"010101\",\"sf7_transaction_type\":\"00\",\"sf8_amount_authorized\":\"000000000000\",\"sf9_transaction_currency_code\":\"0840\",\"sf10_application_interchange_profile\":\"0000\",\"sf11_terminal_country_code\":\"0840\",\"sf15_amount_other\":\"000000000000\",\"sf23_application_transaction_counter\":\"00FF\"},\"f56_payment_account_reference_data\":{},\"f60_additional_pos_data\":\"42\",\"f62_custom_payment_services\":{},\"f63_private_use\":{\"bitmap_fields\":[1,2,3],\"sf1_network_id\":\"0002\",\"sf2_time\":\"0002\",\"sf3_message_reason_code\":\"5206\"},\"f104_transaction_description_transaction_specific_data\":{\"sf5d_installments_data\":{},\"sf69_payment_format\":{},\"sf67_national_payment_format\":{}},\"f117_national_use\":{\"usage_6_argentina_agro\":{}},\"f123_verification_data\":{\"token_data\":{},\"address_verification_data\":{},\"activation_verification_data\":{}},\"f126_visa_private_use_fields\":{},\"validFields\":[2,3,4,6,7,10,11,12,13,14,18,19,22,23,25,28,32,35,37,41,42,43,49,51,52,53,55,60,62,63],\"pan_hash\":\"efYmHGg5tGj20Uc6JMR0GR5WQ0cQlRZHK12MAn5Gt10/gyEMQ3f9Me0HI9BBOJFvjjQ+3BS5KoEz4mhR/A7E2g==\",\"start\":1651256379647922400,\"installment_value\":\"0\",\"interest_rate\":\"0\",\"number_of_installments\":\"1\",\"contract_amount\":\"0\",\"institutionId\":\"457074\",\"network_configuration_id\":\"visa-credit-org\",\"orgId\":\"TN-8eb9e203-f18a-4381-bfb5-408f8c1c45bb\",\"denial_code\":\"FR1\",\"anti_fraud_http_status_code\":\"null\"}"
+      ]
+    },
+    "retrieval_reference_number": {
+      "type": "string",
+      "title": "Retrieval reference number",
+      "description": "Acquirer assigned document reference number",
+      "examples": [
+        "085000100001"
+      ]
+    },
+    "secure_indicator": {
+      "type": "string",
+      "title": "Secure indicator",
+      "description": "Purchase secure indicator",
+      "examples": [
+        "260",
+        "07"
+      ]
+    },
+    "server_id": {
+      "type": "string",
+      "title": "Server ID",
+      "description": "Customer unique ID for network authorizations sign-on",
+      "examples": [
+        "customer-uniqueid"
+      ]
+    },
+    "settlement_amount": {
+      "type": "string",
+      "title": "Setttlement amount",
+      "description": "Purchase settlement amount",
+      "examples": [
+        "000000001000"
+      ]
+    },
+    "settlement_currency": {
+      "type": "string",
+      "title": "Settlement currency",
+      "description": "Purchase settlement currency",
+      "examples": [
+        "860"
+      ]
+    },
+    "tcp_bytes_written": {
+      "type": "number",
+      "title": "TCP bytes written",
+      "description": "Number of bytes written back to the network.",
+      "examples": [
+        201,
+        0
+      ]
+    },
+    "tcp_error": {
+      "type": "string",
+      "title": "TCP error",
+      "description": "Error that happened when trying to respond to the network.",
+      "examples": [
+        "EOF"
+      ]
+    },
+    "timestamp": {
+      "type": [
+        "string"
+      ],
+      "format": "date-time",
+      "title": "Timestamp",
+      "description": "Event UTC date and time",
+      "examples": [
+        "2020-01-01T10:10:00.000Z"
+      ]
+    },
+    "token_requestor_id": {
+      "type": "string",
+      "title": "Token requestor ID",
+      "description": "ID assigned by the token service provider to the token requestor. The token requestor ID is required for Card-on-File token request messages - Mastercard only",
+      "examples": [
+        "123131313123"
+      ]
+    },
+    "track1_presence": {
+      "type": "boolean",
+      "title": "Track1 present flag",
+      "description": "Track1 data presence in the purchase flag",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "track2_presence": {
+      "type": "boolean",
+      "title": "Track2 present flag",
+      "description": "Track2 data presence in the purchase flag",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "wallet": {
+      "type": "string",
+      "title": "Wallet ID",
+      "description": "Wallet (Apple pay, Google Pay ...) used in purchase - Mastercard only",
+      "examples": [
+        "2016779"
+      ]
+    }
+  }
+}

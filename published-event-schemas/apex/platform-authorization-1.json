@@ -1,0 +1,1239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Platform authorization created [beta]",
+  "description": "This event occurs when a platform authorization is created. This event includes a required `external_account_id` field.",
+  "additionalProperties": false,
+  "required": [
+    "authorization_id",
+    "category",
+    "clearing_type",
+    "code",
+    "contract_amount",
+    "event_datetime",
+    "external_account_id",
+    "installment_amount",
+    "operation",
+    "original_authorization_datetime",
+    "original_authorization_id",
+    "principal_amount",
+    "processing_code",
+    "response_code",
+    "tracking_id",
+    "validation_results"
+  ],
+  "properties": {
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization ID ",
+      "description": "Pismo authorization ID.",
+      "minimum": 1,
+      "maximum": 9223372036854775807,
+      "examples": [
+        1164217752,
+        2114217752,
+        2964217752
+      ]
+    },
+    "category": {
+      "type": "string",
+      "title": "Authorization category",
+      "description": "Authorization category.",
+      "maxLength": 19,
+      "enum": [
+        "AUTHORIZATION",
+        "CANCELLATION",
+        "PARTIAL_CANCELLATION",
+        "DENIED",
+        "DENIED_CANCELLATION",
+        "CONFIRMATION"
+      ]
+    },
+    "clearing_type": {
+      "type": "string",
+      "title": "Clearing type",
+      "description": "Type of clearing used for this authorization. Online for authorizations that create instant transactions, offline for authorizations that create transactions from confirmation.",
+      "minLength": 6,
+      "maxLength": 7,
+      "enum": [
+        "ONLINE",
+        "OFFLINE"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "title": "New authorization code",
+      "description": "Alphanumeric 6-digit ID for the new authorization.",
+      "minLength": 1,
+      "maxLength": 6,
+      "examples": [
+        "143ABC",
+        "11D5A6",
+        "EW15D3"
+      ]
+    },
+    "contract_amount": {
+      "type": "number",
+      "title": "Contract amount",
+      "description": "Calculated authorization amount with taxes or fees in the account's currency.",
+      "maximum": 1e+18,
+      "examples": [
+        125.0
+      ]
+    },
+    "event_datetime": {
+      "type": "string",
+      "title": "Event datetime",
+      "description": "Event timestamp in the UTC format (RFC 3339).",
+      "format": "date-time",
+      "minLength": 24,
+      "maxLength": 30,
+      "examples": [
+        "2023-01-01T00:00:00.000Z"
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External account ID",
+      "description": "Custom account ID used to identify the account within your organization. This value links the Pismo account to your internal account identifier. This field is a key that links a Pismo account to your account ID.",
+      "examples": [
+        "df8d5b61-3cc0-4ec1-a72d-61860bff8fed"
+      ]
+    },
+    "installment_amount": {
+      "type": "number",
+      "title": "Installment amount",
+      "description": "Installment amount of the authorization. If the authorization does not have more than one installment, the value of this field is the same as `principal_amount`.",
+      "maximum": 1e+18,
+      "examples": [
+        50.0
+      ]
+    },
+    "operation": {
+      "type": "string",
+      "description": "Operation type of the authorization.",
+      "minLength": 7,
+      "maxLength": 8,
+      "enum": [
+        "CASH_IN",
+        "CASH_OUT",
+        "UNKNOWN"
+      ]
+    },
+    "original_authorization_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Original authorization datetime",
+      "description": "Date and time of the original authorization in UTC-0 (RFC3339) format, which includes milliseconds (yyyy-MM-ddThh:mm:ss.SSSZ). For events with the AUTHORIZATION category, this field will always have the same value as `event_datetime`.",
+      "minLength": 24,
+      "maxLength": 30,
+      "examples": [
+        "2023-01-01T00:00:00.000Z"
+      ]
+    },
+    "original_authorization_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Original authorization ID",
+      "description": "Pismo ID that represents the original authorization. For events with the AUTHORIZATION category, this field will always have the same value as `authorization_id`.",
+      "minimum": 1,
+      "maximum": 9223372036854775807,
+      "examples": [
+        164217752,
+        2214314710,
+        2521269102
+      ]
+    },
+    "principal_amount": {
+      "type": "number",
+      "title": "Principal amount",
+      "description": "Calculated amount of the authorization without taxes or fees in the account's currency.",
+      "maximum": 1e+18,
+      "examples": [
+        100.0
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code provided for the authorization.",
+      "maxLength": 6,
+      "examples": [
+        "007700",
+        "009900",
+        "007200"
+      ]
+    },
+    "response_code": {
+      "type": "string",
+      "title": "Response code",
+      "description": "Response code assigned to the new authorization. Indicates successful authorization or reasons for authorization denial.",
+      "minLength": 1,
+      "examples": [
+        "00",
+        "55",
+        "99"
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "title": "Tracking ID",
+      "description": "Tracking ID provided by the client for the new authorization.",
+      "minLength": 1,
+      "maxLength": 75,
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "validation_results": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Validation results",
+      "description": "All executed validations with details for each result. For a complete documentation of all the possible validations, see <a href='https://developers.pismo.io/pismo-docs/docs/authorization-validation-rules-for-platform-operations' target='_blank'>Authorization validation rules for platform operations</a>",
+      "items": {
+        "$ref": "#/definitions/validation_result"
+      }
+    },
+    "account_currency": {
+      "type": "string",
+      "title": "Account currency",
+      "description": "ISO-4217 alphabetic code of the account's currency of the authorization. In the absence of the field you see an empty string.",
+      "minLength": 1,
+      "maxLength": 3,
+      "examples": [
+        "USD",
+        "BRL",
+        "GBP"
+      ]
+    },
+    "account_currency_num_code": {
+      "type": "string",
+      "title": "Account currency",
+      "description": "ISO-4217 numeric code (3 digits) for authorization account's currency. In the absence of the field you see an empty string.",
+      "minLength": 1,
+      "maxLength": 3,
+      "examples": [
+        "840",
+        "986",
+        "826"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo ID for the account associated with the authorization. In the absence of the field you see 0.",
+      "minimum": 1,
+      "maximum": 9223372036854775807,
+      "examples": [
+        123,
+        456,
+        789
+      ]
+    },
+    "additional_financial_details": {
+      "$ref": "#/definitions/additional_financial_details"
+    },
+    "authorization_validations": {
+      "$ref": "#/definitions/authorization_validations"
+    },
+    "beneficiary_id": {
+      "title": "Beneficiary ID",
+      "description": "ID for the beneficiary related to the account. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        }
+      ],
+      "examples": [
+        "18bfa09c-2216-43f7-97c9-075051c38683",
+        "3903367a-23d4-47aa-9d56-3cf9e9890b6c"
+      ]
+    },
+    "caller": {
+      "title": "Caller",
+      "description": "Identification of the caller from which the request was originated. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 16
+        }
+      ],
+      "examples": [
+        "ON-US",
+        "OFF-US",
+        "INSTANT-PAY"
+      ]
+    },
+    "cancellation_reason": {
+      "title": "Cancellation reason",
+      "description": "Reason for the cancellation. Supported value is AUTHORIZATION CONFIRMATION TIMEOUT. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 34
+        }
+      ],
+      "examples": [
+        "AUTHORIZATION CONFIRMATION TIMEOUT"
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "Pismo ID for the card associated with the authorization. In the absence of the field you see 0.",
+      "anyOf": [
+        {
+          "type": "integer",
+          "const": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        }
+      ],
+      "examples": [
+        10222,
+        8899
+      ]
+    },
+    "customer_id": {
+      "title": "Customer ID",
+      "description": "Pismo ID of the customer associated with the account. In the absence of the field you see 0.",
+      "anyOf": [
+        {
+          "type": "integer",
+          "const": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        }
+      ],
+      "examples": [
+        82123,
+        98991
+      ]
+    },
+    "denial_code": {
+      "title": "Denial code",
+      "description": "Code generated for denied authorizations, which indicates the reason the request was denied. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10
+        }
+      ],
+      "examples": [
+        "AU001",
+        "AU002",
+        "PA001",
+        "PA002",
+        "IAD",
+        "ECE"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Authorization description",
+      "description": "Description provided for the authorization. In the absence of the field you see an empty string.",
+      "maxLength": 100,
+      "examples": [
+        "Cash-in",
+        "Cash-out"
+      ]
+    },
+    "entry_mode": {
+      "title": "Entry mode",
+      "description": "Entry mode of the authorization. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5
+        }
+      ],
+      "examples": [
+        "01",
+        "05",
+        "10"
+      ]
+    },
+    "installments_details": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Installments details",
+      "description": "Detailed information for all the installments of the authorization.",
+      "items": {
+        "$ref": "#/definitions/installment_detail"
+      }
+    },
+    "ledger_id": {
+      "type": "string",
+      "title": "Ledger ID",
+      "description": "Pismo ID of the ledger indicating the account limit impact. This field may be empty since some authorizations don't have any financial impact. You can see the same information in the `ledger_updates` array. In the future, this field will be discontinued. In the absence of the field you see an empty string.",
+      "maxLength": 38,
+      "examples": [
+        "1585f434-de83-43fc-9840-ad2a61ae13e2"
+      ]
+    },
+    "ledger_impact": {
+      "type": "array",
+      "title": "Ledger impact",
+      "description": "Limits that were impacted by the ledger during the authorization. You can see the same information in the `ledger_updates` array. In the future, this field will be discontinued.",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255
+      },
+      "examples": [
+        "[AvailableCreditLimit]",
+        "[AvailableCreditLimit,AvailableSavingsAccountLimit]",
+        "[OverdraftLimit]"
+      ]
+    },
+    "ledger_update_datetime": {
+      "title": "Ledger update datetime",
+      "description": "Date and time of the exact moment of impact on ledger in UTC-0 (RFC3339) format, which includes milliseconds (yyyy-MM-ddThh:mm:ss.SSSZ). This field may be empty since some authorizations don't have any financial impact. You can see the same information in the `ledger_updates` array. In the future, this field will be discontinued. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "examples": [
+        "2023-01-01T00:00:00.000Z"
+      ]
+    },
+    "ledger_updates": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Ledger updates",
+      "description": "Detailed information for all ledger updates, which indicate impact of this authorization on account limits.",
+      "items": {
+        "$ref": "#/definitions/ledger_update"
+      }
+    },
+    "local_amount": {
+      "type": "number",
+      "title": "Local amount",
+      "description": "Local amount of the authorization.",
+      "maximum": 1e+18,
+      "examples": [
+        50.0
+      ]
+    },
+    "local_currency": {
+      "type": "string",
+      "title": "Local currency",
+      "description": "ISO-4217 alphabetic code of the local currency of the authorization. In the absence of the field you see an empty string.",
+      "minLength": 1,
+      "maxLength": 3,
+      "examples": [
+        "USD",
+        "BRL",
+        "GBP"
+      ]
+    },
+    "local_currency_num_code": {
+      "type": "string",
+      "title": "Local currency",
+      "description": "ISO-4217 numeric code (3 digits) for local authorization's currency. In the absence of the field you see an empty string.",
+      "minLength": 1,
+      "maxLength": 3,
+      "examples": [
+        "840",
+        "986",
+        "826"
+      ]
+    },
+    "marketplace_id": {
+      "title": "Marketplace ID",
+      "description": "ID of the marketplace associated with the merchant. In the absence of the field you see 0.",
+      "anyOf": [
+        {
+          "type": "integer",
+          "const": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        }
+      ],
+      "examples": [
+        7819,
+        9123,
+        10231
+      ]
+    },
+    "merchant": {
+      "title": "Merchant details for the authorization",
+      "description": "Object containing additional merchant data, if applicable.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "city": {
+          "type": "string",
+          "title": "Merchant city",
+          "description": "City where the merchant is located, supplied during authorization creation. In the absence of the field you see an empty string.",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "Bras\u00edlia",
+            "London",
+            "Another City"
+          ]
+        },
+        "country": {
+          "type": "string",
+          "title": "Merchant country",
+          "description": "Country where the merchant is located, supplied during authorization creation. In the absence of the field you see an empty string.",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "Brazil",
+            "United Kingdom",
+            "Another Country"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "title": "External merchant ID",
+          "description": "Client-provided external merchant ID, supplied during authorization creation. This value may differ from the internal merchant ID. In the absence of the field you see an empty string.",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "MR4023",
+            "6242",
+            "ABC123"
+          ]
+        },
+        "marketplace_id": {
+          "type": "string",
+          "title": "External marketplace ID",
+          "description": "Client-provided external marketplace ID associated with the merchant, supplied during authorization creation. This value may differ from the internal marketplace ID. In the absence of the field you see an empty string.",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "MK7819",
+            "9123",
+            "XYZ123"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Merchant name",
+          "description": "Name of the merchant associated with the authorization, supplied during authorization creation. In the absence of the field you see an empty string.",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "Merchant Name",
+            "XYC Inc",
+            "ABC Store"
+          ]
+        },
+        "terminal_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Merchant terminal ID",
+          "description": "ID of the terminal used by the merchant, supplied during authorization creation.",
+          "maxLength": 255,
+          "examples": [
+            "MT1234",
+            "MT5678",
+            "ABC1234"
+          ]
+        }
+      }
+    },
+    "merchant_id": {
+      "title": "Merchant ID",
+      "description": "ID of the merchant associated with the authorization. In the absence of the field you see 0.",
+      "anyOf": [
+        {
+          "type": "integer",
+          "const": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        }
+      ],
+      "examples": [
+        4023,
+        6242,
+        8231
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Any additional information relevant to the caller",
+      "examples": [
+        {
+          "customer-data": {
+            "any": "fields"
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "nsu": {
+      "title": "NSU",
+      "description": "Message initiator ID that uniquely identifies an authorization. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ],
+      "examples": [
+        "123456",
+        "999000"
+      ]
+    },
+    "number_of_installments": {
+      "type": "integer",
+      "title": "Number of installments",
+      "description": "Number of installments in the authorization. In the absence of the field you see 0.",
+      "minimum": 1,
+      "maximum": 9223372036854775807,
+      "examples": [
+        1,
+        6,
+        12
+      ]
+    },
+    "org_operation_id": {
+      "type": "integer",
+      "title": "Org operation ID",
+      "description": "For Pismo internal processing only. In the absence of the field you see 0.",
+      "maximum": 9223372036854775807,
+      "examples": [
+        756,
+        913
+      ]
+    },
+    "original_authorization_confirmed": {
+      "type": "boolean",
+      "title": "Original authorization confirmed flag",
+      "description": "Defines whether the original authorization has been confirmed already.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "payment_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Payment datetime",
+      "description": "Date and time of the authorized payment in UTC-0 (RFC3339) format, which includes milliseconds (yyyy-MM-ddThh:mm:ss.SSSZ). In the absence of the field you see an empty string.",
+      "maxLength": 30,
+      "examples": [
+        "2023-01-01T00:00:00.000Z"
+      ]
+    },
+    "posting_date": {
+      "title": "Posting date",
+      "description": "Date of the statement when the authorization will be posted. The format is yyyy-mm-dd (RFC 3339). In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "format": "date",
+          "minLength": 10,
+          "maxLength": 10
+        }
+      ],
+      "examples": [
+        "2023-01-01"
+      ]
+    },
+    "postings": {
+      "$ref": "#/definitions/postings"
+    },
+    "pre_authorization": {
+      "type": "boolean",
+      "title": "Pre-authorization flag",
+      "description": "Defines whether this authorization request is a pre-authorization or not.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo ID for the program associated with the account. In the absence of the field you see 0.",
+      "minimum": 1,
+      "maximum": 9223372036854775807,
+      "examples": [
+        8899,
+        10222
+      ]
+    },
+    "rates": {
+      "$ref": "#/definitions/rates"
+    },
+    "raw_message": {
+      "type": "object",
+      "title": "Raw message",
+      "description": "Metadata provided by applications that integrate with the platform authorization. This field is different from the 'metadata' field, which contains custom information provided by the customer.",
+      "examples": [
+        {
+          "application-data": {
+            "any": "fields"
+          }
+        }
+      ]
+    },
+    "related_accounts": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Related accounts",
+      "description": "Parent accounts used during the authorization with shared limits.",
+      "items": {
+        "$ref": "#/definitions/related_accounts"
+      }
+    },
+    "request_id": {
+      "type": "string",
+      "title": "Request ID",
+      "description": "Unique identifier of the request that originated the authorization. This field is omitted from the payload when it is not present.",
+      "maxLength": 60,
+      "examples": [
+        "c59971eb-c2e6-41c6-b578-9e176003d7301"
+      ]
+    },
+    "statement_id": {
+      "title": "Statement ID",
+      "description": "Pismo ID for the statement when the authorization will be posted. In the absence of the field you see 0.",
+      "anyOf": [
+        {
+          "type": "integer",
+          "const": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        }
+      ],
+      "examples": [
+        514312,
+        10111
+      ]
+    },
+    "tid": {
+      "title": "Transaction ID",
+      "description": "External transaction ID received with the authorization message. In the absence of the field you see an empty string.",
+      "anyOf": [
+        {
+          "type": "string",
+          "const": ""
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        }
+      ],
+      "examples": [
+        "ABC10119031908214800000"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Authorization type",
+      "description": "Type of the authorization. Indicates if this is a normal authorization, a pre-authorization, a cancellation, or a confirmation.",
+      "minLength": 1,
+      "maxLength": 21,
+      "enum": [
+        "NORMAL",
+        "PRE_AUTHORIZATION",
+        "CANCELLATION",
+        "CONFIRMATION"
+      ]
+    }
+  },
+  "definitions": {
+    "validation_result": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Validation result",
+      "description": "Executed validation with details for its result.",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "name",
+        "reason",
+        "status"
+      ],
+      "properties": {
+        "description": {
+          "description": "Validation description.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 153,
+          "examples": [
+            "The processing code was not found.",
+            "The authorization passed flex control evaluation.",
+            "The authorization passed anti-fraud evaluation.",
+            "There was an internal error creating the authorization."
+          ]
+        },
+        "name": {
+          "description": "Validation name.",
+          "type": "string",
+          "maxLength": 30,
+          "examples": [
+            "PROCESSING_CODE",
+            "FLEX_CONTROLS",
+            "ANTI_FRAUD",
+            "AUTHORIZATION"
+          ]
+        },
+        "reason": {
+          "description": "Validation reason.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "examples": [
+            "PROCESSING_CODE_NOT_FOUND",
+            "FLEX_CONTROLS_APPROVED",
+            "ANTI_FRAUD_APPROVED",
+            "AUTHORIZATION_ERROR"
+          ]
+        },
+        "status": {
+          "description": "Validation status.",
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 8,
+          "enum": [
+            "APPROVED",
+            "REJECTED",
+            "SKIPPED"
+          ]
+        },
+        "additional_data": {
+          "title": "Additional data",
+          "description": "Contains additional information that is relevant to identify how the validation was performed. Every type of validation has its own additional data.",
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    },
+    "postings": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Postings",
+      "description": "Authorization taxes and fees.",
+      "additionalProperties": true,
+      "examples": [
+        {
+          "fee_amount": 1.0,
+          "interest_amount": 5.5
+        }
+      ]
+    },
+    "additional_financial_details": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Additional financial details ",
+      "description": "Additional information related to the authorization.",
+      "additionalProperties": true,
+      "properties": {
+        "annual_interest_rate": {
+          "type": "integer",
+          "title": "Annual interest rate",
+          "description": "Percentage of interest charged over the course of a year. In the absence of the field you see 0.",
+          "maximum": 100,
+          "examples": [
+            10,
+            15
+          ]
+        },
+        "effective_annual_cost": {
+          "type": "number",
+          "title": "Effective annual cost",
+          "description": "Total annual finance charge expressed as a percentage rate.",
+          "maximum": 1e+18,
+          "examples": [
+            0.13,
+            0.19
+          ]
+        },
+        "effective_monthly_cost": {
+          "type": "number",
+          "title": "Effective monthly cost",
+          "description": "Total monthly finance charge expressed as a percentage rate.",
+          "maximum": 1e+18,
+          "examples": [
+            0.13,
+            0.19
+          ]
+        }
+      }
+    },
+    "rates": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Rates",
+      "description": "Authorization rates used to calculate taxes and fees present on postings object.",
+      "additionalProperties": true,
+      "examples": [
+        {
+          "conversion_rate": 5.4598,
+          "interest_rate": 10.0
+        }
+      ]
+    },
+    "authorization_validations": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Authorization validations",
+      "description": "Contains additional data to be used in the authorization flow.",
+      "additionalProperties": false,
+      "properties": {
+        "associated_ids": {
+          "$ref": "#/definitions/associated_ids"
+        },
+        "is_device_registered": {
+          "type": "boolean",
+          "title": "Device registration status",
+          "description": "Indicates whether the device used for the operation is registered according to the financial institution's security policies.",
+          "examples": [
+            true,
+            false
+          ]
+        }
+      }
+    },
+    "associated_ids": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Associated IDs",
+      "description": "External IDs used in the authorization flow.",
+      "additionalProperties": false,
+      "properties": {
+        "origin_id": {
+          "type": "string",
+          "title": "Origin ID",
+          "description": "External ID of the origin of the authorization. In the absence of the field you see an empty string.",
+          "minLength": 1,
+          "maxLength": 50,
+          "examples": [
+            "CUSTOM_ORIGIN"
+          ]
+        },
+        "payment_id": {
+          "type": "string",
+          "title": "Payment ID",
+          "description": "External ID associated with the authorization. In the absence of the field you see an empty string.",
+          "minLength": 1,
+          "maxLength": 50,
+          "examples": [
+            "319d00f5-48de-4c71-ad47-40b1e9c4e37f",
+            "1103cc09-fe12-4ac9-a34f-f8f0f2153c13"
+          ]
+        }
+      }
+    },
+    "installment_detail": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Installment detail",
+      "description": "Detailed information for a given installment.",
+      "required": [
+        "installment_amount",
+        "number",
+        "postings",
+        "principal_amount"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "installment_amount": {
+          "type": "number",
+          "title": "Installment amount",
+          "description": "Amount of the current installment.",
+          "minimum": 0.01,
+          "maximum": 1e+18,
+          "examples": [
+            100.5,
+            25.99
+          ]
+        },
+        "number": {
+          "type": "integer",
+          "title": "Sequential number of installment",
+          "description": "Sequential number of the current installment.",
+          "minimum": 1,
+          "maximum": 9223372036854775807,
+          "examples": [
+            1,
+            2
+          ]
+        },
+        "postings": {
+          "$ref": "#/definitions/postings"
+        },
+        "principal_amount": {
+          "type": "number",
+          "title": "Principal amount",
+          "description": "Principal amount of the current installment.",
+          "minimum": 0.01,
+          "maximum": 1e+18,
+          "examples": [
+            100.0,
+            25.0
+          ]
+        }
+      }
+    },
+    "related_accounts": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Related accounts",
+      "description": "This object lists all related accounts in this authorization that have a common shared limit.",
+      "required": [
+        "account_id",
+        "is_centralizer",
+        "level",
+        "parent_account_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "ID of the account returned when searching the account hierarchy.",
+          "examples": [
+            1,
+            2
+          ]
+        },
+        "is_centralizer": {
+          "type": "boolean",
+          "title": "Is centralizer",
+          "description": "Is this the centralizing account within the hierarchy? The centralizing account groups the debits of the accounts within the hierarchy.",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "level": {
+          "type": "integer",
+          "title": "Level",
+          "description": "Numeric level in the hierarchy when compared to the account used in this authorization.",
+          "examples": [
+            1,
+            2
+          ]
+        },
+        "parent_account_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Parent account ID",
+          "description": "ID of the parent account of the account returned in the object.",
+          "examples": [
+            1,
+            2
+          ]
+        },
+        "currency_numeric_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Currency numeric code",
+          "description": "Account's currency ISO-4217 numeric code (3 digits)"
+        },
+        "division_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Division ID",
+          "description": "Account's administrative division ID",
+          "examples": [
+            1,
+            2
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Pismo ID for the program associated with the account. In the absence of the field you see 0.",
+          "examples": [
+            1,
+            2
+          ]
+        }
+      },
+      "examples": [
+        {
+          "account_id": 4,
+          "is_centralizer": false,
+          "level": 0,
+          "parent_account_id": 3,
+          "currency_numeric_code": "036",
+          "program_id": 17432,
+          "division_id": null
+        },
+        {
+          "account_id": 3,
+          "is_centralizer": false,
+          "level": 1,
+          "parent_account_id": 2,
+          "currency_numeric_code": "036",
+          "program_id": 17432,
+          "division_id": null
+        },
+        {
+          "account_id": 2,
+          "is_centralizer": false,
+          "level": 2,
+          "parent_account_id": 1,
+          "currency_numeric_code": null,
+          "program_id": 17432,
+          "division_id": null
+        },
+        {
+          "account_id": 1,
+          "is_centralizer": true,
+          "level": 3,
+          "parent_account_id": null,
+          "currency_numeric_code": "036",
+          "program_id": 17432,
+          "division_id": null
+        }
+      ]
+    },
+    "ledger_update": {
+      "type": "object",
+      "title": "Ledger update",
+      "description": "Detailed information for a ledger impact.",
+      "additionalProperties": false,
+      "minLength": 1,
+      "maxLength": 38,
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Ledger ID",
+          "description": "Pismo ID of the ledger indicating the account limit impact. This field may be empty since some authorizations don't have any financial impact. In the absence of the field you see an empty string.",
+          "examples": [
+            "1585f434-de83-43fc-9840-ad2a61ae13e2"
+          ]
+        },
+        "impact": {
+          "type": "array",
+          "title": "Ledger impact",
+          "description": "Limits that were impacted by the ledger during the authorization.",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "examples": [
+            "[AvailableCreditLimit]",
+            "[AvailableCreditLimit,AvailableSavingsAccountLimit]",
+            "[OverdraftLimit]"
+          ]
+        },
+        "update_datetime": {
+          "title": "Ledger update datetime",
+          "description": "Date and time of the exact moment of impact on ledger in UTC-0 (RFC3339) format, which includes milliseconds (yyyy-MM-ddThh:mm:ss.SSSZ). This field may be empty since some authorizations don't have any financial impact. In the absence of the field you see an empty string.",
+          "anyOf": [
+            {
+              "type": "string",
+              "const": ""
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ],
+          "examples": [
+            "2023-01-01T00:00:00.000Z"
+          ]
+        }
+      }
+    }
+  }
+}

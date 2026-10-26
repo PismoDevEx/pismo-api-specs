@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Program calendar strategy updated",
+  "description": "Event generated when a program calendar strategy is updated",
+  "required": [
+    "program_calendar_strategy_id",
+    "program_id",
+    "strategy",
+    "configuration",
+    "created_at",
+    "active",
+    "updated_at"
+  ],
+  "properties": {
+    "program_calendar_strategy_id": {
+      "type": "number",
+      "description": "ID of the updated program calendar strategy",
+      "examples": [
+        "1000"
+      ]
+    },
+    "program_id": {
+      "type": "number",
+      "description": "Program associated with the program calendar strategy",
+      "examples": [
+        "1000"
+      ]
+    },
+    "strategy": {
+      "type": "string",
+      "description": "Calendar strategy",
+      "examples": [
+        "FIXED_CYCLE_CLOSING"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of the program calendar strategy",
+      "format": "date-time",
+      "examples": [
+        "2020-02-02T17:12:40Z"
+      ]
+    },
+    "active": {
+      "type": "boolean",
+      "title": "The active flag",
+      "description": "Is the program calendar strategy active?",
+      "examples": [
+        false,
+        true
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Configuration properties",
+      "description": "Configuration properties in JSON format used to create the program calendar strategy.",
+      "examples": [
+        {
+          "cycle_closing_day": 11,
+          "days_between_cycle_closing_and_due_date": 7
+        }
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of the program calendar strategy",
+      "format": "date-time",
+      "examples": [
+        "2020-02-02T17:12:40Z"
+      ]
+    }
+  }
+}

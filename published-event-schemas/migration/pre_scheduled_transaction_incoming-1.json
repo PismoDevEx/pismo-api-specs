@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/pre_scheduled_transaction_incoming-1.json",
+  "type": "object",
+  "title": "Pre scheduled transaction migration started",
+  "description": "Event generated when a pre scheduled transaction migration is started. Contains the payload with the data to be migrated.",
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents a pre scheduled transaction.",
+      "required": [
+        "amount",
+        "migration",
+        "description",
+        "statement_scheduled_date",
+        "processing_code",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "$id": "#/properties/entity/properties/amount",
+          "type": "number",
+          "title": "The amount of the transaction",
+          "examples": [
+            10.4
+          ]
+        },
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "This field contains the data that identifies a migration.",
+          "required": [
+            "id",
+            "version_date",
+            "account_id"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "description": "Unique migration id for pre scheduled transaction",
+              "examples": [
+                "c261c1f2-5b63-462b-82ba-e3669205aa42"
+              ]
+            },
+            "version_date": {
+              "type": "string",
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "description": "A record identifier for update data. Valid format (yyyy-MM-ddTHH:mm:ss.SSSZ).",
+              "examples": [
+                "2024-08-15T17:37:28.123Z"
+              ]
+            },
+            "account_id": {
+              "type": "string",
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "description": "The same migrationId informed on account's migration.",
+              "examples": [
+                "66547417154"
+              ]
+            }
+          },
+          "examples": [
+            {
+              "id": "c261c1f2-5b63-462b-82ba-e3669205aa42",
+              "version_date": "2024-08-15T17:37:28Z",
+              "account_id": "66547417154"
+            }
+          ]
+        },
+        "description": {
+          "$id": "#/properties/entity/properties/description",
+          "type": "string",
+          "description": "The description of pre scheduled transaction",
+          "examples": [
+            "EMI transaction"
+          ]
+        },
+        "statement_scheduled_date": {
+          "type": "string",
+          "$id": "#/properties/entity/properties/statement_scheduled_date",
+          "description": "Date that the transaction will be created",
+          "examples": [
+            "2024-11-01"
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "The processing code of the transaction",
+          "examples": [
+            "00"
+          ]
+        },
+        "currency": {
+          "$id": "#/properties/entity/properties/currency",
+          "type": "string",
+          "description": "The currency code (ISO-4217) of the transaction",
+          "examples": [
+            "USD"
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "This field contains others pre schedule transaction information.",
+          "default": {},
+          "examples": [
+            {
+              "mykey": "myvalue",
+              "mysecond-key": "myvalue2"
+            }
+          ],
+          "additionalProperties": true
+        }
+      },
+      "examples": [
+        {
+          "amount": 10.4,
+          "migration": {
+            "id": "c261c1f2-5b63-462b-82ba-e3669205aa42",
+            "version_date": "2024-08-15T17:37:28Z",
+            "account_id": "66547417154"
+          },
+          "description": "EMI transaction",
+          "statement_scheduled_date": "2024-11-01",
+          "processing_code": "00",
+          "currency": "USD",
+          "metadata": {
+            "mykey": "myvalue",
+            "mysecond-key": "myvalue2"
+          }
+        }
+      ]
+    },
+    "ignore": {
+      "type": "boolean",
+      "default": false,
+      "title": "The ignore Schema",
+      "examples": [
+        false
+      ]
+    }
+  },
+  "examples": [
+    {
+      "entity": {
+        "amount": 10.4,
+        "migration": {
+          "id": "c261c1f2-5b63-462b-82ba-e3669205aa42",
+          "version_date": "2024-08-15T17:37:28Z",
+          "account_id": "66547417154"
+        },
+        "description": "EMI transaction",
+        "statement_scheduled_date": "2024-11-01",
+        "processing_code": "00",
+        "currency": "USD",
+        "metadata": {
+          "mykey": "myvalue",
+          "mysecond-key": "myvalue2"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "type": "object",
+  "title": "p2m store data updated",
+  "required": [
+    "method",
+    "uri",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "Method",
+      "description": "The HTTP Method of contract data change operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "URI",
+      "description": "The URI of contract data change operation",
+      "examples": [
+        "/v1/clientes/:merchantDocument/contratos/:contractCode",
+        null
+      ]
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "E-mail",
+      "description": "The operator email of contract data change operation",
+      "examples": [
+        "pismo@pismo.com",
+        null
+      ]
+    },
+    "operator_profile": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Operator profile",
+      "description": "The operator profile of contract data change operation",
+      "examples": [
+        "pismo@pismo.com",
+        null
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "Object",
+      "description": "The object that represents the store data change operation",
+      "required": [
+        "old_status",
+        "new_status",
+        "store_code",
+        "merchant_document",
+        "old_address",
+        "new_address"
+      ],
+      "properties": {
+        "old_status": {
+          "type": "string",
+          "title": "Old status",
+          "description": "The store old status",
+          "examples": [
+            "Ativo",
+            "Inativo"
+          ]
+        },
+        "new_status": {
+          "type": "string",
+          "title": "New status",
+          "description": "The store new status",
+          "examples": [
+            "Ativo",
+            "Inativo"
+          ]
+        },
+        "store_code": {
+          "type": "string",
+          "title": "Store code",
+          "description": "The store code identifier",
+          "examples": [
+            "000001"
+          ]
+        },
+        "merchant_document": {
+          "type": "string",
+          "title": "Merchant document",
+          "description": "The merchant reference document",
+          "examples": [
+            "99999999999999",
+            "99999999999"
+          ]
+        },
+        "old_address": {
+          "type": "object",
+          "title": "Old address",
+          "description": "The store old address information",
+          "properties": {
+            "main": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Main address",
+              "description": "The store address street",
+              "examples": [
+                "Av. Engenheiro Lu\u00eds Carlos Berrini",
+                null
+              ]
+            },
+            "number": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Number",
+              "description": "The store address number",
+              "examples": [
+                "105",
+                null
+              ]
+            },
+            "additional": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Additional",
+              "description": "The store additional address information",
+              "examples": [
+                "1th floor",
+                "some important address information",
+                "room b",
+                null
+              ]
+            },
+            "neighborhood": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Neighborhood",
+              "description": "The store neighborhood",
+              "examples": [
+                "Vila Olimpia",
+                null
+              ]
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "State",
+              "description": "The store state",
+              "examples": [
+                "SP",
+                null
+              ]
+            },
+            "zip_code": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Zip code",
+              "description": "The store zip code",
+              "examples": [
+                "12345-678",
+                null
+              ]
+            }
+          }
+        },
+        "new_address": {
+          "type": "object",
+          "title": "The store new address information",
+          "properties": {
+            "main": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Main address",
+              "description": "The store address streat",
+              "examples": [
+                "Av. Engenheiro Lu\u00eds Carlos Berrini",
+                null
+              ]
+            },
+            "number": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Number",
+              "description": "The store address number",
+              "examples": [
+                "105",
+                null
+              ]
+            },
+            "additional": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Additional",
+              "description": "The store additional address information",
+              "examples": [
+                "1th floor",
+                "some important address information",
+                "room b",
+                null
+              ]
+            },
+            "neighborhood": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Neighborhood",
+              "description": "The store neighborhood",
+              "examples": [
+                "Vila Olimpia",
+                null
+              ]
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "State",
+              "description": "The store state",
+              "examples": [
+                "SP",
+                null
+              ]
+            },
+            "zip_code": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Zip code",
+              "description": "The store zip code",
+              "examples": [
+                "12345-678",
+                null
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

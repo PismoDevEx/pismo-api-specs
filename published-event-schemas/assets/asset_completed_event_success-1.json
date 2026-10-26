@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset completed event success",
+  "description": "This event occurs when an asset is completed.",
+  "required": [
+    "asset_id",
+    "issuer_id",
+    "status",
+    "updated_at"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions and cancellations.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer id",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Asset status",
+      "description": "Status of asset",
+      "enum": [
+        "COMPLETED"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Updated date",
+      "description": "Date asset was last updated",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    },
+    "issuing_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "Date asset was effectively issued by client",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "Date asset expires, finishing its cycle",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "units": {
+      "type": "number",
+      "title": "Issued units",
+      "description": "Number of units asset can support. When `registration_mode` is `single`, this number should reflect the entire quota. When `registration_mode` is `many`, it should reflect the number of units available for purchase in the asset.",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "unit_value": {
+      "type": "number",
+      "title": "Unit value",
+      "description": "Current unit value of asset",
+      "format": "double",
+      "examples": [
+        3.12e-05
+      ]
+    },
+    "current_amount": {
+      "type": "number",
+      "title": "Current amount",
+      "description": "Current value of asset",
+      "format": "double",
+      "examples": [
+        3.12e-05
+      ]
+    },
+    "operation_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Operation code",
+      "description": "Optional attribute generated when asset change to completed",
+      "examples": [
+        "202404110000000900"
+      ]
+    }
+  }
+}

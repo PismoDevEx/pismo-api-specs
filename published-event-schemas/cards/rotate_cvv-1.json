@@ -1,0 +1,294 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card CVV changed",
+  "description": "CVV (card verification value) updated event, only applies to virtual cards. The <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-reset-cvv'>Rotate virtual card CVV</a> endpoint generates this event. It can also occur when the CVV is rotated automatically. See our <a href='https://developers.pismo.io/pismo-docs/docs/cards-overview-1#card-types'>Cards overview</a> guide for more information about virtual cards.",
+  "examples": [
+    {
+      "account_id": 8675309,
+      "program_id": 1183,
+      "card_id": 5476631,
+      "card_name": "JMG owner 310",
+      "card_printed_name": "Warren Pease",
+      "card_type": "VIRTUAL",
+      "card_last_four_numbers": "0504",
+      "card_hash": "U5xsBtm2w4Ifj2fDcdF8OZbGdoF+ZE5p1Oi+HvBsZ6/iarbCWIbbTr8xGVxpdEd92gM+KrJdT0Xlrp/NSWDlTg==",
+      "card_status": "NORMAL",
+      "transaction_limit": 100,
+      "embossing_custom_fields": null,
+      "issuing_date": "2021-02-10T20:41:15Z",
+      "expiration_date": "2026-02-10T00:00:00Z",
+      "embossed": null,
+      "status": "success",
+      "reason": null,
+      "customer_id": 23954239,
+      "contactless_enabled": true,
+      "abu_enabled": true,
+      "metadata": null,
+      "cvv_rotation_type": "AUTOMATIC",
+      "cvv_next_rotation_date": "2021-02-11T02:41:15Z",
+      "operation_type": "AUTOMATIC_CVV_ROTATION",
+      "cvv_rotation_interval_hours": 2
+    }
+  ],
+  "required": [
+    "account_id",
+    "card_hash",
+    "card_id",
+    "card_last_four_numbers",
+    "card_name",
+    "card_printed_name",
+    "card_status",
+    "contactless_enabled",
+    "cvv_next_rotation_date",
+    "cvv_rotation_type",
+    "operation_type",
+    "cvv_rotation_interval_hours",
+    "expiration_date",
+    "issuing_date",
+    "program_id",
+    "status",
+    "transaction_limit"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "User's Pismo account ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "card_hash": {
+      "type": "string",
+      "title": "Card PAN hash",
+      "description": "Hashed PAN (Primary Account Number)",
+      "examples": [
+        "0fsdf0sdf9sdf0sdf0sd0fsdn09vsdj0c9sjdcsdcs0d9c=="
+      ]
+    },
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Card's Pismo ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "card_last_four_numbers": {
+      "type": "string",
+      "title": "Last 4 PAN numbers",
+      "description": "Card's last 4 PAN (Primary Account Number) numbers",
+      "examples": [
+        "1234"
+      ]
+    },
+    "card_name": {
+      "type": "string",
+      "title": "Card name",
+      "description": "Card's display name",
+      "examples": [
+        "Al Fresco"
+      ]
+    },
+    "card_printed_name": {
+      "type": [
+        "string"
+      ],
+      "title": "Card printed name",
+      "description": "Cardholder's name",
+      "examples": [
+        "Ho Lee Smokes"
+      ]
+    },
+    "card_status": {
+      "type": "string",
+      "title": "Card status",
+      "description": "Card's status",
+      "enum": [
+        "CREATED",
+        "UNBOUND",
+        "NORMAL",
+        "REISSUED",
+        "BLOCKED",
+        "PENDING",
+        "WARNING",
+        "INOPERATIVE",
+        "LOST",
+        "ROBBED",
+        "CANCELED",
+        "FRAUD",
+        "DAMAGED",
+        "EXPIRED",
+        "DELETED",
+        "BROKEN",
+        "THEFT",
+        "DEFECT"
+      ]
+    },
+    "contactless_enabled": {
+      "type": "boolean",
+      "title": "Contactless card flag",
+      "description": "Card can make transactions using contactless entry mode. Default is true"
+    },
+    "cvv_next_rotation_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Next cvv rotation date",
+      "description": "Date and time, in RFC3339 format, scheduled to change the CVV2/CVC2 value. Virtual card only.",
+      "format": "date-time",
+      "examples": [
+        "2021-03-01T18:45:00Z"
+      ]
+    },
+    "cvv_rotation_type": {
+      "type": "string",
+      "title": "CVV rotation type",
+      "description": "CVV2/CVC2 value rotation method. Virtual card only.",
+      "enum": [
+        "MANUAL",
+        "AUTOMATIC"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "CVV operation type",
+      "description": "CVV2/CVC2 value to identify rotation type. Virtual card only.",
+      "enum": [
+        "CHANGE_CVV_ROTATION",
+        "DELETE_CVV_ROTATION",
+        "FORCE_CVV_ROTATION",
+        "AUTOMATIC_CVV_ROTATION",
+        "START_CVV_ROTATION"
+      ]
+    },
+    "cvv_rotation_interval_hours": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "CVV rotation interval in hours",
+      "description": "CVV2/CVC2 rotation value in hours used to calculate 'cvv_next_rotation_date'. Virtual card only.",
+      "examples": [
+        1,
+        3,
+        5
+      ]
+    },
+    "expiration_date": {
+      "type": "string",
+      "title": "Card expiration date",
+      "description": "Card expiration date in RFC3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2025-10-08T00:00:00Z"
+      ]
+    },
+    "issuing_date": {
+      "type": "string",
+      "title": "Card issued date",
+      "description": "Card issued date and time in RFC3339 format",
+      "format": "date-time",
+      "examples": [
+        "2018-11-13T20:20:39"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Card's Pismo program ID",
+      "default": 0,
+      "examples": [
+        12345678
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Event status",
+      "description": "Event status",
+      "enum": [
+        "SUCCESS",
+        "FAILURE",
+        "success"
+      ]
+    },
+    "transaction_limit": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Maximum amount allowed per transaction",
+      "description": "Transaction limit for virtual cards",
+      "examples": [
+        1000.0
+      ]
+    },
+    "abu_enabled": {
+      "type": "boolean",
+      "title": "ABU enabled flag",
+      "description": "Must card number be sent to Mastercard's automatic billing update service. Default is true. Mastercard only."
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Pismo customer ID",
+      "description": "Pismo customer ID",
+      "examples": [
+        100602614
+      ]
+    },
+    "embossed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Embosser file",
+      "description": "Name of file containing cards to be embossed sent to embosser.",
+      "examples": [
+        "/trackfile"
+      ]
+    },
+    "embossing_custom_fields": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Personalized information sent with emboss",
+      "description": "Any customer-provided information for embosser such as tracking number or embossing instructions",
+      "examples": [
+        "Cards should be metal, not plastic"
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Metadata",
+      "description": "Caller provided information. No business rule validation is done.",
+      "examples": [
+        {
+          "customer-data": {
+            "my": "value",
+            "my-custom-business-label": "label",
+            "score": "123"
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Failure reason",
+      "description": "Failure reason",
+      "examples": [
+        "Reason of failure"
+      ]
+    }
+  },
+  "definitions": {}
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset migrate failed",
+  "description": "This event occurs when an asset migrate fails.",
+  "required": [
+    "asset_id",
+    "issuer_id"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation. Optional field provided by customer in asset block operation.",
+      "examples": [
+        "00000000013"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of error that occured when trying to migrate asset",
+      "examples": [
+        "the asset is in the grace period and cannot be migrated."
+      ]
+    }
+  }
+}

@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "FPS outbound payment return processed",
+  "description": "Faster Payment System (FPS) outbound return (return_admissions) payment processed. This event is generated when the counterparty rejects the FPS out transaction and reverts back the amount to the debtor whose account gets credited.",
+  "required": [
+    "account_id",
+    "end_to_end_id",
+    "debtor_account",
+    "creditor_account",
+    "currency",
+    "remittance_information",
+    "status",
+    "creation_date_time",
+    "update_date_time",
+    "scheme_payment_type"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Debtor account ID",
+      "description": "Pismo debtor account ID",
+      "examples": [
+        1
+      ]
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction ID",
+      "description": "Pismo transaction ID",
+      "examples": [
+        "1"
+      ]
+    },
+    "scheme_payment_type": {
+      "type": "string",
+      "title": "Scheme payment type ID",
+      "description": "Indicates the type of FPS payment scheme used for this transaction, such as 'ImmediatePayment'. Valid values typically include 'ImmediatePayment', 'StandingOrder', or other scheme types as defined by the Faster Payment System.",
+      "examples": [
+        "ImmediatePayment"
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Payment end-to-end ID",
+      "description": "Initiating party-assigned payment ID.",
+      "maxLength": 31,
+      "examples": [
+        "1374f841568e4ff4b3a63b023c170ec"
+      ]
+    },
+    "fpid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "FPS ID",
+      "description": "Faster Payment System transaction ID",
+      "examples": [
+        null,
+        "e6e7ab2a97d1"
+      ]
+    },
+    "scheme_status_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Scheme Status Code",
+      "description": "Status code returned by the payment scheme indicating the outcome of the transaction processing.",
+      "examples": [
+        "0000",
+        "1114"
+      ]
+    },
+    "debtor_account": {
+      "type": "object",
+      "required": [
+        "scheme",
+        "identification"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Account name",
+          "description": "Account holder name",
+          "examples": [
+            "John Doe"
+          ]
+        },
+        "scheme": {
+          "type": "string",
+          "title": "Scheme name",
+          "description": "Bank scheme name",
+          "maxLength": 21,
+          "enum": [
+            "iban",
+            "bban",
+            "uk-scan"
+          ]
+        },
+        "identification": {
+          "type": "string",
+          "title": "Debtor account ID",
+          "description": "Bank-assigned debtor account ID",
+          "maxLength": 34,
+          "examples": [
+            "GB00CUBK22102243266831"
+          ]
+        }
+      }
+    },
+    "creditor_account": {
+      "type": "object",
+      "required": [
+        "scheme",
+        "identification"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Account name",
+          "description": "Account holder name",
+          "examples": [
+            "Alex Doe"
+          ]
+        },
+        "scheme": {
+          "type": "string",
+          "title": "Scheme name",
+          "description": "Bank scheme name",
+          "maxLength": 21,
+          "enum": [
+            "iban",
+            "bban",
+            "uk-scan"
+          ]
+        },
+        "identification": {
+          "type": "string",
+          "title": "Creditor account ID",
+          "description": "Bank-assigned creditor account ID",
+          "maxLength": 34,
+          "examples": [
+            "GB00CUBK22002243218765"
+          ]
+        }
+      }
+    },
+    "currency": {
+      "type": "object",
+      "required": [
+        "amount",
+        "code"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "title": "FPS payment amount",
+          "description": "FPS transferred payment amount",
+          "examples": [
+            88.52
+          ]
+        },
+        "code": {
+          "type": "string",
+          "title": "Currency code",
+          "description": "Account's three-letter ISO 4217 currency code",
+          "maxLength": 3,
+          "examples": [
+            "GBP"
+          ]
+        }
+      }
+    },
+    "remittance_information": {
+      "type": "object",
+      "required": [
+        "reference"
+      ],
+      "properties": {
+        "reference": {
+          "type": "string",
+          "title": "Reference",
+          "description": "Initiating party's reference for remittance information",
+          "examples": [
+            "Some transaction info"
+          ]
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "FPS payment status. See https://developers.pismo.io/pismo-docs/reference/post-create-fps for status descriptions.",
+      "examples": [
+        "SETTLED",
+        "CANCELLED"
+      ]
+    },
+    "status_reason": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "code",
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "title": "Reason description",
+          "description": "Status reason description",
+          "examples": [
+            "Provider sent unmatch return admission"
+          ]
+        },
+        "code": {
+          "title": "Reason error code",
+          "description": "Reason error code",
+          "examples": [
+            "EFPS0079"
+          ]
+        }
+      }
+    },
+    "creation_date_time": {
+      "type": "string",
+      "title": "FPS payment creation datetime",
+      "description": "FPS payment creation datetime - ISO 8601 format.",
+      "examples": [
+        "2019-01-01T11:12:05.101Z"
+      ]
+    },
+    "update_date_time": {
+      "type": "string",
+      "title": "FPS payment last updated datetime",
+      "description": "FPS payment last updated datetime - ISO 8601 format.",
+      "examples": [
+        "2019-01-01T11:12:05.101Z"
+      ]
+    },
+    "settlement_cycle": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Settlement cycle",
+      "description": "Settlement cycle in which the payment will be settled. Populated by Provider when transaction has successfully passed validation and is submitted to FPS.",
+      "examples": [
+        1,
+        2
+      ]
+    },
+    "settlement_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "title": "Settlement date",
+      "description": "Date when the settlement cycle in which the payment will be settled begins. Populated by Provider when transaction has successfully passed validation and is submitted to FPS.",
+      "examples": [
+        "2024-01-15"
+      ]
+    }
+  }
+}

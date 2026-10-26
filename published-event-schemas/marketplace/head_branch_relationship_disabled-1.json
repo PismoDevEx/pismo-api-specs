@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant head branch relationship disabled",
+  "required": [
+    "id",
+    "marketplace_id",
+    "merchant_hq_id",
+    "merchant_branch_id",
+    "enabled"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The head branch id",
+      "description": "This field represents the head branch id",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "marketplace_id": {
+      "$id": "#/properties/marketplace_id",
+      "type": "integer",
+      "title": "The head branch marketplace id",
+      "description": "This field represents the head branch marketplace id",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "merchant_hq_id": {
+      "$id": "#/properties/merchant_hq_id",
+      "type": "integer",
+      "title": "The head branch merchant hq id",
+      "description": "This field represents the head branch merchant hq id",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "merchant_branch_id": {
+      "$id": "#/properties/merchant_branch_id",
+      "type": "integer",
+      "title": "The head branch merchant branch id",
+      "description": "This field represents the head branch merchant branch id",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "enabled": {
+      "$id": "#/properties/enabled",
+      "type": "boolean",
+      "default": "false",
+      "title": "The head branch enabled flag",
+      "description": "This field represents the head branch enabled flag",
+      "examples": [
+        false,
+        true
+      ]
+    }
+  }
+}

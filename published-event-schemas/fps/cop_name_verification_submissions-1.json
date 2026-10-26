@@ -1,0 +1,232 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "CoP name verification requested",
+  "description": "Confirmation of Payee (CoP) name verification event. This event is generated when a name verification request is submitted for processing. The [Confirmation of Payment](https://developers.pismo.io/pismo-docs/reference/post-cop-verification) endpoint generates this event. The client receives the result in a [CoP name verification result received](https://developers.pismo.io/events/docs/fps-cop-name-verification-admissions-1) event. ",
+  "required": [
+    "name_verification_id",
+    "account_number",
+    "account_number_code",
+    "bank_id",
+    "bank_id_code",
+    "name"
+  ],
+  "properties": {
+    "name_verification_id": {
+      "type": "string",
+      "title": "Name verification ID",
+      "description": "Name verification request ID (webhook data->id). This is a 36-character UUID.",
+      "maxLength": 36,
+      "examples": [
+        "11e70814-61d5-4fe6-b35f-c6c726a72f6e"
+      ]
+    },
+    "answer": {
+      "type": "string",
+      "title": "Answer",
+      "description": "Name verification check result",
+      "enum": [
+        "rejected",
+        "confirmed"
+      ],
+      "example": "confirmed"
+    },
+    "actual_name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Actual name",
+      "description": "Actual name associated with the account",
+      "examples": [
+        "Pete Moss"
+      ]
+    },
+    "reason_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Reason code",
+      "description": "Verification result reason code.<br>`AC01` - No account with the given account number<br>`ACNS` - Account does not support Confirmation of Payee<br>`ANNM` - String does not match the account name<br>`BAMM` - Close match to the account name. Account type is Business when Personal was indicated<br>`BANM` - Match to the account name, but account type is Business when Personal was indicated<br>`CASS` - Account has been switched to a different organisation<br>`IVCR` - Invalid secondary customer reference data<br>`MBAM` - Close match to the account name<br>`OPTO` - Account opted out of Confirmation of Payee<br>`PAMM` - Close match to the account name. Account type is Personal when Business was indicated<br>`PANM` - Match to the account name, but account type is Personal when Business was indicated<br>`SCNS` - Organisation doesn't own the passed sort code",
+      "enum": [
+        "AC01",
+        "ACNS",
+        "ANNM",
+        "BANM",
+        "CASS",
+        "IVCR",
+        "MBAM",
+        "OPTO",
+        "PAMM",
+        "PAMN",
+        "SCNS",
+        "",
+        "PANM"
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Reason",
+      "description": "Verification result description",
+      "examples": [
+        "Close match with the name of the payment counterparty"
+      ]
+    },
+    "account_number": {
+      "type": "string",
+      "title": "Account Number",
+      "description": "Account number being verified",
+      "examples": [
+        "123456789"
+      ]
+    },
+    "account_number_code": {
+      "type": "string",
+      "title": "Account number code",
+      "description": "Account number type or scheme",
+      "enum": [
+        "BBAN"
+      ]
+    },
+    "name": {
+      "type": [
+        "array",
+        "null",
+        "string"
+      ],
+      "title": "Name",
+      "description": "Name provided for verification",
+      "maxLength": 135,
+      "examples": [
+        "Al Amony"
+      ]
+    },
+    "bank_id": {
+      "type": "string",
+      "title": "Bank ID",
+      "description": "ID of bank holding the account",
+      "examples": [
+        "123456"
+      ]
+    },
+    "bank_id_code": {
+      "type": "string",
+      "title": "Bank ID code",
+      "description": "Bank ID",
+      "enum": [
+        "GBDSC"
+      ]
+    },
+    "secondary_identification": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Secondary ID",
+      "description": "Additional account identification information",
+      "examples": [
+        "123"
+      ]
+    },
+    "requester": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Requester",
+      "description": "Requesting bank information",
+      "properties": {
+        "bank_id": {
+          "type": "string",
+          "title": "Bank ID",
+          "description": "Requesting bank ID",
+          "examples": [
+            "123457"
+          ]
+        },
+        "bank_id_code": {
+          "type": "string",
+          "title": "Bank ID Code",
+          "description": "Requesting bank ID type or scheme",
+          "enum": [
+            "GBDSC"
+          ]
+        }
+      }
+    },
+    "sort_code_validation": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Sort Code Validation",
+      "description": "Sort code and account number validation result from modulus check",
+      "properties": {
+        "status": {
+          "type": "string",
+          "title": "Validation Status",
+          "description": "Result of sort code and account number validation",
+          "enum": [
+            "VALID",
+            "INVALID"
+          ],
+          "examples": [
+            "VALID"
+          ]
+        },
+        "bank_code": {
+          "type": "string",
+          "title": "Bank Code",
+          "description": "Bank code identifier",
+          "examples": [
+            "1234"
+          ]
+        },
+        "bank_name": {
+          "type": "string",
+          "title": "Bank Name",
+          "description": "Bank name associated with the sort code",
+          "examples": [
+            "NATIONAL WESTMINSTER BANK PLC"
+          ]
+        },
+        "bank_office_title": {
+          "type": "string",
+          "title": "Bank Office Title",
+          "description": "Bank branch office title",
+          "examples": [
+            "LONDON OFFICE"
+          ]
+        },
+        "fps_supported": {
+          "type": "boolean",
+          "title": "FPS Supported",
+          "description": "Whether the bank supports Faster Payments Service",
+          "examples": [
+            true
+          ]
+        },
+        "messages": {
+          "type": "array",
+          "title": "Messages",
+          "description": "Validation error messages when status is INVALID",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            [
+              "MOD check failed"
+            ],
+            [
+              "Sort code not found: 123456"
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Digital receivable creation failed",
+  "description": "Emitted as the digital_receivable_create_failure event type when the asynchronous create flow rejects a digital receivable received through the create digital receivable API due to a business rule, such as a duplicated digital_receivable_id or a duplicated receivable. One event is emitted per rejected digital receivable. Consumers can use it to reconcile rejected registrations through error_code and error_details.",
+  "required": [
+    "error_code"
+  ],
+  "properties": {
+    "digital_receivable_id": {
+      "type": "string",
+      "title": "Digital receivable ID",
+      "description": "Client-provided identifier of the digital receivable, up to 20 characters, unique per organization. Echoed from the rejected request.",
+      "examples": [
+        "RECEIVABLE0010021231",
+        "23221396000100212341"
+      ]
+    },
+    "lender_document_number": {
+      "type": "string",
+      "title": "Lender document number",
+      "description": "CPF (11 digits) or CNPJ (14 digits) of the lender, echoed from the rejected request.",
+      "examples": [
+        "00000000000191",
+        "00000000000"
+      ]
+    },
+    "debtor_document_number": {
+      "type": "string",
+      "title": "Debtor document number",
+      "description": "CPF (11 digits) or CNPJ (14 digits) of the debtor, echoed from the rejected request.",
+      "examples": [
+        "00000000000",
+        "00000000000191"
+      ]
+    },
+    "face_value": {
+      "type": "number",
+      "title": "Face value",
+      "description": "Face value in BRL with up to 5 decimal places, echoed from the rejected request.",
+      "format": "double",
+      "examples": [
+        10.0,
+        1500.75
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "title": "Maturity date",
+      "description": "Maturity date in yyyy-MM-dd format, echoed from the rejected request.",
+      "format": "date",
+      "examples": [
+        "2027-12-25"
+      ]
+    },
+    "reason_type": {
+      "type": "string",
+      "title": "Reason type",
+      "description": "Reason type echoed from the rejected request, from the ReasonType enum. LIVR: Livre, free of restrictions and available for negotiation. BLOQ: Comprometida, committed to a contract or negotiable instrument act. BQSD: Bloqueada pelo sacador, blocked by the drawer (lender). BQCJ: Bloqueada por constri\u00e7\u00e3o judicial, blocked by a court order. COMT: Completada, the receivable is settled. Absent when the request did not inform it.",
+      "enum": [
+        "LIVR",
+        "BLOQ",
+        "BQSD",
+        "BQCJ",
+        "COMT"
+      ],
+      "examples": [
+        "LIVR",
+        "BLOQ"
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error code",
+      "description": "Legacy business error code returned by the API explaining why the creation was rejected, for example 101052 (digital_receivable_id already registered) or 101055 (receivable with the same lender, debtor, face value, maturity date and tax invoice number already exists).",
+      "examples": [
+        "101052",
+        "101055"
+      ]
+    },
+    "error_details": {
+      "type": "object",
+      "title": "Error details",
+      "description": "Structured error from the new error dictionary mapped from error_code. Absent when error_code has no mapping in the new dictionary.",
+      "required": [
+        "code",
+        "description"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Error code",
+          "description": "Business error code from the new error dictionary in the 6-digit [MM][O][nnn] format (module, operation, sequence), for example 131043 for a duplicated digital_receivable_id or 131044 for a duplicated receivable.",
+          "examples": [
+            "131043",
+            "131044"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Error description",
+          "description": "Human-readable message for the new error code, not intended as a technical key.",
+          "examples": [
+            "digital receivable already registered with this [digital_receivable_id]"
+          ]
+        }
+      }
+    }
+  }
+}

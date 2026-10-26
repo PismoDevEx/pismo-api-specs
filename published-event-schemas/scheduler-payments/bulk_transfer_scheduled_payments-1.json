@@ -1,0 +1,315 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bulk transfer schedules created",
+  "description": "This event occurs when bulk transfer schedule processing has finished. If errors occur, no schedules are registered. Errors for each schedule will be described in its `violations` field.<br><br>More information: <a href='https://developers.pismo.io/pismo-docs/docs/payment-scheduler'>Payment scheduler</a>",
+  "required": [
+    "schedule_status",
+    "schedules"
+  ],
+  "properties": {
+    "schedule_status": {
+      "type": "string",
+      "title": "Schedule status",
+      "description": "Indicates whether all schedules were processed successfully or with errors",
+      "enum": [
+        "SUCCESS",
+        "ERROR"
+      ],
+      "examples": [
+        "SUCCESS"
+      ]
+    },
+    "schedules": {
+      "type": "array",
+      "title": "Schedules",
+      "description": "Array of schedule objects",
+      "items": {
+        "$ref": "#/definitions/schedule"
+      }
+    }
+  },
+  "definitions": {
+    "schedule": {
+      "type": "object",
+      "title": "Schedule object",
+      "description": "Object with transfer schedule information",
+      "required": [
+        "schedule_id",
+        "schedule_details",
+        "transfers"
+      ],
+      "properties": {
+        "schedule_id": {
+          "$ref": "#/definitions/schedule_id"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "schedule_kind": {
+          "$ref": "#/definitions/schedule_kind"
+        },
+        "strategy": {
+          "$ref": "#/definitions/strategy"
+        },
+        "schedule_details": {
+          "$ref": "#/definitions/schedule_details"
+        },
+        "transfers": {
+          "$ref": "#/definitions/transfers"
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadata"
+        },
+        "violations": {
+          "$ref": "#/definitions/violations"
+        }
+      }
+    },
+    "schedule_id": {
+      "type": "string",
+      "title": "Schedule ID",
+      "description": "Schedule ID",
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Schedule description",
+      "description": "Schedule description",
+      "examples": [
+        "Monthly transfer",
+        "Daily transfer"
+      ]
+    },
+    "schedule_kind": {
+      "type": "string",
+      "title": "Schedule kind",
+      "description": "The type of schedule",
+      "enum": [
+        "TRANSFERS"
+      ],
+      "examples": [
+        "TRANSFERS"
+      ]
+    },
+    "strategy": {
+      "type": "string",
+      "title": "Transfer strategy",
+      "description": "Strategy for multi-transfer execution",
+      "enum": [
+        "SWEEP",
+        "OVERDRAFT_SWEEP"
+      ],
+      "examples": [
+        "SWEEP"
+      ]
+    },
+    "schedule_details": {
+      "type": "object",
+      "title": "Details object",
+      "description": "Object with schedule details",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "RECURRING"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "interval",
+          "end_date"
+        ]
+      },
+      "required": [
+        "type",
+        "start_date",
+        "day_type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Schedule type",
+          "description": "Indicates if the schedule is one-time or recurring",
+          "enum": [
+            "ONCE",
+            "RECURRING"
+          ],
+          "examples": [
+            "ONCE",
+            "RECURRING"
+          ]
+        },
+        "interval": {
+          "type": "string",
+          "title": "Interval",
+          "description": "Recurrence interval (required for RECURRING type)",
+          "enum": [
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "YEARLY"
+          ],
+          "examples": [
+            "MONTHLY"
+          ]
+        },
+        "start_date": {
+          "type": "string",
+          "title": "Start date",
+          "description": "Schedule start date in ISO 8601 format",
+          "examples": [
+            "2024-01-15T10:00:00Z"
+          ]
+        },
+        "end_date": {
+          "type": "string",
+          "title": "End date",
+          "description": "Schedule end date in ISO 8601 format (required for RECURRING type)",
+          "examples": [
+            "2024-12-31T10:00:00Z"
+          ]
+        },
+        "day_type": {
+          "type": "string",
+          "title": "Day type",
+          "description": "Indicates if schedule runs on business days or calendar days",
+          "enum": [
+            "BUSINESS_DAY",
+            "CALENDAR_DAY"
+          ],
+          "examples": [
+            "BUSINESS_DAY"
+          ]
+        },
+        "allow_execution_after_day_change": {
+          "type": "boolean",
+          "title": "Allow execution after day change",
+          "description": "Allows schedule execution after 11:30pm UTC",
+          "examples": [
+            false
+          ]
+        }
+      }
+    },
+    "transfers": {
+      "type": "array",
+      "title": "Transfers",
+      "description": "Array of transfer objects",
+      "items": {
+        "$ref": "#/definitions/transfer"
+      }
+    },
+    "transfer": {
+      "type": "object",
+      "title": "Transfer object",
+      "description": "Object with transfer information",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "title": "Transfer description",
+          "description": "Transfer description",
+          "examples": [
+            "Monthly transfer to savings"
+          ]
+        },
+        "from": {
+          "$ref": "#/definitions/source"
+        },
+        "to": {
+          "$ref": "#/definitions/source"
+        },
+        "metadata": {
+          "ref": "#/definitions/metadata"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "title": "Source",
+      "description": "Source or destination account information",
+      "required": [
+        "account_id",
+        "processing_code"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Pismo account ID",
+          "examples": [
+            100602614
+          ]
+        },
+        "processing_code": {
+          "type": "string",
+          "title": "Processing code",
+          "description": "Processing code used for the transaction",
+          "examples": [
+            "007700",
+            "009900",
+            "007200"
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Additional information relevant to the customer. No business rule validation is performed on it.",
+      "examples": [
+        {
+          "metadata": {
+            "customer-data": {
+              "any": "fields"
+            }
+          }
+        }
+      ]
+    },
+    "violations": {
+      "type": "array",
+      "title": "Violations",
+      "description": "List of violations encountered while processing each transfer schedule",
+      "properties": {
+        "violation": {
+          "$ref": "#/definitions/violation"
+        }
+      }
+    },
+    "violation": {
+      "type": "object",
+      "title": "Violation",
+      "description": "Object with violation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Violation type",
+          "description": "Violation type",
+          "enum": [
+            "ACCOUNT",
+            "PROCESSING_CODE",
+            "ALREADY_EXISTS"
+          ],
+          "examples": [
+            "ACCOUNT"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "title": "Violation message",
+          "description": "Error message related to the violation type",
+          "examples": [
+            "[AC001] Account not found."
+          ]
+        }
+      }
+    }
+  }
+}

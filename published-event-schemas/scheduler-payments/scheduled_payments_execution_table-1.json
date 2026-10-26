@@ -1,0 +1,274 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Scheduled payment execution table record (internal)",
+  "description": "This event is for internal Pismo use only. It represents a flattened DynamoDB table record for scheduled payment executions.",
+  "required": [
+    "pk",
+    "sk",
+    "id",
+    "account_id",
+    "org_id",
+    "schedule_id",
+    "schedule_sk",
+    "execution_status",
+    "attempt_number",
+    "attempt_number_system_error"
+  ],
+  "properties": {
+    "pk": {
+      "type": "string",
+      "title": "Partition Key",
+      "description": "DynamoDB partition key.",
+      "examples": [
+        "execution:TN-495f7976-7707-422a-8f1f-822cf279a26c:da19bb6e-86fd-46a2-846b-5a18948c3145"
+      ]
+    },
+    "sk": {
+      "type": "string",
+      "title": "Sort Key",
+      "description": "DynamoDB sort key.",
+      "examples": [
+        "1fc22154-619a-4a78-90b6-c8351455e962"
+      ]
+    },
+    "lsi": {
+      "type": "integer",
+      "title": "Local Secondary Index",
+      "description": "Local secondary index timestamp.",
+      "examples": [
+        1753758036082642,
+        123456789
+      ]
+    },
+    "id": {
+      "type": "string",
+      "title": "Execution ID",
+      "description": "Execution ID.",
+      "examples": [
+        "1fc22154-619a-4a78-90b6-c8351455e962",
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "title": "Organization ID",
+      "description": "Organization ID.",
+      "examples": [
+        "TN-495f7976-7707-422a-8f1f-822cf279a26c"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        39657603,
+        100602614,
+        987654321
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "Correlation ID for tracking.",
+      "examples": [
+        "b9c398f8-8d68-9c27-956d-fe003fe5526a",
+        "example-cid"
+      ]
+    },
+    "aws_region": {
+      "type": "string",
+      "title": "AWS Region",
+      "description": "AWS region where the record is stored.",
+      "examples": [
+        "sa-east-1"
+      ]
+    },
+    "schedule_id": {
+      "type": "string",
+      "title": "Schedule ID",
+      "description": "Schedule ID associated with this execution.",
+      "examples": [
+        "da19bb6e-86fd-46a2-846b-5a18948c3145",
+        "schedule-id"
+      ]
+    },
+    "schedule_sk": {
+      "type": "string",
+      "title": "Schedule SK",
+      "description": "String representation of a numeric timestamp (e.g., in seconds, milliseconds, or microseconds) used as the schedule's sort key.",
+      "examples": [
+        "1751054086887157",
+        "987654321"
+      ]
+    },
+    "execution_status": {
+      "type": "string",
+      "title": "Execution status",
+      "description": "Execution status.",
+      "enum": [
+        "EXECUTED",
+        "EXECUTED_WITH_RESTRICTIONS",
+        "EXECUTED_WITHOUT_SCRAPING",
+        "EXECUTED_WITH_ERROR_NEXT_DAY_NOT_ALLOWED",
+        "EXECUTED_WITH_ERROR_BANK_SLIP"
+      ],
+      "examples": [
+        "EXECUTED",
+        "EXECUTED_WITHOUT_SCRAPING"
+      ]
+    },
+    "attempt_number": {
+      "type": "integer",
+      "title": "Attempt number",
+      "description": "Number of execution attempts.",
+      "examples": [
+        0,
+        1,
+        2
+      ]
+    },
+    "attempt_number_system_error": {
+      "type": "integer",
+      "title": "Attempt number system error",
+      "description": "Number of system error attempts.",
+      "examples": [
+        0,
+        1
+      ]
+    },
+    "authorizations": {
+      "type": "array",
+      "title": "List of authorizations",
+      "description": "Array of authorization objects.",
+      "items": {
+        "type": "object",
+        "title": "Authorization",
+        "description": "Information about the authorization.",
+        "required": [
+          "tracking_id",
+          "account_id",
+          "payment_date"
+        ],
+        "properties": {
+          "tracking_id": {
+            "type": "string",
+            "title": "Tracking ID",
+            "description": "Tracking ID of the authorization.",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "examples": [
+              "80121c44-b674-4624-95cd-6dc7c7737cbb",
+              "123e4567-e89b-12d3-a456-426614174000"
+            ]
+          },
+          "account_id": {
+            "type": "integer",
+            "title": "Account ID",
+            "description": "Pismo account ID.",
+            "examples": [
+              34342807,
+              100602614,
+              123456789
+            ]
+          },
+          "payment_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Payment date",
+            "description": "Date and time of the authorization that was performed in UTC-0 (RFC3339) format.",
+            "examples": [
+              "2025-11-02T03:00:36.063Z",
+              "2024-06-01T00:00:00Z"
+            ]
+          },
+          "response_code": {
+            "type": "string",
+            "title": "Response code",
+            "description": "Response code assigned to the new authorization. Indicates successful authorization or reasons for authorization denial.",
+            "examples": [
+              "00",
+              "55",
+              "99"
+            ]
+          },
+          "denial_code": {
+            "type": "string",
+            "title": "Denial code",
+            "description": "Code generated for denied authorizations, which indicates the reason the request was denied.",
+            "examples": [
+              "",
+              "AU001",
+              "AU002",
+              "PA001",
+              "PA002",
+              "IAD",
+              "ECE"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Validation status of authorization.",
+            "enum": [
+              "APPROVED",
+              "DENIED"
+            ],
+            "examples": [
+              "APPROVED",
+              "DENIED"
+            ]
+          }
+        }
+      }
+    },
+    "internal_flow_for_next_execution": {
+      "type": "string",
+      "title": "Internal flow for next execution",
+      "description": "Internal flow ID for next execution.",
+      "examples": [
+        "71ed63b6-03c6-4738-a9b8-bd2a66a884b2",
+        "d49f0d98-2f22-42b2-b0e8-33abdd337fee",
+        "next-execution-id"
+      ]
+    },
+    "internal_flow_execution_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Internal flow execution date",
+      "description": "Execution date in UTC-0 (RFC3339) format.",
+      "examples": [
+        "2025-07-29T02:59:59.000Z",
+        "2024-06-02T00:00:00Z"
+      ]
+    },
+    "internal_flow_execution_available_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Internal flow execution available date",
+      "description": "Execution available date in UTC-0 (RFC3339) format.",
+      "examples": [
+        "2025-07-29T02:59:59.000Z",
+        "2024-06-03T00:00:00Z"
+      ]
+    },
+    "error_details_code": {
+      "type": "string",
+      "title": "Error details code",
+      "description": "Error code if execution failed.",
+      "examples": [
+        "ERR001",
+        "ERR002"
+      ]
+    },
+    "error_details_message": {
+      "type": "string",
+      "title": "Error details message",
+      "description": "Error message if execution failed.",
+      "examples": [
+        "An error occurred",
+        "System error"
+      ]
+    }
+  }
+}

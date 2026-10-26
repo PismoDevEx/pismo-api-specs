@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Recurring charge plan link terminated",
+  "description": "Event generated when a link is terminated because it has no renewal method. That is, the last charge was incurred, so the link was terminated.",
+  "required": [
+    "recurring_charge_link_id",
+    "recurring_charge_plan_id",
+    "org_id",
+    "account_id",
+    "created_at",
+    "tracking_id",
+    "end_date",
+    "cid"
+  ],
+  "properties": {
+    "recurring_charge_link_id": {
+      "type": "number",
+      "description": "Created link identifier",
+      "examples": [
+        9832195123
+      ]
+    },
+    "recurring_charge_plan_id": {
+      "type": "number",
+      "description": "Recurring charge plan ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "account_id": {
+      "type": "number",
+      "description": "Account linked to the referenced plan",
+      "examples": [
+        233200
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Link creation date and time in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "end_date": {
+      "type": "string",
+      "description": "Link end date and time in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "Link description",
+      "examples": [
+        "Credit card annuity"
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Tracking ID",
+      "description": "This is a unique identifier for tracking purposes.",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "creation cid",
+      "description": "CID that triggered the link creation",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant settlement created",
+  "description": "This event occurs when a settlement process is finished with success.",
+  "required": [
+    "id",
+    "merchant_id",
+    "settlement_date",
+    "gross_amount",
+    "net_amount",
+    "processing_code",
+    "settlement_type",
+    "payment_type",
+    "payment_info"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The merchant settlement identifier",
+      "description": "This field identifies the merchant transaction created.",
+      "examples": [
+        123456789
+      ]
+    },
+    "merchant_id": {
+      "$id": "#/properties/merchant_id",
+      "type": "integer",
+      "title": "The merchant identifier",
+      "description": "This field identifies the merchant related to transaction.",
+      "examples": [
+        123456789
+      ]
+    },
+    "settlement_date": {
+      "$id": "#/properties/settlement_date",
+      "type": "string",
+      "format": "date",
+      "title": "The date of settlement",
+      "description": "This field identifies the date when the settlement occurred.",
+      "examples": [
+        "2006-01-02"
+      ]
+    },
+    "gross_amount": {
+      "$id": "#/properties/gross_amount",
+      "type": "number",
+      "title": "The gross amount of the settlement",
+      "description": "This field identifies the settlement gross amount.",
+      "examples": [
+        100.0
+      ]
+    },
+    "net_amount": {
+      "$id": "#/properties/net_amount",
+      "type": "number",
+      "title": "The net amount of the settlement",
+      "description": "This field identifies the settlement net amount.",
+      "examples": [
+        100.0
+      ]
+    },
+    "currency_code": {
+      "$id": "#/properties/currency_code",
+      "title": "Currency code",
+      "description": "ISO 4217 alphabetic currency code.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 0,
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD"
+      ]
+    },
+    "processing_code": {
+      "$id": "#/properties/processing_code",
+      "type": "string",
+      "title": "The processing code of the settlement.",
+      "description": "This field identifies the processing code related to the settlement.",
+      "examples": [
+        "007400"
+      ]
+    },
+    "settlement_type": {
+      "$id": "#/properties/settlement_type",
+      "type": "string",
+      "title": "The settlement type.",
+      "description": "This field identifies the type related to the settlement.",
+      "examples": [
+        "MERCHANT_TRANSACTIONS"
+      ]
+    },
+    "payment_type": {
+      "$id": "#/properties/payment_type",
+      "type": "string",
+      "title": "The payment type.",
+      "description": "This field identifies the type related to the payment.",
+      "examples": [
+        "ACCOUNT"
+      ]
+    },
+    "payment_info": {
+      "$id": "#/properties/payment_info",
+      "type": "object",
+      "title": "The payment info.",
+      "description": "Additional information related to the payment.",
+      "examples": [
+        {
+          "account_id": 187191962
+        }
+      ]
+    },
+    "fees": {
+      "$id": "#/properties/fees",
+      "type": "array",
+      "title": "The fees.",
+      "description": "This field identifies the fees related to the settlement.",
+      "items": {
+        "type": "object",
+        "title": "The fee",
+        "description": "This field identifies the fee related to the settlement.",
+        "required": [
+          "title",
+          "amount"
+        ],
+        "properties": {
+          "title": {
+            "$id": "#/properties/fees/items/title",
+            "type": "string",
+            "title": "The title.",
+            "description": "This field identifies the title related to the fees.",
+            "examples": [
+              "mdr"
+            ]
+          },
+          "amount": {
+            "$id": "#/properties/fees/items/amount",
+            "type": "number",
+            "title": "The amount.",
+            "description": "This field identifies the amount related to the fees.",
+            "examples": [
+              0.1
+            ]
+          }
+        }
+      }
+    }
+  }
+}

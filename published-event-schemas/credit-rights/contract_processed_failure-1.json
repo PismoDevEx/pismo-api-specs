@@ -1,0 +1,231 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Contract processing failed",
+  "description": "Emitted as the contract_processed_failure event type when an asynchronous contract operation requested through the contracts API is rejected by a business validation: creation (CREATE_CONTRACT), update including renegotiation (UPDATE_CONTRACT) or termination (DELETE_CONTRACT). One event is emitted per rejected contract request with the business error that caused the rejection, so consumers can notify the client and decide whether to retry with corrected data.",
+  "required": [
+    "error_code"
+  ],
+  "properties": {
+    "contract_operation_id": {
+      "type": "string",
+      "title": "Contract operation ID",
+      "description": "Client-provided identifier of the credit operation taken from the rejected request, sent as credit_operation.id on creation and as operation_id on update and termination.",
+      "examples": [
+        "aec93861-ccc6-41c4-aa80-3fe2e416d34e"
+      ]
+    },
+    "joint_debtors": {
+      "type": "array",
+      "title": "Joint debtors",
+      "description": "Joint debtors sent in the rejected creation or update request. It is an empty array when the request had none and it is absent for termination requests.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "document_number": {
+            "type": "string",
+            "title": "Joint debtor document number",
+            "description": "CPF (11 digits) or CNPJ (14 digits) of the joint debtor as sent in the request, digits only. It is omitted when empty.",
+            "examples": [
+              "00000000000",
+              "00000000000191"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "title": "Joint debtor name",
+            "description": "Name of the joint debtor as sent in the request. It is omitted when empty.",
+            "examples": [
+              "Fake Debtor Name"
+            ]
+          }
+        }
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error code",
+      "description": "Legacy business error code returned by the API explaining why the contract operation was rejected, for example 106035 (contract already registered with this operation_id), 108011 (contract not found) or 107042 (origin or destination contract not active for renegotiation).",
+      "examples": [
+        "106035",
+        "108011",
+        "107042"
+      ]
+    },
+    "error_details": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Error details",
+      "description": "Structured error information with the new 6-digit error code and its human-readable description. It is absent when error_code has no mapping in the new error dictionary.",
+      "required": [
+        "code",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Error code (new format)",
+          "description": "Business error code from the new error dictionary, 6 digits following [MM][O][nnn] (module, operation and sequence), for example 114001 (contract already registered), 115001 (contract not found) or 134040 (contracts must be active to renegotiate).",
+          "examples": [
+            "114001",
+            "115001",
+            "134040"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Error description",
+          "description": "Human-readable message of the new error code, in English, intended for display and not as a technical key.",
+          "examples": [
+            "there's already a contract registered with this [operation_id]",
+            "contract not found"
+          ]
+        }
+      }
+    },
+    "feature_type": {
+      "type": "string",
+      "title": "Feature type",
+      "description": "Classifies the operation that was rejected. CREATE_CONTRACT: contract creation. UPDATE_CONTRACT: contract update, including renegotiation. DELETE_CONTRACT: contract termination. CREATE_INSTRUMENT_ACT: negotiable instrument act creation, not emitted by this event. UPDATE_INSTRUMENT_ACT: negotiable instrument act update, not emitted by this event. DELETE_INSTRUMENT_ACT: negotiable instrument act termination, not emitted by this event.",
+      "enum": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT",
+        "DELETE_CONTRACT",
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT",
+        "DELETE_INSTRUMENT_ACT"
+      ],
+      "examples": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT",
+        "DELETE_CONTRACT"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Specializes feature_type. CREATE_CONTRACT is used for creation; UPDATE_CONTRACT_INCL, UPDATE_CONTRACT_ALTE and UPDATE_CONTRACT_EXCL map the update_type INCL (inclusion), ALTE (alteration) and EXCL (exclusion, also used for renegotiation); CANCELLATION_ERROR, CLOSING, CLOSING_DJUD and CLOSING_RNGC map the termination reasons CNOP (operational error), ENCT (regular closing), DJUD (judicial decision) and RNGC (renegotiation).",
+      "examples": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT_EXCL",
+        "CLOSING_RNGC"
+      ]
+    },
+    "digital_receivable_supplement": {
+      "type": "object",
+      "title": "Digital receivable supplement",
+      "description": "Digital receivable supplement (aditivo) sent with the contract operation, taken from the request, so total_amount and available_balance repeat max_face_value. Omitted when the request has no supplement.",
+      "properties": {
+        "total_amount": {
+          "type": "number",
+          "title": "Total amount",
+          "description": "Total amount of the supplement in BRL with decimals, as defined on the contract.",
+          "format": "decimal",
+          "examples": [
+            10.0,
+            150000.5
+          ]
+        },
+        "available_balance": {
+          "type": "number",
+          "title": "Available balance",
+          "description": "Remaining amount of the supplement in BRL with decimals that can still be consumed by digital receivables bound to the contract. On updates with balance capture enabled it is the previous available balance adjusted by the change in total_amount.",
+          "format": "decimal",
+          "examples": [
+            10.0,
+            98000.25
+          ]
+        },
+        "start_date": {
+          "type": "string",
+          "title": "Start date",
+          "description": "Start date of the supplement period, formatted as yyyy-MM-dd.",
+          "format": "date",
+          "examples": [
+            "2020-12-01"
+          ]
+        },
+        "end_date": {
+          "type": "string",
+          "title": "End date",
+          "description": "End date of the supplement period, formatted as yyyy-MM-dd.",
+          "format": "date",
+          "examples": [
+            "2021-12-01"
+          ]
+        },
+        "min_expire_days": {
+          "type": "integer",
+          "title": "Minimum expire days",
+          "description": "Minimum number of days until maturity that a digital receivable must have to be covered by the supplement.",
+          "examples": [
+            10,
+            100
+          ]
+        },
+        "max_expire_days": {
+          "type": "integer",
+          "title": "Maximum expire days",
+          "description": "Maximum number of days until maturity that a digital receivable may have to be covered by the supplement.",
+          "examples": [
+            10,
+            100
+          ]
+        },
+        "min_face_value": {
+          "type": "number",
+          "title": "Minimum face value",
+          "description": "Minimum face value in BRL with decimals that a digital receivable must have to be covered by the supplement.",
+          "format": "double",
+          "examples": [
+            10.0
+          ]
+        },
+        "max_face_value": {
+          "type": "number",
+          "title": "Maximum face value",
+          "description": "Maximum face value in BRL with decimals that a digital receivable may have to be covered by the supplement.",
+          "format": "double",
+          "examples": [
+            10.0
+          ]
+        },
+        "debtors": {
+          "type": "array",
+          "title": "Debtors",
+          "description": "Debtors included in or excluded from the supplement scope, as stored on the supplement. Absent when the supplement has no debtors.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "document_number": {
+                "type": "string",
+                "title": "Debtor document number",
+                "description": "Document number of the debtor, either CPF or CNPJ, as informed on the contract.",
+                "examples": [
+                  "00000000000191",
+                  "00000000000"
+                ]
+              },
+              "document_number_prefix": {
+                "type": "string",
+                "title": "Debtor document number prefix",
+                "description": "First eight digits (CNPJ root) of the debtor document number. Present only when the debtor is identified by CNPJ; absent for CPF debtors.",
+                "examples": [
+                  "00000000"
+                ]
+              },
+              "operation_type": {
+                "type": "string",
+                "title": "Debtor operation type",
+                "description": "Whether the debtor is part of the supplement scope, validated against the debtor OperationType enum on the contract API. INCL: The debtor is included in the supplement scope. EXCL: The debtor is excluded from the supplement scope."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

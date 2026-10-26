@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/file_summary-1.json",
+  "type": "object",
+  "title": "File summary migration status reported",
+  "description": "Event reporting the status of the migration: `VALID`, `PROCESSING , `COMPLETE`, or `ERROR`. More than one event can be generated while processing a file.",
+  "examples": [
+    {
+      "cid": "f695223f-52d0-433d-b4be-19658eb63008",
+      "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "01_XXXX",
+      "line_number": 1,
+      "layout_type": "CARDS",
+      "date": "2021-08-19",
+      "time": "13:45:00",
+      "total_lines": 13,
+      "unparsable_lines": 0,
+      "status": "COMPLETE"
+    },
+    {
+      "cid": "f695223f-52d0-433d-b4be-19658eb63008",
+      "org_id": "PISMO_EXT_TESTE",
+      "origin": "API",
+      "file_id": null,
+      "file_name": null,
+      "file_size": null,
+      "line_number": 1,
+      "layout_type": "CARDS",
+      "date": "2021-08-19",
+      "time": "13:45:00",
+      "total_lines": 13,
+      "unparsable_lines": 1,
+      "status": "ERROR",
+      "error_message": "Any processing error"
+    }
+  ],
+  "required": [
+    "cid",
+    "org_id",
+    "origin",
+    "file_id",
+    "file_name",
+    "file_size",
+    "line_number",
+    "layout_type",
+    "date",
+    "time",
+    "total_lines",
+    "unparsable_lines",
+    "status"
+  ],
+  "properties": {
+    "cid": {
+      "$id": "#/properties/cid",
+      "type": "string",
+      "format": "uuid",
+      "description": "This field identifies a file processing or an API request.",
+      "examples": [
+        "9be0486e-073a-4f56-80bb-5c400337e721"
+      ]
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "description": "Internal identifier of the client organization registered into the platform.",
+      "examples": [
+        "TN_c642ca23-4ea8-4218-a00d-8331a496253c"
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "API",
+        "FILE"
+      ],
+      "examples": [
+        "API",
+        "FILE"
+      ]
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field identifies the name file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the size file.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "integer",
+      "default": 0,
+      "description": "This field identifies the last line processed.",
+      "examples": [
+        0,
+        1
+      ]
+    },
+    "layout_type": {
+      "$id": "#/properties/layout_type",
+      "type": "string",
+      "description": "This field identifies the layout type of file.",
+      "examples": [
+        "CsvLayout.CARD",
+        "CsvLayout.PCI"
+      ]
+    },
+    "date": {
+      "$id": "#/properties/date",
+      "type": "string",
+      "format": "date",
+      "description": "This field identifies the date info of file.",
+      "examples": [
+        "2021-08-19"
+      ]
+    },
+    "time": {
+      "$id": "#/properties/time",
+      "type": "string",
+      "format": "time",
+      "description": "This field identifies the time info of file.",
+      "examples": [
+        "13:45:00"
+      ]
+    },
+    "total_lines": {
+      "$id": "#/properties/total_lines",
+      "type": "integer",
+      "default": 0,
+      "description": "This field identifies the count total of lines.",
+      "examples": [
+        0,
+        10,
+        999
+      ]
+    },
+    "unparsable_lines": {
+      "$id": "#/properties/unparsable_lines",
+      "type": "integer",
+      "description": "This field identifies the count of unparsable lines.",
+      "default": 0,
+      "examples": [
+        0,
+        999
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "description": "This field identifies the status of processing.",
+      "default": "PROCESSING",
+      "enum": [
+        "VALID",
+        "PROCESSING",
+        "COMPLETE",
+        "ERROR"
+      ],
+      "examples": [
+        "VALID",
+        "PROCESSING",
+        "COMPLETE",
+        "ERROR"
+      ]
+    },
+    "error_message": {
+      "$id": "#/properties/error_message",
+      "type": "string",
+      "description": "This field contains error details of processing.",
+      "examples": [
+        "File not contains valid header! Expected pattern: '^01\\s*,(CARDS|PCI)\\s*,\\d{4}-\\d{2}-\\d{2}\\s*,\\d{2}:\\d{2}:\\d{2}\\s*,[^,]+\\s*$', but content: '...'",
+        "File not contains valid footer! Expected pattern: '^99\\s*,\\d+\\s*$', but content: '...'",
+        "There are '10' unparseable lines",
+        "The count lines: '2' is different of total lines extracted from footer: '3'",
+        "Any processing error"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

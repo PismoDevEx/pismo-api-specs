@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest daily closure succeeded",
+  "description": "This event occurs when the daily closure step of the closing process is completed with product interest management. When the step generates reports, it is sent after all reports are resolved.",
+  "required": [
+    "operation_date"
+  ],
+  "properties": {
+    "operation_date": {
+      "type": "string",
+      "title": "Operation date",
+      "description": "Operation date, represents the day being closed.",
+      "format": "date",
+      "examples": [
+        "2026-10-20"
+      ]
+    }
+  }
+}

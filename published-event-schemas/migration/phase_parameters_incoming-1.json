@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/phase_parameters_incoming-1.json",
+  "type": "object",
+  "title": "Phase parameters migration started",
+  "description": "Event generated when phase parameters migration is started for processing.",
+  "examples": [
+    {
+      "entity": {
+        "phase_id": "Rollout_Jan2022",
+        "allow_cards_migration": false
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Contains the phase ID parameters for migration.",
+      "examples": [
+        {
+          "phase_id": "Rollout_Jan2022",
+          "allow_cards_migration": false
+        }
+      ],
+      "required": [
+        "phase_id"
+      ],
+      "properties": {
+        "phase_id": {
+          "$id": "#/properties/entity/properties/phase_id",
+          "type": "string",
+          "description": "Migration phase identifier",
+          "examples": [
+            "Rollout_Jan2022"
+          ]
+        },
+        "allow_cards_migration": {
+          "$id": "#/properties/entity/properties/allow_cards_migration",
+          "type": "boolean",
+          "description": "Defines whether card/pci migration is allowed for the phase ID. If `true`, card migration is allowed to proceed; if `false`, an outgoing error will be sent to the customer.",
+          "examples": [
+            false,
+            true
+          ]
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

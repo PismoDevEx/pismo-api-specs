@@ -1,0 +1,397 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix-out notification received",
+  "description": "Event generated when the <a href='https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer' target='_blank'>Pix-out transfer</a> endpoint is called. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments' target='_blank'>Pix-instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events' target='_blank'>Pix payments data events</a> guide.",
+  "examples": [
+    {
+      "domain": "pix",
+      "event_type": "pix_out",
+      "schema_version": 1,
+      "org_id": "4ea21a59-7f4f-4087-aab6-a9a96733084a",
+      "cid": "cid",
+      "timestamp": "2023-10-25T18:29:19Z",
+      "data": {
+        "account_id": 1234589,
+        "authorization_id": 123456,
+        "end_to_end_id": "E0000000020210519134701363535166",
+        "amount": 100,
+        "initiation_type": "MANUAL",
+        "transaction_type": "TRANSFER",
+        "status": "SETTLED",
+        "authorization_datetime": "2022-01-01T15:00:00Z",
+        "payee_name": "payee name",
+        "payee_participant": "12345678",
+        "schedule_id": "9c23477d-3f61-4697-b797-a9cf7fa60bc3",
+        "client_request_id": "4ea21a59-7f4f-4087-aab6-a9a96733084a",
+        "internal": false,
+        "payee": {
+          "account_number": "12345678",
+          "branch": "001",
+          "bank": "00992014",
+          "account_type": "CACC",
+          "document_number": "12312312390",
+          "name": "Tad Pohl"
+        },
+        "recurrence_pix": {
+          "scheduler_id": "c23477d-3f61-4697-b797-a9cf7fa60bc3",
+          "execution_id": 10010
+        },
+        "is_device_registered": false,
+        "processing_code": "000000"
+      }
+    }
+  ],
+  "required": [
+    "account_id",
+    "amount",
+    "authorization_datetime",
+    "authorization_id",
+    "end_to_end_id",
+    "payee",
+    "payee_participant",
+    "status"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Pix-out amount",
+      "description": "Pix-out amount",
+      "examples": [
+        125.5
+      ]
+    },
+    "authorization_datetime": {
+      "type": "string",
+      "title": "Authorization datetime",
+      "description": "Authorization date/time from the Pismo platform. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID",
+      "examples": [
+        123
+      ]
+    },
+    "client_request_id": {
+      "type": "string",
+      "title": "Unique transaction ID",
+      "description": "Client-generated unique transaction ID. This value cannot be repeated.",
+      "maxLength": 36,
+      "examples": [
+        "bc0bc832-ca05-425e-95d4-a1bf48ada1cc"
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Pix end to end ID",
+      "description": "Pix end to end transaction ID. This field is a Brazil Central Bank (BCB) requirement to track Pix transactions. Basically, there are two steps to a Pix transaction: 1. Initialize a transaction and 2. Confirm a transaction. This field is sent to the BCB in both steps in order to identify all transaction information.",
+      "examples": [
+        "E0000000020210519134701363533333"
+      ]
+    },
+    "initiation_type": {
+      "type": "string",
+      "title": "Payment initiation type",
+      "description": "Initiated payment type:  `MANUAL` - Manually initiated. Key is not used - bank account, bank code, document number, and branch is used for identification. `DICT` - Diretorio de Identificadores de Contas de Transacapo (Transaction accounts identifier directory). Pix/DICT key is used for identification. `STATIC_QRCODE` - Reusable code that contains only the data necessary to complete a transaction. When using static QR code, the transaction amount must be provided manually. `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically. `PAYMENT_INITIATOR` - Payment provider initiated. A payment initiator is a 3rd party that has obtained authorization from the Central Bank and has an Open Finance certification. `AUTOMATIC_PIX` - Payment order initiated via automatic PIX. `DYNAMIC_PROXIMITY_PIX` - Dynamic NFC-based initiation. `STATIC_PROXIMITY_PIX` - Static NFC-based initiation",
+      "maxLength": 50,
+      "enum": [
+        "MANUAL",
+        "DICT",
+        "STATIC_QRCODE",
+        "DYNAMIC_QRCODE",
+        "PAYMENT_INITIATOR",
+        "AUTOMATIC_PIX",
+        "DYNAMIC_PROXIMITY_PIX",
+        "STATIC_PROXIMITY_PIX"
+      ],
+      "examples": [
+        "PAYMENT_INITIATOR"
+      ]
+    },
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction type",
+      "description": "Type of transaction: `TRANSFER` = simple transfer (purchases or cash only); `CHANGE` = transfer of cash in addition to purchase amount (only when initiated by a `CHANGE` type QR code); `WITHDRAWAL` = cash-only transaction (only when initiated by a `WITHDRAWAL` type QR code); `REFUND_AUTOMATIC_PIX` = refund a pix to the PSP payer  (only when initiated by a `MANUAL`); `REFUND` = total or partial refund to the paying user within the scope of MED 2.0, when this refund occurs from the PI Account of the user's PSP who participated in the distribution chain of the resources of the original transaction (only when initiated by a `MANUAL`); `INSTALLMENT_PIX` = For INSTALLMENT PIX transactions",
+      "enum": [
+        "TRANSFER",
+        "CHANGE",
+        "WITHDRAWAL",
+        "REFUND_AUTOMATIC_PIX",
+        "REFUND",
+        "INSTALLMENT_PIX"
+      ],
+      "example": "TRANSFER"
+    },
+    "payee": {
+      "type": "object",
+      "required": [
+        "account_number",
+        "branch",
+        "bank",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "account_number": {
+          "type": "string",
+          "title": "Account Number",
+          "description": "Payee account number",
+          "maxLength": 20,
+          "examples": [
+            "98765432"
+          ]
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Payee's bank code - ISPB (Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier, an 8-digit value.",
+          "examples": [
+            "30306294"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Payee account branch without digit",
+          "maxLength": 4,
+          "examples": [
+            "1234"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account Type",
+          "description": "Payee's account type",
+          "maxLength": 4,
+          "examples": [
+            "CACC",
+            "SLRY",
+            "SVGS",
+            "TRAN"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Payee's document number",
+          "description": "Payee ID. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Payee account name",
+          "description": "Payee's account name",
+          "examples": [
+            "Sue Flay"
+          ]
+        }
+      }
+    },
+    "payee_name": {
+      "type": "string",
+      "title": "Payee Name",
+      "description": "Payee name",
+      "examples": [
+        "Cristill Ball"
+      ]
+    },
+    "payee_participant": {
+      "type": "string",
+      "title": "Payee participant ID",
+      "description": "Participant's ISPB (Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier for the receiving bank, an 8-digit value.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Pix-out Status",
+      "description": "Pix-out transaction status",
+      "enum": [
+        "CANCELLED",
+        "SETTLED"
+      ],
+      "example": "CANCELLED"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Text message from payer to receiver.",
+      "examples": [
+        "Transaction description"
+      ]
+    },
+    "external_movement_id": {
+      "type": "string",
+      "title": "External movement id",
+      "description": "The participant external movement ID",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "initiator_document_number": {
+      "type": "string",
+      "title": "Initiator's document number",
+      "description": "Payment initiator document number when `initiation_type` is `PAYMENT_INITIATOR`. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+      "maxLength": 14,
+      "examples": [
+        "12345678912345"
+      ]
+    },
+    "purchase_amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Purchase amount",
+      "description": "Purchase amount",
+      "examples": [
+        100.5
+      ]
+    },
+    "internal": {
+      "type": "boolean",
+      "title": "Internal transaction",
+      "description": "Internal transaction informs if the transaction was made inside Pismo (between accounts at the same Org), in this case, the SPI was not called",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "is_device_registered": {
+      "type": "boolean",
+      "title": "Is Device Registered",
+      "description": "Registered Device is about the limit that the device in question can make a pix transaction",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code used to create the transaction",
+      "examples": [
+        "PS1234"
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Pix-out Cancellation Error code",
+      "description": "Error code for Pix-out status `CANCELLED`, an 8-digit value.",
+      "examples": [
+        "EPIX0114",
+        "EPIX0134"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "title": "Pix-out cancellation reason",
+      "description": "Reason for Pix-out status `CANCELLED`",
+      "examples": [
+        "Transaction stopped due to error at the Creditor Agent.",
+        "Creditor account number invalid or missing.",
+        "Account specified is blocked, prohibiting posting of transactions against it.",
+        "Creditor account number closed.",
+        "Creditor account type missing or invalid.",
+        "Transaction type not supported/authorized on this account.",
+        "Specific transaction/message amount is greater than allowed maximum.",
+        "Amount received is not the amount agreed or expected.",
+        "Identification of end customer is not consistent with associated account number.",
+        "Creditor or Ultimate Creditor identification code missing or invalid.",
+        "Value in Creditor Identifier is incorrect.",
+        "The order was rejected by the bank side (for reasons concerning content).",
+        "Waiting time expired due to incomplete order.",
+        "Associated message, payment information block or transaction was received after agreed processing cut-off date, i.e., date in the past.",
+        "Settlement of the transaction has failed.",
+        "Regulatory Reason.",
+        "Due to specific service offered by the Creditor Agent."
+      ]
+    },
+    "schedule_id": {
+      "type": "string",
+      "title": "Schedule Identifier",
+      "description": "Pismo scheduled transaction ID (created upon scheduling a transaction and is used when canceling a scheduled transaction)",
+      "examples": [
+        "5633e370-0916-4799-96f6-3ae15112fb85"
+      ]
+    },
+    "transaction_identification": {
+      "type": "string",
+      "title": "Transaction identification code",
+      "description": "Transaction ID. This field is returned from the Validate QR code endpoint.",
+      "maxLength": 35,
+      "examples": [
+        "16484851846841"
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Metadata",
+      "description": "Additional information relevant to the customer. No business rule validation is performed on it.",
+      "examples": [
+        {
+          "customer-data": {
+            "my": "value",
+            "my-custom-business-label": "label",
+            "score": "123"
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "withdraw_amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Withdraw amount",
+      "description": "Amount of cash back returned to payer in excess of purchase amount",
+      "examples": [
+        26.0
+      ]
+    },
+    "recurrence_pix": {
+      "type": "object",
+      "required": [
+        "scheduler_id",
+        "execution_id"
+      ],
+      "properties": {
+        "scheduler_id": {
+          "type": "string",
+          "title": "Scheduler Identifier",
+          "description": "Schedule identifier. This field refers to the identification of the recurring payment schedule.",
+          "maxLength": 36,
+          "examples": [
+            "2633e340-0915-4192-46fs-3ae15112fbq9"
+          ]
+        },
+        "execution_id": {
+          "type": "integer",
+          "title": "Execution Identifier",
+          "description": "Schedule execution identifier. This field refers to the identification of the recurring payment execution",
+          "examples": [
+            10010
+          ]
+        }
+      }
+    }
+  }
+}

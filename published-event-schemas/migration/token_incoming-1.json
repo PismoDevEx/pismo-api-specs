@@ -1,0 +1,371 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/token_incoming-1.json",
+  "type": "object",
+  "default": {},
+  "title": "Token migration started",
+  "description": "Event generated when a token migration is started. Contains the payload with the data to be migrated.",
+  "examples": [
+    {
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "1",
+      "line_number": 1,
+      "entity": {
+        "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+        "cid": "my-unique-cid-here",
+        "file_id": "1",
+        "payment_application_instance_id": "PicPay",
+        "card_holder_name": "Walter White",
+        "token_type": "ECOMMERCE",
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikp",
+        "tc_date_time": "2022-06-02T15:26Z",
+        "token_unique_ref": "852741",
+        "pan_unique_ref": "PAN-4584",
+        "expiry_date": "2811",
+        "status": "ACTIVE",
+        "wallet_identifier": "40010036958 PayPal",
+        "network": "VTS",
+        "event_date_time": "2020-01-31T12:34:56.000123Z",
+        "device_id": "0jqfHOrefhK7FX0ryNEnFSI19",
+        "correlation_id": "c1f18245-0a69-4887-80b2-df92cbf559bd",
+        "devices_binding": true,
+        "metadata": {
+          "migrationDate": "2022-06-02 15:14:00",
+          "tcDateTime": "202206021526",
+          "eventDateTime": "2020-01-31-12.34.56.000123",
+          "chpras": "000000258600054"
+        },
+        "migration": {
+          "id": "ABC-123-DEF",
+          "version_date": "2022-06-02T15:14Z",
+          "card_id": "987654321",
+          "phase_id": "rollOut-002"
+        }
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "API",
+        "FILE"
+      ],
+      "examples": [
+        "API",
+        "FILE"
+      ]
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field identifies the name file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the size file.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "string",
+      "description": "This field identifies the line of the file that originated the event (can be 0 when origin is API).",
+      "examples": [
+        0,
+        2,
+        11
+      ]
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents a token.",
+      "examples": [
+        {
+          "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+          "cid": "my-unique-cid-here",
+          "file_id": "1",
+          "payment_application_instance_id": "PicPay",
+          "card_holder_name": "Walter White",
+          "token_type": "ECOMMERCE",
+          "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikp",
+          "tc_date_time": "2022-06-02T15:26Z",
+          "token_unique_ref": "852741",
+          "pan_unique_ref": "PAN-4584",
+          "expiry_date": "2811",
+          "status": "ACTIVE",
+          "wallet_identifier": "40010036958 PayPal",
+          "network": "VTS",
+          "event_date_time": "2020-01-31T12:34:56.000123Z",
+          "device_id": "0jqfHOrefhK7FX0ryNEnFSI19",
+          "correlation_id": "c1f18245-0a69-4887-80b2-df92cbf559bd",
+          "metadata": {
+            "migrationDate": "2022-06-02 15:14:00",
+            "tcDateTime": "202206021526",
+            "eventDateTime": "2020-01-31-12.34.56.000123",
+            "chpras": "000000258600054"
+          },
+          "migration": {
+            "id": "ABC-123-DEF",
+            "version_date": "2022-06-02T15:14Z",
+            "card_id": "987654321",
+            "phase_id": "rollOut-002"
+          }
+        }
+      ],
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "org_id": {
+          "$id": "#/properties/entity/properties/org_id",
+          "type": "string",
+          "description": "Internal identifier of the client organization registered into the platform.",
+          "examples": [
+            "TN_c642ca23-4ea8-4218-a00d-8331a496253c"
+          ]
+        },
+        "cid": {
+          "$id": "#/properties/entity/properties/cid",
+          "type": "string",
+          "format": "uuid",
+          "description": "This field identifies a file processing or an API request.",
+          "examples": [
+            "9be0486e-073a-4f56-80bb-5c400337e721"
+          ]
+        },
+        "payment_application_instance_id": {
+          "$id": "#/properties/entity/properties/payment_application_instance_id",
+          "type": "string",
+          "title": "Identifies payment_application_instance_id",
+          "examples": [
+            "PicPay"
+          ]
+        },
+        "card_holder_name": {
+          "$id": "#/properties/entity/properties/card_holder_name",
+          "type": "string",
+          "title": "Card owner name",
+          "examples": [
+            "Walter White"
+          ]
+        },
+        "token_type": {
+          "$id": "#/properties/entity/properties/token_type",
+          "type": "string",
+          "title": "Type of token",
+          "examples": [
+            "ECOMMERCE",
+            "HCE",
+            "CARD_ON_FILE",
+            "SECURE_ELEMENT",
+            "QRC",
+            "C",
+            "S"
+          ]
+        },
+        "token": {
+          "$id": "#/properties/entity/properties/token",
+          "type": "string",
+          "title": "Hash of token",
+          "examples": [
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikp"
+          ]
+        },
+        "tc_date_time": {
+          "$id": "#/properties/entity/properties/tc_date_time",
+          "type": "string",
+          "title": "Token confirmation Date and time",
+          "examples": [
+            "2022-06-02T15:26Z"
+          ]
+        },
+        "token_unique_ref": {
+          "$id": "#/properties/entity/properties/token_unique_ref",
+          "type": "string",
+          "title": "Token unique reference code",
+          "examples": [
+            "852741"
+          ]
+        },
+        "pan_unique_ref": {
+          "$id": "#/properties/entity/properties/pan_unique_ref",
+          "type": "string",
+          "title": "PAN unique reference code",
+          "examples": [
+            "PAN-4584"
+          ]
+        },
+        "expiry_date": {
+          "$id": "#/properties/entity/properties/expiry_date",
+          "type": "string",
+          "title": "Token expiration date",
+          "examples": [
+            "2811"
+          ]
+        },
+        "status": {
+          "$id": "#/properties/entity/properties/status",
+          "type": "string",
+          "title": "Identifies token status",
+          "examples": [
+            "ACTIVE"
+          ]
+        },
+        "wallet_identifier": {
+          "$id": "#/properties/entity/properties/wallet_identifier",
+          "type": "string",
+          "title": "Identifies digital wallet",
+          "examples": [
+            "40010036958 PayPal"
+          ]
+        },
+        "network": {
+          "$id": "#/properties/entity/properties/network",
+          "type": "string",
+          "title": "Identifies token network",
+          "examples": [
+            "VTS",
+            "MDES"
+          ]
+        },
+        "event_date_time": {
+          "type": "string",
+          "default": "",
+          "title": "Date and time of last status update",
+          "examples": [
+            "2020-01-31T12:34:56.000123Z"
+          ]
+        },
+        "device_id": {
+          "$id": "#/properties/entity/properties/device_id",
+          "type": "string",
+          "title": "Identifies the device id",
+          "examples": [
+            "MTgwNDIxMDEwNTAwMTMxODQ200cA3GlwEoRnaBGYQ8VWV46A"
+          ]
+        },
+        "correlation_id": {
+          "$id": "#/properties/entity/properties/correlation_id",
+          "type": "string",
+          "title": "Correlation id",
+          "examples": [
+            "c1f18245-0a69-4887-80b2-df92cbf559bd"
+          ]
+        },
+        "devices_binding": {
+          "$id": "#/properties/entity/properties/devices_binding",
+          "type": "boolean",
+          "title": "Devices binding",
+          "description": "Indicates whether the token requires an additional network call to retrieve device binding information (true) or not (false).",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "Others token information.",
+          "default": {},
+          "examples": [
+            {
+              "mykey": "myvalue",
+              "mysecond-key": "myvalue2"
+            }
+          ],
+          "additionalProperties": true
+        },
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "title": "This field contains the data that identifies a migration.",
+          "examples": [
+            {
+              "id": "ABC-123-DEF",
+              "version_date": "2022-06-02T15:14Z",
+              "card_id": "987654321",
+              "phase_id": "rollOut-002"
+            }
+          ],
+          "required": [
+            "id",
+            "version_date",
+            "card_id",
+            "phase_id"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "Migration unique id",
+              "examples": [
+                "ABC-123-DEF"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "Date of version of migration.",
+              "examples": [
+                "2021-08-27T16:45:07.750936Z"
+              ]
+            },
+            "card_id": {
+              "$id": "#/properties/entity/properties/migration/properties/card_id",
+              "type": "string",
+              "title": "Card migration id",
+              "examples": [
+                "987654321"
+              ]
+            },
+            "phase_id": {
+              "$id": "#/properties/entity/properties/migration/properties/phase_id",
+              "type": "string",
+              "title": "Card massive migration phase_id",
+              "examples": [
+                "rollOut-002"
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

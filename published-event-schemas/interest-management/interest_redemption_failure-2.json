@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest redemption failed",
+  "description": "This event occurs when a quota redemption fails",
+  "required": [
+    "external_redemption_id",
+    "account_id",
+    "message"
+  ],
+  "properties": {
+    "external_redemption_id": {
+      "type": "string",
+      "title": "External Redemption ID",
+      "description": "External identifier for redemption operation",
+      "examples": [
+        "6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within client organization",
+      "examples": [
+        "999999999"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of error that occurred when trying to redeem quota",
+      "examples": [
+        "This asset does not have any more available units."
+      ]
+    }
+  }
+}

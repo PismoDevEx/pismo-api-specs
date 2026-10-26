@@ -1,0 +1,228 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Instant pay scheduler status changed",
+  "description": "Pix instant pay scheduler actions generate this event. The <a href='https://developers.pismo.io/pismo-docs/reference/delete-cancel-pix-out'>Schedule transfers V2</a> and <a href='https://developers.pismo.io/pismo-docs/reference/post-schedule-pix-payment'>Cancel scheduled transfer V2</a> endpoints generate this event.",
+  "required": [
+    "id",
+    "domain",
+    "status",
+    "start_date",
+    "end_date",
+    "type",
+    "day_type",
+    "continue_even_failed",
+    "execution_hour",
+    "retry_hour",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Scheduler ID",
+      "description": "Scheduler identifier.",
+      "examples": [
+        "BBA99AF1-0843-451E-A8C9-2EF5D20C5276"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "title": "Domain",
+      "description": "Scheduler domain ID.",
+      "enun": [
+        "pix",
+        "pix-out-scheduled"
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Correlational ID of event",
+      "description": "This is not a unique value, so different events (from same domain+event_type or not) can share same cid. This is usefull to identify all events produced from same request or processing.",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Scheduler status",
+      "enum": [
+        "ACTIVE",
+        "INACTIVE",
+        "CANCELLED",
+        "COMPLETED"
+      ],
+      "examples": [
+        "ACTIVE"
+      ]
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Start date",
+      "description": "Scheduler start date. Format = yyyy-mm-dd",
+      "examples": [
+        "2024-12-12"
+      ]
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "title": "End date",
+      "description": "Scheduler end date. Format = yyyy-mm-dd",
+      "examples": [
+        "2024-12-12"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Type",
+      "description": "Scheduler type.",
+      "enum": [
+        "RECURRING",
+        "ONCE"
+      ],
+      "examples": [
+        "RECURRING"
+      ]
+    },
+    "day_type": {
+      "type": "string",
+      "title": "Day type",
+      "description": "Scheduler day type",
+      "enum": [
+        "CALENDAR",
+        "BUSINESS"
+      ],
+      "examples": [
+        "CALENDAR"
+      ]
+    },
+    "interval": {
+      "type": "string",
+      "title": "Interval",
+      "description": "Scheduler interval type.",
+      "enum": [
+        "MONTH",
+        "WEEK",
+        "DAY"
+      ],
+      "examples": [
+        "MONTH"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Scheduler description.",
+      "examples": [
+        "Pix out scheduler"
+      ]
+    },
+    "continue_even_failed": {
+      "type": "boolean",
+      "title": "Continue even failed",
+      "description": "If true, the next run is scheduled, even if the current run fails.",
+      "examples": [
+        true
+      ]
+    },
+    "execution_hour": {
+      "type": "string",
+      "title": "Execution hour",
+      "description": "Time when scheduler executes. Format = HH:MM:SS.",
+      "examples": [
+        "00:00:00"
+      ]
+    },
+    "retry_hour": {
+      "type": "string",
+      "title": "Execution retry hour",
+      "description": "Time when scheduler is retried in case of initial execution failure. Format = HH:MM:SS.",
+      "examples": [
+        "22:00:00"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created at",
+      "description": "Scheduler creation datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Updated at",
+      "description": "Scheduler last modified datetime. RCF 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID."
+    },
+    "cycle": {
+      "title": "Cycle",
+      "type": "object",
+      "description": "Cycle frequency",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Type",
+          "description": "Cycle frequency",
+          "enum": [
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "YEARLY"
+          ],
+          "examples": [
+            "DAILY"
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "title": "Count",
+          "description": "Cycle count"
+        }
+      },
+      "required": [
+        "type",
+        "count"
+      ]
+    }
+  },
+  "examples": [
+    {
+      "domain": "instantpay-scheduler",
+      "event_type": "scheduler_status_change",
+      "schema_version": 1,
+      "org_id": "4ea21a59-7f4f-4087-aab6-a9a96733084a",
+      "cid": "12766d76-6e0d-99fa-8209-d236f4fbb4a2",
+      "timestamp": "2023-10-25T18:29:19Z",
+      "data": {
+        "id": "51a7e875-35a5-4c81-aa77-51bdf3090835",
+        "domain": "pix-out-scheduled",
+        "account_id": 123456,
+        "description": "Pix out scheduler",
+        "status": "ACTIVE",
+        "start_date": "2024-10-13",
+        "end_date": "2024-12-12",
+        "type": "RECURRING",
+        "day_type": "CALENDAR",
+        "interval": "MONTH",
+        "continue_even_failed": true,
+        "execution_hour": "00:00:00",
+        "retry_hour": "22:00:00"
+      }
+    }
+  ]
+}

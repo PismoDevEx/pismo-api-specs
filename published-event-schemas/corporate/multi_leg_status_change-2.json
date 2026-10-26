@@ -1,0 +1,370 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Multi-leg payment lifecycle status changed",
+  "required": [
+    "multileg_id",
+    "status"
+  ],
+  "properties": {
+    "multileg_id": {
+      "title": "A unique 50 character long identification for the multi-leg payment",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "examples": [
+        "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0"
+      ]
+    },
+    "status": {
+      "title": "Current multi-leg status",
+      "description": "\n\nIt only accepts the following values:\n\n`FINISHED`: When all the legs have finished execution.\n\n`ROLLED_BACK`: When an error has occurred and the operations have been reverted.\n\n`ROLLBACK_FAILED`: When an error occurs during the rollback operation.\n\n`TIMED_OUT`: When the multi-leg payment processing times out.\n\n",
+      "type": "string",
+      "enum": [
+        "FINISHED",
+        "ROLLED_BACK",
+        "ROLLBACK_FAILED",
+        "TIMED_OUT"
+      ],
+      "minLength": 1,
+      "maxLength": 20,
+      "examples": [
+        "FINISHED"
+      ]
+    },
+    "debits": {
+      "title": "List of debit leg execution statuses",
+      "type": [
+        "array"
+      ],
+      "items": {
+        "type": "object",
+        "required": [
+          "external_account_id",
+          "tracking_id",
+          "status"
+        ],
+        "properties": {
+          "external_account_id": {
+            "type": "string",
+            "title": "External account ID",
+            "description": "The external account ID to which the transaction is posted.",
+            "minLength": 1,
+            "maxLength": 60,
+            "examples": [
+              "f8eccb3c-bce1-47b5-a122-f08c9c41b036"
+            ]
+          },
+          "tracking_id": {
+            "title": "A unique 50 character long identification for the payment",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "examples": [
+              "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0-db00"
+            ]
+          },
+          "status": {
+            "title": "Current debit leg status",
+            "description": "\n\nIt only accepts the following values:\n\n`PENDING`: When the debit leg is pending execution.\n\n`EXECUTED`: When the debit leg has finished execution.\n\n`FAILED`: When an error has occurred during the debit leg execution.\n\n`ROLLED_BACK`: When the debit leg has been rolled back.\n\n`ROLLBACK_FAILED`: When an error has occurred during the debit leg rollback.\n\n",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "examples": [
+              "EXECUTED"
+            ]
+          },
+          "event_datetime": {
+            "type": "string",
+            "title": "Event datetime",
+            "description": "Event timestamp in the UTC format (RFC 3339).",
+            "format": "date-time",
+            "minLength": 24,
+            "maxLength": 24,
+            "examples": [
+              "2023-01-01T00:00:00.000Z"
+            ]
+          },
+          "error": {
+            "type": "object",
+            "title": "Error",
+            "description": "Leg error details, if any.",
+            "required": [
+              "status",
+              "code",
+              "message"
+            ],
+            "properties": {
+              "status": {
+                "type": "integer",
+                "title": "HTTP status code",
+                "description": "The HTTP status code returned by the operation.",
+                "minimum": 100,
+                "maximum": 599,
+                "examples": [
+                  402
+                ]
+              },
+              "code": {
+                "type": "string",
+                "title": "Error code",
+                "description": "A code that identifies the error.",
+                "minLength": 1,
+                "maxLength": 50,
+                "examples": [
+                  "WPMT0010"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "title": "Error message",
+                "description": "A message that describes the error.",
+                "minLength": 1,
+                "maxLength": 255,
+                "examples": [
+                  "Insufficient funds"
+                ]
+              }
+            }
+          },
+          "rollback": {
+            "type": "object",
+            "title": "Rollback",
+            "description": "Details about the rollback operation, if applicable.",
+            "properties": {
+              "tracking_id": {
+                "type": "string",
+                "title": "A unique 50 character long identification for the rollback operation",
+                "minLength": 1,
+                "maxLength": 50,
+                "examples": [
+                  "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0-db00rb"
+                ]
+              },
+              "event_datetime": {
+                "type": "string",
+                "title": "Event datetime",
+                "description": "Event timestamp in the UTC format (RFC 3339).",
+                "format": "date-time",
+                "minLength": 24,
+                "maxLength": 24,
+                "examples": [
+                  "2023-01-01T00:00:00.000Z"
+                ]
+              },
+              "error": {
+                "type": "object",
+                "title": "Error",
+                "description": "Rollback error details, if any.",
+                "required": [
+                  "status",
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "title": "HTTP status code",
+                    "description": "The HTTP status code returned by the rollback operation.",
+                    "minimum": 100,
+                    "maximum": 599,
+                    "examples": [
+                      402
+                    ]
+                  },
+                  "code": {
+                    "type": "string",
+                    "title": "Error code",
+                    "description": "A code that identifies the error.",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "examples": [
+                      "WPMT0010"
+                    ]
+                  },
+                  "message": {
+                    "type": "string",
+                    "title": "Error message",
+                    "description": "A message that describes the error.",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "examples": [
+                      "Insufficient funds"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "credits": {
+      "title": "List of credit leg execution statuses",
+      "type": [
+        "array"
+      ],
+      "items": {
+        "type": "object",
+        "required": [
+          "external_account_id",
+          "tracking_id",
+          "status"
+        ],
+        "properties": {
+          "external_account_id": {
+            "type": "string",
+            "title": "External account ID",
+            "description": "The external account ID to which the transaction is posted.",
+            "minLength": 1,
+            "maxLength": 60,
+            "examples": [
+              "f8eccb3c-bce1-47b5-a122-f08c9c41b036"
+            ]
+          },
+          "tracking_id": {
+            "title": "A unique 50 character long identification for the payment",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "examples": [
+              "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0-db00"
+            ]
+          },
+          "status": {
+            "title": "Current debit leg status",
+            "description": "\n\nIt only accepts the following values:\n\n`PENDING`: When the debit leg is pending execution.\n\n`EXECUTED`: When the debit leg has finished execution.\n\n`FAILED`: When an error has occurred during the debit leg execution.\n\n`ROLLED_BACK`: When the debit leg has been rolled back.\n\n`ROLLBACK_FAILED`: When an error has occurred during the debit leg rollback.\n\n",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "examples": [
+              "EXECUTED"
+            ]
+          },
+          "event_datetime": {
+            "type": "string",
+            "title": "Event datetime",
+            "description": "Event timestamp in the UTC format (RFC 3339).",
+            "format": "date-time",
+            "minLength": 24,
+            "maxLength": 24,
+            "examples": [
+              "2023-01-01T00:00:00.000Z"
+            ]
+          },
+          "error": {
+            "type": "object",
+            "title": "Error",
+            "description": "Leg error details, if any.",
+            "required": [
+              "status",
+              "code",
+              "message"
+            ],
+            "properties": {
+              "status": {
+                "type": "integer",
+                "title": "HTTP status code",
+                "description": "The HTTP status code returned by the operation.",
+                "minimum": 100,
+                "maximum": 599,
+                "examples": [
+                  402
+                ]
+              },
+              "code": {
+                "type": "string",
+                "title": "Error code",
+                "description": "A code that identifies the error.",
+                "minLength": 1,
+                "maxLength": 50,
+                "examples": [
+                  "WPMT0010"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "title": "Error message",
+                "description": "A message that describes the error.",
+                "minLength": 1,
+                "maxLength": 255,
+                "examples": [
+                  "Insufficient funds"
+                ]
+              }
+            }
+          },
+          "rollback": {
+            "type": "object",
+            "title": "Rollback",
+            "description": "Details about the rollback operation, if applicable.",
+            "properties": {
+              "tracking_id": {
+                "type": "string",
+                "title": "A unique 50 character long identification for the rollback operation",
+                "minLength": 1,
+                "maxLength": 50,
+                "examples": [
+                  "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0-db00rb"
+                ]
+              },
+              "event_datetime": {
+                "type": "string",
+                "title": "Event datetime",
+                "description": "Event timestamp in the UTC format (RFC 3339).",
+                "format": "date-time",
+                "minLength": 24,
+                "maxLength": 24,
+                "examples": [
+                  "2023-01-01T00:00:00.000Z"
+                ]
+              },
+              "error": {
+                "type": "object",
+                "title": "Error",
+                "description": "Rollback error details, if any.",
+                "required": [
+                  "status",
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "title": "HTTP status code",
+                    "description": "The HTTP status code returned by the rollback operation.",
+                    "minimum": 100,
+                    "maximum": 599,
+                    "examples": [
+                      402
+                    ]
+                  },
+                  "code": {
+                    "type": "string",
+                    "title": "Error code",
+                    "description": "A code that identifies the error.",
+                    "minLength": 1,
+                    "maxLength": 50,
+                    "examples": [
+                      "WPMT0010"
+                    ]
+                  },
+                  "message": {
+                    "type": "string",
+                    "title": "Error message",
+                    "description": "A message that describes the error.",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "examples": [
+                      "Insufficient funds"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

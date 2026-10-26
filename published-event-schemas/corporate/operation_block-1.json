@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Operations Blocks created, updated, or canceled",
+  "required": [
+    "block_id",
+    "status",
+    "description",
+    "created_at"
+  ],
+  "properties": {
+    "block_id": {
+      "title": "Unique identifier of the operation block",
+      "type": "string",
+      "format": "uuid",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "status": {
+      "title": "Status of the operation block",
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "DEACTIVATED"
+      ],
+      "examples": [
+        "ACTIVE"
+      ]
+    },
+    "description": {
+      "title": "The operation block description",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "examples": [
+        "Bank Liquidation (FDIC 12 C.F.R. \u00a7 360.9)"
+      ]
+    },
+    "program_id": {
+      "title": "Program identifier on the Pismo platform to which the operation block will be enforced",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        123456
+      ]
+    },
+    "division_code": {
+      "title": "Division code to which the operation block will be enforced",
+      "minLength": 1,
+      "maxLength": 36,
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "2ded065b2b02-ffab221"
+      ]
+    },
+    "created_at": {
+      "title": "Date and time when the operation block was created",
+      "type": "string",
+      "format": "date-time",
+      "examples": [
+        "2023-10-01T12:00:00Z"
+      ]
+    },
+    "updated_at": {
+      "title": "Date and time when the operation block was last updated",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2023-10-01T12:00:00Z"
+      ]
+    },
+    "allowed_operations": {
+      "title": "Operations that will not be affected by the operation block enforcement",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "EARMARK_CREATE",
+          "EARMARK_RELEASE",
+          "EARMARK_UPDATE",
+          "PAYMENT_DEBIT",
+          "PAYMENT_CREDIT",
+          "ACCOUNT_HOLD_FUNDS_CREATE",
+          "ACCOUNT_HOLD_FUNDS_RELEASE",
+          "ACCOUNT_STATUS_UPDATE",
+          "CHECK_RELEASE"
+        ]
+      },
+      "examples": [
+        "EARMARK_RELEASE"
+      ]
+    }
+  }
+}

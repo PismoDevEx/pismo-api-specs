@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix DICT synchronized",
+  "description": "(Internal only) Event that represents a Pix DICT synchronization between Pismo Platform and the Central Bank of Braziil",
+  "required": [
+    "job_id",
+    "key_type",
+    "participant",
+    "result"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "title": "Job ID",
+      "description": "Identifier of the process that executed the synchronization",
+      "examples": [
+        "91d65e98-97c0-4b0f-b577-73625da1f9fc"
+      ]
+    },
+    "correlation_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Correlation ID",
+      "description": "Correlation identifier for operational support",
+      "examples": [
+        "B20220921145635222303062944CA66F"
+      ]
+    },
+    "key_type": {
+      "type": "string",
+      "title": "Key Type",
+      "description": "Type of Pix key that was used in this synchronization",
+      "examples": [
+        "CPF",
+        "CNPJ",
+        "PHONE",
+        "EMAIL",
+        "EVP"
+      ]
+    },
+    "participant": {
+      "type": "string",
+      "title": "Participant",
+      "description": "Pix Participant ID registered with Central Bank of Brazil",
+      "examples": [
+        "00000000",
+        "60746948"
+      ]
+    },
+    "result": {
+      "type": "string",
+      "title": "Result",
+      "description": "Final result of the synchronization process",
+      "examples": [
+        "OK",
+        "NOK"
+      ]
+    }
+  }
+}

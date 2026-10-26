@@ -1,0 +1,255 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix internal transaction reported",
+  "description": "This event is generated when a Pix internal transaction occurs and is reported. You can use this event to track internal Pix transaction progress, completion, or failure.",
+  "required": [
+    "amount",
+    "end_to_end_id",
+    "transaction_date_time",
+    "status",
+    "initiation_type",
+    "payee",
+    "payer"
+  ],
+  "properties": {
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Transaction amount",
+      "examples": [
+        30.34
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "End-to-end-ID",
+      "description": "Unique Pix transaction identifier. This field is a Brazil Central Bank (BCB) requirement to track all steps of Pix transactions.",
+      "examples": [
+        "E2198371298371"
+      ]
+    },
+    "transaction_date_time": {
+      "type": "string",
+      "title": "Transaction datetime",
+      "description": "Transaction datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2023-10-25T18:29:19Z"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Transaction status",
+      "enum": [
+        "PROCESSING",
+        "CONFIRMED",
+        "ERROR"
+      ],
+      "examples": [
+        "CONFIRMED"
+      ]
+    },
+    "initiation_type": {
+      "type": "string",
+      "title": "Initiation type",
+      "description": "Transaction initiation type. Refer to the [Pix-out transfer](https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer) endpoint for enum descriptions",
+      "enum": [
+        "MANUAL",
+        "DICT",
+        "STATIC_QRCODE",
+        "DYNAMIC_QRCODE",
+        "PAYMENT_INITIATOR",
+        "AUTOMATIC_PIX",
+        "DYNAMIC_PROXIMITY_PIX",
+        "STATIC_PROXIMITY_PIX"
+      ],
+      "examples": [
+        "DICT"
+      ]
+    },
+    "payee": {
+      "type": "object",
+      "title": "Payee",
+      "description": "Transaction payee object",
+      "required": [
+        "account_number",
+        "branch",
+        "bank",
+        "document_number",
+        "account_type"
+      ],
+      "properties": {
+        "account_number": {
+          "type": "string",
+          "title": "Account number",
+          "description": "Payee account number plus check digit (verifier). Format: account number + check digit. Example: '9876543' (account number) + '2' (check digit) = '98765432'.",
+          "maxLength": 10,
+          "examples": [
+            "98765432"
+          ]
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Payee's bank code - ISPB (Identificador do Sistema de Pagamento Brazil), an 8-digit value.",
+          "maxLength": 8,
+          "examples": [
+            "30306294"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Payee account branch without digit.",
+          "maxLength": 4,
+          "examples": [
+            "1234"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Payee's document number",
+          "description": "Government-issued ID such as a tax registration ID (CPF/CNPJ). Must be numeric with 11\u201314 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account Type",
+          "description": "Payee account type. Refer to the [Pix-out transfer](https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer) endpoint for enum descriptions ",
+          "enum": [
+            "CACC",
+            "SVGS",
+            "TRAN",
+            "SLRY"
+          ],
+          "examples": [
+            "CACC"
+          ]
+        }
+      }
+    },
+    "payer": {
+      "type": "object",
+      "description": "Transaction payer object",
+      "title": "Payer",
+      "required": [
+        "account_number",
+        "branch",
+        "bank",
+        "document_number",
+        "account_type"
+      ],
+      "properties": {
+        "account_number": {
+          "type": "string",
+          "title": "Account number",
+          "description": "Payer account number plus check digit (verifier). Format: account number + hyphen (-) +  check digit. For example - '1234567-8'.",
+          "maxLength": 10,
+          "examples": [
+            "1234567-8"
+          ]
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Payer's bank code - ISPB (Identificador do Sistema de Pagamento Brazil), an 8-digit value.",
+          "maxLength": 8,
+          "examples": [
+            "00000033"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Payer account branch without digit.",
+          "maxLength": 4,
+          "examples": [
+            "1234"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Payer's document number",
+          "description": "Government-issued ID, such as a tax registration ID (CPF/CNPJ). Must be numeric with 11\u201314 digits.",
+          "maxLength": 14,
+          "examples": [
+            "98765432100"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account type",
+          "description": "Payer's account type. Refer to the [Pix-out transfer](https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer) endpoint for enum descriptions",
+          "enum": [
+            "CACC",
+            "SVG",
+            "TRAN",
+            "SLRY"
+          ],
+          "examples": [
+            "CACC"
+          ]
+        }
+      },
+      "original_transaction": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "title": "Original transaction",
+        "description": "Reference to the original transaction in case of refund",
+        "required": [
+          "end_to_end_id",
+          "amount"
+        ],
+        "properties": {
+          "end_to_end_id": {
+            "type": "string",
+            "title": "Original end-to-end ID",
+            "description": "Original transaction end-to-end ID",
+            "examples": [
+              "D21418814181"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "title": "Original amount",
+            "description": "Original transaction amount",
+            "examples": [
+              20.0
+            ]
+          }
+        }
+      },
+      "key": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Pix key",
+        "description": "Pix key used in the transaction such as an email or mobile number"
+      },
+      "error_code": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Error code",
+        "description": "Error code in case of failure"
+      },
+      "error_message": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Error message",
+        "description": "Error message in case of failure"
+      }
+    }
+  }
+}

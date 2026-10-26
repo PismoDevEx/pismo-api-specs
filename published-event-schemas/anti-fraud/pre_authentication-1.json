@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://pismo.io/events/anti-fraud/pre-authentication.json",
+  "title": "3DS pre-authentication received",
+  "description": "3DS pre-authentication event",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "provider",
+    "document_number",
+    "account_id",
+    "card_id",
+    "card_mode_id",
+    "customer_id",
+    "card_hash",
+    "raw_provider"
+  ],
+  "properties": {
+    "external_id": {
+      "type": "string",
+      "title": "External transaction identifier"
+    },
+    "type": {
+      "type": "string",
+      "title": "Event type"
+    },
+    "provider": {
+      "type": "string",
+      "title": "Provider identifier"
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Cardholder document number"
+    },
+    "cardholder_postal_code": {
+      "type": "string",
+      "title": "Card holder postal code"
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account identifier"
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program identifier"
+    },
+    "card_id": {
+      "type": "integer",
+      "title": "Card identifier"
+    },
+    "card_mode_id": {
+      "type": "integer",
+      "title": "Card mode identifier"
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Customer identifier"
+    },
+    "card_hash": {
+      "type": "string",
+      "title": "Card secure equivalent to PAN"
+    },
+    "card_bin": {
+      "type": "string",
+      "title": "Card bin"
+    },
+    "card_last_four_digits": {
+      "type": "string",
+      "title": "Card last four digits"
+    },
+    "card_type": {
+      "type": "string",
+      "title": "Card type"
+    },
+    "raw_provider": {
+      "type": "object",
+      "title": "Received provider data without PCI fields",
+      "additionalProperties": true
+    },
+    "raw_response": {
+      "type": "object",
+      "title": "Generated response returned to provider",
+      "additionalProperties": true
+    }
+  }
+}

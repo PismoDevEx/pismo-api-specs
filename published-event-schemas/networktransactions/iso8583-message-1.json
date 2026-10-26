@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Network authorization ISO8583 message received",
+  "description": "Network authorization <a href='https://en.wikipedia.org/wiki/ISO_8583' target='_blank'>ISO8583</a> message event. This event represents the raw message received from the card network in the authorization workflow. You can use it to verify all non-sensitive data received for a specific message (that is, messages other than Clearing/Base II messages). Pismo issues an iso8583 event after parsing the message and removing any sensitive data from the payload. To see example IS08583 messages and for more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/authorization-events' target='_blank'>Authorization events</a> guide.",
+  "required": [
+    "caller",
+    "card_hash",
+    "message",
+    "mti"
+  ],
+  "properties": {
+    "caller": {
+      "type": "string",
+      "description": "Card brand",
+      "enum": [
+        "Mastercard",
+        "Visa",
+        "tecban",
+        "artajasa",
+        "rupay"
+      ]
+    },
+    "card_hash": {
+      "type": "string",
+      "description": "Hash of card PAN used in the authorization",
+      "examples": [
+        "abcde999999aaaaaa/abcde999999aaaaaaxxMXhKHHHHASS999abcde999999aaaaaaxxASYsssa=="
+      ]
+    },
+    "message": {
+      "type": "object",
+      "title": "ISO8583 message",
+      "description": "ISO8583 message in JSON format"
+    },
+    "mti": {
+      "type": "string",
+      "description": "Message type identifier. For more information see <a href='https://en.wikipedia.org/wiki/ISO_8583#Message_type_indicator_(MTI)'  target='_blank'>MTI</a>",
+      "examples": [
+        "0100"
+      ]
+    }
+  }
+}

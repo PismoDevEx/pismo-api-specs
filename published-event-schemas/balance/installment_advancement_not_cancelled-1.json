@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Installment advanced not canceled",
+  "description": "Event generated when client tries to cancel an installment advancement v2, and it is not canceled due to a business validation.",
+  "required": [
+    "installment_advancement_id",
+    "org_id",
+    "program_id",
+    "program_type_id",
+    "account_id",
+    "error_message",
+    "event_date_time"
+  ],
+  "properties": {
+    "installment_advancement_id": {
+      "type": "integer",
+      "description": "Installment advancement ID",
+      "examples": [
+        1010
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID",
+      "examples": [
+        1122
+      ]
+    },
+    "program_type_id": {
+      "type": "integer",
+      "description": "Program type ID",
+      "examples": [
+        1
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message explaining why the installment advancement can't be canceled",
+      "examples": [
+        "Account current cycle does not correspond to the advancement cycle."
+      ]
+    },
+    "event_date_time": {
+      "type": "string",
+      "description": "Date and time when event was generated in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    }
+  }
+}

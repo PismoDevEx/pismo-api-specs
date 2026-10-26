@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset Redemption Cancellation Success",
+  "description": "This event occurs when the redemption cancellation is processed successfully.",
+  "required": [
+    "asset_id",
+    "issuer_id",
+    "external_id",
+    "redemption_id",
+    "units",
+    "amount",
+    "redemption_date"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation. field provided by customer in asset redemption operation.",
+      "examples": [
+        "00000000013"
+      ]
+    },
+    "redemption_id": {
+      "type": "string",
+      "title": "Redemption Id",
+      "description": "ransom id in our system",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "units": {
+      "type": "number",
+      "title": "Asset unit",
+      "format": "double",
+      "description": "Unit redeemed",
+      "examples": [
+        0.01
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Redeemed amount",
+      "format": "double",
+      "description": "Monetary value redeemed",
+      "examples": [
+        999.0
+      ]
+    },
+    "redemption_date": {
+      "type": "string",
+      "title": "Redemption date",
+      "format": "date",
+      "description": "Date redemption occurred",
+      "examples": [
+        "2020-12-28"
+      ]
+    },
+    "unit_value": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Asset unit value received from API",
+      "format": "double",
+      "description": "Unit value redeemed received from API",
+      "examples": [
+        0.01
+      ]
+    }
+  }
+}

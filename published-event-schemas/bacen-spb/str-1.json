@@ -1,0 +1,230 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "BCB SPB transfer processed",
+  "required": [
+    "str_message_code",
+    "type",
+    "status",
+    "correlation_id",
+    "amount"
+  ],
+  "properties": {
+    "str_message_code": {
+      "type": "string",
+      "title": "STR Message Code",
+      "description": "The message code received from the provider. It refers to the BACEN field CdMensagem",
+      "examples": [
+        "STR0008"
+      ]
+    },
+    "if_control_id": {
+      "type": "string",
+      "title": "IF Control Identifier",
+      "description": "The IF control code received from the provider. It refers to the BACEN field NumCtrlIF",
+      "examples": [
+        "123456"
+      ]
+    },
+    "str_control_id": {
+      "type": "string",
+      "title": "STR Control Identifier",
+      "description": "The STR control code received from the provider. It refers to the BACEN field NumCtrlSTR",
+      "examples": [
+        "123456"
+      ]
+    },
+    "str_reversal_control_id": {
+      "type": "string",
+      "title": "STR Reversal Control Identifier",
+      "description": "The STR control code received from the provider on reversal flow (STR0010R2). It refers to the BACEN field NumCtrlSTR",
+      "examples": [
+        "123456"
+      ]
+    },
+    "external_reversal_code": {
+      "type": "string",
+      "title": "External Reversal Code",
+      "description": "The external reversal code which received from the provider. It refers to the BACEN field CodDevTransf",
+      "examples": [
+        "1"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Transaction Type",
+      "description": "Type of the transaction",
+      "examples": [
+        "CASHOUT",
+        "CASHIN"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Status of the transaction",
+      "examples": [
+        "PROCESSING",
+        "SETTLED",
+        "REVERTED",
+        "ERROR"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account Identifier",
+      "description": "Unique account identifier at Pismo Platform",
+      "examples": [
+        123
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization Identifier",
+      "description": "Authorization Identifier on Pismo platform",
+      "examples": [
+        123
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Correlation Identifier",
+      "description": "Pismo platform correlation identifier used on the entire flow",
+      "examples": [
+        "562c3bbf-5cd9-4d36-a693-5020f551476b"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "transaction amount",
+      "description": "The amount of the transaction",
+      "examples": [
+        20.15
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error code",
+      "description": "Internal error code of the application",
+      "examples": [
+        "EBS0001"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error Message",
+      "description": "Error details",
+      "examples": [
+        "invalid bank account"
+      ]
+    },
+    "from": {
+      "$ref": "#/definitions/from"
+    },
+    "to": {
+      "$ref": "#/definitions/to"
+    }
+  },
+  "definitions": {
+    "from": {
+      "type": [
+        "object"
+      ],
+      "title": "Source information",
+      "description": "Source information. Who sent the money.",
+      "properties": {
+        "ispb": {
+          "type": "string",
+          "title": "ISPB",
+          "description": "Source bank ISPB",
+          "examples": [
+            "12345678"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Source bank branch",
+          "examples": [
+            "0123"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account Number",
+          "description": "Source bank account number",
+          "examples": [
+            "0123456"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document Number",
+          "description": "Source document number",
+          "examples": [
+            "12345689"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Source name",
+          "examples": [
+            "JOAO"
+          ]
+        }
+      }
+    },
+    "to": {
+      "type": [
+        "object"
+      ],
+      "title": "Destination information",
+      "description": "Destination information. Who receives the money.",
+      "properties": {
+        "ispb": {
+          "type": "string",
+          "title": "ISPB",
+          "description": "Destination bank ISPB",
+          "examples": [
+            "12345678"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Destination bank branch",
+          "examples": [
+            "0123"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account Number",
+          "description": "Destination bank account number",
+          "examples": [
+            "0123456"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document Number",
+          "description": "Destination document number",
+          "examples": [
+            "12345689"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Destination name",
+          "examples": [
+            "JOAO"
+          ]
+        }
+      }
+    }
+  }
+}

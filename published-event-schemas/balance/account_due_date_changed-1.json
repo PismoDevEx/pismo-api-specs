@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Account due date changed",
+  "description": "This event is generated when an account due date is changed.",
+  "required": [
+    "account_id",
+    "org_id",
+    "old_program_due_date_id",
+    "new_program_due_date_id",
+    "statements"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID.",
+      "examples": [
+        1
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID.",
+      "examples": [
+        "TN-XXX"
+      ]
+    },
+    "old_program_due_date_id": {
+      "type": "integer",
+      "description": "Previous program due date ID.",
+      "examples": [
+        1
+      ]
+    },
+    "new_program_due_date_id": {
+      "type": "integer",
+      "description": "New program due date ID.",
+      "examples": [
+        2
+      ]
+    },
+    "statements": {
+      "type": "array",
+      "description": "Statements impacted by the due date change.",
+      "items": {
+        "type": "object",
+        "required": [
+          "statement_id",
+          "new_calendar"
+        ],
+        "properties": {
+          "statement_id": {
+            "type": "integer",
+            "description": "Statement ID.",
+            "examples": [
+              1
+            ]
+          },
+          "new_calendar": {
+            "type": "object",
+            "description": "New calendar generated for the statement.",
+            "required": [
+              "calendar_id",
+              "program_id",
+              "program_due_date_id",
+              "cycle_closing_date",
+              "due_date"
+            ],
+            "properties": {
+              "calendar_id": {
+                "type": "integer",
+                "description": "Calendar ID.",
+                "examples": [
+                  654
+                ]
+              },
+              "program_id": {
+                "type": "integer",
+                "description": "Program ID.",
+                "examples": [
+                  123
+                ]
+              },
+              "program_due_date_id": {
+                "type": "integer",
+                "description": "Program due date ID.",
+                "examples": [
+                  3128
+                ]
+              },
+              "cycle_closing_date": {
+                "type": "string",
+                "description": "Cycle closing date.",
+                "format": "date",
+                "examples": [
+                  "2021-06-21"
+                ]
+              },
+              "due_date": {
+                "type": "string",
+                "description": "Due date.",
+                "format": "date",
+                "examples": [
+                  "2021-06-21"
+                ]
+              },
+              "real_due_date": {
+                "type": "string",
+                "description": "Real due date.",
+                "examples": [
+                  "2021-06-21"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "examples": [
+        [
+          {
+            "statement_id": 1,
+            "new_calendar": {
+              "calendar_id": 654,
+              "program_id": 123,
+              "program_due_date_id": 3128,
+              "cycle_closing_date": "2021-06-21",
+              "due_date": "2021-06-21",
+              "real_due_date": "2021-06-21"
+            }
+          }
+        ]
+      ]
+    }
+  }
+}

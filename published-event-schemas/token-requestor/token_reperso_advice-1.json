@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Token Reperso Advice event",
+  "description": "Event emitted when a token re-personalization is advised.",
+  "properties": {
+    "date": {
+      "type": "integer",
+      "description": "Event creation timestamp in UTC format."
+    },
+    "v_provisioned_token_id": {
+      "type": "string",
+      "description": "Visa provisioned-token identifier. Opaque reference to the provisioned token."
+    },
+    "v_pan_enrollment_id": {
+      "type": "string",
+      "description": "Visa PAN enrollment identifier associated with the provisioned token."
+    },
+    "v_notification_id": {
+      "type": "string",
+      "description": "Visa notification identifier that triggered this event."
+    },
+    "token_type": {
+      "type": "string",
+      "description": "Type of the provisioned token.",
+      "enum": [
+        "ECOMMERCE_COF",
+        "DEVICE",
+        "SCAN"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "date",
+    "v_provisioned_token_id",
+    "v_pan_enrollment_id",
+    "token_type"
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Overdraft program attached",
+  "required": [
+    "program_id",
+    "attach_datetime",
+    "overdraft"
+  ],
+  "properties": {
+    "program_id": {
+      "type": "integer",
+      "title": "Program Identifier",
+      "description": "Program identifier in the pismo platform.",
+      "examples": [
+        123456
+      ]
+    },
+    "attach_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Attach Date",
+      "description": "The date and time when the program was attached.",
+      "examples": [
+        "2023-10-01T12:00:00Z"
+      ]
+    },
+    "overdraft": {
+      "type": "object",
+      "required": [
+        "product_id",
+        "name",
+        "interest_plan_id",
+        "processing_codes",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "title": "Product ID",
+          "description": "Product ID in UUID v4 format",
+          "examples": [
+            "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Product name",
+          "description": "Name of the overdraft product",
+          "examples": [
+            "Tax 1 Default"
+          ]
+        },
+        "interest_plan_id": {
+          "type": "string",
+          "title": "Interest plan ID",
+          "description": "Your interest plan ID on the Pismo platform. The ID is in UUID v4 format.",
+          "examples": [
+            "b935acaf-886c-4817-8f7c-c2cc3ce4d509"
+          ]
+        },
+        "grace_period": {
+          "type": "integer",
+          "title": "Grace period",
+          "description": "Grace period in days",
+          "examples": [
+            0
+          ]
+        },
+        "processing_codes": {
+          "type": "object",
+          "required": [
+            "interest_processing_code"
+          ],
+          "properties": {
+            "interest_processing_code": {
+              "type": "string",
+              "title": "Interest processing code",
+              "description": "Processing code used to identify interest-related transactions such as interest accrual, charging, and reversals on the overdraft balance.",
+              "examples": [
+                "202526"
+              ]
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "title": "Status",
+          "description": "Current status of the overdraft product",
+          "examples": [
+            "ACTIVE"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Created at",
+          "description": "The datetime when the overdraft product was created. Represented as a RFC3339 timestamp",
+          "examples": [
+            "2024-01-23T13:26:25Z"
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Custom fields",
+      "description": "This field is used to propagate information not directly related to the transactional flow. It's in the key-value pair format and is not handled by Pismo",
+      "examples": [
+        {
+          "custom_info": "value"
+        }
+      ]
+    }
+  }
+}

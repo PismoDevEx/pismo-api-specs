@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Overdraft product created",
+  "description": "Create an organization's overdraft product.",
+  "required": [
+    "product_id",
+    "name",
+    "interest_plan_id",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID on the Pismo platform. The ID is in the UUID v4 format.",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "title": "Product name",
+      "description": "Name of the overdraft product",
+      "examples": [
+        "Tax 1 Default"
+      ]
+    },
+    "interest_plan_id": {
+      "type": "string",
+      "title": "Interest plan ID",
+      "description": "Your interest plan ID on the Pismo platform. Displayed in the UUID v4 format.",
+      "examples": [
+        "b935a**************************d509"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Overdraft product status. The status of a new product's status is always `CREATED`.",
+      "enum": [
+        "CREATED"
+      ],
+      "examples": [
+        "CREATED"
+      ]
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "title": "Product creation datetime",
+      "description": "Overdraft product creation datetime. Emitted as a Unix epoch in nanoseconds (integer). The string form is retained for backward compatibility.",
+      "examples": [
+        1783441897889466819,
+        "2024-01-23T13:26:25Z"
+      ]
+    },
+    "processing_codes": {
+      "type": "object",
+      "title": "Processing codes",
+      "description": "Accounting processing codes",
+      "required": [
+        "interest_processing_code"
+      ],
+      "properties": {
+        "interest_processing_code": {
+          "type": "string",
+          "title": "Interest processing code",
+          "description": "Processing code used to identify interest-related transactions such as interest accrual, charging, and reversals on the overdraft balance.",
+          "examples": [
+            "202526"
+          ]
+        }
+      }
+    },
+    "grace_period": {
+      "type": "integer",
+      "title": "Grace period",
+      "description": "Grace period in days.",
+      "examples": [
+        0
+      ]
+    }
+  }
+}

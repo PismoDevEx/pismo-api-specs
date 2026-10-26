@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest accrual account succeeded",
+  "description": "This event occurs when a deposit quota is accrued with product interest management.",
+  "required": [
+    "account_id",
+    "accrual_date",
+    "net_balance",
+    "gross_balance",
+    "accrual_daily_net_amount",
+    "accrual_daily_gross_amount",
+    "taxes"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        "999999999"
+      ]
+    },
+    "accrual_date": {
+      "type": "string",
+      "title": "Accrual date",
+      "description": "Date asset was effectively issued by client.",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "net_balance": {
+      "type": "number",
+      "title": "Accrual Net Amount",
+      "description": "Actual net value.",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "gross_balance": {
+      "type": "number",
+      "title": "Accrual Gross Amount",
+      "description": "Accrual Gross Amount.",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "accrual_daily_net_amount": {
+      "type": "number",
+      "title": "Accrual Daily Net Amount",
+      "description": "Accrual Daily Net Amount.",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "accrual_daily_gross_amount": {
+      "type": "number",
+      "title": "Accrual Daily Gross Amount",
+      "description": "Accrual Daily Gross Amount.",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "taxes": {
+      "type": "array",
+      "title": "List of taxes",
+      "items": {
+        "$ref": "#/definitions/taxes"
+      }
+    }
+  },
+  "definitions": {
+    "taxes": {
+      "type": "object",
+      "title": "Tax",
+      "description": "Tax.",
+      "required": [
+        "name",
+        "amount"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Tax Name",
+          "description": "Tax Name.",
+          "examples": [
+            "IR",
+            "IOF"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tax Amount",
+          "description": "Tax Amount.",
+          "format": "double",
+          "examples": [
+            0.15
+          ]
+        },
+        "rate": {
+          "type": "number",
+          "title": "Tax Rate",
+          "description": "Tax Rate.",
+          "format": "double",
+          "examples": [
+            22.5
+          ]
+        }
+      }
+    }
+  }
+}

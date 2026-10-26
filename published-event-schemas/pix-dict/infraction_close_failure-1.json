@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix infraction close failure",
+  "description": "Pix infraction integrity close failure. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-infraction-close'>Close infraction report</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events'>Pix payments data events</a> guide.",
+  "required": [
+    "infraction_id"
+  ],
+  "properties": {
+    "infraction_id": {
+      "type": "string",
+      "title": "Infraction ID",
+      "description": "Pismo-generated Pix infraction ID",
+      "examples": [
+        "91d65e98-97c0-4b0f-b577-73625da1f9fc"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error message.",
+      "description": "Error message that occurred during processing in the integrity stream.",
+      "examples": [
+        "Error on provider"
+      ]
+    }
+  }
+}

@@ -1,0 +1,663 @@
+{
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Cashout transfer completed",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "Method",
+      "description": "The operation HTTP method",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "URI",
+      "description": "The API operation URI",
+      "examples": [
+        "/v1/roles-approve/transfers"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "E-mail",
+      "description": "The operator email",
+      "examples": [
+        "backoffice-operator@pismo.com.br"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "title": "Roles",
+      "description": "Pre-defined groups of privileges",
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Items",
+        "description": "The roles",
+        "examples": [
+          "backoffice-operator",
+          "crm-operator",
+          "geroficios-operator",
+          "inspetoria-master",
+          "inspetoria-operator",
+          "itibackoffice-master",
+          "itibackoffice-operator",
+          "itinivel1-operator",
+          "treasury-operator"
+        ]
+      }
+    },
+    "origin": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Origin",
+      "description": "The interface through which the event originates",
+      "examples": [
+        "CRM",
+        "APP"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "Object",
+      "description": "The audit data message",
+      "required": [
+        "authorization_id",
+        "event_date",
+        "type",
+        "amount",
+        "mdr",
+        "cash_back",
+        "iti_discount",
+        "entry_mode",
+        "source_holder",
+        "destination_holder"
+      ],
+      "properties": {
+        "authorization_id": {
+          "type": "integer",
+          "title": "Authorization ID",
+          "description": "Identifies an authorization on Pismo's platform",
+          "examples": [
+            14125
+          ]
+        },
+        "event_date": {
+          "type": "string",
+          "title": "Event date",
+          "description": "The event date and time in ISO 8601",
+          "examples": [
+            "2019-09-18T18:09:39.432Z"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Type",
+          "description": "The transfer type",
+          "examples": [
+            "OP",
+            "TED",
+            "TEF"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Amount",
+          "description": "The amount value",
+          "examples": [
+            0.01
+          ]
+        },
+        "mdr": {
+          "type": "number",
+          "title": "MDR",
+          "description": "MDR means merchant discount rate. In other words, is how much the processor of the credit card charges over the operation",
+          "examples": [
+            0.0
+          ]
+        },
+        "cash_back": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Cash back",
+          "description": "The cash back value",
+          "examples": [
+            0.0
+          ]
+        },
+        "iti_discount": {
+          "type": "integer",
+          "title": "Iti discount",
+          "description": "The Iti discount value",
+          "default": 0.0,
+          "examples": [
+            0.0
+          ]
+        },
+        "entry_mode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Entry mode",
+          "description": "The Entry mode Type",
+          "examples": [
+            "POS",
+            "QRCODE"
+          ]
+        },
+        "source_holder": {
+          "type": "object",
+          "title": "Source holder",
+          "description": "The source holder Object",
+          "required": [
+            "name",
+            "document_number",
+            "entity_type",
+            "phone_country_code",
+            "phone_area_code",
+            "phone_number",
+            "bankaccount"
+          ],
+          "properties": {
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Name",
+              "description": "Account holder's name",
+              "examples": [
+                "Joao",
+                "Iti user"
+              ]
+            },
+            "document_number": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Document number",
+              "description": "The document number (CPF, CNPJ) value",
+              "examples": [
+                "38258325205",
+                "38426982000150"
+              ]
+            },
+            "entity_type": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Entity type",
+              "description": "Identifies if the account holder is a person or a company",
+              "examples": [
+                "F"
+              ]
+            },
+            "phone_country_code": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Phone country code",
+              "description": "The phone country code",
+              "examples": [
+                "55"
+              ]
+            },
+            "phone_area_code": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Phone area code",
+              "description": "The phone code area",
+              "examples": [
+                "11"
+              ]
+            },
+            "phone_number": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Phone number",
+              "description": "The phone number",
+              "examples": [
+                "989354983"
+              ]
+            },
+            "bankaccount": {
+              "type": "object",
+              "title": "Bank Account",
+              "description": "The bank account Object",
+              "required": [
+                "bank",
+                "bank_name",
+                "branch",
+                "account_number",
+                "check_digit",
+                "program_id",
+                "account_id",
+                "status"
+              ],
+              "properties": {
+                "bank": {
+                  "type": "string",
+                  "maxLength": 3,
+                  "title": "Bank Code",
+                  "description": "Identifies the bank",
+                  "examples": [
+                    "341"
+                  ]
+                },
+                "bank_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Bank name",
+                  "description": "The name of the bank",
+                  "examples": [
+                    "Ita\u00fa Unibanco S.A."
+                  ]
+                },
+                "branch": {
+                  "type": "string",
+                  "title": "Branch Code",
+                  "description": "Identifies the bank's branch",
+                  "examples": [
+                    "0500"
+                  ]
+                },
+                "account_number": {
+                  "type": "string",
+                  "title": "Account number",
+                  "description": "identifier of a specific user's bank account",
+                  "examples": [
+                    "014943015"
+                  ]
+                },
+                "check_digit": {
+                  "type": "string",
+                  "title": "Check digit",
+                  "description": "The check digit of the account number",
+                  "examples": [
+                    "8"
+                  ]
+                },
+                "program_id": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "title": "Program ID",
+                  "description": "Program ID of the source holder",
+                  "examples": [
+                    540
+                  ]
+                },
+                "account_id": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "title": "Account ID",
+                  "description": "Pismo's account identifier",
+                  "examples": [
+                    21563
+                  ]
+                },
+                "status": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Status",
+                  "description": "Flag that Identifies the status of the bank account",
+                  "examples": [
+                    "ACTIVE"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "destination_holder": {
+          "type": "object",
+          "title": "Destination holder",
+          "description": "The destination holder object",
+          "required": [
+            "payment_details"
+          ],
+          "properties": {
+            "authorization_id": {
+              "type": "integer",
+              "title": "Authorization ID",
+              "description": "The authorization identifier",
+              "examples": [
+                14125
+              ]
+            },
+            "event_date": {
+              "type": "string",
+              "title": "Event date",
+              "description": "The event date and time in ISO 8601",
+              "examples": [
+                "2019-09-18T18:09:39.432Z"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "description": "The transfer type",
+              "examples": [
+                "OP",
+                "TED",
+                "TEF"
+              ]
+            },
+            "amount": {
+              "type": "number",
+              "title": "Amount",
+              "description": "The amount value",
+              "examples": [
+                0.01
+              ]
+            },
+            "mdr": {
+              "type": "number",
+              "title": "MDR",
+              "description": "The mdr value",
+              "examples": [
+                0.0
+              ]
+            },
+            "cash_back": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "Cash back",
+              "description": "The cash back value",
+              "examples": [
+                0.0
+              ]
+            },
+            "iti_discount": {
+              "type": "integer",
+              "title": "Iti discount",
+              "description": "The Iti discount value",
+              "default": 0.0,
+              "examples": [
+                0.0
+              ]
+            },
+            "entry_mode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Entry mode",
+              "description": "The Entry mode Type",
+              "examples": [
+                "POS",
+                "QRCODE"
+              ]
+            },
+            "source_holder": {
+              "type": "object",
+              "title": "Source holder",
+              "description": "The source holder Object",
+              "required": [
+                "name",
+                "document_number",
+                "entity_type",
+                "phone_country_code",
+                "phone_area_code",
+                "phone_number",
+                "bankaccount"
+              ],
+              "properties": {
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Name",
+                  "description": "Account holder's name",
+                  "examples": [
+                    "Joao",
+                    "Iti user"
+                  ]
+                },
+                "document_number": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Document number",
+                  "description": "The document number (CPF, CNPJ) value",
+                  "examples": [
+                    "38258325205"
+                  ]
+                },
+                "entity_type": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Entity type",
+                  "description": "Identifies if the account holder is a person or a company",
+                  "examples": [
+                    "F"
+                  ]
+                },
+                "phone_country_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Phone country code",
+                  "description": "The phone country code",
+                  "examples": [
+                    "55"
+                  ]
+                },
+                "phone_area_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Phone area code",
+                  "description": "The phone code area",
+                  "examples": [
+                    "11"
+                  ]
+                },
+                "phone_number": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Phone number",
+                  "description": "The phone number",
+                  "examples": [
+                    "989354983"
+                  ]
+                },
+                "bankaccount": {
+                  "type": "object",
+                  "title": "Bank Account",
+                  "description": "The bank account Object",
+                  "required": [
+                    "bank",
+                    "bank_name",
+                    "branch",
+                    "account_number",
+                    "check_digit",
+                    "program_id",
+                    "account_id",
+                    "status"
+                  ],
+                  "properties": {
+                    "bank": {
+                      "type": "string",
+                      "maxLength": 3,
+                      "title": "Bank Code",
+                      "description": "Identifies the bank",
+                      "examples": [
+                        "341"
+                      ]
+                    },
+                    "bank_name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "title": "Bank name",
+                      "description": "The name of the bank",
+                      "examples": [
+                        "Ita\u00fa Unibanco S.A."
+                      ]
+                    },
+                    "branch": {
+                      "type": "string",
+                      "title": "Branch Code",
+                      "description": "Identifies the bank's branch",
+                      "examples": [
+                        "0500"
+                      ]
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "title": "Account number",
+                      "description": "identifier of a specific user's bank account",
+                      "examples": [
+                        "014943015"
+                      ]
+                    },
+                    "check_digit": {
+                      "type": "string",
+                      "title": "Check digit",
+                      "description": "The check digit of the account number",
+                      "examples": [
+                        "8"
+                      ]
+                    },
+                    "program_id": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "title": "Program ID",
+                      "description": "Program ID of the source holder",
+                      "examples": [
+                        540
+                      ]
+                    },
+                    "account_id": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "title": "Account ID",
+                      "description": "Pismo's account identifier",
+                      "examples": [
+                        21563
+                      ]
+                    },
+                    "status": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "title": "Status",
+                      "description": "Flag that Identifies the status of the bank account",
+                      "examples": [
+                        "ACTIVE"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "payment_details": {
+              "type": "object",
+              "title": "Payment details",
+              "description": "The payment detailsi information",
+              "required": [
+                "type",
+                "payment_reason",
+                "is_same_owner",
+                "skip_rules"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "title": "Type",
+                  "description": "The payment type",
+                  "default": "",
+                  "examples": [
+                    "CASH"
+                  ]
+                },
+                "payment_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "title": "Payment reason",
+                  "description": "The reason from this cash out",
+                  "examples": [
+                    "00010"
+                  ]
+                },
+                "is_same_owner": {
+                  "type": "boolean",
+                  "title": "Is same owner",
+                  "description": "Flag to identifies if a cash out goes to the same owner",
+                  "default": false,
+                  "examples": [
+                    true,
+                    false
+                  ]
+                },
+                "skip_rules": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "title": "Skip rule",
+                  "description": "Flag that identifies if it skipped rules check",
+                  "default": false,
+                  "examples": [
+                    true,
+                    false
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Customer application created",
+  "description": "This event occurs when the platform creates a customer during a migration.",
+  "required": [],
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": [
+        "id",
+        "document_number"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Entity ID",
+          "description": "Pismo entity ID.",
+          "examples": [
+            100428899
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Cardholder name",
+          "description": "Cardholder name",
+          "maxLength": 60,
+          "examples": [
+            "Kris Smith"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "Document number of the entity.",
+          "maxLength": 50,
+          "examples": [
+            "74086002051"
+          ]
+        },
+        "registration": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Entity registration",
+          "description": "Registration number for another document to identify the entity.",
+          "maxLength": 15,
+          "examples": [
+            "123456"
+          ]
+        },
+        "birth_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Birth date",
+          "description": "Entity's birth date.",
+          "examples": [
+            "1991-01-30"
+          ]
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Entity gender",
+          "description": "Entity's gender. If exists, it is validated as 'F' or 'M'.",
+          "examples": [
+            "F",
+            "M"
+          ]
+        },
+        "marital_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Marital status",
+          "description": "Martital status of the entity.",
+          "maxLength": 30,
+          "examples": [
+            "SINGLE",
+            "MARRIED",
+            "DIVORCED",
+            "WIDOWER"
+          ]
+        },
+        "mothers_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Mother's name",
+          "description": "Mother's name of the entity.",
+          "maxLength": 60,
+          "examples": [
+            "Mary Smith"
+          ]
+        }
+      }
+    },
+    "customer": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Customer ID",
+          "description": "Pismo customer ID.",
+          "examples": [
+            100602614
+          ]
+        },
+        "social_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Social name",
+          "description": "Customer's social name.",
+          "maxLength": 64,
+          "examples": [
+            "Maria"
+          ]
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Email",
+          "description": "Customer's email.",
+          "maxLength": 255,
+          "examples": [
+            "user@domain.com"
+          ]
+        },
+        "is_active": {
+          "type": "boolean",
+          "title": "Active flag",
+          "description": "Flag that indicates whether the customer is active.",
+          "examples": [
+            false,
+            true
+          ]
+        }
+      }
+    }
+  }
+}

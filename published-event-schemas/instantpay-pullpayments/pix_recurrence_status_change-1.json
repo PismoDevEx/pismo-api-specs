@@ -1,0 +1,556 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix recurrence status changed",
+  "description": "Pix recurrence status changed event",
+  "required": [
+    "role_type",
+    "account_id",
+    "recurrence_id",
+    "contract_id",
+    "frequency_type",
+    "dynamic_amount",
+    "allow_attempts_after_expiration",
+    "dates",
+    "status",
+    "payee",
+    "debtor"
+  ],
+  "properties": {
+    "role_type": {
+      "type": "string",
+      "title": "Role type",
+      "description": "Role type",
+      "enum": [
+        "PAYEE",
+        "PAYER"
+      ],
+      "example": [
+        "PAYEE"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "example": "5869300"
+    },
+    "recurrence_id": {
+      "type": "string",
+      "title": "Recurrence ID",
+      "description": "BACEN recurrence ID.",
+      "example": "RN000000012025050500012345678"
+    },
+    "journey_type": {
+      "type": "string",
+      "title": "Journey type",
+      "description": "Recurrence payment type. For more information, refer to the `journey_type` field returned from the <a href='https://developers.pismo.io/pismo-docs/reference/post-recurrence-automatic'> Create recurrence</a> endpoint.",
+      "enum": [
+        "WAITING_DEFINITION",
+        "AUT1",
+        "AUT2",
+        "AUT3",
+        "AUT4"
+      ],
+      "example": [
+        "AUT1"
+      ]
+    },
+    "contract_id": {
+      "type": "string",
+      "title": "Contract ID",
+      "description": "Payee-created external ID for their reference.",
+      "example": "5509-uroo-78944-9987"
+    },
+    "description": {
+      "type": "string",
+      "title": "Recurrence description",
+      "description": "Recurrence payment description",
+      "example": "Gym membership"
+    },
+    "transaction_identification": {
+      "type": "string",
+      "title": "Recurrence transaction ID",
+      "description": "Recurrence transaction ID.",
+      "example": "1a84daf6-a61b-4aba-919a-a9943db7102e"
+    },
+    "allow_attempts_after_expiration": {
+      "type": "boolean",
+      "title": "Allow attempts after expiration",
+      "description": "Will charge continue after due date?",
+      "example": "true"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Amount to be transferred.",
+      "example": "1050.44"
+    },
+    "min_payment_amount": {
+      "type": "number",
+      "title": "Minimal payment amount",
+      "description": "Payee-defined minimum payment amount for dynamic amount recurrences.",
+      "example": "10.01"
+    },
+    "max_payment_amount": {
+      "type": "number",
+      "title": "Maximum payment amount",
+      "description": "Payer-defined maximum payment amount for dynamic amount recurrences.",
+      "example": "1050.44"
+    },
+    "dynamic_amount": {
+      "type": "boolean",
+      "title": "Dynamic amount",
+      "description": "Does recurrence have a dynamic amount?",
+      "example": "false"
+    },
+    "frequency_type": {
+      "type": "string",
+      "title": "Frequency type",
+      "description": "Recurrence payment type",
+      "enum": [
+        "WEEK",
+        "MONTH",
+        "QUARTER",
+        "SEMESTER",
+        "YEAR"
+      ],
+      "example": [
+        "MONTH"
+      ]
+    },
+    "dates": {
+      "type": "object",
+      "required": [
+        "first_payment_date"
+      ],
+      "properties": {
+        "first_payment_date": {
+          "type": "string",
+          "format": "date",
+          "title": "First payment date",
+          "description": "First charge/payment date. Format = yyyy-mm-dd",
+          "example": "2025-09-07"
+        },
+        "last_payment_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Last payment date",
+          "description": "Last charge/payment date. Format = yyyy-mm-dd",
+          "example": "2025-09-07"
+        },
+        "expiration_datetime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Expiration date time",
+          "description": "Authorization expiration date time. RFC 3339 format",
+          "example": "2025-09-07T17:54:40Z"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "title": "Recurrence status",
+      "description": "Recurrence status",
+      "enum": [
+        "CREATED",
+        "ACCEPTED",
+        "APPROVED",
+        "REJECTED",
+        "FINISHED",
+        "EXPIRED",
+        "CANCELLED"
+      ],
+      "example": [
+        "CREATED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created at",
+      "description": "Created at datetime. RFC 3339 format",
+      "example": "2025-11-14T17:54:40Z"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated at",
+      "description": "Updated at datetime. RFC 3339 format",
+      "example": "2025-11-14T17:54:40Z"
+    },
+    "reason": {
+      "type": "object",
+      "title": "Rejection/Cancelation reason",
+      "description": "Will be returned when the status is REJECTED or CANCELLED",
+      "required": [
+        "code",
+        "description"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Code",
+          "description": "Rejection code",
+          "enum": [
+            "ACCL",
+            "CPCL",
+            "DCSD",
+            "ERSL",
+            "FRUD",
+            "PCFD",
+            "SLCR",
+            "SLDB",
+            "NRES",
+            "OTHS",
+            "AC01",
+            "AC04",
+            "AC06",
+            "AG12",
+            "AM05",
+            "AP01",
+            "AP02",
+            "AP03",
+            "AP04",
+            "AP05",
+            "AP06",
+            "AP07",
+            "AP08",
+            "AP09",
+            "AP10",
+            "AP11",
+            "AP12",
+            "AP13",
+            "AP14",
+            "AP15",
+            "CH16",
+            "DS27",
+            "MD01",
+            "MD20",
+            "RC09",
+            "RC10",
+            ""
+          ],
+          "example": "ACCL"
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Rejection description",
+          "enum": [
+            "ACCL - Cancellation due to cancellation of the paying receiving user's account",
+            "CPCL - Cancellation due to closure of the receiving company",
+            "DCSD - Cancellation requested due to death of the paying user",
+            "ERSL - Cancellation requested by the receiving user or by their participant due to an error in the confirmation request",
+            "FRUD - Cancellation due to fraud",
+            "PCFD - Cancellation requested by the receiving user participant because the same recurrence was confirmed through another journey, for example, via QR code",
+            "SLCR - Cancellation requested by the receiving user",
+            "SLDB - Cancellation requested by the paying user",
+            "NRES - Cancellation requested by the receiving PSP due to lack of response to pain.009 within the regulatory period",
+            "OTHS - Requested by either the payer\u2019s participant or the receiver\u2019s participant for other reasons not specified in the previous categories",
+            "AC01 - Account not found or not belonging to the paying user",
+            "AC04 - The transactional account of the paying user is closed",
+            "AC06 - The transactional account of the paying user is blocked",
+            "AG12 - It is not allowed to send the request for recurrence authorization, recurrence cancellation, recurrence confirmation, or cancellation of pain.009 for a transactional account in the same institution or in a participant that uses the settlement service of the same settling participant in SPI.",
+            "AM05 - Recurrence confirmation request for periodic payments already previously confirmed or with status 'PDNG'",
+            "AP01 - Discrepancy in the field for updating recurrence data for periodic payments and the recurrence status for periodic payments (e.g., lack of synchronization)",
+            "AP02 - CPF/CNPJ of the paying user not found or different from the one in the original pain.009. Or, in the case of cancellation, the CPF/CNPJ of the paying user does not match the one contained in the recurrence data for periodic payments.",
+            "AP03 - Paying user's branch not found",
+            "AP04 - Invalid recurrence ID or does not match the original",
+            "AP05 - Inconsistent recurrence status for periodic payments",
+            "AP06 - CPF/CNPJ of the receiving user different from the one in the pain.009 or the payload. Or, in the case of cancellation, the CPF/CNPJ of the receiving user does not match the one contained in the recurrence data for periodic payments.",
+            "AP07 - Recurrence confirmation by the paying user performed after the expiration or cancellation of the confirmation request (pain.009)",
+            "AP08 - First immediate payment associated with the recurrence was not identified. (Valid only for Authorization Journey 3.)",
+            "AP09 - Recurrence confirmation request for periodic payments was not identified to enable its cancellation.",
+            "AP10 - CPF/CNPJ of the cancellation requester does not match the identification of the paying/receiving user or the paying/receiving PSP contained in the recurrence data for periodic payments.",
+            "AP11 - ISPB of the paying PSP diverges from the information contained in the recurrence for periodic payments",
+            "AP12 - ISPB of the receiving PSP diverges from the information contained in the recurrence for periodic payments",
+            "AP13 - Recurrence confirmation request for periodic payments rejected by the paying user due to non-recognition of the receiving user",
+            "AP14 - Recurrence confirmation request for periodic payments rejected by the paying user due to lack of interest in using Pix Automatic for the receiving user",
+            "AP15 - Recurrence confirmation request for periodic payments rejected by the paying user's participant who chose not to offer Pix Automatic usage for corporate clients",
+            "CH16 - Incorrect or incompatible message content with business rules.",
+            "DS27 - Participant is not registered or has not yet started operations in SPI.",
+            "MD01 - Recurrence object of the cancellation request does not exist. Should not be used for cancellation requests of pain.009 with status = 'PDNG'. That is, a recurrence with status = 'PDNG' should be considered as an existing recurrence.",
+            "MD20 - Recurrence object of the cancellation request has already expired.",
+            "RC09 - ISPB of the paying user's participant is invalid or non-existent.",
+            "RC10 - ISPB of the receiving user's participant is invalid or non-existent.",
+            " - ",
+            "OTHS - "
+          ],
+          "example": "AC05 - Paying user's transactional account closed."
+        }
+      }
+    },
+    "payee": {
+      "type": "object",
+      "required": [
+        "name",
+        "document_number",
+        "document_type",
+        "bank"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Entregas Expressas Ltda"
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "45337989000161"
+        },
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "LEGAL_PERSON"
+          ]
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank code",
+          "description": "<a href=\"https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/\" target=\"_blank\">ISPB (Identifcador do Sistema de Pagamento Brazil)</a> - the Brazilian Payment System ID for the receiving bank, an 8-digit value.",
+          "example": "00000001"
+        }
+      }
+    },
+    "debtor": {
+      "type": "object",
+      "required": [
+        "document_type",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "NATURAL_PERSON"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "27329425028"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Walter Melon"
+        }
+      }
+    },
+    "payer": {
+      "type": "object",
+      "required": [
+        "document_type",
+        "document_number",
+        "bank",
+        "branch",
+        "account_number"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "LEGAL_PERSON"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "27329425028"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Walter Melon"
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank code",
+          "description": "<a href=\"https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/\" target=\"_blank\">ISPB (Identifcador do Sistema de Pagamento Brazil)</a> - the Brazilian Payment System ID for the receiving bank, an 8-digit value.",
+          "example": "00000001"
+        },
+        "branch": {
+          "type": "string",
+          "title": "Bank branch",
+          "description": "This could be a bank-assigned branch ID or the branch's ISPB number.",
+          "example": "1001"
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account number",
+          "description": "Payer's account number.",
+          "example": "98765432"
+        },
+        "city_code": {
+          "type": "string",
+          "title": "City code",
+          "description": "The <a href='https://www.ibge.gov.br/explica/codigos-dos-municipios.php' target='_blank'>IBGE</a> (Instituto Brasileiro de Geografia e Estat\u00edstica) city code",
+          "example": "3550308"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "role_type": "PAYEE",
+      "account_id": 254539210,
+      "recurrence_id": "RN272141122025050815965a45c80",
+      "journey_type": "AUT1",
+      "contract_id": "00000000010",
+      "description": "Gym Training Payment",
+      "transaction_identification": "007f587d-01f9-41a6-b4a0-cd16b498a7d3",
+      "allow_attempts_after_expiration": false,
+      "amount": 10,
+      "min_payment_amount": 10.15,
+      "max_payment_amount": 10000.15,
+      "dynamic_amount": false,
+      "frequency_type": "MONTH",
+      "dates": {
+        "first_payment_date": "2025-05-21",
+        "expiration_date": "2025-05-18T00:00:00Z",
+        "last_payment_date": "2025-12-21"
+      },
+      "status": "CREATED",
+      "payee": {
+        "name": "Diane Ross",
+        "document_number": "00539493000132",
+        "document_type": "LEGAL_PERSON",
+        "bank": "27214112"
+      },
+      "debtor": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe"
+      },
+      "payer": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe",
+        "bank": "00000341",
+        "branch": "2050",
+        "account_number": "9000003"
+      },
+      "created_at": "2025-05-08T16:59:22Z",
+      "updated_at": "2025-05-08T16:59:31Z"
+    },
+    {
+      "role_type": "PAYEE",
+      "account_id": 254539210,
+      "recurrence_id": "RN272141122025050815965a45c80",
+      "journey_type": "AUT1",
+      "contract_id": "00000000010",
+      "description": "Gym Training Payment",
+      "transaction_identification": "007f587d-01f9-41a6-b4a0-cd16b498a7d3",
+      "allow_attempts_after_expiration": false,
+      "amount": 10,
+      "min_payment_amount": 10.15,
+      "max_payment_amount": 10000.15,
+      "dynamic_amount": false,
+      "frequency_type": "MONTH",
+      "dates": {
+        "first_payment_date": "2025-05-21",
+        "expiration_date": "2025-05-18T00:00:00Z",
+        "last_payment_date": "2025-12-21"
+      },
+      "status": "REJECTED",
+      "reason": {
+        "code": "ACCL",
+        "description": "ACCL - Cancellation due to cancellation of the paying receiving user's account"
+      },
+      "payee": {
+        "name": "Diane Ross",
+        "document_number": "00539493000132",
+        "document_type": "LEGAL_PERSON",
+        "bank": "27214112"
+      },
+      "debtor": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe"
+      },
+      "payer": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe",
+        "bank": "00000341",
+        "branch": "2050",
+        "account_number": "9000003"
+      },
+      "created_at": "2025-05-08T16:59:22Z",
+      "updated_at": "2025-05-08T16:59:31Z"
+    },
+    {
+      "role_type": "PAYEE",
+      "account_id": 254539210,
+      "recurrence_id": "RN272141122025050815965a45c80",
+      "journey_type": "AUT1",
+      "contract_id": "00000000010",
+      "description": "Gym Training Payment",
+      "transaction_identification": "007f587d-01f9-41a6-b4a0-cd16b498a7d3",
+      "allow_attempts_after_expiration": false,
+      "amount": 10,
+      "min_payment_amount": 10.15,
+      "max_payment_amount": 10000.15,
+      "dynamic_amount": false,
+      "frequency_type": "MONTH",
+      "dates": {
+        "first_payment_date": "2025-05-21",
+        "expiration_date": "2025-05-18T00:00:00Z",
+        "last_payment_date": "2025-12-21"
+      },
+      "status": "CANCELLED",
+      "reason": {
+        "code": "RC10",
+        "description": "RC10 - ISPB of the receiving user's participant is invalid or non-existent."
+      },
+      "payee": {
+        "name": "Diane Ross",
+        "document_number": "00539493000132",
+        "document_type": "LEGAL_PERSON",
+        "bank": "27214112"
+      },
+      "debtor": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe"
+      },
+      "payer": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe",
+        "bank": "00000341",
+        "branch": "2050",
+        "account_number": "9000003"
+      },
+      "created_at": "2025-05-08T16:59:22Z",
+      "updated_at": "2025-05-08T16:59:31Z"
+    }
+  ]
+}

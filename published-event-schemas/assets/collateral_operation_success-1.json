@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Operation request succeed",
+  "description": "This event occurs when operation is success.",
+  "required": [
+    "external_id",
+    "asset_id",
+    "operation_type",
+    "units"
+  ],
+  "properties": {
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation provided by client.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    },
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions, cancellations and collateral operations.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Type of operation",
+      "description": "Type of operation indicates if units will be add ou removed from collateral contract. block means that we're including and unblock we're removing units.",
+      "enums": [
+        "block",
+        "unblock"
+      ]
+    },
+    "units": {
+      "type": "number",
+      "title": "Units",
+      "format": "double",
+      "description": "Number of units to add or remove from collateral contract",
+      "examples": [
+        100.0
+      ]
+    }
+  }
+}

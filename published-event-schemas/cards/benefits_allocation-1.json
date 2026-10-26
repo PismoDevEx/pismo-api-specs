@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card benefits notification allocation",
+  "description": "Card benefits allocation event received.",
+  "examples": [
+    {
+      "account_id": 8675309,
+      "card_id": 6767937,
+      "card_script_id": "2092aa7e-d6a7-49d8-b83b-4fb8e7666436",
+      "customer_id": 102440864,
+      "program_id": 1457,
+      "reason": null,
+      "status": null,
+      "operation": "segments_assign",
+      "network_data": {
+        "bundles": {
+          "code": "342482",
+          "effective_date": "2025-08-10",
+          "expiry_date": "2025-08-14"
+        },
+        "network_correlation_id": "3c54b66590c72806db469c3f34e761ae"
+      }
+    }
+  ],
+  "required": [
+    "card_id",
+    "account_id",
+    "customer_id"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "customer_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Customer ID",
+      "description": "Pismo customer ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "program_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Program ID",
+      "description": "Pismo program ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "operation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Benefits allocation benefits type",
+      "description": "Reference to service that allocated benefits to the card.",
+      "examples": [
+        "cards_freeze",
+        "cards_replace",
+        "segments_assign",
+        "segments_replace",
+        "segments_assign_cancel"
+      ]
+    },
+    "network_data": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Response data from Network.",
+      "description": "Response data from Network.",
+      "examples": [
+        {
+          "errors": {
+            "error": {
+              "source": "benefits-personalization-service",
+              "reasonCode": "51",
+              "description": "Not authorized to allocate benefits for given card number",
+              "recoverable": false
+            }
+          }
+        },
+        {
+          "bundles": {
+            "code": "342482",
+            "effective_date": "2025-08-10",
+            "expiry_date": "2025-08-14"
+          },
+          "network_correlation_id": "fe1bf855f651810629107cfbce5b09d2"
+        }
+      ]
+    }
+  },
+  "definitions": {}
+}

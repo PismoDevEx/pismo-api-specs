@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest post-balance operation",
+  "description": "This event occurs when a redemption or registration needs to happen based on the post-balance feature of product interest management.",
+  "required": [
+    "org_id",
+    "program_id",
+    "balance_id",
+    "interest_plan_id",
+    "asset_id",
+    "account_id",
+    "amount",
+    "document_number",
+    "customer_name",
+    "customer_type",
+    "request_type",
+    "request_date",
+    "has_asset_registration"
+  ],
+  "properties": {
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "title": "Organization ID",
+      "description": "Organization/tenant ID.",
+      "type": "string",
+      "examples": [
+        "TN-1234"
+      ]
+    },
+    "program_id": {
+      "type": "string",
+      "title": "Program identification",
+      "description": "Program ID to which the account belongs within your organization.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "balance_id": {
+      "type": "string",
+      "title": "Balance ID",
+      "description": "Unique balance identifier defined by Pismo.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "interest_plan_id": {
+      "type": "string",
+      "title": "Interest Plan ID identifier",
+      "description": "A custom identifier string that indicates the interest plan to be used in the rate calculations.",
+      "examples": [
+        ""
+      ]
+    },
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by Pismo.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "account_id": {
+      "type": "string",
+      "title": "Account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within your organization.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Registration or redemption Amount based on request_type",
+      "description": "Deposit Amount, monetary value.",
+      "format": "double",
+      "examples": [
+        0.15
+      ]
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Customer document number",
+      "description": "Number of post balance owner's legal document",
+      "examples": [
+        "00000000012"
+      ]
+    },
+    "customer_name": {
+      "type": "string",
+      "title": "Customer name",
+      "description": "Name of post balance owner. Can be a company or an individual.",
+      "examples": [
+        "Lorem ipsum"
+      ]
+    },
+    "customer_type": {
+      "type": "string",
+      "title": "Entity type",
+      "description": "Legal nature of post balance owner",
+      "enum": [
+        "natural",
+        "legal"
+      ]
+    },
+    "request_type": {
+      "type": "string",
+      "title": "Entity type",
+      "description": "Type of request for banking to call",
+      "enum": [
+        "registration",
+        "redemption"
+      ]
+    },
+    "request_date": {
+      "type": "string",
+      "title": "Request Date",
+      "description": "Date of the file posting",
+      "format": "date-time",
+      "examples": [
+        "2024-01-23T13:26:25"
+      ]
+    },
+    "has_asset_registration": {
+      "type": "boolean",
+      "title": "Has Asset Registration",
+      "description": "Indicates if the interest deposit must be registered as a asset",
+      "examples": [
+        true,
+        false
+      ]
+    }
+  }
+}

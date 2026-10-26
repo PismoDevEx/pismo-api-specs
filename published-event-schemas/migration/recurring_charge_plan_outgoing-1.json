@@ -1,0 +1,265 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/recurring_charge_plan_outgoing-1.json",
+  "type": "object",
+  "title": "Recurring charge plan migration completed",
+  "description": "Event generated when a recurring charge plan migration finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "examples": [
+    {
+      "operation": "UNKNOWN",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Recurring charge plan has been migrated successfully",
+      "migration": {
+        "id": "b9ebd50c-1bc5-4e30-9a76-640ede15f1e2",
+        "version_date": "2023-12-28T15:00:35Z"
+      },
+      "entity": {
+        "id": 1234,
+        "split_transaction": true,
+        "processing_code": "1234",
+        "installment_amount": 10,
+        "description": "Card Recurring charge",
+        "number_of_cycles": 12,
+        "first_cycles_to_discount": 1,
+        "discount_percentage": 1,
+        "secondary_processing_code": "4321",
+        "secondary_description": "Early Renew Discount",
+        "minimum_spend_to_charge": 12,
+        "renew_method": "WITH_DISCOUNT",
+        "tracking_id": "bd242827-aeb4-477e-bc34-eab33ed68170"
+      }
+    },
+    {
+      "operation": "UNKNOWN",
+      "status": "FAIL",
+      "code": "EX1002",
+      "message": "PLAN_ALREADY_EXISTS",
+      "migration": {
+        "id": "b9ebd50c-1bc5-4e30-9a76-640ede15f1e2"
+      }
+    }
+  ],
+  "required": [
+    "operation",
+    "status",
+    "message",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "Whether the migration was a creation or update, if identifiable",
+      "enum": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "UPDATE"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the result of account migration was a success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "The code of message for systems",
+      "default": "",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Message describing the migration result",
+      "default": "",
+      "examples": [
+        "Recurring charge plan has been migrated successfully"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Identifier Object",
+      "description": "Identifier sent at the start of the migration process",
+      "examples": [
+        {
+          "id": "migration-id",
+          "version_date": "2021-08-11T11:25:00.000Z"
+        }
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "title": "Version Date of Migration Identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Recurring charge plan information",
+      "examples": [
+        {
+          "id": 1234,
+          "split_transaction": true,
+          "processing_code": "1234",
+          "installment_amount": 10,
+          "description": "Taxa de rota\u00e7\u00e3o",
+          "number_of_cycles": 12,
+          "first_cycles_to_discount": 1,
+          "discount_percentage": 1,
+          "secondary_processing_code": "4321",
+          "secondary_description": "Atrito",
+          "minimum_spend_to_charge": 12,
+          "renew_method": "WITH_DISCOUNT",
+          "tracking_id": "63c2c3c9-5963-4a8f-ac86-5e6d35ee9f67"
+        }
+      ],
+      "required": [],
+      "properties": {
+        "id": {
+          "$id": "#/properties/entity/properties/id",
+          "type": "integer",
+          "description": "The migrated plan's platform id. Can be used as `recurring_charge_plan_id` on recurring charge link migrations.",
+          "examples": [
+            1234
+          ]
+        },
+        "split_transaction": {
+          "$id": "#/properties/entity/properties/split_transaction",
+          "type": "boolean",
+          "description": "Whether to apply the recurring charge amount in a single transaction or to create separate transactions with the full installment_amount ('primary transaction') and the discount value ('secondary transaction')",
+          "examples": [
+            true
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "Processing code for the recurring recurring charge transactions. If `split_transaction` is set to `true`, this is used as the processing code for the primary transaction.",
+          "examples": [
+            "1234"
+          ]
+        },
+        "installment_amount": {
+          "$id": "#/properties/entity/properties/installment_amount",
+          "type": "number",
+          "description": "The full amount of a recurring charge installment before any discount is applied",
+          "examples": [
+            10.99
+          ]
+        },
+        "description": {
+          "$id": "#/properties/entity/properties/description",
+          "type": "string",
+          "description": "A description for the recurring charge transactions. If `split_transaction` is set to `true`, this is used as the description for the primary transaction",
+          "examples": [
+            "Annuity"
+          ]
+        },
+        "number_of_cycles": {
+          "$id": "#/properties/entity/properties/number_of_cycles",
+          "type": "integer",
+          "description": "Number of cycles",
+          "examples": [
+            12
+          ]
+        },
+        "first_cycles_to_discount": {
+          "$id": "#/properties/entity/properties/first_cycles_to_discount",
+          "type": "integer",
+          "description": "The number of cycles the discount (defined by discount_percentage) should be applied to before reverting to the full charge.",
+          "examples": [
+            3
+          ]
+        },
+        "discount_percentage": {
+          "$id": "#/properties/entity/properties/discount_percentage",
+          "type": "number",
+          "description": "Percentage value to be discounted if first_cycles_to_discount is configured. Should be a number from 0 to 100.",
+          "examples": [
+            99.999
+          ]
+        },
+        "secondary_processing_code": {
+          "$id": "#/properties/entity/properties/secondary_processing_code",
+          "type": "string",
+          "description": "Processing code used to create the secondary transaction when `split_transaction` is set to `true`",
+          "examples": [
+            "4321"
+          ]
+        },
+        "secondary_description": {
+          "$id": "#/properties/entity/properties/secondary_description",
+          "type": "string",
+          "description": "Used to create a description for the secondary transaction when `split_transaction` is `true`",
+          "examples": [
+            "New customer discount"
+          ]
+        },
+        "minimum_spend_to_charge": {
+          "$id": "#/properties/entity/properties/minimum_spend_to_charge",
+          "type": "number",
+          "description": "Minimum debit amount on statement to enable cycle charging",
+          "examples": [
+            100.0
+          ]
+        },
+        "renew_method": {
+          "$id": "#/properties/entity/properties/renew_method",
+          "type": "string",
+          "description": "Whether to automatically renew the recurring charge plan at the end of the cycle. Should be one of [NO_RENEW, WITHOUT_DISCOUNT, WITH_DISCOUNT]",
+          "examples": [
+            "NO_RENEW",
+            "WITH_DISCOUNT",
+            "WITHOUT_DISCOUNT"
+          ]
+        },
+        "tracking_id": {
+          "$id": "#/properties/entity/properties/tracking_id",
+          "type": "string",
+          "description": "A unique id used to track the migration request",
+          "examples": [
+            "8bd2fa6c-0aaa-413a-b2d9-0bc3f00b9e15"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,246 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bank slip issuance registered",
+  "description": "This event occurs when a bank slip is registered on the Pismo platform. The [Issue bank slip](https://developers.pismo.io/pismo-docs/reference/post-integrated-payments-api-v1-bankslips-issue) endpoint generates this event.",
+  "required": [
+    "amount",
+    "debtor",
+    "due_date",
+    "instructions",
+    "over_due_date",
+    "receiver"
+  ],
+  "optional": [
+    "description",
+    "minimum_amount",
+    "maximum_amount",
+    "pix_key"
+  ],
+  "properties": {
+    "amount": {
+      "title": "Amount",
+      "type": "number",
+      "description": "Bank slip amount",
+      "examples": [
+        100.0
+      ]
+    },
+    "debtor": {
+      "type": "object",
+      "title": "Debtor object",
+      "description": "Debtor's personal information",
+      "required": [
+        "name",
+        "document_number"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Debtor's full name",
+          "examples": [
+            "John Doe"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document Number",
+          "description": "Debtor's Document Number",
+          "examples": [
+            "9999099999"
+          ]
+        },
+        "zip_code": {
+          "type": "string",
+          "title": "Zip code",
+          "description": "Zip code",
+          "examples": [
+            "00000350"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "title": "State",
+          "description": "The name of the state",
+          "examples": [
+            "state"
+          ]
+        },
+        "city": {
+          "type": "string",
+          "title": "City",
+          "description": "City where the debtor resides",
+          "examples": [
+            "city"
+          ]
+        },
+        "neighborhood": {
+          "type": "string",
+          "title": "Neighborhood",
+          "description": "Neighborhood name where the debtor resides",
+          "examples": [
+            "neighborhood"
+          ]
+        },
+        "street": {
+          "type": "string",
+          "title": "Street",
+          "description": "The name of the street where the debtor resides",
+          "examples": [
+            "street"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "title": "Number",
+          "description": "Street number",
+          "examples": [
+            "1009"
+          ]
+        },
+        "complement": {
+          "type": "string",
+          "title": "Complement",
+          "description": "Additional address",
+          "examples": [
+            "additional address"
+          ]
+        }
+      }
+    },
+    "due_date": {
+      "title": "Due date",
+      "type": "string",
+      "format": "date",
+      "description": "Bank slip due date",
+      "examples": [
+        "2023-01-01"
+      ]
+    },
+    "instructions": {
+      "type": "object",
+      "title": "Instructions object",
+      "description": "Additional Instructions of bank slip related to taxes and discount",
+      "properties": {
+        "fine": {
+          "type": "number",
+          "title": "Fine",
+          "description": "Fine to be applied to the bank slip amount if overdue",
+          "examples": [
+            1.0
+          ]
+        },
+        "interest": {
+          "type": "number",
+          "title": "Interest",
+          "description": "Interest to be applied to the bank slips amount when overdue",
+          "examples": [
+            5.0
+          ]
+        },
+        "discount": {
+          "type": "object",
+          "title": "Discount object",
+          "description": "Discount value and due date applied to the banks slip",
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "description": "Bank slip discount type.\n\n`FIXED`: Fixed discount amount.\n\n`PERCENT`: Discount percentage.",
+              "enum": [
+                "FIXED",
+                "PERCENT"
+              ]
+            },
+            "amount": {
+              "type": "number",
+              "title": "Amount",
+              "description": "Discounted amount to be applied to the bank slip amount if paid before or on the deadline",
+              "examples": [
+                10.0
+              ]
+            },
+            "deadline": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Deadline",
+              "description": "Deadline of discount value applied to the bank slip",
+              "examples": [
+                10.0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "over_due_date": {
+      "title": "Over due date",
+      "type": "string",
+      "format": "date",
+      "description": "Last day to accept bank slip payments. After this date, the bank slip is treated as not paid",
+      "examples": [
+        "2023-01-01"
+      ]
+    },
+    "receiver": {
+      "type": "object",
+      "title": "Receiver object",
+      "description": "Recipient's personal information",
+      "required": [
+        "name",
+        "document_number"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Recipient's Name",
+          "examples": [
+            "John Doe"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document Number",
+          "description": "Recipient's Document Number",
+          "examples": [
+            "9999099999"
+          ]
+        }
+      }
+    },
+    "description": {
+      "title": "Description",
+      "type": "string",
+      "description": "Additional information related to bank slip",
+      "examples": [
+        "description can include any additional information related to the bank slip"
+      ]
+    },
+    "minimum_amount": {
+      "title": "Minimum amount",
+      "type": "number",
+      "description": "Minimum amount accepted when paying the bank slip",
+      "examples": [
+        100.0
+      ]
+    },
+    "maximum_amount": {
+      "title": "Maximum amount",
+      "type": "number",
+      "description": "Maximum amount accepted when paying the bank slip",
+      "examples": [
+        100.0
+      ]
+    },
+    "pix_key": {
+      "title": "Pix key",
+      "type": "string",
+      "description": "PIX key related to the bank slip",
+      "examples": [
+        "email@email.com"
+      ]
+    }
+  }
+}

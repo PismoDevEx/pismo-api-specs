@@ -1,0 +1,232 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Credit transaction used for discharge",
+  "description": "Event generated when a credit transaction is used to discharge debt. The event is generated for each discharge, so a single credit transaction could result in multiple `discharge-1` events.",
+  "required": [
+    "account_id",
+    "program_id",
+    "program_type_id",
+    "statement_id",
+    "transaction_id",
+    "transaction_amount",
+    "transaction_type_id",
+    "event_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        5106089
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID",
+      "examples": [
+        252
+      ]
+    },
+    "program_type_id": {
+      "type": "integer",
+      "description": "Credit transaction program type ID",
+      "examples": [
+        1
+      ]
+    },
+    "statement_id": {
+      "type": "integer",
+      "description": "Transaction's statement ID",
+      "examples": [
+        100002556
+      ]
+    },
+    "transaction_id": {
+      "type": "integer",
+      "description": "Credit transaction ID",
+      "examples": [
+        60659309
+      ]
+    },
+    "transaction_amount": {
+      "type": "number",
+      "description": "Credit transaction total amount",
+      "examples": [
+        240.48
+      ]
+    },
+    "previous_balance": {
+      "type": "number",
+      "description": "Credit transaction previous balance",
+      "examples": [
+        300.52
+      ]
+    },
+    "final_balance": {
+      "type": "number",
+      "description": "Credit transaction final balance",
+      "examples": [
+        100.0
+      ]
+    },
+    "transaction_type_id": {
+      "type": "integer",
+      "description": "Credit transaction type ID",
+      "examples": [
+        201
+      ]
+    },
+    "customer_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Customer ID",
+      "examples": [
+        5217323
+      ]
+    },
+    "event_datetime": {
+      "type": "string",
+      "description": "Event date and time in ISO 8601 format",
+      "format": "date-time",
+      "examples": [
+        "2020-07-06T05:09:33Z"
+      ]
+    },
+    "credit_authorization_tracking_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Credit transaction tracking authorization ID",
+      "examples": [
+        "352dd377-f734-4532-8cb9-1523af465629"
+      ]
+    },
+    "target": {
+      "type": [
+        "array"
+      ],
+      "title": "Debit transactions",
+      "description": "Debit transactions discharged by the credit transaction",
+      "items": [
+        {
+          "type": "object",
+          "title": "Transactions discharged",
+          "description": "One or more debit transactions discharged by credit transaction",
+          "required": [
+            "transaction_id",
+            "statement_id",
+            "transaction_type_id",
+            "account_id",
+            "transaction_amount",
+            "amount",
+            "previous_balance",
+            "final_balance"
+          ],
+          "properties": {
+            "transaction_id": {
+              "type": "integer",
+              "description": "Debit transaction ID",
+              "examples": [
+                28318254
+              ]
+            },
+            "statement_id": {
+              "type": "integer",
+              "description": "Transaction's statement ID",
+              "examples": [
+                100002556
+              ]
+            },
+            "transaction_type_id": {
+              "type": "integer",
+              "description": "Debit transaction type ID",
+              "examples": [
+                112
+              ]
+            },
+            "customer_id": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Debit transaction customer ID",
+              "examples": [
+                5217323
+              ]
+            },
+            "debit_authorization_tracking_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Debit transaction tracking authorization ID",
+              "examples": [
+                "352dd377-f734-4532-8cb9-1523af465629"
+              ]
+            },
+            "account_id": {
+              "type": "integer",
+              "description": "Debit transaction account ID",
+              "examples": [
+                5106089
+              ]
+            },
+            "transaction_amount": {
+              "type": "number",
+              "description": "Debit transaction total amount",
+              "examples": [
+                118.9
+              ]
+            },
+            "amount": {
+              "type": "number",
+              "description": "Debit transaction discharge amount",
+              "examples": [
+                118.9
+              ]
+            },
+            "previous_balance": {
+              "type": "number",
+              "description": "Debit transaction previous balance before discharge",
+              "examples": [
+                118.9
+              ]
+            },
+            "final_balance": {
+              "type": "number",
+              "description": "Debit transaction final balance after discharge",
+              "examples": [
+                0.0
+              ]
+            },
+            "discharge_order": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Order in which the debit transaction was discharged",
+              "examples": [
+                1
+              ]
+            },
+            "payment_hierarchy_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Payment hierarchy ID applied to the debit transaction discharge",
+              "format": "uuid",
+              "examples": [
+                "150e8400-e29b-41d4-a716-446655440000"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

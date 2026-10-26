@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Network authorization clearing message received",
+  "description": "A Clearing/Base II event.  This event has the same purpose as an iso8583 event, as it represents a raw message received from the card network. The Pismo platform issues a Clearing/Base II event after parsing the message and removing any sensitive data from the payload. You can use a Clearing/Base II event to verify all non-sensitive data received for Clearing/Base II messages. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/authorization-events'>Authorization events</a> guide.",
+  "additionalProperties": true,
+  "required": [
+    "file_type",
+    "network",
+    "raw_message"
+  ],
+  "properties": {
+    "file_type": {
+      "title": "File type",
+      "description": "Type of file that generated the event.",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "T112",
+        "EPIN",
+        "ServiceB",
+        "",
+        "T464",
+        "RUPAY"
+      ]
+    },
+    "network": {
+      "title": "Network Identifier",
+      "description": "Network that originated this clearing raw message.",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "Mastercard",
+        "Visa",
+        "TECBAN",
+        "RuPay",
+        "Artajasa"
+      ]
+    },
+    "raw_message": {
+      "type": "object",
+      "description": "Contains the ISO8583 message in JSON format. This is different for every network."
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "ID of account impacted by this clearing raw message. This information is fetched using the Card used in the conciliation. If no card is found, this value is null.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        15500,
+        null
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "ID of card received on this clearing raw message. If no card is found based on the PAN received, this value is null.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        10222,
+        null
+      ]
+    },
+    "program_id": {
+      "title": "Program ID",
+      "description": "ID of the card's program used on this clearing raw message. If no card is found, this value is null.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        100,
+        null
+      ]
+    }
+  }
+}

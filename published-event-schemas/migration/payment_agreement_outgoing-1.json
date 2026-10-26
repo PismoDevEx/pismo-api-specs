@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://pismo.io/events/migration/payment_agreement_outgoing-1.json",
+  "type": "object",
+  "title": "Payment agreement migration completed",
+  "required": [
+    "operation",
+    "status",
+    "code",
+    "message",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "description": "Migration operation",
+      "examples": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "description": "Migration status",
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "description": "Migration message code",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "description": "Migration result",
+      "examples": [
+        "Payment agreement has been migrated with success"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "description": "Migration Identifiers Object",
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/id",
+          "type": "string",
+          "description": "Migration Identifier",
+          "examples": [
+            "102030"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/version_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "Version Date of Migration Identifier",
+          "examples": [
+            "2022-09-12T15:02:45Z"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Pismo generated payment agreement information",
+      "properties": {
+        "metadata": {
+          "$id": "#/properties/entity/metadata",
+          "type": "object",
+          "description": "The metadata Schema",
+          "examples": [
+            {
+              "foo": "bar",
+              "foo2": "bar2"
+            }
+          ]
+        },
+        "payment_agreement_id": {
+          "$id": "#/properties/entity/payment_agreement_id",
+          "type": "integer",
+          "description": "The Pismo id for payment agreement",
+          "examples": [
+            1
+          ]
+        },
+        "statement_agreement": {
+          "$id": "#/properties/entity/statement_agreement",
+          "type": "boolean",
+          "description": "Indicates if it is and payment agreement or statement agreement, in the case of compulsory this attribute must be FALSE.",
+          "examples": [
+            false
+          ]
+        },
+        "compulsory": {
+          "$id": "#/properties/entity/compulsory",
+          "type": "boolean",
+          "description": "In the case of compulsory this attribute must be TRUE.",
+          "examples": [
+            true
+          ]
+        },
+        "settle_accrual": {
+          "$id": "#/properties/entity/settle_accrual",
+          "type": "boolean",
+          "description": "Indicate if the pending interest accrual must be settled (forgiven) when the agreement occurs.",
+          "examples": [
+            false
+          ]
+        },
+        "split_iof": {
+          "$id": "#/properties/entity/split_iof",
+          "type": "boolean",
+          "description": "If TRUE must generate an separate transaction for IOF (417) - it\u2019s used by Brazilian clients only.",
+          "examples": [
+            true
+          ]
+        },
+        "created_at": {
+          "$id": "#/properties/entity/created_at",
+          "type": "string",
+          "format": "date-time",
+          "description": "It will be used specially to prevent the payment agreement cancellation older than 30 days.",
+          "examples": [
+            "2022-02-02T11:29:00-03:00"
+          ]
+        },
+        "payment_datetime": {
+          "$id": "#/properties/entity/payment_datetime",
+          "type": "string",
+          "format": "date-time",
+          "description": "Needs more details from squad",
+          "examples": [
+            "2022-02-02T11:29:00-03:00"
+          ]
+        },
+        "authorization_id": {
+          "$id": "#/properties/entity/authorization_id",
+          "type": "integer",
+          "description": "The authorization ID used to create the payment agreement transactions.",
+          "examples": [
+            1000
+          ]
+        },
+        "interest_rate": {
+          "$id": "#/properties/entity/interest_rate",
+          "type": "number",
+          "description": "Interest rate used on the payment agreement.",
+          "examples": [
+            10.0
+          ]
+        },
+        "use_original_rate": {
+          "$id": "#/properties/entity/use_original_rate",
+          "type": "boolean",
+          "description": "If TRUE, the interest_rate will be used in case of accrual interest.",
+          "examples": [
+            true
+          ]
+        },
+        "installments": {
+          "$id": "#/properties/entity/installments",
+          "type": "array",
+          "description": "The installments Schema",
+          "items": {
+            "type": "object",
+            "properties": {
+              "installment_number": {
+                "$id": "#/properties/entity/installments/installment_number",
+                "type": "integer",
+                "description": "Installment number",
+                "examples": [
+                  1,
+                  2
+                ]
+              },
+              "description": {
+                "$id": "#/properties/entity/installments/description",
+                "type": "string",
+                "description": "Description of the installment",
+                "examples": [
+                  "parcela 1",
+                  "parcela 2"
+                ]
+              },
+              "total_amount": {
+                "$id": "#/properties/entity/installments/total_amount",
+                "type": "number",
+                "description": "Total amount of the installment",
+                "examples": [
+                  555.0
+                ]
+              },
+              "principal_amount": {
+                "$id": "#/properties/entity/installments/principal_amount",
+                "type": "number",
+                "description": "Principal amount of the installment",
+                "examples": [
+                  500.0
+                ]
+              },
+              "interest_rate": {
+                "$id": "#/properties/entity/installments/interest_rate",
+                "type": "number",
+                "description": "Interest rate of the installment",
+                "examples": [
+                  10.0
+                ]
+              },
+              "interest_amount": {
+                "$id": "#/properties/entity/installments/interest_amount",
+                "type": "number",
+                "description": "Interest amount of the installment",
+                "examples": [
+                  50.0
+                ]
+              },
+              "iof_amount": {
+                "$id": "#/properties/entity/installments/iof_amount",
+                "type": "number",
+                "description": "Iof amount of the installment",
+                "examples": [
+                  5.0
+                ]
+              },
+              "daily_iof_amount": {
+                "$id": "#/properties/entity/installments/daily_iof_amount",
+                "type": "number",
+                "description": "Daily iof amount of the installment",
+                "examples": [
+                  0.0
+                ]
+              }
+            }
+          }
+        },
+        "account_id": {
+          "$id": "#/properties/entity/account_id",
+          "type": "integer",
+          "description": "Pismo's account Id of the payment agreement",
+          "examples": [
+            102175426
+          ]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Payment agreement has been migrated with success",
+      "migration": {
+        "id": "102030",
+        "version_date": "2022-09-12T15:02:45Z"
+      },
+      "entity": {
+        "metadata": {
+          "foo": "bar",
+          "foo2": "bar2"
+        },
+        "payment_agreement_id": 1,
+        "statement_agreement": false,
+        "compulsory": true,
+        "settle_accrual": false,
+        "split_iof": true,
+        "created_at": "2022-02-02T11:29:00-03:00",
+        "payment_datetime": "2022-02-02T11:29:00-03:00",
+        "authorization_id": 1000,
+        "interest_rate": 10.0,
+        "use_original_rate": true,
+        "installments": [
+          {
+            "installment_number": 1,
+            "description": "parcela 1",
+            "total_amount": 555.0,
+            "principal_amount": 500.0,
+            "interest_rate": 10.0,
+            "interest_amount": 50.0,
+            "iof_amount": 5.0,
+            "daily_iof_amount": 0.0
+          },
+          {
+            "installment_number": 2,
+            "description": "parcela 2",
+            "total_amount": 555.0,
+            "principal_amount": 500.0,
+            "interest_rate": 10.0,
+            "interest_amount": 50.0,
+            "iof_amount": 5.0,
+            "daily_iof_amount": 0.0
+          }
+        ],
+        "account_id": 102175426
+      }
+    }
+  ]
+}

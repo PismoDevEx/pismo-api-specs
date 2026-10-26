@@ -1,0 +1,369 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/accrual_outgoing-1.json",
+  "type": "object",
+  "title": "Accrual migration completed",
+  "description": "Event generated when an accrual migration finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Accrual has been migrated with success!",
+      "migration": {
+        "id": "0000001238929602022-03-14",
+        "version_date": "2022-03-14T09:38:18Z"
+      },
+      "entity": {
+        "type": "REFINANCING",
+        "accruals": [
+          {
+            "interest_accrual_id": 916193539,
+            "type": "IOF",
+            "amount": 0.0,
+            "interest_rate": 0.0,
+            "accrual_date": "2023-12-12"
+          },
+          {
+            "interest_accrual_id": 916193539,
+            "type": "REFINANCING",
+            "amount": 0.0,
+            "interest_rate": 0.0,
+            "accrual_date": "2023-12-12"
+          }
+        ],
+        "metadata": {
+          "planSequence": "",
+          "reference": "",
+          "customerAccountId": "000000000000",
+          "balanceIof": "",
+          "customerOrgId": "004",
+          "planCode": ""
+        },
+        "accounting_date": "2023-12-12"
+      }
+    },
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "TRNSMIG-0000",
+      "message": "The transaction was migrated with success",
+      "migration": {
+        "id": "any-received-migration-id",
+        "version_date": "2021-08-11T11:25:00.000Z"
+      },
+      "entity": {
+        "type": "DECENDIAL_IOF",
+        "account_id": 12345678,
+        "transaction_id": 1
+      }
+    },
+    {
+      "status": "FAIL",
+      "code": "001",
+      "message": "Accrual not migrated!",
+      "migration": {
+        "id": "21390232942-accruals",
+        "version_date": "2021-11-27T20:54:41Z"
+      },
+      "entity": {
+        "type": "REFINANCING"
+      },
+      "error_details": [
+        {
+          "property": "001",
+          "message": "error during processing"
+        }
+      ]
+    }
+  ],
+  "required": [
+    "code",
+    "message",
+    "migration",
+    "status"
+  ],
+  "properties": {
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "The code of message for systems",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Message of accrual migration result",
+      "examples": [
+        "Accrual migrated with success"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Identifiers Object",
+      "description": "Identifier sent on start of migration process",
+      "examples": [
+        {
+          "id": "migration-id",
+          "version_date": "2021-08-11T11:25:00.000Z"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "format": "date-time",
+          "title": "Version Date of Migration Identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the result of accrual migration was success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Pismo generated Accrual information",
+      "examples": [
+        {
+          "type": "REFINANCING",
+          "accruals": [
+            {
+              "interest_accrual_id": 916193539,
+              "type": "IOF",
+              "amount": 0.0,
+              "interest_rate": 0.0,
+              "accrual_date": "2023-12-12"
+            },
+            {
+              "interest_accrual_id": 916193539,
+              "type": "REFINANCING",
+              "amount": 0.0,
+              "interest_rate": 0.0,
+              "accrual_date": "2023-12-12"
+            }
+          ],
+          "metadata": {
+            "planSequence": "",
+            "reference": "",
+            "customerAccountId": "000000000000",
+            "balanceIof": "",
+            "customerOrgId": "004",
+            "planCode": ""
+          },
+          "accounting_date": "2023-12-12"
+        }
+      ],
+      "properties": {
+        "type": {
+          "$id": "#/properties/entity/properties/type",
+          "type": "string",
+          "title": "Type of accrual",
+          "description": "Type of accrual",
+          "enum": [
+            "REFINANCING",
+            "DECENDIAL_IOF",
+            "WITHDRAW_IOF",
+            "NOTACCRUABLE_NOTFINEABLE"
+          ]
+        },
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "integer",
+          "title": "Account Identifier",
+          "description": "Account identifier generated by pismo.",
+          "examples": [
+            98763254
+          ]
+        },
+        "transaction_id": {
+          "$id": "#/properties/entity/properties/transaction_id",
+          "type": "integer",
+          "title": "Transaction Identifier",
+          "description": "Transaction identifier generated by pismo.",
+          "examples": [
+            22944079
+          ]
+        },
+        "accruals": {
+          "$id": "#/properties/entity/properties/accruals",
+          "type": "array",
+          "description": "An explanation about the purpose of this instance.",
+          "examples": [
+            [
+              {
+                "interest_accrual_id": 916193539,
+                "type": "IOF",
+                "amount": 0.0,
+                "interest_rate": 0.0,
+                "accrual_date": "2023-12-12"
+              },
+              {
+                "interest_accrual_id": 916193539,
+                "type": "REFINANCING",
+                "amount": 0.0,
+                "interest_rate": 0.0,
+                "accrual_date": "2023-12-12"
+              }
+            ]
+          ],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/entity/properties/accruals/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/entity/properties/accruals/items/anyOf/0",
+                "type": "object",
+                "examples": [
+                  {
+                    "interest_accrual_id": 916193539,
+                    "type": "IOF",
+                    "amount": 0.0,
+                    "interest_rate": 0.0,
+                    "account_id": 333052617
+                  }
+                ],
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "interest_accrual_id": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/interest_accrual_id",
+                    "type": "integer",
+                    "description": "Accrual identifier generated by pismo.",
+                    "examples": [
+                      916193539
+                    ]
+                  },
+                  "type": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/type",
+                    "type": "string",
+                    "description": "Accrual value type generated by pismo.",
+                    "enum": [
+                      "REFINANCING",
+                      "IOF",
+                      "OVERDUE",
+                      "FINE",
+                      "BALANCE"
+                    ],
+                    "examples": [
+                      "IOF"
+                    ]
+                  },
+                  "amount": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/amount",
+                    "type": "number",
+                    "description": "Accrual amount value generated by pismo.",
+                    "examples": [
+                      0.0
+                    ]
+                  },
+                  "interest_rate": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/interest_rate",
+                    "type": "number",
+                    "description": "Accrual interest_rate value generated by pismo.",
+                    "examples": [
+                      0.0
+                    ]
+                  },
+                  "accrual_date": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/accrual_date",
+                    "type": "string",
+                    "description": "Accrual date in format YYYY-MM-DD.",
+                    "examples": [
+                      "2023-12-12"
+                    ]
+                  },
+                  "account_id": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/account_id",
+                    "type": "integer",
+                    "description": "Account identifier generated by Pismo.",
+                    "examples": [
+                      333044893
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "This field contains others accrual information.",
+          "examples": [
+            {
+              "planSequence": "",
+              "reference": "",
+              "customerAccountId": "000000000000",
+              "balanceIof": "",
+              "customerOrgId": "004",
+              "planCode": ""
+            }
+          ],
+          "additionalProperties": true
+        },
+        "accounting_date": {
+          "$id": "#/properties/entity/properties/accounting_date",
+          "type": "string",
+          "format": "date",
+          "title": "Accounting Date",
+          "description": "Accounting date in format YYYY-MM-DD.",
+          "examples": [
+            "2023-12-12"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "If the accrual migration is a creation or update",
+      "enum": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "UPDATE",
+        "CREATION"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

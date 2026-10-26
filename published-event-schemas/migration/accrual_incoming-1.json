@@ -1,0 +1,508 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/accrual_incoming-1.json",
+  "type": "object",
+  "title": "Accrual migration started",
+  "description": "Event generated when an accrual migration is started. Contains the payload with the data to be migrated.",
+  "examples": [
+    {
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "1",
+      "line_number": "2",
+      "entity": {
+        "migration": {
+          "id": "0000002484919082021-12-14",
+          "version_date": "2021-12-14T12:30:40Z",
+          "account_id": "000000248491908",
+          "authorization_id": "000000-24849-19082022"
+        },
+        "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+        "authorization_type": "PLATFORM",
+        "cid": "4588d1ec-0b8e-4ac0-8578-a8c79f8f682e",
+        "file_id": "1",
+        "type": "1",
+        "flag": "1",
+        "accounting_date": "2022-04-20",
+        "accruals": [
+          {
+            "type": "IOF",
+            "amount": 0.423187,
+            "interest_rate": 0.0
+          },
+          {
+            "type": "REFINANCING",
+            "amount": 14.7,
+            "interest_rate": 0.0
+          },
+          {
+            "type": "OVERDUE",
+            "amount": 1.03,
+            "interest_rate": 0.0
+          },
+          {
+            "type": "FINE",
+            "amount": 4.58,
+            "interest_rate": 0.0
+          }
+        ],
+        "projected_values": [
+          {
+            "type": "IOF",
+            "amount": 1,
+            "interestRate": 0.0
+          },
+          {
+            "type": "REFINANCING",
+            "amount": 0,
+            "interestRate": 0.0
+          }
+        ],
+        "metadata": {
+          "balanceIof": "0000000000000",
+          "customerAccountId": "0004002479013933093",
+          "customerOrgId": "004",
+          "planCode": "00000",
+          "planSequence": "000",
+          "reference": "00000000000000000000000"
+        }
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "FILE",
+        "API"
+      ],
+      "examples": [
+        "FILE"
+      ]
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field identifies the name file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the size file.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "string",
+      "description": "This field identifies the line of the file that originated the event (can be 0 when origin is API).",
+      "examples": [
+        "0",
+        "2",
+        "11"
+      ]
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents an accrual.",
+      "examples": [
+        {
+          "migration": {
+            "id": "0000002484919082021-12-14",
+            "version_date": "2021-12-14T12:30:40Z",
+            "account_id": "000000248491908",
+            "authorization_id": "000000-24849-19082022"
+          },
+          "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+          "cid": "4588d1ec-0b8e-4ac0-8578-a8c79f8f682e",
+          "file_id": "1",
+          "type": "1",
+          "flag": "1",
+          "authorization_type": "PLATFORM",
+          "accounting_date": "2022-04-20",
+          "accruals": [
+            {
+              "type": "IOF",
+              "amount": 0.423187,
+              "interest_rate": 0.0
+            },
+            {
+              "type": "REFINANCING",
+              "amount": 14.7,
+              "interest_rate": 0.0
+            },
+            {
+              "type": "OVERDUE",
+              "amount": 1.03,
+              "interest_rate": 0.0
+            },
+            {
+              "type": "FINE",
+              "amount": 4.58,
+              "interest_rate": 0.0
+            }
+          ],
+          "metadata": {
+            "balanceIof": "0000000000000",
+            "customerAccountId": "0004002479013933093",
+            "customerOrgId": "004",
+            "planCode": "00000",
+            "planSequence": "000",
+            "reference": "00000000000000000000000"
+          }
+        }
+      ],
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "This field contains the data that identifies a migration.",
+          "examples": [
+            {
+              "id": "0000002484919082021-12-14",
+              "version_date": "2021-12-14T12:30:40Z",
+              "account_id": "000000248491908",
+              "authorization_id": "000000-24849-19082022"
+            }
+          ],
+          "required": [
+            "id",
+            "version_date",
+            "account_id"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "This field is the unique identifier of migration.",
+              "examples": [
+                "accrual-external-01"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "This field is the date of version of migration.",
+              "examples": [
+                "2021-08-27T16:45:07.750936Z"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "This field identifies the external account the accrual belongs to.",
+              "examples": [
+                "account-external-01"
+              ]
+            },
+            "authorization_id": {
+              "$id": "#/properties/entity/properties/migration/properties/authorization_id",
+              "type": "string",
+              "description": "This field identifies the external authorization the accrual belongs to.",
+              "examples": [
+                "account-external-01"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "org_id": {
+          "$id": "#/properties/entity/properties/org_id",
+          "type": "string",
+          "description": "Internal identifier of the client organization registered into the platform.",
+          "examples": [
+            "TN_c642ca23-4ea8-4218-a00d-8331a496253c"
+          ]
+        },
+        "cid": {
+          "$id": "#/properties/entity/properties/cid",
+          "type": "string",
+          "format": "uuid",
+          "description": "This field identifies a file processing or an API request.",
+          "examples": [
+            "9be0486e-073a-4f56-80bb-5c400337e721"
+          ]
+        },
+        "file_id": {
+          "$id": "#/properties/entity/properties/file_id",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+          "examples": [
+            "5832868-ca4d-475f-888b-02bb44f84d19",
+            null
+          ]
+        },
+        "type": {
+          "$id": "#/properties/entity/properties/type",
+          "type": "string",
+          "description": "This field identifies the type of accrual.",
+          "examples": [
+            "REFINANCING",
+            "DECENDIAL_IOF",
+            "WITHDRAW_IOF",
+            "NOTACCRUABLE_NOTFINEABLE"
+          ]
+        },
+        "flag": {
+          "$id": "#/properties/entity/properties/flag",
+          "type": [
+            "string",
+            "boolean"
+          ],
+          "pattern": "[01]",
+          "description": "This field whether the accrual should be sent to balance (1/true) or not (0/false).",
+          "examples": [
+            "0",
+            "1",
+            true,
+            false
+          ]
+        },
+        "authorization_type": {
+          "$id": "#/properties/entity/properties/authorization_type",
+          "type": "string",
+          "enum": [
+            "PLATFORM",
+            "NETWORK"
+          ],
+          "description": "If the accrual of the transaction comes from a network (e.g.: VISA, MASTERCARD) then it should be NETWORK. If the accrual of the transaction comes from an internal process then it should be PLATFORM",
+          "examples": [
+            "PLATFORM",
+            "NETWORK"
+          ]
+        },
+        "accounting_date": {
+          "$id": "#/properties/entity/properties/accounting_date",
+          "type": "string",
+          "description": "This field identifies the accounting_date of accrual.",
+          "format": "date",
+          "examples": [
+            "2022-04-20"
+          ]
+        },
+        "can_go_into_delinquency": {
+          "$id": "#/properties/entity/properties/can_go_into_delinquency",
+          "type": "boolean",
+          "description": "Whether the account for a NOTACCRUABLE_NOTFINEABLE accrual can go into delinquency and its current balance must be marked as accruable or nonaccruable",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "accruals": {
+          "$id": "#/properties/entity/properties/accruals",
+          "type": "array",
+          "description": "This field contains the values of accrual.",
+          "examples": [
+            [
+              {
+                "type": "IOF",
+                "amount": 0.423187,
+                "interest_rate": 0.0
+              },
+              {
+                "type": "REFINANCING",
+                "amount": 14.7,
+                "interest_rate": 0.0
+              }
+            ]
+          ],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/entity/properties/accruals/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/entity/properties/accruals/items/anyOf/0",
+                "type": "object",
+                "examples": [
+                  {
+                    "type": "IOF",
+                    "amount": 0.423187,
+                    "interest_rate": 0.0
+                  }
+                ],
+                "required": [
+                  "type",
+                  "amount"
+                ],
+                "properties": {
+                  "type": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/type",
+                    "type": "string",
+                    "description": "This field identifies the type of value.",
+                    "enum": [
+                      "REFINANCING",
+                      "IOF",
+                      "OVERDUE",
+                      "FINE"
+                    ],
+                    "examples": [
+                      "IOF",
+                      "OVERDUE"
+                    ]
+                  },
+                  "amount": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/amount",
+                    "type": [
+                      "string",
+                      "integer",
+                      "null"
+                    ],
+                    "description": "This field identifies the amount of value.",
+                    "examples": [
+                      0.423187
+                    ]
+                  },
+                  "interest_rate": {
+                    "$id": "#/properties/entity/properties/accruals/items/anyOf/0/properties/interest_rate",
+                    "type": "number",
+                    "description": "This field identifies the interest rate of value.",
+                    "examples": [
+                      0.0
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "projected_values": {
+          "$id": "#/properties/entity/properties/projected_values",
+          "type": "array",
+          "description": "This field contains the projected values of accrual.",
+          "examples": [
+            [
+              {
+                "type": "IOF",
+                "amount": 0.423187,
+                "interest_rate": 0.0
+              },
+              {
+                "type": "REFINANCING",
+                "amount": 14.7,
+                "interest_rate": 0.0
+              }
+            ]
+          ],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/entity/properties/projected_values/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/entity/properties/projected_values/items/anyOf/0",
+                "type": "object",
+                "examples": [
+                  {
+                    "type": "IOF",
+                    "amount": 0.423187,
+                    "interest_rate": 0.0
+                  }
+                ],
+                "required": [
+                  "type",
+                  "amount"
+                ],
+                "properties": {
+                  "type": {
+                    "$id": "#/properties/entity/properties/projected_values/items/anyOf/0/properties/type",
+                    "type": "string",
+                    "description": "This field identifies the type of projected value.",
+                    "enum": [
+                      "REFINANCING",
+                      "IOF",
+                      "OVERDUE",
+                      "FINE"
+                    ],
+                    "examples": [
+                      "IOF",
+                      "OVERDUE"
+                    ]
+                  },
+                  "amount": {
+                    "$id": "#/properties/entity/properties/projected_values/items/anyOf/0/properties/amount",
+                    "type": [
+                      "number",
+                      "null",
+                      "string"
+                    ],
+                    "description": "This field identifies the amount of projected value.",
+                    "examples": [
+                      0.423187
+                    ]
+                  },
+                  "interest_rate": {
+                    "$id": "#/properties/entity/properties/projected_values/items/anyOf/0/properties/interest_rate",
+                    "type": "number",
+                    "description": "This field identifies the projected interest rate of value.",
+                    "examples": [
+                      0.0
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "This field contains others accrual information.",
+          "default": {},
+          "examples": [
+            {
+              "balanceIof": "0000000000000",
+              "customerAccountId": "0004002479013933093",
+              "customerOrgId": "004",
+              "planCode": "00000",
+              "planSequence": "000",
+              "reference": "00000000000000000000000"
+            }
+          ],
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

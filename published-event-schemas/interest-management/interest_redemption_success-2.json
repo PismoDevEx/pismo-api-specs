@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest redemption succeeded",
+  "description": "This event occurs when a quota is redeemed",
+  "required": [
+    "external_redemption_id",
+    "external_asset_id",
+    "external_quota_id",
+    "account_id",
+    "document_number",
+    "asset_type",
+    "redemption_date",
+    "treasury_date",
+    "currency_code",
+    "net_redeemed_amount",
+    "gross_redeemed_amount",
+    "redeemed_units",
+    "net_unit_value",
+    "gross_unit_value",
+    "taxes",
+    "remaining_amount"
+  ],
+  "properties": {
+    "external_redemption_id": {
+      "type": "string",
+      "title": "External Redemption ID",
+      "description": "External identifier for redemption operation",
+      "examples": [
+        "deposit:6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "external_asset_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External asset ID",
+      "description": "Unique asset identifier defined by Pismo",
+      "examples": [
+        "kxBHNMCAYDnQav"
+      ]
+    },
+    "external_quota_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External quota ID",
+      "description": "Quota External identifier",
+      "examples": [
+        "deposit:6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within client organization",
+      "examples": [
+        "999999999"
+      ]
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Document number",
+      "description": "Number of asset quota owner's legal document",
+      "examples": [
+        "00000000012"
+      ]
+    },
+    "asset_type": {
+      "type": "string",
+      "title": "Asset type",
+      "description": "Financial instrument type",
+      "enum": [
+        "CDB",
+        "RDB"
+      ]
+    },
+    "redemption_date": {
+      "type": "string",
+      "title": "Redemption date",
+      "description": "Date quota was totally/partially redeemed by client",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "treasury_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Treasury date",
+      "description": "Date the treasury operation was settled",
+      "format": "date",
+      "examples": [
+        "2020-12-03"
+      ]
+    },
+    "currency_code": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "ISO 4217 currency code",
+      "examples": [
+        "986"
+      ]
+    },
+    "net_redeemed_amount": {
+      "type": "number",
+      "title": "Net Amount Redeemed",
+      "description": "Net value to be redeemed from quota",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "gross_redeemed_amount": {
+      "type": "number",
+      "title": "Gross Amount Redeemed",
+      "description": "Gross value to be redeemed from quota",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "redeemed_units": {
+      "type": "number",
+      "title": "Redeemed quota units",
+      "description": "Number of quota units redeemed",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "net_unit_value": {
+      "type": "number",
+      "title": "Net Unit value",
+      "description": "Net value of the asset's units",
+      "format": "double",
+      "examples": [
+        1.0
+      ]
+    },
+    "gross_unit_value": {
+      "type": "number",
+      "title": "Gross Unit value",
+      "description": "Gross value of the asset's units",
+      "format": "double",
+      "examples": [
+        1.0
+      ]
+    },
+    "taxes": {
+      "type": "array",
+      "title": "List of taxes",
+      "items": {
+        "$ref": "#/definitions/taxes"
+      }
+    },
+    "remaining_amount": {
+      "type": "object",
+      "title": "Remaining quota attributes",
+      "required": [
+        "gross_amount",
+        "net_amount",
+        "taxes"
+      ],
+      "description": "Remaining quota available for redemption",
+      "properties": {
+        "gross_amount": {
+          "type": "number",
+          "title": "Remaining Gross Amount",
+          "description": "Remaining gross amount from quota",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        },
+        "net_amount": {
+          "type": "number",
+          "title": "Remaining Net Amount",
+          "description": "Remaining net amount from quota",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        },
+        "taxes": {
+          "type": "array",
+          "title": "List of taxes of remaining quota",
+          "items": {
+            "$ref": "#/definitions/taxes"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "taxes": {
+      "type": "object",
+      "title": "Taxes attributes",
+      "required": [
+        "type",
+        "amount",
+        "rate"
+      ],
+      "description": "Taxes applied to redemptions",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Tax type",
+          "description": "Tax type identifier.",
+          "enum": [
+            "IR",
+            "IOF"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tax Amount",
+          "description": "Tax Amount.",
+          "format": "double",
+          "examples": [
+            0.15
+          ]
+        },
+        "rate": {
+          "type": "number",
+          "title": "Tax Rate",
+          "description": "Tax Rate.",
+          "format": "double",
+          "examples": [
+            22.5
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix reconciliation notification received",
+  "description": "Pix financial reconciliation received event. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer' target='_blank'>Pix-out transfer</a>, <a href='https://developers.pismo.io/pismo-docs/reference/post-pix-reversal' target='_blank'>Pix reversal</a>, and <a href='https://developers.pismo.io/pismo-docs/reference/post-close-dict-refund' target='_blank'>Close refund request</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments' target='_blank'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events' target='_blank'>Pix payments data events</a> guide.",
+  "required": [
+    "amount",
+    "end_to_end_id",
+    "result",
+    "result_description",
+    "transaction_id"
+  ],
+  "properties": {
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Authorization Amount",
+      "description": "Pismo authorization amount",
+      "examples": [
+        125.5
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Pix-out end ti end ID",
+      "description": "Pix end-to-end transaction identifier. This field is a Brazil Central Bank (BCB) requirement to track Pix transactions. Basically, there are two steps to a Pix transaction: 1. Initialize a transaction and 2. Confirm a transaction. This field is sent to the BCB in both steps in order to identify all transaction information.",
+      "examples": [
+        "E4086716320220629204700103800548"
+      ]
+    },
+    "result": {
+      "type": "boolean",
+      "title": "Result",
+      "description": "End result condition of the financial reconciliation",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "result_description": {
+      "type": "string",
+      "title": "Result description",
+      "description": "Financial reconciliation end result description",
+      "examples": [
+        "OK",
+        "PISMO_TRANSACTION_NOT_FOUND",
+        "PROVIDER_TRANSACTION_NOT_FOUND",
+        "TRANSACTION_AMOUNT_DIVERGENT"
+      ]
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Pismo transaction ID",
+      "description": "Pismo ID for Pix transaction",
+      "examples": [
+        "67c1c555-9f40-4eb1-bc20-621086cc3c98"
+      ]
+    },
+    "authorization_datetime": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization datetime",
+      "description": "Pismo authorization datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "authorization_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID",
+      "examples": [
+        123
+      ]
+    },
+    "provider_amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double",
+      "title": "Provider Amount",
+      "description": "Amount returned from provider",
+      "examples": [
+        125.5
+      ]
+    },
+    "provider_authorization_id": {
+      "type": "string",
+      "title": "Provider authorization ID",
+      "description": "Transaction ID from provider",
+      "examples": [
+        "17579222"
+      ]
+    }
+  }
+}

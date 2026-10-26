@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Delinquency bucket created",
+  "description": "The event is generated when a delinquency bucket is created. This event is generated automatically, no endpoint generates this event. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/delinquency-buckets' target = '_blank'>Delinquency buckets</a> guide.",
+  "examples": [
+    {
+      "org_id": "TN-cc8f8b89-233a-4582-9f36-63ee85999999",
+      "program_id": 9500,
+      "program_type_id": 1,
+      "account_id": 111508999,
+      "sender": "delinquency-bucket-worker",
+      "event": "statements-delinquency-bucket-created",
+      "schema_version": "1.0",
+      "cid": "test-111508462-8",
+      "data": {
+        "program_id": 9500,
+        "account_id": 111508999,
+        "statement_id": 315542539,
+        "due_date": "2023-02-28",
+        "cycle_closing_date": "2023-02-20",
+        "delinquency_bucket_id": 9471,
+        "bucket_amount": 127.78,
+        "bucket_balance": 127.78,
+        "overdue_amount": 127.78,
+        "created_at": "2023-02-28T14:52:03.351702947"
+      }
+    }
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "ID of account with statement delinquency bucket",
+      "examples": [
+        9832195123
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Program ID of account with statement delinquency bucket.",
+      "examples": [
+        9832195123
+      ]
+    },
+    "statement_id": {
+      "type": "integer",
+      "title": "Statement ID",
+      "description": "Statement ID",
+      "examples": [
+        98132196
+      ]
+    },
+    "due_date": {
+      "type": "string",
+      "title": "Due Date",
+      "description": "Due date from statement calendar",
+      "format": "date",
+      "examples": [
+        "2023-02-28"
+      ]
+    },
+    "cycle_closing_date": {
+      "type": "string",
+      "title": "Cycle Closing Date",
+      "description": "Cycle closing date from statement calendar",
+      "format": "date",
+      "examples": [
+        "2023-02-20"
+      ]
+    },
+    "delinquencybucket_id": {
+      "type": "integer",
+      "title": "Delinquency bucket ID",
+      "description": "Statement's delinquency bucket ID.",
+      "examples": [
+        98132196
+      ]
+    },
+    "bucket_amount": {
+      "type": "number",
+      "title": "Delinquency bucket amount",
+      "description": "Delinquency bucket amount. Amount from when the delinquency bucket was created.",
+      "format": "double",
+      "examples": [
+        40.3
+      ]
+    },
+    "bucket_balance": {
+      "type": "number",
+      "title": "Delinquency bucket balance",
+      "description": "Delinquency bucket balance.",
+      "format": "double",
+      "examples": [
+        40.3
+      ]
+    },
+    "overdue_amount": {
+      "type": "number",
+      "title": "Delinquency overdue amount",
+      "description": "Delinquency overdue amount.",
+      "format": "double",
+      "examples": [
+        40.3
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Delinquency bucket creation date/time",
+      "description": "Delinquency bucket creation date/time",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    }
+  },
+  "required": [
+    "account_id",
+    "program_id",
+    "statement_id",
+    "due_date",
+    "cycle_closing_date",
+    "bucket_amount",
+    "bucket_balance",
+    "overdue_amount",
+    "created_at"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card tokenization timeline event added",
+  "description": "Card tokenization event added to user's timeline. For more information, see [Timeline events overview](https://developers.pismo.io/pismo-docs/docs/timeline-overview).",
+  "required": [
+    "status",
+    "response_code"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "title": "Identifies the status from tokenization",
+      "examples": [
+        "APPROVED",
+        "DENIED"
+      ]
+    },
+    "wallet": {
+      "type": "string",
+      "title": "Identifies the name of the wallet in the tokenization flow",
+      "examples": [
+        "APPLE_PAY"
+      ]
+    },
+    "response_code": {
+      "type": "string",
+      "title": "Defines the disposition of a previous message or an action taken as a result of receipt of a previous message",
+      "examples": [
+        "00"
+      ]
+    },
+    "custom_code": {
+      "type": "string",
+      "title": "Custom code from authorization.",
+      "examples": [
+        "FL2",
+        "FL8",
+        "FLB",
+        "FLE"
+      ]
+    }
+  },
+  "definitions": {}
+}

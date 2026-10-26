@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Savings account product created",
+  "required": [
+    "product_id",
+    "name",
+    "processing_codes",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "title": "Product Identifier",
+      "description": "Product identifier in the pismo platform. UUID v4 format",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "title": "Product Name",
+      "description": "Name given to the product by the customer",
+      "examples": [
+        "My product"
+      ]
+    },
+    "interest_plan_id": {
+      "type": "string",
+      "title": "Interest Plan Identifier",
+      "description": "Interest plan identifier in the pismo platform. UUID v4 format",
+      "examples": [
+        "b935acaf-886c-4817-8f7c-c2cc3ce4d509"
+      ]
+    },
+    "min_amount": {
+      "type": "number",
+      "title": "Minimum amount",
+      "description": "Minimum amount for yield.",
+      "examples": [
+        10.2,
+        20
+      ]
+    },
+    "processing_codes": {
+      "$ref": "#/definitions/processing_codes"
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Savings Account product status. A new product's status will always be \"CREATED\"",
+      "examples": [
+        "CREATED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Creation Datetime",
+      "description": "Savings Account product creation datetime. Represented as a RFC3339 timestamp",
+      "examples": [
+        "2024-01-23T13:26:25Z"
+      ]
+    }
+  },
+  "definitions": {
+    "processing_codes": {
+      "type": "object",
+      "title": "Processing Codes",
+      "description": "Processing codes used for accounting",
+      "properties": {
+        "interest_processing_code": {
+          "type": "string",
+          "title": "Interest Processing Code",
+          "description": "Processing code for interest processing",
+          "examples": [
+            "202526"
+          ]
+        }
+      },
+      "required": [
+        "interest_processing_code"
+      ]
+    }
+  }
+}

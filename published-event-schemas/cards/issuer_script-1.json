@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card issuer script notification received",
+  "description": "Card issuer script event. Issuers can configure scripts for embossed, physical cards that are run on the chip at the next authorization. Typically, they are used to update a password or grant additional capability, such as allowing a debit card to also be used for credit.<br><br>Endpoints that generate this event include Append issuer script and <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-append-update-pin-script'>Append update PIN script</a>. This event is also generated when the script is sent for execution on the chip and when it succeeds or fails.<br><br>For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/card-scripts'>Card scripts</a> guide",
+  "examples": [
+    {
+      "account_id": 8675309,
+      "card_id": 6767937,
+      "card_script_id": "2092aa7e-d6a7-49d8-b83b-4fb8e7666436",
+      "customer_id": 102440864,
+      "program_id": 1457,
+      "reason": null,
+      "script_event_type": "script_applied",
+      "script_type": "DISABLE_APPLICATION",
+      "status": null,
+      "template_script_id": "11a10bff-830b-4649-9660-1a01a5e1c192"
+    }
+  ],
+  "required": [
+    "card_id",
+    "account_id",
+    "customer_id",
+    "program_id",
+    "script_event_type",
+    "script_type"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Customer ID",
+      "description": "Pismo customer ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo program ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "script_event_type": {
+      "type": "string",
+      "title": "Script event type",
+      "description": "Enums for script actions",
+      "enum": [
+        "SCRIPT_APPLIED",
+        "SCRIPT_CANCELED",
+        "SCRIPT_CREATED",
+        "SCRIPT_FAILED",
+        "SCRIPT_SENT",
+        "SCRIPT_UPDATED"
+      ]
+    },
+    "script_type": {
+      "type": "string",
+      "title": "Script type",
+      "description": "Enums for scripts currently supported",
+      "enum": [
+        "UNKNOWN",
+        "ENABLE_APPLICATION",
+        "DISABLE_APPLICATION",
+        "UPDATE_PIN",
+        "SYNC_PIN"
+      ]
+    },
+    "card_script_id": {
+      "type": "string",
+      "title": "Issuer script ID",
+      "description": "Script ID from card.",
+      "examples": [
+        12345678
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Failure reason",
+      "description": "Failure reason",
+      "examples": [
+        "Reason of failure"
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Status",
+      "description": "Operation status",
+      "enum": [
+        "SUCCESS",
+        "FAILURE",
+        null
+      ]
+    },
+    "template_script_id": {
+      "type": "string",
+      "title": "Template script ID",
+      "description": "Pismo script ID",
+      "examples": [
+        12345678
+      ]
+    }
+  },
+  "definitions": {}
+}

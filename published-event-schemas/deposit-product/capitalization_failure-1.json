@@ -1,0 +1,263 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Capitalization credit processing failed",
+  "description": "This event occurs when a capitalization credit (or debit for reversals) fails to be processed.",
+  "examples": [
+    {
+      "account_id": 123,
+      "program_id": 123,
+      "product_id": "4aa5556f-8062-4705-9aca-7246c4d1f36d",
+      "amount": 10.14,
+      "operation_type": "CREDIT",
+      "status": "ERROR",
+      "capitalization_date": "2026-02-10",
+      "created_at": "2026-02-10T13:26:25Z",
+      "updated_at": "2026-02-10T13:30:25Z",
+      "payout_account": {
+        "label": "My Payout Account",
+        "type": "INTERNAL",
+        "internal_account_id": 123456
+      },
+      "interest_credits": [
+        {
+          "tracking_id": "6a9ba2dc-5c24-4c9d-bb5c-1a8fef4f68bc",
+          "amount": 10.14
+        }
+      ],
+      "payout": {
+        "debit_tracking_id": "8f2c4e1a-3b7d-4c9e-a5f6-0d1e2f3a4b5c",
+        "payout_credit_tracking_id": "13d2a008-f68b-499b-8bdf-8842a6c8f36e",
+        "amount": 10.14
+      },
+      "interest_capitalization_mode": "PAYOUT",
+      "error_message": "failed to process capitalization"
+    }
+  ],
+  "required": [
+    "account_id",
+    "program_id",
+    "product_id",
+    "amount",
+    "operation_type",
+    "status",
+    "capitalization_date",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Program ID",
+      "examples": [
+        123
+      ]
+    },
+    "product_id": {
+      "type": "string",
+      "title": "Product ID",
+      "description": "Deposit product ID",
+      "examples": [
+        "4aa5556f-8062-4705-9aca-7246c4d1f36d"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Credit or debit amount. The value is always positive",
+      "examples": [
+        10.14
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Operation type, either `CREDIT` for capitalization or `DEBIT` for reversal",
+      "examples": [
+        "CREDIT"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "For this event, the status is always `ERROR`",
+      "examples": [
+        "ERROR"
+      ]
+    },
+    "capitalization_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Capitalization date",
+      "description": "Date when the capitalization occurred",
+      "examples": [
+        "2026-02-10"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created at",
+      "description": "Creation timestamp",
+      "examples": [
+        "2026-02-10T13:26:25Z"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated at",
+      "description": "Updated timestamp",
+      "examples": [
+        "2026-02-10T13:30:25Z"
+      ]
+    },
+    "payout_account": {
+      "$ref": "#/definitions/payout_account"
+    },
+    "interest_credits": {
+      "type": "array",
+      "title": "Interest credits",
+      "description": "Interest credit instructions related to this capitalization. Contains a single credit, or multiple credits when the capitalization is split across tax thresholds. Omitted when no interest credit was recorded for this capitalization.",
+      "items": {
+        "type": "object",
+        "title": "Interest credit",
+        "description": "Interest credit instruction for a single credit transaction.",
+        "required": [
+          "tracking_id",
+          "amount"
+        ],
+        "properties": {
+          "tracking_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tracking ID",
+            "description": "Generated tracking ID for the interest credit transaction.",
+            "examples": [
+              "6a9ba2dc-5c24-4c9d-bb5c-1a8fef4f68bc"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount",
+            "description": "Interest credit amount.",
+            "examples": [
+              10.14
+            ]
+          }
+        }
+      }
+    },
+    "payout": {
+      "type": "object",
+      "title": "Payout",
+      "description": "Payout instruction related to this capitalization.",
+      "required": [
+        "debit_tracking_id",
+        "amount"
+      ],
+      "properties": {
+        "debit_tracking_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Debit tracking ID",
+          "description": "Tracking ID of the debit leg of the payout.",
+          "examples": [
+            "6a9ba2dc-5c24-4c9d-bb5c-1a8fef4f68bc"
+          ]
+        },
+        "payout_credit_tracking_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Payout credit tracking ID",
+          "description": "Tracking ID of the credit leg of the payout.",
+          "examples": [
+            "13d2a008-f68b-499b-8bdf-8842a6c8f36e"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Amount",
+          "description": "Payout amount.",
+          "examples": [
+            10.14
+          ]
+        }
+      }
+    },
+    "interest_capitalization_mode": {
+      "type": "string",
+      "title": "Interest capitalization mode",
+      "description": "Interest capitalization mode. Either `REINVEST` or `PAYOUT`.",
+      "examples": [
+        "REINVEST",
+        "PAYOUT"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Detailed message describing the reason for the failure",
+      "examples": [
+        "failed to process capitalization"
+      ]
+    }
+  },
+  "definitions": {
+    "payout_account": {
+      "type": "object",
+      "title": "Payout account",
+      "description": "",
+      "properties": {
+        "label": {
+          "type": "string",
+          "title": "Payout account label",
+          "description": "Payout account label",
+          "examples": [
+            "My Payout Account"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Informs whether the account is is internal (Pismo) or external (client's account). Value is either `INTERNAL` or `EXTERNAL`",
+          "description": "Payout account type",
+          "examples": [
+            "INTERNAL",
+            "EXTERNAL"
+          ]
+        },
+        "external_account": {
+          "type": "object",
+          "title": "External account",
+          "description": "Use this field to provide the external account information configured during product attachment. Enter the information as key-value pairs. Pismo does not evaluate this content. Required when type is EXTERNAL",
+          "examples": [
+            {
+              "custom_info": "value"
+            }
+          ]
+        },
+        "internal_account_id": {
+          "type": "number",
+          "title": "Internal account ID",
+          "description": "Use this field to provide the internal account ID configured during product attachment. This field is required when type is `INTERNAL`",
+          "examples": [
+            123456
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ]
+    }
+  }
+}

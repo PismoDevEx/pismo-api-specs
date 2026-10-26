@@ -1,0 +1,108 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Statement cycle opened",
+  "description": "Event generated when a statement cycle is opened. <b>Note:</b> This event is only generated if the <b>Indicates whether the cycle opening event should be sent to the first cycle</b> program parameter is set to `true`.",
+  "required": [
+    "account_id",
+    "statement_id",
+    "program_id",
+    "cycle",
+    "cycle_closing_date",
+    "due_date",
+    "real_due_date",
+    "opening_date",
+    "credits",
+    "debits",
+    "balance",
+    "minimum_payment"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID"
+    },
+    "statement_id": {
+      "type": "integer",
+      "description": "Statement ID"
+    },
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID"
+    },
+    "program_name": {
+      "type": "string",
+      "description": "Program name"
+    },
+    "cycle": {
+      "type": "integer",
+      "description": "Sequential number that identifies the current account cycle"
+    },
+    "statement_cycle": {
+      "type": "integer",
+      "description": "Sequential number that identifies the statement cycle"
+    },
+    "cycle_closing_date": {
+      "type": "string",
+      "description": "Billing cycle end date, format = yyyy-mm-dd",
+      "examples": [
+        "2019-07-20"
+      ],
+      "format": "date"
+    },
+    "due_date": {
+      "type": "string",
+      "description": "Due date for monthly credit card payment, format = yyyy-mm-dd",
+      "examples": [
+        "2019-07-20"
+      ],
+      "format": "date"
+    },
+    "real_due_date": {
+      "type": "string",
+      "description": "Next working day after `due_date`, format = yyyy-mm-dd",
+      "examples": [
+        "2019-07-20"
+      ],
+      "format": "date"
+    },
+    "opening_date": {
+      "type": "string",
+      "description": "Billing cycle start date, format = yyyy-mm-dd",
+      "examples": [
+        "2019-07-20"
+      ],
+      "format": "date"
+    },
+    "credits": {
+      "type": "number",
+      "description": "Credit total value",
+      "examples": [
+        100.0
+      ]
+    },
+    "debits": {
+      "type": "number",
+      "description": "Debit total value",
+      "examples": [
+        300.0
+      ]
+    },
+    "balance": {
+      "type": "number",
+      "description": "Balance value",
+      "examples": [
+        200.0
+      ]
+    },
+    "minimum_payment": {
+      "type": "number",
+      "description": "Minimum payment value",
+      "examples": [
+        30.0
+      ]
+    }
+  }
+}

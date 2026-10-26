@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset updated",
+  "description": "This event occurs when an asset is updated.",
+  "required": [
+    "asset"
+  ],
+  "properties": {
+    "asset": {
+      "type": "object",
+      "title": "Asset updated",
+      "required": [
+        "id",
+        "asset_type",
+        "issuer_id",
+        "registration_mode",
+        "issuing_date",
+        "maturity_date",
+        "issued_units",
+        "unit_value",
+        "index_type",
+        "index_rate",
+        "interest_rate",
+        "currency",
+        "operation_type",
+        "early_redemption_terms"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Asset ID",
+          "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions and cancellations.",
+          "examples": [
+            "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+          ]
+        },
+        "asset_type": {
+          "type": "string",
+          "title": "Asset type",
+          "description": "Financial instrument type",
+          "examples": [
+            "cdb",
+            "rdb"
+          ]
+        },
+        "issuer_id": {
+          "type": "string",
+          "title": "Issuer ID",
+          "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+          "examples": [
+            "12345678"
+          ]
+        },
+        "registration_mode": {
+          "type": "string",
+          "title": "Registration mode",
+          "description": "Registration mode of asset. When `single`, asset has only one quota. When `many`, it can be filled with any number of quotas based on `issued_units`.",
+          "examples": [
+            "single",
+            "many"
+          ]
+        },
+        "issuing_date": {
+          "type": "string",
+          "title": "Issuing date",
+          "description": "Date asset was effectively issued by client",
+          "format": "date",
+          "examples": [
+            "2020-12-01"
+          ]
+        },
+        "maturity_date": {
+          "type": "string",
+          "title": "Issuing date",
+          "description": "Date asset expires, finishing its cycle",
+          "format": "date",
+          "examples": [
+            "2022-12-01"
+          ]
+        },
+        "issued_units": {
+          "type": "number",
+          "title": "Issued units",
+          "description": "Number of units asset can support. When `single`, the number should reflect the entire quota. When `many`, it should reflect the number of units available for purchase in the asset.",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        },
+        "unit_value": {
+          "type": "number",
+          "title": "Unit value",
+          "description": "Value of asset's units",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        },
+        "index_type": {
+          "type": "string",
+          "title": "Index type",
+          "description": "Daily accrual calculations are based on the index type. For example, \"di\" for DI rate or \"pre\" for prefixed rate.",
+          "enum": [
+            "di",
+            "pre",
+            "vpc",
+            "ipca",
+            "monthdi"
+          ]
+        },
+        "index_rate": {
+          "type": "number",
+          "title": "Index rate",
+          "description": "How much asset accrues per day",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        },
+        "interest_rate": {
+          "type": "number",
+          "title": "Interest rate",
+          "description": "Interest rate of asset",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "title": "Currency",
+          "description": "ISO 4217 currency code",
+          "examples": [
+            "986"
+          ]
+        },
+        "early_redemption_terms": {
+          "type": "string",
+          "title": "Early redemption terms",
+          "description": "Identifies assets that have a different calculation condition at redemption time",
+          "examples": [
+            "yes",
+            "no",
+            "market"
+          ]
+        },
+        "isin_code": {
+          "type": "string",
+          "title": "Isin code",
+          "description": "Isin code of asset",
+          "examples": [
+            "123"
+          ]
+        },
+        "operation_type": {
+          "type": "string",
+          "title": "Operation type",
+          "description": "The reason for the update. If the reason is 'amendment', the change was suggested by someone in Pismo. If the reason is 'audit', the change was suggested by another company.",
+          "enum": [
+            "amendment",
+            "audit"
+          ]
+        },
+        "additional_data": {
+          "type": "object",
+          "title": "Additional data for asset",
+          "properties": {
+            "early_redemption_attributes": {
+              "type": "array",
+              "title": "Early redemption terms. Can have `early_redemption_attributes` when `early_redemption_terms` is set to `yes`.",
+              "items": {
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "title": "Date",
+                    "description": "Date of early redemption",
+                    "format": "date",
+                    "examples": [
+                      "2022-12-01"
+                    ]
+                  },
+                  "interest_rate": {
+                    "type": "number",
+                    "title": "Interest rate",
+                    "description": "Interest rate used in early redemption",
+                    "format": "double",
+                    "examples": [
+                      1.0
+                    ]
+                  },
+                  "floating_rate": {
+                    "type": "number",
+                    "title": "Floating rate",
+                    "description": "Floating rate used in early redemption",
+                    "format": "double",
+                    "examples": [
+                      1.0
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

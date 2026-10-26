@@ -1,0 +1,310 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Credit rights receivable registration succeeded ",
+  "description": "A credit rights receivable was successfully registered. The <a href='https://developers.pismo.io/pismo-docs/reference/create-receivable' target='_blank'>Create receivable</a> endpoint generates this event.",
+  "required": [
+    "credit_rights_receivable_type",
+    "debtor_document_number",
+    "debtor_name",
+    "face_value",
+    "holding_number",
+    "internal_number",
+    "interop_holding_number",
+    "issuing_date",
+    "lender_document_number",
+    "lender_name",
+    "maturity_date",
+    "payment_status",
+    "payment_method"
+  ],
+  "properties": {
+    "credit_rights_receivable_type": {
+      "type": "number",
+      "title": "Credit rights receivable type",
+      "description": "Credit receivable type: 1 - Mercantile, 2 - Service ",
+      "examples": [
+        1
+      ]
+    },
+    "debtor_document_number": {
+      "type": "string",
+      "title": "Debtor document number",
+      "description": "Debtor document number. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil).",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "debtor_name": {
+      "type": "string",
+      "title": "Debtor name",
+      "description": "Debtor name",
+      "examples": [
+        "Hy Ball"
+      ]
+    },
+    "face_value": {
+      "type": "number",
+      "title": "Face value",
+      "description": "Face value refers to the nominal or stated value of a financial instrument or asset, typically printed or stated on the instrument itself. It represents the initial value assigned to the instrument at the time of issuance or purchase",
+      "format": "double",
+      "examples": [
+        10.0
+      ]
+    },
+    "holding_number": {
+      "type": "string",
+      "title": "Holding Number",
+      "description": "Holding number - The invoice number  + '.' + the number of installments.",
+      "examples": [
+        "ABC.26"
+      ]
+    },
+    "ibge_code": {
+      "type": "string",
+      "title": "IBGE Code",
+      "description": "IBGE stands for Instituto Brasileiro de Geografia e Estat\u00edstica, which translates to the Brazilian Institute of Geography and Statistics. This Brazilian national statistical agency is responsible for collecting and providing official data on various aspects of the country. An IBGE code is a specific numerical code assigned to various administrative divisions and geographical areas in Brazil. Federative Unit + Town Name",
+      "examples": [
+        "1234567"
+      ]
+    },
+    "internal_number": {
+      "type": "string",
+      "title": "Internal number",
+      "description": "Client-assigned internal number used to manage credit rights receivable",
+      "examples": [
+        "56789012"
+      ]
+    },
+    "interop_holding_number": {
+      "type": "string",
+      "title": "Interop Holding Number",
+      "description": "Credit rights receivable recurring code with letter",
+      "examples": [
+        "ABCY"
+      ]
+    },
+    "invoice_number": {
+      "type": "number",
+      "title": "Invoice number",
+      "description": "Invoice number.",
+      "examples": [
+        123456789
+      ]
+    },
+    "invoice_serie": {
+      "type": "number",
+      "title": "Invoice serie",
+      "description": "Invoice serie (series).",
+      "examples": [
+        2
+      ]
+    },
+    "invoice_total_value": {
+      "type": "number",
+      "title": "Invoice total value",
+      "description": "Invoice total value.",
+      "format": "double",
+      "examples": [
+        1000.0
+      ]
+    },
+    "issuing_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "When client issued credit rights receivable",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "lender_document_number": {
+      "type": "string",
+      "title": "Lender document number",
+      "description": "Lender document number. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil).",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "lender_name": {
+      "type": "string",
+      "title": "Lender name",
+      "description": "Name of lender",
+      "examples": [
+        "Ho Lee Smokes"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "Credit rights receivable maturity date.",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "payment_method": {
+      "type": "number",
+      "title": "Payment method",
+      "description": "Payment method. Number between 1-6. See detailed descriptions in <a href='https://developers.pismo.io/pismo-docs/reference/create-receivable' target='_blank'>Create receivable</a> endpoint documentation.",
+      "examples": [
+        1
+      ]
+    },
+    "payment_status": {
+      "type": "number",
+      "title": "Payment status",
+      "description": "Payment status: 1  Paid, 2 = Unpaid",
+      "examples": [
+        1
+      ]
+    },
+    "recorder_account": {
+      "type": "number",
+      "title": "Recorder account",
+      "description": "Recorder account number",
+      "examples": [
+        1
+      ]
+    },
+    "access_key": {
+      "type": "string",
+      "title": "Access key",
+      "description": "Client-assigned access key identifier",
+      "examples": [
+        "access-key"
+      ]
+    },
+    "collateral_type": {
+      "type": "number",
+      "title": "Collateral type",
+      "description": "Collateral type: 1 - Aval collateral",
+      "examples": [
+        1
+      ]
+    },
+    "credit_operations": {
+      "type": "array",
+      "title": "Credit operations list",
+      "items": {
+        "$ref": "#/definitions/credit_operations"
+      }
+    },
+    "debtor_signing_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "When debtor signed credit rights receivable",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Detailed description.",
+      "examples": [
+        "Description"
+      ]
+    },
+    "guarantor_name": {
+      "type": "string",
+      "title": "Guarantor name",
+      "description": "Guarantor name",
+      "examples": [
+        "Brotherhood Loan"
+      ]
+    },
+    "lender_signing_date": {
+      "type": "string",
+      "title": "Lender signing date",
+      "description": "Lender signing date",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "owner_document_number": {
+      "type": "string",
+      "title": "Owner document number",
+      "description": "Account owner document number. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil).",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "owner_name": {
+      "type": "string",
+      "title": "Owner name",
+      "description": "Name of account owner",
+      "examples": [
+        "Marshall Law"
+      ]
+    },
+    "validated": {
+      "type": "boolean",
+      "title": "Validated",
+      "description": "It's true when the Invoice was consulted."
+    }
+  },
+  "definitions": {
+    "credit_operations": {
+      "type": "object",
+      "title": "Credit Operations",
+      "description": "List of payments linked to Receivable Unit",
+      "properties": {
+        "operation_type": {
+          "type": "string",
+          "title": "Operation Type",
+          "description": "Operation type. You need to configure the operation types with Pismo.",
+          "examples": [
+            "operation-type"
+          ]
+        },
+        "operation_date": {
+          "type": "string",
+          "title": "Operation Date",
+          "description": "Date operation occurred.",
+          "format": "date",
+          "examples": [
+            "2022-01-01"
+          ]
+        },
+        "contact_number": {
+          "type": "string",
+          "title": "Contact number",
+          "description": "Contact number",
+          "examples": [
+            "0123456789"
+          ]
+        },
+        "operation_maturity": {
+          "type": "string",
+          "title": "Operation maturity date",
+          "description": "Date operation expires, finishing cycle.",
+          "format": "date",
+          "examples": [
+            "2022-01-01"
+          ]
+        },
+        "operation_value": {
+          "type": "number",
+          "title": "Operation Value",
+          "description": "Operation amount value",
+          "format": "double",
+          "examples": [
+            10.0
+          ]
+        },
+        "guarantee_percentage": {
+          "type": "number",
+          "title": "Guaranteed percentage",
+          "description": "Operation percentage",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        }
+      }
+    }
+  }
+}

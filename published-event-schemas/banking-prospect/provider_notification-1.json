@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Provider notification generated",
+  "description": "Notification from the provider regarding the creation process of a new prospect account",
+  "required": [
+    "id",
+    "provider",
+    "client_document_number",
+    "status",
+    "step",
+    "custom_fields"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Banking prospect provisioning unique identifier",
+      "description": "An ID assigned to new prospect creation ",
+      "examples": [
+        "12387965::TN-d6fe9b36-6a14-432e-b177"
+      ]
+    },
+    "provider": {
+      "type": "string",
+      "title": "Provider",
+      "description": "Provider's Name",
+      "examples": [
+        "Celcoin"
+      ]
+    },
+    "client_document_number": {
+      "type": "string",
+      "title": "Client Document Number",
+      "description": "Document number that associates the customer with the creation of a new prospect account",
+      "examples": [
+        "123456789"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Provider's status",
+      "examples": [
+        "REJECTED",
+        "APPROVED"
+      ]
+    },
+    "step": {
+      "type": "string",
+      "title": "Step",
+      "description": "Provider's step",
+      "examples": [
+        "PROVIDER_BACKGROUND_CHECK"
+      ]
+    },
+    "custom_fields": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "integer"
+        ]
+      },
+      "title": "Custom fields",
+      "description": "Custom fields",
+      "examples": [
+        {
+          "action_required": "validate customer data"
+        },
+        {
+          "message": "The onboarding process is at step: PROVIDER_BACKGROUND_CHECK",
+          "status": "PENDING"
+        }
+      ]
+    }
+  }
+}

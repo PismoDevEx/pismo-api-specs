@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card program updated",
+  "description": "Card program has been updated event. One endpoint generate this event: <a href='https://developers.pismo.io/pismo-docs/reference/patch-v2-card-program-migration'>Card program migration</a>. The <a href='https://developers.pismo.io/pismo-docs/reference/patch-v2-card-program-migration'>Card program migration</a> generates this event when the program has been changed at the Card PCI data.",
+  "examples": [
+    {
+      "card_id": 10895630,
+      "account_id": 8675309,
+      "customer_id": 10895631,
+      "old_program_id": 1234,
+      "program_id": 5678
+    }
+  ],
+  "required": [
+    "card_id"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "User's Pismo account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "User's Pismo customer ID",
+      "description": "Pismo customer ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "card_id": {
+      "type": [
+        "integer"
+      ],
+      "title": "Pismo card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "old_program_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Card's previous Pismo program ID",
+      "description": "Previous program ID.",
+      "default": 0,
+      "example": [
+        12345678
+      ]
+    },
+    "program_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Card's Pismo program ID",
+      "description": "Program ID.",
+      "default": 0,
+      "example": [
+        12345678
+      ]
+    }
+  },
+  "definitions": {}
+}

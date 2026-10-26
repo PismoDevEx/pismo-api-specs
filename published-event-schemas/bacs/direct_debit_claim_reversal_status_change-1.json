@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BACS Direct Debit indemnity claim reversal status change.",
+  "type": "object",
+  "description": "Bankers' Automated Clearing System (BACS) Direct Debit Indemnity Claim (DDIC) reversal event data. A reversal withdraws a previously raised, delivery-confirmed indemnity claim. This event is emitted when a reversal is created and on every subsequent status transition (`PROCESSING`, `CONFIRMED`, `FAILED`).",
+  "required": [
+    "id",
+    "org_id",
+    "account_id",
+    "claim_id",
+    "original_instruction_id",
+    "status",
+    "creation_date_time"
+  ],
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string",
+      "description": "Pismo claim reversal ID. Use this ID to fetch or reference the reversal in Pismo BACS claim APIs. To cross-reference the reversal at the provider, use `reversal_id`.",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "reversal_id": {
+      "title": "Reversal ID",
+      "type": "string",
+      "description": "Provider (Form3) reversal ID. You can use this to link the reversal in our system to the provider's reversal. Absent until the reversal is submitted to the scheme.",
+      "examples": [
+        "f3a1c2d4-5678-90ab-cdef-1234567890ab"
+      ]
+    },
+    "claim_id": {
+      "title": "Claim ID",
+      "type": "string",
+      "description": "Pismo ID of the parent claim being reversed.",
+      "examples": [
+        "019e9300-1111-7c54-9d17-89f5542a06e4"
+      ]
+    },
+    "original_instruction_id": {
+      "title": "Original instruction ID",
+      "type": "string",
+      "description": "The DDIC Sequence Number of the claim being reversed, forwarded to the scheme.",
+      "examples": [
+        "0000000000001234"
+      ]
+    },
+    "org_id": {
+      "title": "Org ID",
+      "type": "string",
+      "description": "Organization ID that owns the reversal",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "type": "integer",
+      "description": "Reversal account ID",
+      "examples": [
+        8675309
+      ]
+    },
+    "status": {
+      "title": "Status",
+      "type": "string",
+      "description": "Reversal status. `CREATED` (persisted, awaiting submission), `PROCESSING` (submitted to the scheme via Form3), `CONFIRMED` (delivery confirmed, terminal), `FAILED` (rejected or failed validation/submission, terminal).",
+      "enum": [
+        "CREATED",
+        "PROCESSING",
+        "CONFIRMED",
+        "FAILED"
+      ],
+      "examples": [
+        "CONFIRMED"
+      ]
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string",
+      "description": "Free-text reason associated with the reversal status, typically populated when a reversal is `FAILED`.",
+      "examples": [
+        "Rejected by scheme"
+      ]
+    },
+    "creation_date_time": {
+      "title": "Creation date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Reversal creation datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    },
+    "update_date_time": {
+      "title": "Update date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Reversal updated datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card metadata deleted",
+  "description": "Event generated when the <a href='https://developers.pismo.io/pismo-docs/reference/delete-a-metadata-field-for-a-given-card' target='_blank'>Delete card metadata</a> endpoint is called",
+  "required": [
+    "card_uuid",
+    "account_id"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        786542222
+      ]
+    },
+    "card_uuid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Card UUID token",
+      "description": "Tokenized card ID",
+      "examples": [
+        "bbbb9682-06e4-11ea-9d60-52552f8f9999"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Card metadata. Client-created - no business rule validation is performed."
+    },
+    "org": {
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization ID, also known as the Tenant ID",
+      "examples": [
+        "TN-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx"
+      ]
+    },
+    "printed_name": {
+      "type": "string",
+      "title": "Printed card name",
+      "description": "Cardholder name embossed on physical card",
+      "examples": [
+        "Anne Teak"
+      ]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Account status created",
+  "description": "This event occurs when a new account status is created. \n More information: <a href='https://developers.pismo.io/pismo-docs/docs/accounts-overview#account-status'>Account status</a>",
+  "required": [
+    "status_id",
+    "allowed_operations",
+    "name",
+    "is_final",
+    "creation_datetime"
+  ],
+  "properties": {
+    "status_id": {
+      "type": "integer",
+      "title": "Status ID",
+      "description": "Status ID"
+    },
+    "allowed_operations": {
+      "type": "string",
+      "title": "Allowed operations",
+      "description": "Allowed status operations",
+      "enum": [
+        "ALL_OPERATIONS",
+        "CREDIT_ONLY",
+        "DEBIT_ONLY",
+        "NO_OPERATIONS"
+      ],
+      "example": "ALL_OPERATIONS"
+    },
+    "name": {
+      "type": "string",
+      "title": "Status name",
+      "description": "Status name",
+      "maxLength": 200
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Status description",
+      "description": "Status description",
+      "maxLength": 200
+    },
+    "is_final": {
+      "type": "boolean",
+      "title": "Final flag",
+      "description": "Is this a final status? Final statuses can still be rollbacked with the [Roll back account status](ref:patch-v2-accounts-accountid-status-rollback) endpoint."
+    },
+    "creation_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Creation timestamp",
+      "description": "UTC status creation datetime",
+      "examples": [
+        "2022-01-01T10:10:00.000Z"
+      ]
+    }
+  }
+}

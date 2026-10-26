@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Recurring charge plan disabled",
+  "description": "Event generated when a recurring charge plan is disabled.",
+  "required": [
+    "recurring_charge_plan_id",
+    "org_id",
+    "created_at",
+    "processing_code",
+    "installment_amount",
+    "description",
+    "number_of_cycles",
+    "tracking_id",
+    "disabled_at",
+    "cid"
+  ],
+  "properties": {
+    "recurring_charge_plan_id": {
+      "type": "number",
+      "description": "Recurring charge plan ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Plan creation date and time in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "Plan`s description",
+      "examples": [
+        "Description of the recurring charge plan"
+      ]
+    },
+    "installment_amount": {
+      "type": "number",
+      "description": "Credit transaction total amount",
+      "examples": [
+        12.0
+      ]
+    },
+    "number_of_cycles": {
+      "type": "integer",
+      "description": "Number of cycles that composes the recurring charge plan",
+      "examples": [
+        12
+      ]
+    },
+    "automatic_renew": {
+      "type": "boolean",
+      "description": "Should plan renew automatically?",
+      "examples": [
+        true
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "description": "Character sequence that represents a group of transactions.",
+      "examples": [
+        "009999"
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Trancking ID",
+      "description": "Trancking ID",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    },
+    "disabled_at": {
+      "type": "string",
+      "description": "Plan disablement date and time in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "first_cycles_to_skip": {
+      "type": "integer",
+      "description": "Number of initial cycles to skip",
+      "examples": [
+        3
+      ]
+    },
+    "discount_percentage": {
+      "type": "number",
+      "description": "Discount percentage that applies to the charge",
+      "examples": [
+        12
+      ]
+    },
+    "secondary_description": {
+      "type": "string",
+      "description": "Plan`s secondary description",
+      "examples": [
+        "Secondary description for the recurring charge plan"
+      ]
+    },
+    "secondary_processing_code": {
+      "type": "string",
+      "description": "Character sequence that represents a group of transactions.",
+      "examples": [
+        "009999"
+      ]
+    },
+    "minimum_sepend_to_charge": {
+      "type": "number",
+      "description": "Minimum value to charge the client",
+      "examples": [
+        120.0
+      ]
+    },
+    "renew_method": {
+      "type": "string",
+      "description": "Plan`s renewal method",
+      "examples": [
+        "NO_RENEW",
+        "WITHOUT_DISCOUNT",
+        "WITH_DISCOUNT"
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Correlational ID of event",
+      "description": "Correlational ID of event. This is not a unique value. Different events (possibly from the same domain plus `event_type`) can share the same CID. This correlation value is useful to identify all events produced from the same request or process.",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    }
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Loan updated",
+  "description": "This event occurs when a loan is updated.",
+  "required": [
+    "cid",
+    "loan_id",
+    "org_id",
+    "account_id",
+    "currency",
+    "amount",
+    "previous_status",
+    "current_status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "cid": {
+      "$id": "#/properties/cid",
+      "type": "string",
+      "title": "CID",
+      "description": "Event ID",
+      "example": "7da3db3b-400d-4851-a362-2022dab27284"
+    },
+    "loan_id": {
+      "$id": "#/properties/loan_id",
+      "type": "string",
+      "title": "Loan ID",
+      "description": "Loan ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID associated with authorization",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "example": 12176
+    },
+    "product_id": {
+      "$id": "#/properties/product_id",
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID",
+      "example": "89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo platform program ID",
+      "example": 9000
+    },
+    "currency": {
+      "$id": "#/properties/currency",
+      "type": "string",
+      "title": "Currency",
+      "description": "ISO 4217 3-letter currency code for loan",
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD"
+      ]
+    },
+    "amount": {
+      "$id": "#/properties/amount",
+      "type": "number",
+      "title": "Amount",
+      "description": "Loan amount",
+      "example": 18690.0
+    },
+    "contract_amount": {
+      "$id": "#/properties/contract_amount",
+      "type": "number",
+      "title": "Contract amount",
+      "description": "Loan contract amount",
+      "example": 18690.0
+    },
+    "principal_amount": {
+      "$id": "#/properties/principal_amount",
+      "type": "number",
+      "title": "Principal amount authorized",
+      "description": "Principal amount authorized without charges or taxes.",
+      "example": 336.66
+    },
+    "interest_rate": {
+      "$id": "#/properties/interest_rate",
+      "type": "number",
+      "title": "Monthly interest rate",
+      "description": "Loan monthly interest rate",
+      "example": 1.1
+    },
+    "annual_interest_rate": {
+      "$id": "#/properties/annual_interest_rate",
+      "type": "number",
+      "title": "Annual interest rate",
+      "description": "Loan annual interest rate",
+      "example": 5.5
+    },
+    "effective_monthly_cost": {
+      "$id": "#/properties/effective_monthly_cost",
+      "type": "number",
+      "title": "Effective monthly cost",
+      "description": "Loan effective monthly cost",
+      "example": 800.0
+    },
+    "effective_annual_cost": {
+      "$id": "#/properties/effective_annual_cost",
+      "type": "number",
+      "title": "Effective annual cost",
+      "description": "Loan effective annual cost",
+      "example": 6400.0
+    },
+    "previous_status": {
+      "$id": "#/properties/previous_status",
+      "type": "string",
+      "title": "Previous status",
+      "description": "Loan previous status",
+      "enum": [
+        "CREATING",
+        "PENDING",
+        "BOOKED",
+        "ACTIVE",
+        "CANCELED",
+        "PROCESSING",
+        "RENEGOTIATED",
+        "SETTLED",
+        "WRITTEN_OFF",
+        "ERROR"
+      ],
+      "example": "CREATING"
+    },
+    "current_status": {
+      "$id": "#/properties/current_status",
+      "type": "string",
+      "title": "Current status",
+      "description": "Loan current status",
+      "enum": [
+        "CREATING",
+        "PENDING",
+        "BOOKED",
+        "ACTIVE",
+        "CANCELED",
+        "PROCESSING",
+        "RENEGOTIATED",
+        "SETTLED",
+        "WRITTEN_OFF",
+        "ERROR"
+      ],
+      "example": "BOOKED"
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": "string",
+      "title": "Updated date",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "example": "2020-12-29T19:48:25.000Z"
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "title": "Created date",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "example": "2020-12-29T19:48:25.000Z"
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization ID",
+      "description": "Authorization ID",
+      "example": 14123
+    },
+    "authorization_tracking_id": {
+      "$id": "#/properties/authorization_tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization tracking ID",
+      "description": "Authorization tracking ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "authorization_customer_id": {
+      "$id": "#/properties/authorization_customer_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization customer ID",
+      "description": "Authorization customer ID",
+      "example": 69332
+    },
+    "authorization_cancellation_id": {
+      "$id": "#/properties/authorization_cancellation_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization cancellation ID",
+      "description": "Authorization cancellation ID",
+      "example": 14123
+    },
+    "authorization_cancellation_tracking_id": {
+      "$id": "#/properties/authorization_cancellation_tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization cancellation tracking ID",
+      "description": "Authorization cancellation tracking ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "contracted_installment_count": {
+      "$id": "#/properties/contracted_installment_count",
+      "type": "integer",
+      "title": "Number of installments contracted",
+      "description": "Total number of installments of the loan at booking time.",
+      "example": 8
+    },
+    "initial_amounts": {
+      "$id": "#/properties/initial_amounts",
+      "title": "Initial amounts",
+      "description": "Breakdown of the loan amounts at booking time.",
+      "$ref": "#/definitions/amounts"
+    },
+    "repayment_schedule": {
+      "type": "array",
+      "title": "Repayment schedule",
+      "items": {
+        "$ref": "#/definitions/installment"
+      }
+    },
+    "days_past_due": {
+      "$id": "#/properties/days_past_due",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Days past due",
+      "description": "Number of calendar days elapsed since the real due date of the loan's most overdue repayment. Computed from repayments currently in a past due or overdue status. A value of `0` indicates the loan has no past due or overdue repayments.",
+      "example": 15
+    }
+  },
+  "definitions": {
+    "amounts": {
+      "type": "object",
+      "title": "Amounts",
+      "description": "Breakdown of loan amounts by component",
+      "properties": {
+        "principal": {
+          "$id": "#/amounts/properties/principal",
+          "type": "number",
+          "title": "Principal",
+          "description": "Principal amount",
+          "example": 1000.0
+        },
+        "interest": {
+          "$id": "#/amounts/properties/interest",
+          "type": "number",
+          "title": "Interest",
+          "description": "Interest amount",
+          "example": 120.0
+        },
+        "charge": {
+          "$id": "#/amounts/properties/charge",
+          "type": "number",
+          "title": "Charge",
+          "description": "Charge amount",
+          "example": 0.0
+        },
+        "tax": {
+          "$id": "#/amounts/properties/tax",
+          "type": "number",
+          "title": "Tax",
+          "description": "Tax amount",
+          "example": 10.0
+        },
+        "fee": {
+          "$id": "#/amounts/properties/fee",
+          "type": "number",
+          "title": "Fee",
+          "description": "Fee amount",
+          "example": 20.0
+        },
+        "penalty": {
+          "$id": "#/amounts/properties/penalty",
+          "type": "number",
+          "title": "Penalty",
+          "description": "Penalty amount",
+          "example": 0.0
+        },
+        "total": {
+          "$id": "#/amounts/properties/total",
+          "type": "number",
+          "title": "Total",
+          "description": "Total amount (sum of all components)",
+          "example": 1150.0
+        }
+      }
+    },
+    "installment": {
+      "type": "object",
+      "title": "Repayment",
+      "description": "Definition of a loan installment",
+      "properties": {
+        "repayment_id": {
+          "$id": "#/installment/properties/repayment_id",
+          "type": "string",
+          "title": "Repayment ID",
+          "description": "Repayment ID",
+          "example": "7da3db3b-400d-4851-a362-2022dab27284"
+        },
+        "installment": {
+          "$id": "#/installment/properties/installment",
+          "type": "number",
+          "title": "Repayment index ID",
+          "description": "Loan installment index ID",
+          "example": 12
+        },
+        "due_date": {
+          "$id": "#/installment/properties/due_date",
+          "type": "string",
+          "title": "Due date",
+          "description": "ISO 8601 date format: YYYY-MM-DD",
+          "format": "date",
+          "example": "2023-07-01"
+        },
+        "amount": {
+          "$id": "#/installment/properties/amount",
+          "type": "number",
+          "title": "Amount",
+          "description": "Repayment amount",
+          "example": 1336.66
+        },
+        "previous_status": {
+          "$id": "#/installment/properties/previous_status",
+          "type": "string",
+          "title": "Previous status",
+          "description": "Repayment previous status",
+          "enum": [
+            "PENDING",
+            "PROCESSING",
+            "DONE",
+            "SCHEDULED",
+            "PAST_DUE",
+            "PAID",
+            "PARTIALLY_PAID",
+            "CANCELED",
+            "PENDING_PAYMENT",
+            "PAST_DUE_PENDING_PAYMENT",
+            "ACTIVE",
+            "OVERDUE",
+            "OVERDUE_PENDING_PAYMENT",
+            "IN_GRACE_PERIOD",
+            "IN_GRACE_PERIOD_PENDING_PAYMENT",
+            "PARTIALLY_PAID_IN_GRACE_PERIOD",
+            "PAID_WITHIN_GRACE",
+            "PARTIALLY_PAID_PENDING_PAYMENT",
+            "PAST_DUE_PARTIALLY_PAID",
+            "OVERDUE_PARTIALLY_PAID"
+          ],
+          "example": "SCHEDULED"
+        },
+        "current_status": {
+          "$id": "#/installment/properties/current_status",
+          "type": "string",
+          "title": "Current status",
+          "description": "Repayment current status",
+          "enum": [
+            "PENDING",
+            "PROCESSING",
+            "DONE",
+            "SCHEDULED",
+            "PAST_DUE",
+            "PAID",
+            "PARTIALLY_PAID",
+            "CANCELED",
+            "PENDING_PAYMENT",
+            "PAST_DUE_PENDING_PAYMENT",
+            "ACTIVE",
+            "OVERDUE",
+            "OVERDUE_PENDING_PAYMENT",
+            "IN_GRACE_PERIOD",
+            "IN_GRACE_PERIOD_PENDING_PAYMENT",
+            "PARTIALLY_PAID_IN_GRACE_PERIOD",
+            "PAID_WITHIN_GRACE",
+            "PARTIALLY_PAID_PENDING_PAYMENT",
+            "PAST_DUE_PARTIALLY_PAID",
+            "OVERDUE_PARTIALLY_PAID"
+          ],
+          "example": "PAID"
+        }
+      }
+    }
+  }
+}

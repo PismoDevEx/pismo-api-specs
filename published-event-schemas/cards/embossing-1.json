@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card embossing notification received",
+  "description": "Event that occurs in three situations:<br>1. When the embossing process occurs, via scheduling or through the <a href='https://developers.pismo.io/pismo-docs/reference/start-embossing'>Start card embossing</a> endpoint.<br>2. When the <a href='https://developers.pismo.io/pismo-docs/reference/post-generate-embossing'>Get encrypted card data for embossing</a> endpoint is called.<br><br>See the <a href='https://developers.pismo.io/pismo-docs/docs/physical-card-embossing'>Physical Card Embossing</a> guide for more information.",
+  "examples": [
+    {
+      "account_id": 102148544,
+      "card_id": 8793297,
+      "card_status": "CREATED",
+      "customer_id": 102146146,
+      "embosser": {
+        "id": "4",
+        "name": "EM"
+      },
+      "error_message": "",
+      "error_type": "",
+      "program_id": 8659,
+      "tracking": "EM1008.202208171707001234"
+    }
+  ],
+  "required": [
+    "card_id",
+    "program_id"
+  ],
+  "properties": {
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        1237845
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Card's Pismo program ID",
+      "examples": [
+        9856
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        1169876
+      ]
+    },
+    "address_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "embossing address_id",
+      "description": "ID of address used to emboss card.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Customer ID",
+      "description": "User's Pismo customer ID.",
+      "examples": [
+        16543111
+      ]
+    },
+    "embosser": {
+      "type": "object",
+      "title": "Embosser",
+      "description": "Embosser's Pismo platform information",
+      "properties": {
+        "id": {
+          "examples": [
+            "1111"
+          ],
+          "title": "Embosser ID",
+          "description": "Pismo assigned embosser ID.",
+          "type": "string"
+        },
+        "name": {
+          "examples": [
+            "EM1"
+          ],
+          "title": "Embosser name",
+          "description": "Embosser company name",
+          "type": "string"
+        }
+      }
+    },
+    "embossing_group": {
+      "type": "string",
+      "description": "Embossing group name"
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Card embossing failure error message.",
+      "description": "Error message when a card is removed for embossing. Null if the operation does not fail.",
+      "examples": [
+        "Card 12345 must have its password updated in order to be eligible for embossing"
+      ]
+    },
+    "error_type": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Card error",
+      "description": "Card embossing failure error message.",
+      "examples": [
+        "account_not_found",
+        "account_address_not_found",
+        "account_address_inactive",
+        "account_phone_not_found",
+        "customer_not_found",
+        "card_pci_not_found",
+        "card_pci_password_unchanged",
+        "card_not_found",
+        "card_status_invalid",
+        "card_type_invalid",
+        "internal_error",
+        "embossing_line_not_formatted",
+        "embossing_line_not_encrypted",
+        "embossing_line_invalid_format",
+        "embossing_undelivered",
+        "invalid_printed_name",
+        "account_address_zipcode_invalid",
+        "card_validation_error"
+      ]
+    },
+    "reembossing_counter": {
+      "type": "integer",
+      "title": "Reembossing counter",
+      "description": "How many times the card was re-embossed",
+      "examples": [
+        1
+      ]
+    },
+    "tracking": {
+      "type": "string",
+      "title": "Tracking file",
+      "description": "The tracking file name if the card is eligible for embossing, null if operation fails.",
+      "examples": [
+        "trackfile"
+      ]
+    },
+    "validation_results": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Validation results",
+      "description": "Information about errors encountered in embossing validation",
+      "properties": {
+        "Type": {
+          "examples": [
+            "account_address_zipcode_invalid"
+          ],
+          "title": "Error Type",
+          "description": "Error Type",
+          "type": "string"
+        },
+        "Error": {
+          "examples": [
+            "some-error"
+          ],
+          "title": "Error description",
+          "description": "Error description",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "definitions": {}
+}

@@ -1,0 +1,249 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest registration succeeded",
+  "description": "This event occurs when an asset/quota is registered",
+  "required": [
+    "external_asset_id",
+    "external_quota_id",
+    "program_id",
+    "currency_code",
+    "asset_type",
+    "registration_mode",
+    "index_type",
+    "unit_value",
+    "issued_units",
+    "issuing_date",
+    "maturity_date",
+    "treasury_date",
+    "redemption_condition",
+    "early_redemption_attributes",
+    "customer_type",
+    "document_number",
+    "account_id",
+    "customer_name"
+  ],
+  "properties": {
+    "external_asset_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External asset ID",
+      "description": "Unique asset identifier defined by Pismo",
+      "examples": [
+        "kxBHNMCAYDnQav"
+      ]
+    },
+    "external_quota_id": {
+      "type": "string",
+      "title": "External quota ID",
+      "description": "External identifier for quota operation",
+      "examples": [
+        "deposit:6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "program_id": {
+      "type": "string",
+      "title": "Program identification",
+      "description": "Program ID",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "currency_code": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "ISO 4217 currency code",
+      "examples": [
+        "986"
+      ]
+    },
+    "asset_type": {
+      "type": "string",
+      "title": "Asset type",
+      "description": "Financial instrument type",
+      "enum": [
+        "CDB",
+        "RDB",
+        "DEPOSIT"
+      ]
+    },
+    "registration_mode": {
+      "type": "string",
+      "title": "Registration mode",
+      "description": "Registration mode of asset",
+      "enum": [
+        "INVESTMENT",
+        "SAVINGS"
+      ]
+    },
+    "index_type": {
+      "type": "string",
+      "title": "Index type",
+      "description": "Daily accrual calculations are based on the index type",
+      "enum": [
+        "DI",
+        "PRE"
+      ]
+    },
+    "index_rate": {
+      "type": "number",
+      "title": "Index rate",
+      "description": "How much the asset accrues per day",
+      "format": "double",
+      "examples": [
+        1.0
+      ]
+    },
+    "interest_rate": {
+      "type": "number",
+      "title": "Interest rate",
+      "description": "How much the asset accrues per day",
+      "format": "double",
+      "examples": [
+        1.0
+      ]
+    },
+    "unit_value": {
+      "type": "number",
+      "title": "Unit value",
+      "description": "Value of the asset's units",
+      "format": "double",
+      "examples": [
+        1.0
+      ]
+    },
+    "issued_units": {
+      "type": "number",
+      "title": "Issued units",
+      "description": "Number of quota units purchased by asset quota owner",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "issuing_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "Date asset was effectively issued by client",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "title": "Maturity date",
+      "description": "Date asset expires",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "treasury_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Treasury date",
+      "description": "Date the treasury operation was settled",
+      "format": "date",
+      "examples": [
+        "2020-12-03"
+      ]
+    },
+    "redemption_condition": {
+      "type": "string",
+      "title": "Redemption condition",
+      "description": "Asset identifier with different types of redemption conditions",
+      "enum": [
+        "YES",
+        "NO",
+        "MARKET"
+      ]
+    },
+    "early_redemption_attributes": {
+      "type": "array",
+      "title": "List of early redemption attributes",
+      "items": {
+        "$ref": "#/definitions/early_redemption_attributes"
+      }
+    },
+    "customer_type": {
+      "type": "string",
+      "title": "Entity type",
+      "description": "Legal nature of asset quota owner",
+      "enum": [
+        "NATURAL",
+        "LEGAL"
+      ]
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Document number",
+      "description": "Number of asset quota owner's legal document",
+      "examples": [
+        "00000000012"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within client organization",
+      "examples": [
+        "999999999"
+      ]
+    },
+    "customer_name": {
+      "type": "string",
+      "title": "Customer name",
+      "description": "Name of asset quota owner",
+      "examples": [
+        "Lorem ipsum"
+      ]
+    }
+  },
+  "definitions": {
+    "early_redemption_attributes": {
+      "type": "object",
+      "title": "Early redemption attributes",
+      "required": [
+        "date"
+      ],
+      "description": "Custom redemption conditions",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "title": "Date",
+          "description": "Custom date to be considered",
+          "examples": [
+            "2021-02-01"
+          ]
+        },
+        "interest_rate": {
+          "type": "number",
+          "format": "double",
+          "title": "Interest rate",
+          "description": "Interest rate to be considered until date established",
+          "examples": [
+            1.09
+          ]
+        },
+        "floating_rate": {
+          "type": "number",
+          "format": "double",
+          "title": "Floating rate",
+          "description": "Floating rate to be considered until date established",
+          "examples": [
+            1.18
+          ]
+        }
+      }
+    }
+  }
+}

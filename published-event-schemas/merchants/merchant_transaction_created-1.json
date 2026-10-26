@@ -1,0 +1,433 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant transaction created",
+  "required": [
+    "merchant_transaction_id",
+    "org_operation_id",
+    "merchant_id",
+    "creditor_id",
+    "scheduled_payment_date",
+    "transaction_amount",
+    "transaction_status"
+  ],
+  "properties": {
+    "merchant_transaction_id": {
+      "$id": "#/properties/merchant_transaction_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Merchant transaction ID",
+      "description": "Merchant transaction ID",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "org_operation_id": {
+      "$id": "#/properties/org_operation_id",
+      "type": "integer",
+      "title": "Organization operation ID",
+      "description": "Processing code for the transaction. Refer to the <a href='https://developers.pismo.io/pismo-docs/docs/processing-codes-and-transaction-types'>Processing codes and transaction types</a> guide.",
+      "examples": [
+        3
+      ]
+    },
+    "merchant_id": {
+      "$id": "#/properties/merchant_id",
+      "type": "integer",
+      "title": "Merchant ID",
+      "description": "Merchant ID",
+      "examples": [
+        4
+      ]
+    },
+    "creditor_id": {
+      "$id": "#/properties/creditor_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Creditor ID",
+      "description": "Creditor ID for the merchant that requires the transaction. Null for transactions migrated from a marketplace where no creditor was provided.",
+      "examples": [
+        null,
+        5
+      ]
+    },
+    "scheduled_payment_date": {
+      "$id": "#/properties/scheduled_payment_date",
+      "type": "string",
+      "format": "date",
+      "title": "Scheduled transaction payment date",
+      "description": "Scheduled transaction payment date. Format = YYYY-MM-DD.",
+      "examples": [
+        "2021-03-25"
+      ]
+    },
+    "transaction_amount": {
+      "$id": "#/properties/transaction_amount",
+      "type": "number",
+      "title": "Transaction amount",
+      "description": "Transaction amount",
+      "examples": [
+        100.0
+      ]
+    },
+    "currency_code": {
+      "$id": "#/properties/currency_code",
+      "title": "Currency code",
+      "description": "ISO 4217 alphabetic currency code.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 0,
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD"
+      ]
+    },
+    "transaction_status": {
+      "$id": "#/properties/transaction_status",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "title": "Transaction status",
+      "description": "Transaction status, values are: `PAID`, `SCHEDULED`, or `SETTLED`.",
+      "examples": [
+        "PAID",
+        "SCHEDULED",
+        "SETTLED"
+      ]
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Authorization ID",
+      "description": "Authorization ID",
+      "examples": [
+        null,
+        2
+      ]
+    },
+    "original_authorization_id": {
+      "$id": "#/properties/original_authorization_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Original authorization ID",
+      "description": "Original authorization ID",
+      "examples": [
+        null,
+        "339920"
+      ]
+    },
+    "processing_code": {
+      "$id": "#/properties/processing_code",
+      "type": "string",
+      "title": "Transaction processing code",
+      "description": "Transaction processing code",
+      "examples": [
+        "0001234"
+      ]
+    },
+    "marketplace_id": {
+      "$id": "#/properties/marketplace_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Marketplace ID",
+      "description": "Marketplace ID. Refer to <a href='https://developers.pismo.io/pismo-docs/docs/seller-management-overview'>Seller management overview</a>.",
+      "examples": [
+        null,
+        6
+      ]
+    },
+    "event_date": {
+      "$id": "#/properties/event_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "datetime",
+      "title": "Transaction date",
+      "description": "Date/time for the transaction event. Format = YYYY-MM-DDT00:00:00.000Z.",
+      "examples": [
+        null,
+        "2021-03-25T00:00:00.000Z"
+      ]
+    },
+    "scheduled_payment_date_adjusted": {
+      "$id": "#/properties/scheduled_payment_date_adjusted",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "Adjusted scheduled payment date",
+      "description": "Adjusted scheduled payment date",
+      "examples": [
+        null,
+        "2021-03-25"
+      ]
+    },
+    "mdr_amount": {
+      "$id": "#/properties/mdr_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Merchant Discount Rate (MDR) amount",
+      "description": "Merchant Discount Rate (MDR) amount",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "advanced_amount": {
+      "$id": "#/properties/advanced_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Merchant advancement amount",
+      "description": "Amount advanced to the merchant",
+      "examples": [
+        null,
+        0.0
+      ]
+    },
+    "origin_transaction_id": {
+      "$id": "#/properties/origin_transaction_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Origin transaction ID",
+      "description": "Origin transaction ID",
+      "examples": [
+        null,
+        6
+      ]
+    },
+    "advancement_request_id": {
+      "$id": "#/properties/advancement_request_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Advancement request ID",
+      "description": "Advancement request ID",
+      "examples": [
+        null,
+        7
+      ]
+    },
+    "marketplace_creditor_operation_id": {
+      "$id": "#/properties/marketplace_creditor_operation_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Marketplace creditor operation ID",
+      "description": "Marketplace creditor operation ID",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "installment": {
+      "$id": "#/properties/installment",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Installment",
+      "description": "Installment of the transaction",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "number_of_installments": {
+      "$id": "#/properties/number_of_installments",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Number of installments",
+      "description": "Number of installments",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "mdr_tax": {
+      "$id": "#/properties/mdr_tax",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Amount of Merchant Discount Rate (MDR) tax",
+      "description": "Merchant Discount Rate (MDR) tax amount",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        null,
+        1.0
+      ]
+    },
+    "transaction_fee": {
+      "$id": "#/properties/transaction_fee",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Transaction fee amount",
+      "description": "Transaction fee amount",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        null,
+        1.0
+      ]
+    },
+    "total_mdr ": {
+      "$id": "#/properties/total_mdr",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Total Merchant Discount Rate (MDR)",
+      "description": "Sum of all the Merchant Discount Rate (MDR) amounts used in the discount calculation for the created transaction (mdrAmount + mdrTax). Refer to <a href='https://developers.pismo.io/pismo-docs/docs/seller-management-overview'>Seller management overview</a>.",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        null,
+        1.0
+      ]
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The program identifier",
+      "description": "This field identifies the program related to the merchant",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "discount_details": {
+      "$id": "#/properties/discount_details",
+      "type": [
+        "null",
+        "array"
+      ],
+      "title": "Discount details",
+      "description": "Discount description. The `amount` represents the fee applied - that is, the amount discounted before settlement.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Discount name",
+            "description": "Discount name",
+            "examples": [
+              "MDR",
+              "EMISSION_FEE"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "title": "Discount amount",
+            "description": "Total discount amount",
+            "examples": [
+              4.9,
+              0.6
+            ]
+          }
+        }
+      },
+      "examples": [
+        null,
+        [
+          {
+            "name": "MDR",
+            "amount": 4.9
+          },
+          {
+            "name": "FEE",
+            "amount": 0.6
+          }
+        ]
+      ]
+    },
+    "discount_amount": {
+      "$id": "#/properties/discount_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Total discount amount",
+      "description": "Total discount amount applied to the transaction",
+      "examples": [
+        null,
+        10.0
+      ]
+    },
+    "metadata": {
+      "$id": "#/properties/metadata",
+      "type": [
+        "null",
+        "object"
+      ],
+      "title": "Metadata attached to the transaction",
+      "properties": {
+        "terminal_id": {
+          "$id": "#/properties/metadata/properties/terminal_id",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "The Terminal identifier",
+          "description": "Terminal ID of the authorization",
+          "examples": [
+            null,
+            "12345678"
+          ]
+        },
+        "nsu": {
+          "$id": "#/properties/metadata/properties/nsu",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "NSU",
+          "description": "NSU of the authorization",
+          "examples": [
+            null,
+            "12345678"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Cycle closing request error",
+  "description": "Event generated when an error occurs while the cycle closing request is being processed",
+  "required": [
+    "org_id",
+    "program_id",
+    "account_id",
+    "cycle_closing_request_id",
+    "tracking_id",
+    "error_message"
+  ],
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID",
+      "examples": [
+        1122
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "cycle_closing_request_id": {
+      "type": "integer",
+      "description": "Cycle closing request ID",
+      "examples": [
+        1010
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Tracking ID",
+      "description": "This is a unique field generated to track the request",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error Message",
+      "description": "Error message about the cycle closing request",
+      "examples": [
+        "The statement id 569854785 is already closed."
+      ]
+    }
+  }
+}

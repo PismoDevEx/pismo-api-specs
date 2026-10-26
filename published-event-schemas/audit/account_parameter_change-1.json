@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Account parameter updated",
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of parameter change operation",
+      "examples": [
+        "PUT"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of address updater operation",
+      "examples": [
+        "/v1/accounts/{accountId}/addresses/{addressId}"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator that changes parameters",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "The roles of operator that changes parameters",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of parameter change operation",
+      "examples": [
+        "APP",
+        "CRM"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "The account identifier",
+          "examples": [
+            1
+          ]
+        },
+        "parameter_name": {
+          "type": "string",
+          "title": "The parameter name",
+          "examples": [
+            "MDR",
+            "DESCONTO ITAU"
+          ]
+        },
+        "current_value": {
+          "type": "number",
+          "title": "The value received in this request to update the parameter",
+          "examples": [
+            1.84
+          ]
+        },
+        "initial_value": {
+          "type": "number",
+          "title": "The previous value",
+          "examples": [
+            1.84
+          ]
+        }
+      },
+      "required": [
+        "parameter_name",
+        "current_value"
+      ]
+    }
+  },
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ]
+}

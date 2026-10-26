@@ -1,0 +1,629 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Digital receivable processed successfully",
+  "description": "Emitted as the digital_receivable_processed_success event type (schema version 2) once per affected digital receivable when a lifecycle operation succeeds: a digital receivable update (RECEIVABLE/UPDATE), a bill protest creation or withdrawal (BILL_PROTEST/CREATE or BILL_PROTEST/WITHDRAW), a settlement (SETTLEMENT/CREATE) or a debtor claim (DEBTOR_CLAIM/CREATE). The feature_type field tells which variant block (bill_protest, settlement or debtor_claim) is present, and digital_receivable always carries the receivable snapshot after the operation, so consumers can keep their own view of the receivable and its events up to date.",
+  "required": [
+    "feature_type",
+    "operation_type",
+    "digital_receivable"
+  ],
+  "properties": {
+    "feature_type": {
+      "type": "string",
+      "title": "Feature type",
+      "description": "Domain affected by the operation, serialized from the FeatureTypeV2 enum; it discriminates which variant block is present in the event. RECEIVABLE: digital receivable update, no variant block. CONTRACT: contract operation (not emitted in this version). INSTRUMENT_ACT: negotiable instrument act operation (not emitted in this version). SETTLEMENT: settlement of the digital receivable, settlement block present. DEBTOR_CLAIM: claim registered by the debtor, debtor_claim block present. BILL_PROTEST: bill protest created or withdrawn, bill_protest block present.",
+      "enum": [
+        "RECEIVABLE",
+        "CONTRACT",
+        "INSTRUMENT_ACT",
+        "SETTLEMENT",
+        "DEBTOR_CLAIM",
+        "BILL_PROTEST"
+      ],
+      "examples": [
+        "RECEIVABLE",
+        "SETTLEMENT",
+        "BILL_PROTEST"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Operation performed within the feature_type, serialized from the OperationTypeV2 enum. CREATE: a new record (bill protest, settlement or debtor claim) was created. UPDATE: the digital receivable was updated. DELETE: a record was deleted. WITHDRAW: the bill protest was withdrawn. UPDATE_INCL: inclusion update. UPDATE_ALTE: alteration update. UPDATE_EXCL: exclusion update. CANCELLATION_ERROR: cancellation due to an operational error. CLOSING: closing without a specific reason. CLOSING_DJUD: closing by court decision. CLOSING_RNGC: closing by renegotiation. CLOSING_ENEP: closing by ENEP termination reason. CLOSING_ENEM: closing by ENEM termination reason. CLOSING_ENES: closing by ENES termination reason.",
+      "enum": [
+        "CREATE",
+        "UPDATE",
+        "DELETE",
+        "WITHDRAW",
+        "UPDATE_INCL",
+        "UPDATE_ALTE",
+        "UPDATE_EXCL",
+        "CANCELLATION_ERROR",
+        "CLOSING",
+        "CLOSING_DJUD",
+        "CLOSING_RNGC",
+        "CLOSING_ENEP",
+        "CLOSING_ENEM",
+        "CLOSING_ENES"
+      ],
+      "examples": [
+        "CREATE",
+        "UPDATE",
+        "WITHDRAW"
+      ]
+    },
+    "digital_receivable": {
+      "type": "object",
+      "title": "Digital receivable",
+      "description": "Snapshot of the digital receivable as stored by Pismo after the operation was applied. Nested fields that are null or empty are omitted.",
+      "required": [
+        "id",
+        "face_value",
+        "maturity_date",
+        "situation_type",
+        "lender",
+        "debtor"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Digital receivable ID",
+          "description": "Client-provided identifier of the digital receivable, unique per organization.",
+          "examples": [
+            "00000000000191000001"
+          ]
+        },
+        "face_value": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Face value",
+          "description": "Current face value of the digital receivable in BRL, with decimals.",
+          "examples": [
+            1000.5
+          ]
+        },
+        "maturity_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Maturity date",
+          "description": "Current maturity date of the digital receivable, formatted as yyyy-MM-dd.",
+          "examples": [
+            "2027-12-25"
+          ]
+        },
+        "situation_type": {
+          "type": "string",
+          "title": "Situation type",
+          "description": "Lifecycle situation of the digital receivable, serialized from the DigitalReceivableSituationType enum. ACTIVE: the receivable is live and can be operated. BLOCKED: the receivable is live but blocked for operations. COMPLETED: the receivable was fully settled. INACTIVE: the receivable is no longer active.",
+          "enum": [
+            "ACTIVE",
+            "BLOCKED",
+            "COMPLETED",
+            "INACTIVE"
+          ],
+          "examples": [
+            "ACTIVE",
+            "COMPLETED"
+          ]
+        },
+        "reason_type": {
+          "type": "string",
+          "title": "Reason type",
+          "description": "Reason behind the current situation_type of the digital receivable, from the ReasonType enum. LIVR: Livre, free of restrictions and available for negotiation. BLOQ: Comprometida, committed to a contract or negotiable instrument act. BQSD: Bloqueada pelo sacador, blocked by the drawer (lender). BQCJ: Bloqueada por constri\u00e7\u00e3o judicial, blocked by a court order. COMT: Completada, the receivable is settled. Omitted when the receivable has no reason set.",
+          "enum": [
+            "LIVR",
+            "BLOQ",
+            "BQSD",
+            "BQCJ",
+            "COMT"
+          ],
+          "examples": [
+            "LIVR",
+            "BLOQ"
+          ]
+        },
+        "lender": {
+          "type": "object",
+          "title": "Lender",
+          "description": "Lender (creditor) of the digital receivable.",
+          "required": [
+            "document_number"
+          ],
+          "properties": {
+            "document_number": {
+              "type": "string",
+              "title": "Lender document number",
+              "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the lender, as provided by the client.",
+              "examples": [
+                "00000000000191"
+              ]
+            }
+          }
+        },
+        "debtor": {
+          "type": "object",
+          "title": "Debtor",
+          "description": "Debtor of the digital receivable.",
+          "required": [
+            "document_number"
+          ],
+          "properties": {
+            "document_number": {
+              "type": "string",
+              "title": "Debtor document number",
+              "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the debtor, as provided by the client.",
+              "examples": [
+                "00000000000"
+              ]
+            }
+          }
+        },
+        "owner": {
+          "type": "object",
+          "title": "Owner",
+          "description": "Current owner of the digital receivable; it changes when a contract assigns or endorses the receivable. Fields that are not set are omitted.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Owner type",
+              "description": "Ownership code set by Pismo: OWNR when the receivable is held by its original owner, CESS after an assignment and ENDS after an endorsement.",
+              "examples": [
+                "OWNR",
+                "CESS",
+                "ENDS"
+              ]
+            },
+            "document_number": {
+              "type": "string",
+              "title": "Owner document number",
+              "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the current owner; omitted when not set.",
+              "examples": [
+                "00000000000191"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "title": "Owner name",
+              "description": "Name of the current owner; omitted when not set.",
+              "examples": [
+                "Fake Owner Name"
+              ]
+            }
+          }
+        },
+        "beneficiary": {
+          "type": "object",
+          "title": "Beneficiary",
+          "description": "Current beneficiary of the digital receivable effects, set from the linked contract type. Fields that are not set are omitted.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Beneficiary type",
+              "description": "Beneficiary code set by Pismo: OWNR by default, EDPN for endorsement pledge effect, CEFD for fiduciary cession effect and PENR for pledge effect.",
+              "examples": [
+                "OWNR",
+                "CEFD",
+                "EDPN"
+              ]
+            },
+            "document_number": {
+              "type": "string",
+              "title": "Beneficiary document number",
+              "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the beneficiary; omitted when not set.",
+              "examples": [
+                "00000000000"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "title": "Beneficiary name",
+              "description": "Name of the beneficiary; omitted when not set.",
+              "examples": [
+                "Fake Beneficiary Name"
+              ]
+            }
+          }
+        },
+        "payments": {
+          "$ref": "#/definitions/payments"
+        },
+        "contract": {
+          "type": "object",
+          "title": "Contract",
+          "description": "Contract linked to the digital receivable. Only filled for SETTLEMENT and DEBTOR_CLAIM events, and omitted when the receivable has no contract.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Contract ID",
+              "description": "Identifier of the contract linked to the digital receivable.",
+              "examples": [
+                "019682bc-0b39-7e98-ab22-fa2dd1c908c0"
+              ]
+            },
+            "operation_id": {
+              "type": "string",
+              "title": "Contract operation ID",
+              "description": "Client-provided operation identifier of the contract linked to the digital receivable.",
+              "examples": [
+                "aec93861-ccc6-41c4-aa80-3fe2e416d34e"
+              ]
+            }
+          }
+        },
+        "instrument_act": {
+          "type": "object",
+          "title": "Instrument act",
+          "description": "Negotiable instrument acts linked to the digital receivable. Only filled for SETTLEMENT and DEBTOR_CLAIM events, and omitted when the receivable has no linked act.",
+          "properties": {
+            "ids": {
+              "type": "array",
+              "title": "Instrument act IDs",
+              "description": "Client-provided IDs of all negotiable instrument acts linked to the digital receivable, sorted in ascending order.",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "act-1",
+                  "act-2"
+                ]
+              },
+              "examples": [
+                [
+                  "act-1",
+                  "act-2"
+                ]
+              ]
+            },
+            "processed_id": {
+              "type": "string",
+              "title": "Processed instrument act ID",
+              "description": "First ID of the ids list in ascending order; currently it is not derived from the operation itself.",
+              "examples": [
+                "act-1"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "bill_protest": {
+      "type": "object",
+      "title": "Bill protest",
+      "description": "Bill protest that was created or withdrawn. Present only when feature_type is BILL_PROTEST; null or empty fields are omitted.",
+      "required": [
+        "registry_office_name",
+        "payable_amount"
+      ],
+      "properties": {
+        "registry_office_name": {
+          "type": "string",
+          "title": "Registry office name",
+          "description": "Client-provided name of the registry office where the bill was protested, up to 100 characters.",
+          "examples": [
+            "1\u00ba Tabeli\u00e3o de Protesto de S\u00e3o Paulo"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "title": "Protest date",
+          "description": "Client-provided date the bill was protested, formatted as yyyy-MM-dd; omitted when not informed.",
+          "examples": [
+            "2027-01-15"
+          ]
+        },
+        "discharge_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Discharge date",
+          "description": "Date the protest was discharged, formatted as yyyy-MM-dd; omitted while the protest is not discharged.",
+          "examples": [
+            "2027-02-20"
+          ]
+        },
+        "payable_amount": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Payable amount",
+          "description": "Client-provided total amount in BRL, with decimals, payable to discharge the protest; always positive.",
+          "examples": [
+            1050.75
+          ]
+        },
+        "abatement_amount": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Abatement amount",
+          "description": "Abatement amount in BRL, with decimals, granted on the protested bill; omitted when not informed.",
+          "examples": [
+            50.0
+          ]
+        },
+        "penalty_amount": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Penalty amount",
+          "description": "Penalty amount in BRL, with decimals, charged on the protested bill; omitted when not informed.",
+          "examples": [
+            20.0
+          ]
+        },
+        "interest_amount": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Interest amount",
+          "description": "Interest amount in BRL, with decimals, charged on the protested bill; omitted when not informed.",
+          "examples": [
+            10.5
+          ]
+        },
+        "fee_amount": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Fee amount",
+          "description": "Registry office fee amount in BRL, with decimals, charged on the protested bill; omitted when not informed.",
+          "examples": [
+            30.25
+          ]
+        }
+      }
+    },
+    "settlement": {
+      "type": "object",
+      "title": "Settlement",
+      "description": "Settlement applied to the digital receivable. Present only when feature_type is SETTLEMENT; null or empty fields are omitted.",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Settlement type",
+          "description": "Kind of settlement, serialized from the SettlementType enum. ADVANCE_PAYMENT: paid before the maturity date. ON_TIME_PAYMENT: paid on the maturity date. ARREARS_PAYMENT: paid after the maturity date. DISCOUNT_PAYMENT: paid with a discount. PARTIAL_PAYMENT: only part of the face value was paid. CANCELLATION: the receivable was settled by cancellation. OVERPAYMENT: paid above the face value.",
+          "enum": [
+            "ADVANCE_PAYMENT",
+            "ON_TIME_PAYMENT",
+            "ARREARS_PAYMENT",
+            "DISCOUNT_PAYMENT",
+            "PARTIAL_PAYMENT",
+            "CANCELLATION",
+            "OVERPAYMENT"
+          ],
+          "examples": [
+            "ON_TIME_PAYMENT",
+            "PARTIAL_PAYMENT"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "title": "Settlement date",
+          "description": "Liquidation date informed for the settlement, formatted as yyyy-MM-dd; omitted when not informed.",
+          "examples": [
+            "2027-03-10"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Settlement value",
+          "description": "Amount in BRL, with decimals, paid in this settlement; omitted when not informed.",
+          "examples": [
+            500.0
+          ]
+        },
+        "current_face_value": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Current face value",
+          "description": "Face value of the digital receivable in BRL, with decimals, recorded with the settlement; omitted when not set.",
+          "examples": [
+            1000.0
+          ]
+        },
+        "remaining_value": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Remaining value",
+          "description": "Amount in BRL, with decimals, still owed on the digital receivable after this settlement; omitted when not set.",
+          "examples": [
+            500.0
+          ]
+        },
+        "payments": {
+          "$ref": "#/definitions/payments"
+        }
+      }
+    },
+    "debtor_claim": {
+      "type": "object",
+      "title": "Debtor claim",
+      "description": "Claim registered by the debtor against the digital receivable. Present only when feature_type is DEBTOR_CLAIM; null or empty fields are omitted.",
+      "properties": {
+        "claim_type": {
+          "type": "string",
+          "title": "Claim type",
+          "description": "Client-provided debtor claim (manifesta\u00e7\u00e3o do sacado) over the receivable, from the ClaimType enum. ACTO: accepted by the debtor. RCAV: refused, damaged goods. RCQQ: refused, different quantity or quality. RCVN: refused, sale not completed. RCVL: refused, different amount. RCOP: refused, other problems. ANTC: early payment (antecipa\u00e7\u00e3o) requested by the debtor.",
+          "enum": [
+            "ACTO",
+            "RCAV",
+            "RCQQ",
+            "RCVN",
+            "RCVL",
+            "RCOP",
+            "ANTC"
+          ],
+          "examples": [
+            "ACTO",
+            "RCVL"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "title": "Claim date",
+          "description": "Client-provided date of the claim, formatted as yyyy-MM-dd; omitted when not informed.",
+          "examples": [
+            "2027-04-22"
+          ]
+        },
+        "face_value": {
+          "type": "number",
+          "format": "decimal",
+          "title": "Claimed face value",
+          "description": "Face value in BRL, with decimals, that the debtor claims for the receivable; omitted when not informed.",
+          "examples": [
+            1000.0
+          ]
+        },
+        "maturity_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Claimed maturity date",
+          "description": "Maturity date that the debtor claims for the receivable, formatted as yyyy-MM-dd; omitted when not informed.",
+          "examples": [
+            "2027-12-25"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Free-text justification of the claim provided by the client, up to 255 characters; omitted when not informed.",
+          "examples": [
+            "Debtor disputes the amount."
+          ]
+        },
+        "receipt_indicator": {
+          "type": "boolean",
+          "title": "Receipt indicator",
+          "description": "Client-provided flag telling whether the debtor confirms receipt of the goods or services; omitted when not informed.",
+          "examples": [
+            true,
+            false
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "payments": {
+      "type": "object",
+      "title": "Payments",
+      "description": "Payment instruments of the settlement. Only the first instrument of each kind is sent, and kinds without an instrument are omitted.",
+      "properties": {
+        "bank_slip": {
+          "type": "object",
+          "title": "Bank slip",
+          "description": "First bank slip (boleto) registered for the payment.",
+          "properties": {
+            "bar_code": {
+              "type": "string",
+              "title": "Bar code",
+              "description": "Bar code number of the bank slip, digits only.",
+              "examples": [
+                "00000000000000000000000000000000000000000000000"
+              ]
+            }
+          }
+        },
+        "pix": {
+          "type": "object",
+          "title": "PIX",
+          "description": "First PIX key registered for the payment.",
+          "properties": {
+            "type": {
+              "type": "integer",
+              "title": "PIX key type",
+              "description": "Numeric code of the PIX key type, taken from the PixType enum value. 1: CPF key. 2: CNPJ key. 3: phone number key. 4: email key. 5: random key. 6: copy and paste (QR code) key.",
+              "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "examples": [
+                1,
+                5
+              ]
+            },
+            "value": {
+              "type": "string",
+              "title": "PIX key value",
+              "description": "Value of the PIX key, in the format of its key type.",
+              "examples": [
+                "00000000000"
+              ]
+            }
+          }
+        },
+        "ted": {
+          "type": "object",
+          "title": "TED",
+          "description": "First bank account registered for TED transfers.",
+          "properties": {
+            "ispb": {
+              "type": "string",
+              "title": "ISPB",
+              "description": "ISPB code (8 digits) identifying the receiving financial institution.",
+              "examples": [
+                "00000000"
+              ]
+            },
+            "compe": {
+              "type": "string",
+              "title": "COMPE",
+              "description": "COMPE bank code (3 digits) of the receiving financial institution.",
+              "examples": [
+                "001"
+              ]
+            },
+            "branch": {
+              "type": "string",
+              "title": "Branch",
+              "description": "Bank branch number of the receiving account, without check digit.",
+              "examples": [
+                "0001"
+              ]
+            },
+            "account_number": {
+              "type": "string",
+              "title": "Account number",
+              "description": "Number of the receiving bank account, without check digit.",
+              "examples": [
+                "00000000"
+              ]
+            },
+            "account_digit": {
+              "type": "string",
+              "title": "Account digit",
+              "description": "Check digit of the receiving bank account.",
+              "examples": [
+                "0"
+              ]
+            },
+            "account_type": {
+              "type": "string",
+              "title": "Account type",
+              "description": "Type code of the receiving bank account, as provided by the client.",
+              "examples": [
+                "CC",
+                "PG",
+                "CCOR"
+              ]
+            },
+            "owner_account_document_number": {
+              "type": "string",
+              "title": "Account owner document number",
+              "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the bank account owner.",
+              "examples": [
+                "00000000000191"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,608 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Evaluation requested",
+  "description": "This event occurs asynchronously when the platform completes an evaluation request of a flex control. The event contains information about the evaluated parameters and the result of the evaluation. <br> More information: <a href='https://developers.pismo.io/pismo-docs/docs/flex-controls' target='_blank'>Flexible transaction controls</a>",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of address register operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of address register operation",
+      "examples": [
+        "/v1/evaluation"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator that registered address",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "The roles of operator that registered address",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of address register operation",
+      "examples": [
+        "P2P",
+        "PAYMENTS"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The Evaluation request",
+      "required": [
+        "request",
+        "result"
+      ],
+      "properties": {
+        "request": {
+          "required": [
+            "amount"
+          ],
+          "title": "The evaluation request",
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "title": "The amount of the payment transaction.",
+              "examples": [
+                49999
+              ]
+            },
+            "currency_code": {
+              "examples": [
+                "USD"
+              ],
+              "title": "The currency code based on ISO-4217.",
+              "type": "string"
+            },
+            "accounts": {
+              "required": [
+                "from"
+              ],
+              "title": "The accounts related to the transaction",
+              "type": "object",
+              "properties": {
+                "from": {
+                  "examples": [
+                    {
+                      "id": 292933,
+                      "customer_id": 50000,
+                      "card_id": 40000,
+                      "processing_code": "007100",
+                      "balance": 60000
+                    }
+                  ],
+                  "required": [
+                    "id"
+                  ],
+                  "title": "The account the transaction originated from",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "examples": [
+                        292933
+                      ],
+                      "title": "The account ID.",
+                      "type": "integer"
+                    },
+                    "customer_id": {
+                      "examples": [
+                        50000
+                      ],
+                      "title": "The customer ID.",
+                      "type": "integer"
+                    },
+                    "card_id": {
+                      "examples": [
+                        40000
+                      ],
+                      "title": "The card ID.",
+                      "type": "integer"
+                    },
+                    "processing_code": {
+                      "examples": [
+                        "007100"
+                      ],
+                      "title": "The Processing Code of the transaction.",
+                      "type": "string"
+                    },
+                    "balance": {
+                      "examples": [
+                        60000
+                      ],
+                      "title": "The Balance of the account.",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "to": {
+                  "examples": [
+                    {
+                      "id": 292344,
+                      "customer_id": 50000,
+                      "card_id": 40000,
+                      "processing_code": "007100",
+                      "balance": 10000
+                    }
+                  ],
+                  "required": [
+                    "id"
+                  ],
+                  "title": "The transaction targed account",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "examples": [
+                        292344
+                      ],
+                      "title": "The account ID.",
+                      "type": "integer"
+                    },
+                    "customer_id": {
+                      "examples": [
+                        50000
+                      ],
+                      "title": "The customer ID.",
+                      "type": "integer"
+                    },
+                    "card_id": {
+                      "examples": [
+                        40000
+                      ],
+                      "title": "The card ID.",
+                      "type": "integer"
+                    },
+                    "processing_code": {
+                      "examples": [
+                        "007100"
+                      ],
+                      "title": "The Processing Code of the transaction.",
+                      "type": "string"
+                    },
+                    "balance": {
+                      "examples": [
+                        10000
+                      ],
+                      "title": "The Balance of the account.",
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            },
+            "merchant_id": {
+              "examples": [
+                "2ca51949-3d57-4f70-81b7-cc6a20d6bb4b"
+              ],
+              "title": "The merchant ID.",
+              "type": "string"
+            },
+            "merchant_category_code": {
+              "examples": [
+                "5542"
+              ],
+              "title": "A Merchant Category Code (MCC) is a four-digit number listed in ISO 18245 for retail financial services.",
+              "type": "string"
+            },
+            "entry_mode": {
+              "examples": [
+                "9180"
+              ],
+              "title": "The entry mode are numeric or string codes that identify the method a card transaction was captured.",
+              "type": "string"
+            },
+            "simulation": {
+              "examples": [
+                false
+              ],
+              "title": "The evaluation request is for simulating evaluation.",
+              "type": "boolean"
+            },
+            "force": {
+              "examples": [
+                true
+              ],
+              "title": "Force to evaluate true due to Anti-Fraud decision.",
+              "type": "boolean"
+            },
+            "tracking_id": {
+              "examples": [
+                "ee065d92-339f-405d-99fd-4ed75b784bc7"
+              ],
+              "title": "The tracking id of the request.",
+              "type": "string"
+            },
+            "country_code": {
+              "title": "The country where the transaction originated. The country code is a three-letter code defined by ISO 3166-1.",
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 3,
+              "examples": [
+                "BRA"
+              ]
+            },
+            "number_of_installments": {
+              "title": "Number of installments in the operation.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 255,
+              "examples": [
+                false
+              ]
+            },
+            "is_password_present": {
+              "title": "Is password present",
+              "description": "Is password present in the transaction?",
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "examples": [
+                false
+              ]
+            },
+            "is_pin_validated_offline": {
+              "title": "Is pin validated offline",
+              "description": "Is pin validation performed offline during authorization? When configured as a reset trigger, accumulators reset based on this boolean value.",
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "examples": [
+                false,
+                true
+              ]
+            },
+            "is_physical_card_present": {
+              "title": "Flag that indicates whether a physical card is present.",
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "examples": [
+                false
+              ]
+            },
+            "card_mode": {
+              "title": "Specifies the operational mode of the card.",
+              "description": "Specifies the operational mode of the card.",
+              "type": "string",
+              "enum": [
+                "credit",
+                "debit",
+                ""
+              ],
+              "examples": [
+                "credit"
+              ]
+            },
+            "is_device_registered": {
+              "title": "Is device registered",
+              "description": "Indicates whether the device used for the operation is registered according to the financial institution's security policies.",
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "examples": [
+                false
+              ]
+            },
+            "is_tra_exemption_requested": {
+              "title": "Is TRA exemption requested?",
+              "description": "Indicates whether a TRA (Transaction Risk Assessment) exemption is requested for the transaction.",
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "examples": [
+                false
+              ]
+            },
+            "is_token_present": {
+              "title": "Indicates whether the token is present in the evaluation request.",
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "examples": [
+                false
+              ]
+            },
+            "initiation_mode": {
+              "title": "Initiation mode",
+              "description": "Initiation mode. <br> -`moto`: Payments made through mail order or telephone. <br>- `mit`: Merchant-initiated transactions.",
+              "type": "string",
+              "examples": [
+                "moto"
+              ]
+            },
+            "authentication_method": {
+              "title": "Authentication methods",
+              "description": "List of authentication methods that should trigger a reset of the flex control accumulator.",
+              "type": [
+                "array",
+                "string"
+              ],
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "sms",
+                "password",
+                "email"
+              ]
+            },
+            "acquirer_country_code": {
+              "title": "Acquirer country code",
+              "description": "Acquirer country code based on the ISO 3166-1 standards. It can be represented in one of the following formats: - Alpha-2: Two-letter country code (for example, \"BR\" for Brazil). - Alpha-3: Three-letter country code (for example, \"BRA\" for Brazil). - Numeric: Three-digit country code (for example, \"076\" for Brazil).",
+              "type": [
+                "array",
+                "string"
+              ],
+              "examples": [
+                "BRA",
+                "ARG",
+                "POL"
+              ]
+            },
+            "is_cavv_present": {
+              "title": "Is CAVV present",
+              "description": "Indicates whether the CAVV is present in the evaluation request. CAVV stands for cardholder authentication verification value.",
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "examples": [
+                true
+              ]
+            },
+            "avr": {
+              "title": "AVR",
+              "description": "String indicating that the transaction is a card network Account Verification Request (AVR) transaction. AVR transactions differ from standard authorizations in that they are typically zero-value and are used for card network verification flows. Currently, the only supported value for this attribute is `mtt`, which is the Mobility & Transport Transaction (MTT) type.",
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 3,
+              "examples": [
+                "MTT"
+              ]
+            },
+            "operation_type": {
+              "title": "Operation type",
+              "description": "Type of operation being performed, allowing differentiation between debit and credit transactions.",
+              "type": "string",
+              "enum": [
+                "debit",
+                "credit",
+                "none",
+                ""
+              ],
+              "examples": [
+                "debit"
+              ]
+            }
+          }
+        },
+        "result": {
+          "required": [
+            "result"
+          ],
+          "title": "Result",
+          "description": "Evaluation result.",
+          "type": "object",
+          "properties": {
+            "result": {
+              "title": "Evaluation result",
+              "description": "Indicates whether the flex controls evaluation resulted in approval (`true`) or denial (`false`).",
+              "type": "boolean",
+              "examples": [
+                true
+              ]
+            },
+            "deny_code": {
+              "title": "Deny code",
+              "description": "Deny code explains why the evaluation is denied. You can configure this code when creating a flex control.",
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 100,
+              "examples": [
+                "MAX_LIMIT_USD_P1M"
+              ]
+            },
+            "custom_code": {
+              "title": "Custom code",
+              "description": "Alphanumeric three-character custom code and can be the alternative custom code. Alternative custom code overrides the standard platform custom code and provides the reason set in the alternative custom code. When the platform denies a control evaluation, the custom code provides the denial code.",
+              "type": "string",
+              "maxLength": 3,
+              "examples": [
+                "A1B"
+              ]
+            },
+            "message": {
+              "title": "Message",
+              "description": "Result message.",
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1024,
+              "examples": [
+                "[dd9ff885-14da-40e6-8b54-bb56fce06936] Got value '22095' and the rule value is '1'."
+              ]
+            },
+            "response_code": {
+              "title": "Response code",
+              "description": "Alphanumeric two-character response code. This can be the standard card network response code or an alternative custom response code. When the platform denies a control evaluation, the platform returns the response code that provides the precise reason for the denial by the card network or anti-fraud solution.",
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 2,
+              "examples": [
+                "FM",
+                "57",
+                "05"
+              ]
+            },
+            "evaluated_controls": {
+              "type": "array",
+              "title": "Evaluated controls",
+              "description": "List of evaluated flex controls.",
+              "items": {
+                "properties": {
+                  "id": {
+                    "title": "Flex control ID",
+                    "description": "Flex control ID.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024,
+                    "examples": [
+                      "dd9ff885-14da-40e6-8b54-bb56fce06936"
+                    ]
+                  },
+                  "name": {
+                    "title": "Name",
+                    "description": "Flex control name.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024,
+                    "examples": [
+                      "Purchase 1M limit"
+                    ]
+                  },
+                  "result": {
+                    "title": "Result",
+                    "description": "Indicates whether the flex controls evaluation resulted in approval (`true`) or denial (`false`).",
+                    "type": "boolean",
+                    "examples": [
+                      true
+                    ]
+                  },
+                  "message": {
+                    "title": "Message",
+                    "description": "Result message.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024,
+                    "examples": [
+                      "[dd9ff885-14da-40e6-8b54-bb56fce06936] Got value '22095' and the rule value is '1'."
+                    ]
+                  },
+                  "deny_code": {
+                    "title": "Deny code",
+                    "description": "Deny code related to the restriction. This code is returned when the evaluation does not meet the conditions.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "examples": [
+                      "MAX_LIMIT_USD_P1M"
+                    ]
+                  },
+                  "custom_code": {
+                    "title": "Custom code",
+                    "description": "Alphanumeric three-character custom code and can be the alternative custom code. Alternative custom code overrides the standard platform custom code and provides the reason set in the alternative custom code. When the platform denies a control evaluation, the custom code provides the denial code.",
+                    "type": "string",
+                    "maxLength": 3,
+                    "examples": [
+                      "A1B"
+                    ]
+                  },
+                  "response_code": {
+                    "title": "Response code",
+                    "description": "When the platform denies a control evaluation, the platform returns a response code indicating the card network's or anti-fraud solution's denial reason.",
+                    "type": "string",
+                    "examples": [
+                      "FM",
+                      "57",
+                      "05"
+                    ]
+                  },
+                  "max_limit": {
+                    "title": "Max limit",
+                    "description": "Max flex control limit. Once met or exceeded, the evaluation control flow declines any further transactions.",
+                    "type": "integer",
+                    "maximum": 18446744073709551617,
+                    "examples": []
+                  },
+                  "available_limit": {
+                    "title": "Available limit",
+                    "description": "Flex control for total available limit. The value is the difference of `max_limit` and `current_spend_limit`.",
+                    "type": "integer",
+                    "maximum": 18446744073709551617,
+                    "examples": [
+                      1000
+                    ]
+                  },
+                  "max_amount": {
+                    "title": "Maximum accumulated amount",
+                    "description": "Maximum allowed accumulated amount. Once exceeded, the evaluation control flow declines subsequent transactions. Applies only to cumulative flex controls.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551617,
+                    "examples": [
+                      10000
+                    ]
+                  },
+                  "available_amount": {
+                    "title": "Current available amount",
+                    "description": "Current available amount. The amount available is updated as the Pismo platform evaluates flex controls. The value for `available_amount` is deducted or reset according to `entry_mode` and `reset_strategy`. Applies only to cumulative flex controls.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551617,
+                    "examples": [
+                      5000
+                    ]
+                  },
+                  "max_transactions": {
+                    "title": "Max transactions allowed",
+                    "description": "Max transactions allowed. Applies only to cumulative flex controls.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551617,
+                    "examples": [
+                      10
+                    ]
+                  },
+                  "available_transactions": {
+                    "title": "Current available transactions",
+                    "description": "Current available transactions. The number of available transactions reduces by 1 after each transaction or resets according to `entry_mode` and `reset_strategy`. Applies only to cumulative flex control.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551617,
+                    "examples": [
+                      3
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

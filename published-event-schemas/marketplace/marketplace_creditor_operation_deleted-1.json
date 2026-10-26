@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Marketplace creditor operation deleted",
+  "required": [
+    "marketplace_creditors_operations_id",
+    "marketplace_id"
+  ],
+  "properties": {
+    "marketplace_creditors_operations_id": {
+      "$id": "#/properties/marketplace_creditors_operations_id",
+      "type": [
+        "integer"
+      ],
+      "title": "Marketplace creditor operation identifier",
+      "description": "This field contains the ID of created marketplace creditor operation.",
+      "examples": [
+        1,
+        1234
+      ]
+    },
+    "marketplace_id": {
+      "$id": "#/properties/marketplace_id",
+      "type": "integer",
+      "title": "Marketplace identifier",
+      "description": "This field identifies the marketplace related to the operation.",
+      "examples": [
+        4
+      ]
+    }
+  }
+}

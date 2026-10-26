@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Collateral default contract registration request was failed",
+  "description": "This event occurs when the request of default contract registration is fail",
+  "required": [
+    "external_id",
+    "errors"
+  ],
+  "properties": {
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation provided by client.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    },
+    "errors": {
+      "type": "array",
+      "title": "Error messages",
+      "description": "Descriptions of errors when an operation fail",
+      "additionalProperties": false,
+      "items": {
+        "$id": "#/properties/error_details/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/errors/items/anyOf/0",
+            "type": "object",
+            "title": "Errors object",
+            "required": [
+              "code",
+              "description"
+            ],
+            "examples": [
+              {
+                "code": "F1900023",
+                "description": "some error message"
+              }
+            ],
+            "properties": {
+              "code": {
+                "$id": "#/properties/errors/items/anyOf/0/properties/code",
+                "type": "string",
+                "title": "Code of error",
+                "examples": [
+                  "F1900023"
+                ]
+              },
+              "description": {
+                "$id": "#/properties/error_details/items/anyOf/0/properties/description",
+                "type": "string",
+                "title": "An Error Message",
+                "examples": [
+                  "Failure message"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      },
+      "examples": [
+        [
+          {
+            "code": "F1900023",
+            "description": "Failure message"
+          },
+          {
+            "code": "F1900024",
+            "description": "Failure message"
+          }
+        ]
+      ]
+    }
+  }
+}

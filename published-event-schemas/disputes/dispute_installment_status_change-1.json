@@ -1,0 +1,1701 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Dispute status changed",
+  "description": "Dispute status change event. The <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-disputes-disputeid-event' target='_blank'>Update dispute status</a> endpoint generates this event. It can also occur due to network processing.",
+  "examples": [
+    {
+      "id": 1,
+      "dispute_id": 2,
+      "installment": 1,
+      "arn": "test-arn",
+      "chargeback_id": null,
+      "claim_id": null,
+      "installment_disputed_amount": 150.0,
+      "network_return_reason_code": null,
+      "reason_code": 4853,
+      "network_return_reject_reason": null,
+      "network_response_error": null,
+      "is_first_installment": false,
+      "network_return_reject_reason_code": null,
+      "dispute_status": {
+        "id": 4,
+        "description": "PENDING_DOCUMENT",
+        "type": "MASTERCARD_CARD",
+        "group": "OPEN"
+      },
+      "pre_arb_master": {
+        "pre_arbitration_response_id": 4,
+        "memo": "This is a test memo",
+        "updated_chargeback_reason_code": 2,
+        "merchant_name": "MERCHANT",
+        "filing_ica": "001234",
+        "change_reason_code_reason": "4863",
+        "case_network_response": "Ok",
+        "dispute_amount": 100.0,
+        "currency_code": "USD",
+        "change_reason_code_flag": "Y",
+        "acquirer_ref_num": "05131054165000000048149",
+        "chargeback_reason_code": "4863"
+      },
+      "chargeback_ref_num": null,
+      "dispute_due_to": null,
+      "network_response_amount": 368.5,
+      "network_response_currency": null,
+      "network_status": null,
+      "reversal_reason": null,
+      "dispute_form": null,
+      "dispute_fraud_report": null,
+      "fraud_type": null,
+      "network_response": [],
+      "document_indicator": true,
+      "account_id": 123456789,
+      "authorization_id": 123456789,
+      "internal_transaction_id": 123456789,
+      "tracking_id": "9cd6485a-5680-4df0-a1f1-507e21d3428c",
+      "network_brand_type": "Mastercard"
+    }
+  ],
+  "required": [
+    "arn",
+    "chargeback_id",
+    "claim_id",
+    "dispute_id",
+    "dispute_status",
+    "id",
+    "installment",
+    "installment_disputed_amount",
+    "is_first_installment",
+    "network_response_error",
+    "network_return_reason_code",
+    "network_return_reject_reason",
+    "network_return_reject_reason_code",
+    "reason_code"
+  ],
+  "properties": {
+    "arn": {
+      "$id": "#/properties/arn",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "ARN",
+      "description": "Acquirer reference number",
+      "examples": [
+        null,
+        "teste-arn"
+      ]
+    },
+    "chargeback_id": {
+      "$id": "#/properties/chargeback_id",
+      "title": "Chargeback ID",
+      "description": "Chargeback ID",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "claim_id": {
+      "$id": "#/properties/claim_id",
+      "title": "Claim ID",
+      "description": "Claim ID",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dispute_id": {
+      "$id": "#/properties/dispute_id",
+      "type": "integer",
+      "title": "Dispute ID",
+      "description": "Dispute ID",
+      "examples": [
+        28906
+      ]
+    },
+    "dispute_status": {
+      "$id": "#/properties/dispute_status",
+      "type": "object",
+      "title": "Dispute status",
+      "description": "Dispute status object, description = dispute status, type = state machine, group = group status. See the <a href='https://developers.pismo.io/pismo-docs/docs/disputes-state-machine' target='_blank'>Disputes state machine</a> guide for more information",
+      "examples": [
+        {
+          "id": 4,
+          "description": "OPENED",
+          "type": "PRIMITIVE",
+          "group": "CARDNETWORK_CHARGEBACK"
+        }
+      ],
+      "required": [
+        "description",
+        "group"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/dispute_status/properties/id",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Dispute status ID",
+          "description": "Dispute status ID",
+          "examples": [
+            4
+          ]
+        },
+        "description": {
+          "$id": "#/properties/dispute_status/properties/description",
+          "type": "string",
+          "title": "Dispute status",
+          "description": "Dispute status enum - depends on state machine. For PRIMITIVE, they are `OPENED PENDING CANCELED FAILED CHARGEBACK_REJECTED CHARGEBACK_CREATED CHARGEBACK_ACCEPTED CHARGEBACK_CLOSED SECOND_PRESENTMENT PRE_ARBITRATION_OPENED PRE_ARBITRATION_ACCEPTED PRE_ARBITRATION_DECLINED PRE_ARBITRATION_RECALL PRE_ARB_ALLOCATION_OPENED FAILED_PRE_ARBITRATION PRE_ARB_ALLOCATION_ACCEPTED PRE_ARB_ALLOCATION_DECLINED PRE_ARB_ALLOCATION_RECALLED FAILED_DECLINE_PRE_ARB FAILED_ACCEPT_PRE_ARB FAILED_ON_CLOSE EXPIRED ISSUER_LOSS`",
+          "examples": [
+            "PENDING",
+            "OPENED"
+          ]
+        },
+        "type": {
+          "$id": "#/properties/dispute_status/properties/type",
+          "type": "string",
+          "title": "Dispute status type",
+          "description": "Dispute status type",
+          "enum": [
+            "MASTERCARD_CARD",
+            "TOK_PAG",
+            "PRIMITIVE",
+            "PRIMITIVE_ON_US"
+          ]
+        },
+        "group": {
+          "$id": "#/properties/dispute_status/properties/group",
+          "type": "string",
+          "title": "Dispute group status",
+          "description": "Dispute group status",
+          "enum": [
+            "OPEN",
+            "APPROVED",
+            "DENIED",
+            "CARDNETWORK_CHARGEBACK",
+            "ANALYSING",
+            "CARDNETWORK_SECOND_PRESENTMENT",
+            "FAILED",
+            "CARDNETWORK_PREARBITRATION",
+            "RESEND",
+            "LOSS",
+            "WON",
+            "REJECTED",
+            "FAILED_PROCESSED",
+            "RESEND_PROCESSED",
+            "MIGRATION"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "ID",
+      "description": "Installment ID",
+      "examples": [
+        184740
+      ]
+    },
+    "installment": {
+      "$id": "#/properties/installment",
+      "type": "integer",
+      "title": "Installment",
+      "description": "Installment index number",
+      "examples": [
+        1
+      ]
+    },
+    "installment_disputed_amount": {
+      "$id": "#/properties/installment_disputed_amount",
+      "type": "number",
+      "title": "Installment disputed amount",
+      "description": "Installment disputed amount",
+      "examples": [
+        150.0
+      ]
+    },
+    "is_first_installment": {
+      "$id": "#/properties/is_first_installment",
+      "type": "boolean",
+      "title": "Is first installment flag",
+      "description": "Is this the first installment flag",
+      "default": false,
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "second_presentment_chargeback_id": {
+      "$id": "#/properties/second_presentment_chargeback_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Second presentment chargeback ID",
+      "description": "Second presentment chargeback ID"
+    },
+    "second_presentment_message_text": {
+      "$id": "#/properties/second_presentment_message_text",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Second presentment message text",
+      "description": "Second presentment message text"
+    },
+    "network_dispute_response_id": {
+      "$id": "#/properties/network_dispute_response_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Network dispute response ID",
+      "description": "Network dispute response ID"
+    },
+    "is_partial_tax": {
+      "$id": "#/properties/is_partial_tax",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Is partial tax flag",
+      "description": "Is partial tax flag - for ELO airport tax disputes"
+    },
+    "dispute_form_list": {
+      "$id": "#/properties/dispute_form_list",
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Dispute form list",
+      "description": "List of dispute forms",
+      "items": {
+        "$ref": "#/properties/dispute_form"
+      }
+    },
+    "network_response_error": {
+      "$id": "#/properties/network_response_error",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Network response error",
+      "description": "Network response error",
+      "examples": [
+        null,
+        "The network returned [This field has an invalid input length.], reasonCode [INVALID_INPUT_LENGTH] with the source [acquirerRefNumber]."
+      ]
+    },
+    "network_return_reason_code": {
+      "$id": "#/properties/network_return_reason_code",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Network return reason code",
+      "description": "Network return reason code",
+      "examples": [
+        null,
+        "422"
+      ]
+    },
+    "network_return_reject_reason": {
+      "$id": "#/properties/network_return_reject_reason",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Network return reject reason",
+      "description": "Network return reject reason",
+      "examples": [
+        "null",
+        "Code1=0283(00):D0025/000;DE072=D0025\\4837\\\\",
+        "Code1=2226(00): D0002/000;Code2=0631(00): P0158/004;Code3=2220(00): D0003/000;DE072=D0002\\5214330278318136\\\\P0158\\DE\\\\D0003\\000000\\\\",
+        "Code1=5001(00): D0025/000;DE072=D0025\\0000\\\\",
+        "Code1=5000(00): D0025/000;DE072=D0025\\0000\\\\"
+      ]
+    },
+    "network_return_reject_reason_code": {
+      "$id": "#/properties/network_return_reject_reason_code",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Network return reject reason code",
+      "description": "Network return reject reason code",
+      "examples": [
+        null,
+        283,
+        2226,
+        5001,
+        5000
+      ]
+    },
+    "reason_code": {
+      "$id": "#/properties/reason_code",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Reason code",
+      "description": "Reason code",
+      "examples": [
+        null,
+        4837
+      ]
+    },
+    "category": {
+      "$id": "#/properties/category",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Category",
+      "description": "Category - for ELO card network only",
+      "enum": [
+        "INSTALLMENT",
+        "AIRPORT_TAX",
+        null
+      ],
+      "examples": [
+        "INSTALLMENT"
+      ]
+    },
+    "chargeback_ref_num": {
+      "$id": "#/properties/chargeback_ref_num",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Chargeback reference number",
+      "description": "Chargeback reference number",
+      "examples": [
+        "1234"
+      ]
+    },
+    "dispute_due_to": {
+      "$id": "#/properties/dispute_due_to",
+      "title": "Dispute due to enum",
+      "description": "Dispute due to enums - VISA, reason code 13. For more details on these enums, see the `dispute_due_to` parameter for the <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-networkauthorization-disputes' target='_blank'>Create dispute</a> endpoint",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "CR",
+        "ND",
+        "DM",
+        "Q",
+        "CM",
+        "M",
+        "CN",
+        "CS",
+        "OC",
+        "CL",
+        "TC",
+        "D",
+        "IAN",
+        "IA",
+        "IC",
+        "IT",
+        "ID",
+        "LP",
+        "P",
+        "NR",
+        null
+      ]
+    },
+    "dispute_form": {
+      "$id": "#/properties/dispute_form",
+      "title": "Dispute form object",
+      "description": "Dispute form object",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "id": {
+          "title": "Dispute form ID",
+          "description": "Dispute form ID",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "examples": [
+            17723
+          ]
+        },
+        "dispute_id": {
+          "title": "Dispute ID",
+          "description": "Dispute ID",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "examples": [
+            123
+          ]
+        },
+        "status": {
+          "title": "Dispute form status",
+          "description": "Dispute form status",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "PENDING",
+            "PROCESSED",
+            "FAILED",
+            "INACTIVE",
+            null
+          ]
+        },
+        "network": {
+          "title": "Network",
+          "description": "Network state machine enum",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "MASTERCARD_CARD",
+            "TOK_PAG",
+            "PRIMITIVE",
+            "PRIMITIVE_ON_US"
+          ]
+        },
+        "form": {
+          "title": "Form",
+          "description": "Form",
+          "type": [
+            "object",
+            "null",
+            "string"
+          ],
+          "examples": [
+            {
+              "data": "jsonString"
+            }
+          ]
+        },
+        "dispute_installment_id": {
+          "title": "Dispute installment ID",
+          "description": "Dispute installment ID",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "examples": [
+            123
+          ]
+        },
+        "dispute_form_type": {
+          "title": "Dispute form type object",
+          "description": "Dispute form type object",
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "dispute_form_type_id": {
+              "title": "Dispute form type ID",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "examples": [
+                1
+              ]
+            },
+            "type": {
+              "title": "Type",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "description": {
+              "title": "Description",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "created_at": {
+          "title": "Created at date/time",
+          "description": "Created at date/time",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "2022-01-01 11:11:11"
+          ]
+        },
+        "created_at_utc": {
+          "title": "Created at in UTC date/time",
+          "description": "Created at in UTC date/time",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "2022-01-01 10:11:11"
+          ]
+        },
+        "updated_at": {
+          "title": "Updated at date/time",
+          "description": "Updated at date/time",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "",
+          "examples": [
+            "2022-01-01 22:11:11"
+          ]
+        },
+        "updated_at_utc": {
+          "title": "Updated at UTC date/time",
+          "description": "Updated at UTC date/time",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "",
+          "examples": [
+            "2022-01-01 23:11:11"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "id": 123,
+          "status": "PENDING",
+          "network": "MASTERCARD_CARD",
+          "form": {
+            "data": "jsonString"
+          },
+          "dispute_installment_id": 123,
+          "created_at": "2022-01-01 11:11:11",
+          "created_at_utc": "2022-01-01 10:11:11",
+          "updated_at": "2022-01-01 22:11:11",
+          "updated_at_utc": "2022-01-01 23:11:11"
+        }
+      ],
+      "additionalProperties": true
+    },
+    "dispute_form_id": {
+      "$id": "#/properties/dispute_form_id",
+      "type": [
+        "string",
+        "null",
+        "integer"
+      ],
+      "title": "Dispute form ID",
+      "examples": [
+        null,
+        "283"
+      ]
+    },
+    "dispute_fraud_report": {
+      "$id": "#/properties/dispute_fraud_report",
+      "title": "Dispute fraud report object",
+      "description": "Dispute fraud report object",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "fraud_report_id": {
+          "title": "Fraud report ID",
+          "description": "Fraud report ID",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "examples": [
+            123
+          ]
+        },
+        "status": {
+          "title": "Fraud report status",
+          "description": "Fraud report status",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "PENDING",
+            "PROCESSED",
+            "FAILED",
+            "INACTIVE",
+            null
+          ]
+        },
+        "network_brand_type": {
+          "title": "Network brand",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Mastercard",
+            "Visa",
+            "Elo",
+            "OnUs",
+            null
+          ]
+        },
+        "report": {
+          "title": "Report object",
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "acct_status": {
+              "title": "Account status",
+              "description": "Account status enum",
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "ACCT_IS_OPEN",
+                "ACCT_HAS_BEEN_CLOSED"
+              ]
+            },
+            "chgbk_indicator": {
+              "title": "Chargeback indicator",
+              "description": "Chargeback indicator",
+              "type": [
+                "string",
+                "null"
+              ],
+              "examples": [
+                "1"
+              ]
+            },
+            "cvc_invalid_indicator": {
+              "title": "CVC invalid indicator",
+              "description": "<a href='https://developer.mastercard.com/fld-fraud-submission/documentation/parameters/annexure-1/#table-15-card-validation-code-cvc-indicator' target='_blank'>CVC invalid indicator (link)</a>",
+              "type": [
+                "string",
+                "null"
+              ],
+              "examples": [
+                "1"
+              ]
+            },
+            "device_type": {
+              "title": "Device type",
+              "description": "<a href='https://developer.mastercard.com/fld-fraud-submission/documentation/parameters/annexure-1/#table-3-account-device-type-codes' target='_blank'>Device type (link)</a>",
+              "type": [
+                "string",
+                "null"
+              ],
+              "examples": [
+                "K"
+              ]
+            },
+            "fraud_type": {
+              "title": "Fraud type",
+              "description": "<a href='https://developer.mastercard.com/fld-fraud-submission/documentation/parameters/annexure-1/#table-1-fraud-type-codes' target='_blank'>Fraud type (link)</a>",
+              "type": [
+                "string",
+                "null"
+              ],
+              "examples": [
+                "00"
+              ]
+            },
+            "report_date": {
+              "title": "Report date",
+              "type": [
+                "string",
+                "null"
+              ],
+              "examples": [
+                "2022-01-01"
+              ]
+            },
+            "sub_type": {
+              "title": "Sub type",
+              "description": "<a href='https://developer.mastercard.com/fld-fraud-submission/documentation/parameters/annexure-1/#table-2-fraud-sub-type-codes' target='_blank'>Sub type (link)</a>",
+              "type": [
+                "string",
+                "null"
+              ],
+              "examples": [
+                "K"
+              ]
+            }
+          },
+          "examples": [
+            {
+              "acct_status": "done",
+              "chgbk_indicator": "1",
+              "cvc_invalid_indicator": "1",
+              "device_type": "1",
+              "fraud_type": "00",
+              "report_date": "2022-01-01",
+              "sub_type": "k"
+            }
+          ]
+        },
+        "fraud_report_network_id": {
+          "title": "Fraud report network ID",
+          "description": "Fraud report network ID",
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ],
+          "examples": [
+            123
+          ]
+        },
+        "created_at": {
+          "title": "Created at date/time",
+          "description": "Created at date/time",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "2022-01-01 11:11:11"
+          ]
+        },
+        "updated_at": {
+          "title": "Updated at date/time",
+          "description": "Updated at date/time",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "2022-01-01 22:11:11"
+          ]
+        },
+        "comment_network": {
+          "title": "Network comment",
+          "description": "Network comment",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            "Comment here"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "fraud_report_id": 123,
+          "status": "PENDING",
+          "network_brand_type": "Mastercard",
+          "report": {
+            "acct_status": "ACCT_IS_OPEN",
+            "chgbk_indicator": "1",
+            "cvc_invalid_indicator": "1",
+            "device_type": "1",
+            "fraud_type": "00",
+            "report_date": "2021-02-11",
+            "sub_type": "K"
+          },
+          "fraud_report_network_id": 123,
+          "created_at": "2022-01-01 11:11:11",
+          "updated_at": "2022-01-01 22:11:11",
+          "comment_network": "Comment here"
+        }
+      ],
+      "additionalProperties": false
+    },
+    "fraud_type": {
+      "$id": "#/properties/fraud_type",
+      "title": "Fraud type enum",
+      "description": "Fraud type enums - VISA, reason code 10",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "A",
+        "B",
+        "C",
+        "D",
+        null
+      ]
+    },
+    "document_indicator": {
+      "$id": "#/properties/document_indicator",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Document indicator flag",
+      "description": "Document submission indicator to Network Elo",
+      "default": true,
+      "enum": [
+        true,
+        false,
+        null
+      ]
+    },
+    "network_response": {
+      "$id": "#/properties/network_response",
+      "title": "Network response",
+      "description": "Network response object",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "title": "ID",
+            "description": "Object ID",
+            "type": [
+              "integer",
+              "null"
+            ],
+            "default": 0,
+            "examples": [
+              123
+            ]
+          },
+          "dispute_id": {
+            "title": "Dispute ID",
+            "description": "Pismo dispute ID",
+            "type": [
+              "integer",
+              "null"
+            ],
+            "default": 0,
+            "examples": [
+              1234
+            ]
+          },
+          "dispute_installment_id": {
+            "title": "Dispute installment ID",
+            "description": "Pismo dispute installment ID",
+            "type": [
+              "integer",
+              "null"
+            ],
+            "default": 0,
+            "examples": [
+              4321
+            ]
+          },
+          "claim_id": {
+            "title": "Claim ID",
+            "description": "Claim ID",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": "",
+            "examples": [
+              "1345"
+            ]
+          },
+          "chargeback_id": {
+            "title": "Chargeback ID",
+            "description": "Chargeback ID",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": "",
+            "examples": [
+              "234aa234jal"
+            ]
+          },
+          "reason_code": {
+            "title": "Reason code",
+            "description": "Reason code",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": "",
+            "examples": [
+              "22"
+            ]
+          },
+          "response_error": {
+            "title": "Response error",
+            "description": "Response error",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": "",
+            "examples": [
+              "Error created"
+            ]
+          },
+          "reject_reason": {
+            "title": "Reject reason",
+            "description": "Reject reason",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": "",
+            "examples": [
+              "123"
+            ]
+          }
+        }
+      }
+    },
+    "network_response_amount": {
+      "$id": "#/properties/network_response_amount",
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Network response amount",
+      "description": "Network response amount",
+      "examples": [
+        1234
+      ]
+    },
+    "network_response_currency": {
+      "$id": "#/properties/network_response_currency",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Network response currency",
+      "description": "Network response currency",
+      "examples": [
+        "USD"
+      ]
+    },
+    "network_status": {
+      "$id": "#/properties/network_status",
+      "title": "Dispute network status",
+      "description": "Dispute network status",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "Authorization Dispute - Accepted by Acq"
+      ]
+    },
+    "pre_arb_master": {
+      "$id": "#/properties/pre_arb_master",
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Pre-arbitration Mastercard object",
+      "description": "Pre-arbitration Mastercard object",
+      "examples": [
+        {
+          "pre_arbitration_response_id": 4,
+          "memo": "This is a test memo",
+          "updated_chargeback_reason_code": 2,
+          "merchant_name": "MERCHANT",
+          "filing_ica": "001234",
+          "change_reason_code_reason": "4863",
+          "case_network_response": "Ok",
+          "dispute_amount": 100.0,
+          "currency_code": "USD",
+          "change_reason_code_flag": "Y",
+          "acquirer_ref_num": "05131054165000000048149",
+          "chargeback_reason_code": "4863"
+        }
+      ],
+      "properties": {
+        "pre_arbitration_response_id": {
+          "$id": "#/properties/pre_arb_master/properties/pre_arbitration_response_id",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Pre arbitration response ID",
+          "description": "Pre arbitration response ID",
+          "examples": [
+            48890
+          ]
+        },
+        "pre_arbitration_id": {
+          "$id": "#/properties/pre_arb_master/properties/pre_arbitration_id",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Pre arbitration ID",
+          "description": "Pre arbitration ID"
+        },
+        "memo": {
+          "$id": "#/properties/pre_arb_master/properties/memo",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Pre-arbitration memo ",
+          "description": "Pre-arbitration memo ",
+          "examples": [
+            "Example memo - 13000 chars max"
+          ]
+        },
+        "updated_chargeback_reason_code": {
+          "$id": "#/properties/pre_arb_master/properties/updated_chargeback_reason_code",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Updated chargeback reason",
+          "description": "Updated chargeback reason",
+          "examples": [
+            2
+          ]
+        },
+        "merchant_name": {
+          "$id": "#/properties/pre_arb_master/properties/merchant_name",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Merchant name",
+          "description": "Merchant name",
+          "examples": [
+            "Acme Goods"
+          ]
+        },
+        "acquiring_institution_code": {
+          "$id": "#/properties/pre_arb_master/properties/acquiring_institution_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Acquiring institution code",
+          "description": "Acquiring institution code"
+        },
+        "filing_ica": {
+          "$id": "#/properties/pre_arb_master/properties/filing_ica",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Filing ICA ",
+          "description": "Filing ICA ",
+          "examples": [
+            "001234"
+          ]
+        },
+        "change_reason_code_reason": {
+          "$id": "#/properties/pre_arb_master/properties/change_reason_code_reason",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Change reason code reason",
+          "description": "Change reason code reason",
+          "examples": [
+            "4863"
+          ]
+        },
+        "case_network_response": {
+          "$id": "#/properties/pre_arb_master/properties/case_network_response",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Case network response",
+          "description": "Case network response",
+          "examples": [
+            "Ok"
+          ]
+        },
+        "dispute_amount": {
+          "$id": "#/properties/pre_arb_master/properties/dispute_amount",
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Disputed amount",
+          "description": "Disputed amount",
+          "examples": [
+            "100.0"
+          ]
+        },
+        "currency_code": {
+          "$id": "#/properties/pre_arb_master/properties/currency_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "ISO currency code",
+          "description": "ISO currency code",
+          "examples": [
+            "USD"
+          ]
+        },
+        "currency_code_request": {
+          "$id": "#/properties/pre_arb_master/properties/currency_code_request",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Currency code request",
+          "description": "Currency code request"
+        },
+        "currency_code_response": {
+          "$id": "#/properties/pre_arb_master/properties/currency_code_response",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Currency code response",
+          "description": "Currency code response"
+        },
+        "change_reason_code_flag": {
+          "$id": "#/properties/pre_arb_master/properties/change_reason_code_flag",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Change reason code flag",
+          "description": "Change reason code flag",
+          "examples": [
+            "Y"
+          ]
+        },
+        "acquirer_ref_num": {
+          "$id": "#/properties/pre_arb_master/properties/acquirer_ref_num",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Acquirer reference number (ARN)",
+          "description": "Acquirer reference number (ARN)",
+          "examples": [
+            "05131054165000000048149"
+          ]
+        },
+        "chargeback_reason_code": {
+          "$id": "#/properties/pre_arb_master/properties/chargeback_reason_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Chargeback reason code",
+          "description": "Chargeback reason code",
+          "examples": [
+            "4863"
+          ]
+        },
+        "is_partial": {
+          "$id": "#/properties/pre_arb_master/properties/is_partial",
+          "type": [
+            "string",
+            "null",
+            "boolean"
+          ],
+          "title": "Is partial amount flag",
+          "description": "Is partial amount flag"
+        },
+        "amount_request": {
+          "$id": "#/properties/pre_arb_master/properties/amount_request",
+          "type": [
+            "string",
+            "null",
+            "number"
+          ],
+          "title": "Amount request",
+          "description": "Amount request"
+        },
+        "amount_response": {
+          "$id": "#/properties/pre_arb_master/properties/amount_response",
+          "type": [
+            "string",
+            "null",
+            "number"
+          ],
+          "title": "Amount response",
+          "description": "Amount response"
+        },
+        "justify_not_accepted_fully": {
+          "$id": "#/properties/pre_arb_master/properties/justify_not_accepted_fully",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Justify not accepted fully",
+          "description": "Justify not accepted fully"
+        },
+        "network_pre_arbitration_id": {
+          "$id": "#/properties/pre_arb_master/properties/network_pre_arbitration_id",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Network pre-arbitration ID",
+          "description": "Network pre-arbitration ID"
+        },
+        "acquirer_memo": {
+          "$id": "#/properties/pre_arb_master/properties/acquirer_memo",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Acquirer memo",
+          "description": "Acquirer memo"
+        },
+        "action": {
+          "$id": "#/properties/pre_arb_master/properties/action",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Action",
+          "description": "Action"
+        },
+        "response_date": {
+          "$id": "#/properties/pre_arb_master/properties/response_date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Response date",
+          "description": "Response date"
+        }
+      },
+      "additionalProperties": true
+    },
+    "pre_arbitration": {
+      "$id": "#/properties/pre_arbitration",
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Pre-arbitration for Mastercard object",
+      "description": "Pre-arbitration for Mastercard object",
+      "examples": [
+        {
+          "pre_arbitration_id": 44958,
+          "memo": "This is a test memo",
+          "updated_chargeback_reason_code": 2,
+          "merchant_name": "MERCHANT",
+          "filing_ica": "001234",
+          "change_reason_code_reason": "4863",
+          "case_network_response": "Ok",
+          "dispute_amount": 100.0,
+          "change_reason_code_flag": "Y",
+          "network_pre_arbitration_id": "47575939",
+          "acquirer_memo": "Memo from acquirer",
+          "acquirer_ref_num": "05131054165000000048149",
+          "chargeback_reason_code": "4863",
+          "currency_code_response": null,
+          "currency_code_request": null,
+          "is_partial": "1",
+          "amount_request": "4",
+          "amount_response": null,
+          "justify_not_accepted_fully": "1",
+          "action": "REJECT",
+          "response_date": "2021-02-14"
+        }
+      ],
+      "properties": {
+        "pre_arbitration_id": {
+          "$id": "#/properties/pre_arbitration/properties/pre_arbitration_id",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Pre arbitration ID",
+          "description": "Pre arbitration ID",
+          "examples": [
+            488900
+          ]
+        },
+        "acquirer_memo": {
+          "$id": "#/properties/acquirer_memo",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Acquirer memo",
+          "description": "Acquirer memo",
+          "examples": [
+            null,
+            "Memo from acquirer about this dispute"
+          ]
+        },
+        "memo": {
+          "$id": "#/properties/pre_arbitration/properties/memo",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Pre-arbitration memo",
+          "description": "Pre-arbitration memo",
+          "examples": [
+            "Sample memo"
+          ]
+        },
+        "network_pre_arbitration_id": {
+          "$id": "#/properties/network_pre_arbitration_id",
+          "title": "Network pre-arbitration ID",
+          "description": "Network created pre-arbitration ID",
+          "type": [
+            "string",
+            "null"
+          ],
+          "examples": [
+            null,
+            "6789033989"
+          ]
+        },
+        "updated_chargeback_reason_code": {
+          "$id": "#/properties/pre_arbitration/properties/updated_chargeback_reason_code",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Updated chargeback reason code",
+          "description": "Updated chargeback reason code",
+          "examples": [
+            2
+          ]
+        },
+        "merchant_name": {
+          "$id": "#/properties/pre_arbitration/properties/merchant_name",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Merchant name",
+          "description": "Merchant name",
+          "examples": [
+            "Acme Goods"
+          ]
+        },
+        "filing_ica": {
+          "$id": "#/properties/pre_arbitration/properties/filing_ica",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "ICA filing",
+          "description": "ICA filing",
+          "examples": [
+            "001234"
+          ]
+        },
+        "change_reason_code_reason": {
+          "$id": "#/properties/pre_arbitration/properties/change_reason_code_reason",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Change reason code reason",
+          "description": "Change reason code reason",
+          "examples": [
+            "4863"
+          ]
+        },
+        "case_network_response": {
+          "$id": "#/properties/pre_arbitration/properties/case_network_response",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Case network response",
+          "description": "Case network response",
+          "examples": [
+            "Ok"
+          ]
+        },
+        "dispute_amount": {
+          "$id": "#/properties/pre_arbitration/properties/dispute_amount",
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Dispute amount",
+          "description": "Dispute amount",
+          "examples": [
+            "100.0"
+          ]
+        },
+        "currency_code": {
+          "$id": "#/properties/pre_arbitration/properties/currency_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Currency code",
+          "description": "ISO currency code",
+          "examples": [
+            "USD"
+          ]
+        },
+        "change_reason_code_flag": {
+          "$id": "#/properties/pre_arbitration/properties/change_reason_code_flag",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Change reason code flag",
+          "description": "Change reason code flag",
+          "examples": [
+            "Y"
+          ]
+        },
+        "acquiring_institution_code": {
+          "$id": "#/properties/pre_arbitration/properties/acquiring_institution_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Acquiring institution code",
+          "description": "Acquiring institution code"
+        },
+        "acquirer_ref_num": {
+          "$id": "#/properties/pre_arbitration/properties/acquirer_ref_num",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Acquirer reference number",
+          "description": "Acquirer reference number",
+          "examples": [
+            "05131054165000000048149"
+          ]
+        },
+        "chargeback_reason_code": {
+          "$id": "#/properties/pre_arbitration/properties/chargeback_reason_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Chargeback reason code",
+          "description": "Chargeback reason code for pre-arbitration",
+          "examples": [
+            "4863"
+          ]
+        },
+        "currency_code_request": {
+          "$id": "#/properties/pre_arbitration/properties/currency_code_request",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Currency code request",
+          "description": "Currency code request for pre-arbitration",
+          "examples": [
+            "USD"
+          ]
+        },
+        "currency_code_response": {
+          "$id": "#/properties/pre_arbitration/properties/currency_code_response",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Currency code response",
+          "description": "Currency code response for pre-arbitration",
+          "examples": [
+            "USD"
+          ]
+        },
+        "is_partial": {
+          "$id": "#/properties/pre_arbitration/properties/is_partial",
+          "type": [
+            "string",
+            "null",
+            "boolean"
+          ],
+          "title": "Is partial amount flag",
+          "description": "Is partial amount for pre-arbitration flag",
+          "examples": [
+            "1"
+          ]
+        },
+        "amount_request": {
+          "$id": "#/properties/pre_arbitration/properties/amount_request",
+          "type": [
+            "string",
+            "null",
+            "number"
+          ],
+          "title": "Amount request pre_arbitration schema",
+          "description": "Amount request for pre-arbitration",
+          "examples": [
+            "3"
+          ]
+        },
+        "amount_response": {
+          "$id": "#/properties/pre_arbitration/properties/amount_response",
+          "type": [
+            "string",
+            "null",
+            "number"
+          ],
+          "title": "Amount response pre-arbitration",
+          "description": "Amount response for pre_arbitration",
+          "examples": [
+            "3.2"
+          ]
+        },
+        "justify_not_accepted_fully": {
+          "$id": "#/properties/pre_arbitration/properties/justify_not_accepted_fully",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Justify not accepting full amount for pre_arbitration",
+          "description": "Explanation for not accepting the full amount for pre-arbitration",
+          "examples": [
+            "Ipsum loren"
+          ]
+        },
+        "action": {
+          "$id": "#/properties/pre_arbitration/properties/action",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Pre-arbitration action",
+          "description": "Action taken on the pre-arbitration response",
+          "examples": [
+            null,
+            "REJECT"
+          ]
+        },
+        "response_date": {
+          "$id": "#/properties/pre_arbitration/properties/response_date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Pre-arbitration response date",
+          "description": "Date of the pre-arbitration response",
+          "examples": [
+            null,
+            "2021-02-14"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "reversal_reason": {
+      "$id": "#/properties/reversal_reason",
+      "title": "Visa network reversal reason",
+      "description": "Visa network reversal reason",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "Reason to do a network reversal dispute"
+      ]
+    },
+    "transaction_id": {
+      "$id": "#/properties/transaction_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Transaction ID",
+      "description": "Transaction ID",
+      "examples": [
+        null,
+        "TI:RL4RGMZY4rIo2Ce2lOa7NGKqasEwvWoxPv04yG2gC4bLQhewMvJL5h2l0PZkx4DHD7JPe03jv5tKR0lFSsIN6PtBbuqtLaQMwOkw64p_xRs=#"
+      ]
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123456789
+      ]
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID",
+      "examples": [
+        123456789
+      ]
+    },
+    "internal_transaction_id": {
+      "$id": "#/properties/internal_transaction_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Internal transaction ID",
+      "description": "Pismo transaction ID",
+      "examples": [
+        123456789
+      ]
+    },
+    "tracking_id": {
+      "$id": "#/properties/tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Tracking ID",
+      "description": "Pismo authorization tracking ID",
+      "examples": [
+        null,
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "network_brand_type": {
+      "$id": "#/properties/network_brand_type",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Network Brand Type",
+      "description": "Network brand",
+      "examples": [
+        null,
+        "Mastercard",
+        "Visa",
+        "Elo"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

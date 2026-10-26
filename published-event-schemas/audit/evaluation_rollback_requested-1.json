@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Evaluation rollback request created",
+  "description": "This event occurs asynchronously when the platform completes a rollback request of the flex control evaluation. The event only contains the ID of the original flex control evaluation request.<br>More information: <a href='https://developers.pismo.io/pismo-docs/docs/flex-controls' target='_blank'>Flexible transaction controls</a>",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of address register operation",
+      "examples": [
+        "DELETE"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of address register operation",
+      "examples": [
+        "/v1/evaluation/:evaluationId"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator that registered address",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "The roles of operator that registered address",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of address register operation",
+      "examples": [
+        "P2P",
+        "PAYMENTS"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The Evaluation rollback request",
+      "required": [
+        "evaluation_id"
+      ],
+      "properties": {
+        "evaluation_id": {
+          "examples": [
+            "7ce8e003-5aaf-45c3-8c89-dbb9fa8c991c"
+          ],
+          "title": "The evaluationId is the CID used by POST /v1/evaluation.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

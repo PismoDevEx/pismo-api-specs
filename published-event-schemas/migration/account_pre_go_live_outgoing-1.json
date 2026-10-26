@@ -1,0 +1,385 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/account_pre_go_live_outgoing-1.json",
+  "type": "object",
+  "title": "Pre go-live migration completed",
+  "description": "Event generated when the Pre go-live migration for an account finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "examples": [
+    {
+      "operation": "UPDATE",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Account pre go-live processed with success!",
+      "migration": {
+        "id": "0175ae33-aac4-4ac5-9b0a-55710688d669",
+        "phase_id": "Rollout_Jan2024"
+      },
+      "entity": {
+        "account_id": 182991011,
+        "program_due_date_id": 25701,
+        "current_cycle": 1,
+        "open_due_date": "2021-08-21",
+        "collection_status": "NORMAL",
+        "transaction_balances": [
+          {
+            "type": "BILLED",
+            "credits": 0.0,
+            "debits": 0.0
+          },
+          {
+            "type": "TO_BE_BILLED",
+            "credits": 0.0,
+            "debits": 0.0
+          },
+          {
+            "type": "INSTALLMENTS",
+            "credits": 0.0,
+            "debits": 0.0
+          },
+          {
+            "type": "BALANCE_CONTROL",
+            "credits": 0.0,
+            "debits": 0.0
+          }
+        ],
+        "pending_accruals": [
+          {
+            "type": "REFINANCING",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 0.0
+          },
+          {
+            "type": "IOF",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 0.0
+          },
+          {
+            "type": "FIXED_IOF",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 0.0
+          },
+          {
+            "type": "OVERDUE",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 0.0
+          },
+          {
+            "type": "FINE",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 0.0
+          }
+        ],
+        "projected_accruals": [
+          {
+            "type": "REFINANCING",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 1.0
+          },
+          {
+            "type": "IOF",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 0.0
+          },
+          {
+            "type": "OVERDUE",
+            "begin_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "quantity": 123,
+            "amount": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "operation": "UNKNOWN",
+      "status": "FAIL",
+      "code": "MIGR-0113",
+      "message": "Validation Error. The migration status NOT_MIGRATE from Account is not valid to proceed.",
+      "migration": {
+        "id": "another-migration-id"
+      }
+    }
+  ],
+  "required": [
+    "code",
+    "message",
+    "migration",
+    "status"
+  ],
+  "properties": {
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "The code of message for systems",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "description": "Freeform description of success or error results",
+      "examples": [
+        "Account pre go-live processed with success!",
+        "Balance Control Migration not found for account."
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "description": "Identifier sent on start of migration process",
+      "examples": [
+        {
+          "id": "migration-id"
+        }
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "description": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "phase_id": {
+          "$id": "#/properties/migration/properties/phase_id",
+          "type": "string",
+          "description": "Identifies migration phase",
+          "examples": [
+            "Rollout_Jan2024"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the result of the Pre Go-Live for the account was a success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "The kind of operation executed during the pre go-live, or UNKNOWN if the process errored out before it could be determined",
+      "enum": [
+        "UPDATE",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "UPDATE",
+        "UNKNOWN"
+      ]
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Migration result entity",
+      "description": "Entity containing relevant results of a successful migration, for validation",
+      "properties": {
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "integer",
+          "title": "Account Identifier",
+          "description": "Account identifier",
+          "examples": [
+            182991011
+          ]
+        },
+        "program_due_date_id": {
+          "$id": "#/properties/entity/properties/program_due_date_id",
+          "type": "integer",
+          "title": "Due date Identifier",
+          "description": "Identifier for the account due date on the program to which the account belongs",
+          "examples": [
+            25701
+          ]
+        },
+        "current_cycle": {
+          "$id": "#/properties/entity/properties/current_cycle",
+          "type": "integer",
+          "title": "Current statement cycle",
+          "description": "Current statement cycle for the account after the pre go-live process",
+          "examples": [
+            1,
+            12,
+            98
+          ]
+        },
+        "open_due_date": {
+          "$id": "#/properties/entity/properties/open_due_date",
+          "type": "string",
+          "description": "Open Due Date",
+          "examples": [
+            "2023-07-01"
+          ]
+        },
+        "collection_status": {
+          "$id": "#/properties/entity/properties/collection_status",
+          "type": "string",
+          "title": "Account overdue status",
+          "examples": [
+            "NORMAL",
+            "OVERDUE"
+          ]
+        },
+        "transaction_balances": {
+          "$id": "#/properties/entity/properties/transaction_balances",
+          "type": "array",
+          "title": "Transaction balances per migration type",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "examples": [
+                  "BILLED",
+                  "TO_BE_BILLED",
+                  "INSTALLMENTS",
+                  "BALANCE_CONTROL"
+                ]
+              },
+              "credits": {
+                "type": "number",
+                "examples": [
+                  0.0,
+                  1.99
+                ]
+              },
+              "debits": {
+                "type": "number",
+                "examples": [
+                  54.4,
+                  20.99
+                ]
+              }
+            }
+          }
+        },
+        "pending_accruals": {
+          "$id": "#/properties/entity/properties/pending_accruals",
+          "title": "Pending accrual amounts per type",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "examples": [
+                  "REFINANCING",
+                  "IOF",
+                  "FIXED_IOF",
+                  "OVERDUE",
+                  "FINE"
+                ]
+              },
+              "begin_date": {
+                "type": "string",
+                "format": "date",
+                "examples": [
+                  "2024-01-01"
+                ]
+              },
+              "end_date": {
+                "type": "string",
+                "format": "date",
+                "examples": [
+                  "2024-01-01"
+                ]
+              },
+              "quantity": {
+                "type": "number",
+                "examples": [
+                  0,
+                  123
+                ]
+              },
+              "amount": {
+                "type": "number",
+                "examples": [
+                  0.0,
+                  19.99
+                ]
+              }
+            }
+          }
+        },
+        "projected_accruals": {
+          "$id": "#/properties/entity/properties/projected_accruals",
+          "title": "Projected accrual amounts per type",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "examples": [
+                  "REFINANCING",
+                  "IOF",
+                  "OVERDUE"
+                ]
+              },
+              "begin_date": {
+                "type": "string",
+                "format": "date",
+                "examples": [
+                  "2024-01-01"
+                ]
+              },
+              "end_date": {
+                "type": "string",
+                "format": "date",
+                "examples": [
+                  "2024-01-01"
+                ]
+              },
+              "quantity": {
+                "type": "number",
+                "examples": [
+                  0,
+                  123
+                ]
+              },
+              "amount": {
+                "type": "number",
+                "examples": [
+                  0.0,
+                  19.99
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Validate invoice request failed",
+  "description": "Request to validate invoice failure event. The <a href='https://developers.pismo.io/pismo-docs/reference/findbyaccesskey' target='_blank'>Get invoice</a> endpoint generates this event.",
+  "required": [
+    "message",
+    "access_key"
+  ],
+  "properties": {
+    "access_key": {
+      "type": "string",
+      "title": "Access key",
+      "description": "Access yey identifier",
+      "examples": [
+        "access-key"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Message about validating invoice request failure",
+      "examples": [
+        "B3 service unavailable"
+      ]
+    }
+  }
+}

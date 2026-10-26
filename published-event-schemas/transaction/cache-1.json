@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "First page created",
+  "description": "This event occurs when the first transaction cache page is available.",
+  "required": [
+    "account_id",
+    "endpoint",
+    "key",
+    "page_size",
+    "status"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Caching operation account ID.",
+      "examples": [
+        24141240,
+        24141241
+      ]
+    },
+    "endpoint": {
+      "type": "string",
+      "title": "Endpoint",
+      "description": "Initial request endpoint reference.",
+      "examples": [
+        "/some/path"
+      ]
+    },
+    "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "Auto-generated cache key.",
+      "examples": [
+        "bb3b8d8c7860bd645273861e009efcb7ce226cb3",
+        "396ac2a33748bb784077f4112335faa073861e00"
+      ]
+    },
+    "page_size": {
+      "type": "integer",
+      "title": "Page size",
+      "min": "1",
+      "description": "Max transactions per page.",
+      "examples": [
+        1000,
+        2000
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Current cache operation status.",
+      "enum": [
+        "AVAILABLE",
+        "FINISHED",
+        "FAILED"
+      ],
+      "examples": [
+        "AVAILABLE",
+        "FINISHED",
+        "FAILED"
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Quota status changed",
+  "description": "This event occurs when a quota's status changes",
+  "required": [
+    "external_quota_id",
+    "external_asset_id",
+    "issuer_id",
+    "status"
+  ],
+  "properties": {
+    "external_quota_id": {
+      "type": "string",
+      "title": "External Quota ID",
+      "description": "Unique quota identifier defined by client",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "external_asset_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External asset ID",
+      "description": "Unique asset identifier defined by Pismo",
+      "examples": [
+        "kxBHNMCAYDnQav"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Quota status",
+      "description": "Status of quota",
+      "enum": [
+        "REDEEMED"
+      ]
+    }
+  }
+}

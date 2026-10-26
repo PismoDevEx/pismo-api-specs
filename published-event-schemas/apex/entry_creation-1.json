@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Accounting entry created [beta]",
+  "description": "This event occurs when the platform creates an accounting entry based on the accounting script configuration. This event includes a required `external_account_id` field.",
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Pismo account ID",
+      "examples": [
+        1000001
+      ]
+    },
+    "accounting_entry_id": {
+      "type": "integer",
+      "description": "Unique ID of the accounting entry",
+      "examples": [
+        15335085
+      ]
+    },
+    "accounting_event_id": {
+      "type": "integer",
+      "description": "Event ID of the accounting entry",
+      "examples": [
+        15335085
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "description": "Total amount of the accounting entry",
+      "examples": [
+        240.48
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Creation date and time of the accounting entry in ISO 8601 format, including an explicit UTC offset. The offset is a constant -03:00 (America/Recife, which does not observe daylight saving time) and is the same across all environments and datacenters.",
+      "format": "date-time",
+      "examples": [
+        "2020-07-06T05:09:33-03:00"
+      ]
+    },
+    "credit_account": {
+      "type": "string",
+      "description": "Credit account of the accounting entry",
+      "examples": [
+        1000003
+      ]
+    },
+    "credit_cost_center": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Credit cost center of the accounting entry",
+      "examples": [
+        2000003
+      ]
+    },
+    "debit_account": {
+      "type": "string",
+      "description": "Debit account of the accounting entry",
+      "examples": [
+        1000002
+      ]
+    },
+    "debit_cost_center": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Debit cost center of the accounting entry",
+      "examples": [
+        2000003
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the accounting entry",
+      "examples": [
+        "ENCARGOS ROTATIVO"
+      ]
+    },
+    "entry_type_id": {
+      "type": "integer",
+      "description": "Entry type of the accounting entry",
+      "examples": [
+        2020
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "description": "Event date in ISO 8601 (yyyy-mm-dd)",
+      "format": "date",
+      "examples": [
+        "2020-07-06"
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External account ID",
+      "description": "Custom account ID used to identify the account within your organization. This value links the Pismo account to your internal account identifier. This field is a key that links a Pismo account to your account ID.",
+      "examples": [
+        "df8d5b61-3cc0-4ec1-a72d-61860bff8fed"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID of the accounting entry",
+      "examples": [
+        252
+      ]
+    },
+    "transaction_id": {
+      "type": "integer",
+      "description": "Transaction ID of the accounting entry",
+      "examples": [
+        15335085
+      ]
+    },
+    "authorization_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Authorization date in ISO 8601 (yyyy-mm-dd)",
+      "format": "date",
+      "examples": [
+        "2020-07-06"
+      ]
+    },
+    "installment_number": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Sequential number that represents the order of the installment. The ordering starts with 1.",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "examples": [
+        1,
+        12
+      ]
+    }
+  },
+  "required": [
+    "account_id",
+    "accounting_entry_id",
+    "accounting_event_id",
+    "amount",
+    "created_at",
+    "credit_account",
+    "credit_cost_center",
+    "debit_account",
+    "debit_cost_center",
+    "description",
+    "entry_type_id",
+    "event_date",
+    "external_account_id",
+    "program_id",
+    "transaction_id"
+  ]
+}

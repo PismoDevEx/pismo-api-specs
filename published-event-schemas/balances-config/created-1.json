@@ -1,0 +1,352 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Balance configuration created",
+  "description": "This event occurs when a balance configuration is created. Create a balance configuration in Pismo Control Center or using the <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-balances-config-1' target='_blank'>Create balance configuration</a> endpoint.",
+  "properties": {
+    "level": {
+      "type": "string",
+      "enum": [
+        "tenant",
+        "program",
+        "account"
+      ],
+      "description": "Level to apply the balance configuration. (Note: `tenant` indicates an organization.) If `level` is `tenant`, the org ID is parsed from the access token. You can implement the following operations for all levels: <br>* Impact different balances. <br>* Define the amount to impact balance. <br>* Validate different balances or limits. <br>* Define the amount to validate. <br>* Define when the limit will be reset. <br><br>On the account level, two additional features are available: <br>* Impact a related account. <br>* Define a counterpart account.",
+      "example": "program"
+    },
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID. **REQUIRED** if `level` is `program`.",
+      "example": 999
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID. **REQUIRED** if `level` is `account`.",
+      "example": 999
+    },
+    "configs": {
+      "type": "array",
+      "description": "Array of balance configurations.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Configuration name.",
+            "maxLength": 50,
+            "example": "Config-multiple-accounts"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Is this configuration active?",
+            "example": true
+          },
+          "filters": {
+            "description": "Object that determines the transaction filtering criteria. Can be either a filter template reference or a full filter definition.",
+            "oneOf": [
+              {
+                "type": "object",
+                "description": "Full filter definition with specific criteria",
+                "properties": {
+                  "processing_codes": {
+                    "type": "array",
+                    "description": "Code that defines how the Pismo platform handles a certain financial operation type. For more information, refer to [Processing codes and transaction types](doc:processing-codes-and-transaction-types).",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "01",
+                      "03"
+                    ]
+                  },
+                  "min_installments": {
+                    "type": "integer",
+                    "description": "Minimum number of installments to validate",
+                    "example": 1
+                  },
+                  "max_installments": {
+                    "type": "integer",
+                    "description": "Maximum number of installments to validate",
+                    "example": 12
+                  },
+                  "mcc": {
+                    "type": "array",
+                    "description": "Merchant category codes to validate",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "1234",
+                      "2626"
+                    ]
+                  },
+                  "account_type": {
+                    "type": "string",
+                    "description": "Account type that impacts limit or different account. Account types: <br>\"00\" = Non-specified account <br>\"10\" = Savings account <br>\"20\" = Checking account <br>\"30\" = Credit card account",
+                    "enum": [
+                      "00",
+                      "10",
+                      "20",
+                      "30"
+                    ],
+                    "example": "00"
+                  },
+                  "currency_code": {
+                    "type": "string",
+                    "description": "Alphanumeric ISO 4217 standard currency code that impacts different limits or accounts",
+                    "minLength": 3,
+                    "maxLength": 3,
+                    "example": "USD"
+                  }
+                },
+                "required": [
+                  "processing_codes"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "Reference to a filter template",
+                "properties": {
+                  "filter_template_id": {
+                    "type": "string",
+                    "description": "Filter template ID",
+                    "example": "filter-1"
+                  }
+                },
+                "required": [
+                  "filter_template_id"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "scenarios": {
+            "type": "array",
+            "description": "Balance configuration scenarios. Scenarios determine how the evaluated transactions impact balances and limits.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "condition": {
+                  "type": "object",
+                  "description": "Evaluated condition.",
+                  "properties": {
+                    "order": {
+                      "type": "integer",
+                      "description": "Condition priority order. The lower the number, the higher the priority.",
+                      "example": 1
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Condition type: `default` or `custom`. `custom` allows for available balance or limit validation, `default` does not. If `default` is used, the `consider` field is not used to validate. The validation stops when `default` is used.",
+                      "enum": [
+                        "default",
+                        "custom"
+                      ],
+                      "example": "custom"
+                    },
+                    "amount_to_check_balance": {
+                      "type": "string",
+                      "description": "Amount to check for available balance: `amount` or `installment_amount`. `amount` is the principal amount. This field is **REQUIRED** if `type` is `custom`.",
+                      "enum": [
+                        "amount",
+                        "installment_amount"
+                      ],
+                      "example": "amount"
+                    }
+                  },
+                  "required": [
+                    "order",
+                    "type"
+                  ]
+                },
+                "result": {
+                  "type": "object",
+                  "description": "Expected result described at evaluated conditions.",
+                  "properties": {
+                    "amount": {
+                      "type": "string",
+                      "description": "Amount used to credit or debit the account balances or limits. * `principal_amount`: Original amount, excluding any interest or fees. <br>* `contract_amount`: Final amount, including any interest or fees. <br>* `installment_amount`: Amount of each portion of an installment plan.",
+                      "enum": [
+                        "principal_amount",
+                        "contract_amount",
+                        "installment_amount"
+                      ],
+                      "example": "contract_amount"
+                    },
+                    "impact": {
+                      "type": "array",
+                      "description": "Limits or balances impacted. <br>* `AvailableCreditLimit`: Balance or limit available to the customer. Applicable to debit or credit accounts. <br>* `AvailableTotalInstallmentCredit`: Limit available for installments in the account. Applicable to debit or credit accounts. <br>* `AvailableWithdrawalCredit`: Available withdrawal limit specifically for the credit card. Applicable to credit accounts. <br>* `AvailableSavingsAccountLimit`: Savings balance available in the account. Applicable to debit accounts. <br>* `AdditionalFunds`: Additional funds represent funds that can be used as supplementary when needed and are available to credit limit, held funds, or other funds. Applicable to debit accounts. <br>* `HeldFunds`: Funds held or blocked on the account. Applicable to debit accounts.",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "AvailableCreditLimit",
+                          "AvailableTotalInstallmentCredit",
+                          "AvailableWithdrawalCredit",
+                          "AvailableSavingsAccountLimit",
+                          "AdditionalFunds",
+                          "HeldFunds"
+                        ]
+                      },
+                      "example": [
+                        "AvailableCreditLimit"
+                      ]
+                    },
+                    "consider": {
+                      "type": "array",
+                      "description": "Limits or balances summed for authorization. If `type` = `custom`: <br>* The sum is validated against `amount_to_check_balance`. <br>* If this field is not passed, what's in `impact` is summed instead and used for validation. If `type` = `default`: <br>* This object is ignored and no validation is done. <br>* Since no validation is done, `impact` is not used instead if this object is not passed.",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "AvailableCreditLimit",
+                          "OverLimit",
+                          "AvailableSavingsAccountLimit",
+                          "AvailableWithdrawalCredit",
+                          "AvailableTotalInstallmentCredit"
+                        ]
+                      },
+                      "example": [
+                        "OverLimit",
+                        "AvailableCreditLimit"
+                      ]
+                    },
+                    "amount_consider": {
+                      "type": "string",
+                      "description": "Amount considered to validate whether the account has sufficient limit or balance. <br>* `principal_amount`: Original amount, excluding any interest or fees. <br>* `contract_amount`: Final amount, including any interest or fees. <br>* `installment_amount`: Amount of each portion of an installment plan.",
+                      "enum": [
+                        "principal_amount",
+                        "contract_amount",
+                        "installment_amount"
+                      ],
+                      "example": "principal_amount"
+                    },
+                    "reset_limit": {
+                      "type": "string",
+                      "description": "Indicates when the limit resets. <br>* `never`: Limit referenced in the authorization is never reset. <br>* `payment`: Limit resets when the client pays the credit card bill. <br>* `last_installment`: Limit resets after last customer installment payment.",
+                      "enum": [
+                        "never",
+                        "payment",
+                        "last_installment"
+                      ],
+                      "example": "never"
+                    },
+                    "impact_account": {
+                      "type": "object",
+                      "description": "Impacted account with credit or debit applied. `impact_account` must be related to the principal account. Only available for account-level configurations. For more information, refer to [Related accounts](doc:related-accounts).",
+                      "properties": {
+                        "account_id": {
+                          "type": "integer",
+                          "description": "Account ID.",
+                          "example": 1234
+                        },
+                        "customer_id": {
+                          "type": "integer",
+                          "description": "Impacted customer ID.",
+                          "example": 5678
+                        }
+                      }
+                    },
+                    "counterpart_account": {
+                      "type": "object",
+                      "description": "This counterpart account must be related to the principal account. This account is impacted by the same amount with an opposite transaction operation from the `impact_account` operation. For example, if `impact_account` is debited $100, `counterpart_account` is credited $100. Only available for account-level configurations. For more information, refer to [Related accounts](doc:related-accounts).",
+                      "properties": {
+                        "account_id": {
+                          "type": "integer",
+                          "description": "Account ID.",
+                          "example": 9876
+                        },
+                        "processing_code": {
+                          "type": "string",
+                          "description": "Counterpart account processing code.",
+                          "example": "007700"
+                        }
+                      }
+                    },
+                    "confirmation": {
+                      "type": "object",
+                      "description": "Confirmation indicates which balances must be impacted upon confirmation in dual message scenarios where authorization impacts one balance but confirmation should impact a different balance.",
+                      "properties": {
+                        "impact": {
+                          "type": "array",
+                          "description": "Limits or balances impacted.",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "AvailableCreditLimit",
+                              "AvailableTotalInstallmentCredit",
+                              "AvailableWithdrawalCredit",
+                              "AvailableSavingsAccountLimit",
+                              "AdditionalFunds",
+                              "HeldFunds"
+                            ]
+                          },
+                          "example": [
+                            "AvailableCreditLimit"
+                          ]
+                        },
+                        "opposite_impact": {
+                          "type": "array",
+                          "description": "This field contains a list of limits that should be oppositely impacted in response to the `operation_type`. For instance, if a credit operation affects `AvailableCreditLimit`, the limits specified in this list will be debited to counterbalance the credit impact.",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "AvailableCreditLimit",
+                              "AvailableSavingsAccountLimit",
+                              "AvailableWithdrawalCredit",
+                              "AvailableTotalInstallmentCredit",
+                              "HeldFunds",
+                              "AdditionalFunds"
+                            ]
+                          },
+                          "example": [
+                            "AdditionalFunds"
+                          ]
+                        }
+                      }
+                    },
+                    "opposite_impact": {
+                      "type": "array",
+                      "description": "This field contains a list of limits that should be oppositely impacted in response to the `operation_type`. For instance, if a credit operation affects `AvailableCreditLimit`, the limits specified in this list will be debited to counterbalance the credit impact.",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "AvailableCreditLimit",
+                          "AvailableSavingsAccountLimit",
+                          "AvailableWithdrawalCredit",
+                          "AvailableTotalInstallmentCredit",
+                          "HeldFunds",
+                          "AdditionalFunds"
+                        ]
+                      },
+                      "example": [
+                        "AdditionalFunds"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "amount",
+                    "impact"
+                  ]
+                }
+              },
+              "required": [
+                "condition",
+                "result"
+              ]
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "filters",
+          "scenarios"
+        ]
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "level",
+    "configs"
+  ]
+}

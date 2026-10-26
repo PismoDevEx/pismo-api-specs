@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Check posting status changed",
+  "required": [
+    "check_id",
+    "account_id",
+    "status"
+  ],
+  "properties": {
+    "external_account_id": {
+      "type": "string",
+      "title": "External account ID",
+      "description": "External ID of the account to which the check is posted",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "6b6e32c3-6f67-453e-8221-bafa8993e113"
+      ]
+    },
+    "check_id": {
+      "type": "string",
+      "title": "Check ID",
+      "description": "Check unique identifier",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "c462b2f3-55cc-42b4-ae9a-7614df3e8e72"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        5501
+      ]
+    },
+    "division_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division unique identifier",
+      "description": "Unique ID used to identify the division within your organization.",
+      "minLength": 1,
+      "maxLength": 36,
+      "examples": [
+        "3d1aeaef-0e53-4c18-822d-ce4bd9548785"
+      ]
+    },
+    "division_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division code unique identifier",
+      "description": "Unique code that identifies the division within your organization.",
+      "maxLength": 36,
+      "examples": [
+        "45e37e34-ae5d-4962-a053-0785bf58493f"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Check status",
+      "description": "New status of the check",
+      "enum": [
+        "PENDING",
+        "CREATING",
+        "UNSETTLED",
+        "UNCLEARED",
+        "SETTLING",
+        "PARTIALLY_SETTLED",
+        "SETTLED",
+        "CANCELING",
+        "CANCELED",
+        "PAYMENT_FAILED",
+        "RELEASE_FAILED",
+        "CANCEL_FAILED"
+      ],
+      "examples": [
+        "UNCLEARED"
+      ]
+    }
+  }
+}

@@ -1,0 +1,420 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Loan booked",
+  "description": "This event occurs when a loan is booked.",
+  "required": [
+    "org_id",
+    "loan_id",
+    "status",
+    "product_id",
+    "account_id",
+    "amount",
+    "start_date",
+    "created_at"
+  ],
+  "properties": {
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID for the organization associated with the loan",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "external_id": {
+      "$id": "#/properties/external_id",
+      "type": "string",
+      "title": "External ID",
+      "description": "Client-generated external loan ID for their reference.",
+      "example": "cca6041c-b57d-44cf-a203-eeea22723878"
+    },
+    "loan_id": {
+      "$id": "#/properties/loan_id",
+      "type": "string",
+      "title": "Loan ID",
+      "description": "Loan ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Current loan status",
+      "description": "Loan current status. At this time, it is set as `BOOKED`",
+      "enum": [
+        "BOOKED",
+        "ACTIVE",
+        "PENDING",
+        "CANCELED",
+        "SETTLED",
+        "PROCESSING"
+      ],
+      "default": "BOOKED"
+    },
+    "product_id": {
+      "$id": "#/properties/product_id",
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID",
+      "example": "89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "number",
+      "title": "Account ID",
+      "description": "Loan account ID",
+      "examples": [
+        104336697
+      ]
+    },
+    "amount": {
+      "$id": "#/properties/amount",
+      "type": "number",
+      "title": "Loan amount",
+      "description": "Loan amount",
+      "example": 1000.0
+    },
+    "start_date": {
+      "$id": "#/properties/start_date",
+      "type": "string",
+      "format": "date",
+      "title": "Loan start date",
+      "description": "ISO 8601 date format: YYYY-MM-DD",
+      "example": "2022-10-24"
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "format": "date-time",
+      "title": "Created at",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "example": "2022-10-24T21:34:47.000Z"
+    },
+    "number_of_installments": {
+      "$id": "#/properties/number_of_installments",
+      "type": "integer",
+      "title": "Number of installments",
+      "description": "Total number of installments of the loan at booking time.",
+      "example": 60
+    },
+    "contracted_installment_count": {
+      "$id": "#/properties/contracted_installment_count",
+      "type": "integer",
+      "title": "Number of installments contracted",
+      "description": "Total number of installments of the loan at booking time.",
+      "example": 8
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo platform program ID",
+      "example": 9000
+    },
+    "currency": {
+      "$id": "#/properties/currency",
+      "type": "string",
+      "title": "Currency",
+      "description": "ISO 4217 numeric currency code for loan",
+      "maxLength": 3,
+      "examples": [
+        "986",
+        "840"
+      ]
+    },
+    "contract_amount": {
+      "$id": "#/properties/contract_amount",
+      "type": "number",
+      "title": "Contract amount",
+      "description": "Loan contract amount",
+      "example": 18690.0
+    },
+    "principal_amount": {
+      "$id": "#/properties/principal_amount",
+      "type": "number",
+      "title": "Principal amount",
+      "description": "Principal amount authorized without charges or taxes.",
+      "example": 336.66
+    },
+    "interest_rate": {
+      "$id": "#/properties/interest_rate",
+      "type": "number",
+      "title": "Monthly interest rate",
+      "description": "Loan monthly interest rate",
+      "example": 1.1
+    },
+    "annual_interest_rate": {
+      "$id": "#/properties/annual_interest_rate",
+      "type": "number",
+      "title": "Annual interest rate",
+      "description": "Loan annual interest rate",
+      "example": 5.5
+    },
+    "effective_monthly_cost": {
+      "$id": "#/properties/effective_monthly_cost",
+      "type": "number",
+      "title": "Effective monthly cost",
+      "description": "Loan effective monthly cost",
+      "example": 800.0
+    },
+    "effective_annual_cost": {
+      "$id": "#/properties/effective_annual_cost",
+      "type": "number",
+      "title": "Effective annual cost",
+      "description": "Loan effective annual cost",
+      "example": 6400.0
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization ID",
+      "description": "Unique identifier for authorization",
+      "example": 14123
+    },
+    "authorization_tracking_id": {
+      "$id": "#/properties/authorization_tracking_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization tracking ID",
+      "description": "Authorization tracking ID",
+      "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+    },
+    "simulation_id": {
+      "$id": "#/properties/simulation_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Simulation ID",
+      "description": "Rates BNPL simulation ID that originated this loan booking, when the loan was booked from a saved simulation.",
+      "example": "b0afab56-7b67-45d1-be77-e1d3b02e09c8"
+    },
+    "interest_rate_source": {
+      "$id": "#/properties/interest_rate_source",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "PLAN",
+        "REQUEST",
+        null
+      ],
+      "title": "Interest rate source",
+      "description": "Origin of the interest rate used to book the loan. PLAN when the rate is the one configured in the installment plan, REQUEST when the Rates simulation was calculated with a request-level interest rate override. Null when the origin could not be determined or the loan was booked before this field existed.",
+      "example": "REQUEST"
+    },
+    "plan_interest_rate": {
+      "$id": "#/properties/plan_interest_rate",
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Plan interest rate",
+      "description": "Interest rate configured in the installment plan at booking time, in percent per period. Compare with interest_rate to see whether an override was applied. Null when the plan rate could not be resolved.",
+      "example": 13.49
+    },
+    "initial_amounts": {
+      "$id": "#/properties/initial_amounts",
+      "title": "Initial amounts",
+      "description": "Breakdown of the loan amounts at booking time.",
+      "$ref": "#/definitions/amounts"
+    },
+    "restructured_initial_amounts": {
+      "$id": "#/properties/restructured_initial_amounts",
+      "title": "Restructured initial amounts",
+      "description": "Breakdown of the loan amounts at booking time after restructuring. Only present when the loan is restructured.",
+      "$ref": "#/definitions/amounts"
+    },
+    "repayment_schedule": {
+      "type": "array",
+      "title": "Repayment schedule",
+      "description": "Loan installments created at booking time",
+      "items": {
+        "$ref": "#/definitions/installment"
+      }
+    }
+  },
+  "definitions": {
+    "amounts": {
+      "type": "object",
+      "title": "Amounts",
+      "description": "Breakdown of loan amounts by component",
+      "properties": {
+        "principal": {
+          "$id": "#/amounts/properties/principal",
+          "type": "number",
+          "title": "Principal",
+          "description": "Principal amount",
+          "example": 1000.0
+        },
+        "interest": {
+          "$id": "#/amounts/properties/interest",
+          "type": "number",
+          "title": "Interest",
+          "description": "Interest amount",
+          "example": 120.0
+        },
+        "charge": {
+          "$id": "#/amounts/properties/charge",
+          "type": "number",
+          "title": "Charge",
+          "description": "Charge amount",
+          "example": 0.0
+        },
+        "tax": {
+          "$id": "#/amounts/properties/tax",
+          "type": "number",
+          "title": "Tax",
+          "description": "Tax amount",
+          "example": 10.0
+        },
+        "fee": {
+          "$id": "#/amounts/properties/fee",
+          "type": "number",
+          "title": "Fee",
+          "description": "Fee amount",
+          "example": 20.0
+        },
+        "penalty": {
+          "$id": "#/amounts/properties/penalty",
+          "type": "number",
+          "title": "Penalty",
+          "description": "Penalty amount",
+          "example": 0.0
+        },
+        "total": {
+          "$id": "#/amounts/properties/total",
+          "type": "number",
+          "title": "Total",
+          "description": "Total amount (sum of all components)",
+          "example": 1150.0
+        }
+      }
+    },
+    "installment": {
+      "type": "object",
+      "title": "Repayment",
+      "description": "Definition of a loan installment",
+      "properties": {
+        "repayment_id": {
+          "$id": "#/installment/properties/repayment_id",
+          "type": "string",
+          "title": "Repayment ID",
+          "description": "Repayment identifier",
+          "example": "7da3db3b-400d-4851-a362-2022dab27284"
+        },
+        "installment": {
+          "$id": "#/installment/properties/installment",
+          "type": "number",
+          "title": "Repayment index ID",
+          "description": "Loan installment index ID",
+          "example": 12
+        },
+        "due_date": {
+          "$id": "#/installment/properties/due_date",
+          "type": "string",
+          "format": "date",
+          "title": "Due date",
+          "description": "ISO 8601 date format: YYYY-MM-DD",
+          "example": "2023-07-01"
+        },
+        "real_due_date": {
+          "$id": "#/installment/properties/real_due_date",
+          "type": "string",
+          "format": "date",
+          "title": "Real due date",
+          "description": "ISO 8601 date format: YYYY-MM-DD",
+          "example": "2023-07-01"
+        },
+        "amount": {
+          "$id": "#/installment/properties/amount",
+          "type": "number",
+          "title": "Amount",
+          "description": "Repayment total amount",
+          "example": 1336.66
+        },
+        "principal_amount": {
+          "$id": "#/installment/properties/principal_amount",
+          "type": "number",
+          "title": "Principal amount",
+          "description": "Repayment principal amount",
+          "example": 1000.0
+        },
+        "interest_amount": {
+          "$id": "#/installment/properties/interest_amount",
+          "type": "number",
+          "title": "Interest amount",
+          "description": "Repayment interest amount",
+          "example": 300.0
+        },
+        "penalty_amount": {
+          "$id": "#/installment/properties/penalty_amount",
+          "type": "number",
+          "title": "Penalty amount",
+          "description": "Repayment penalty amount",
+          "example": 0.0
+        },
+        "fee_amount": {
+          "$id": "#/installment/properties/fee_amount",
+          "type": "number",
+          "title": "Fee amount",
+          "description": "Repayment fee amount",
+          "example": 0.0
+        },
+        "charge_amount": {
+          "$id": "#/installment/properties/charge_amount",
+          "type": "number",
+          "title": "Charge amount",
+          "description": "Repayment charge amount",
+          "example": 0.0
+        },
+        "tax_amount": {
+          "$id": "#/installment/properties/tax_amount",
+          "type": "number",
+          "title": "Tax amount",
+          "description": "Repayment tax (IOF) amount",
+          "example": 36.66
+        },
+        "previous_status": {
+          "$id": "#/installment/properties/previous_status",
+          "type": "string",
+          "title": "Previous status",
+          "description": "Repayment previous status",
+          "enum": [
+            "PENDING",
+            "PROCESSING",
+            "DONE",
+            "SCHEDULED",
+            "PAST_DUE",
+            "PAID",
+            "PARTIALLY_PAID",
+            "CANCELED"
+          ],
+          "example": "SCHEDULED"
+        },
+        "current_status": {
+          "$id": "#/installment/properties/current_status",
+          "type": "string",
+          "title": "Current status",
+          "description": "Repayment current status",
+          "enum": [
+            "PENDING",
+            "PROCESSING",
+            "DONE",
+            "SCHEDULED",
+            "PAST_DUE",
+            "PAID",
+            "PARTIALLY_PAID",
+            "CANCELED"
+          ],
+          "example": "SCHEDULED"
+        }
+      }
+    }
+  }
+}

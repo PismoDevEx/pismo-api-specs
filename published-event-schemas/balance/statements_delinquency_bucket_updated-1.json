@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Delinquency bucket updated",
+  "description": "The event is generated when a delinquency bucket is updated. This event is generated automatically, no endpoint generates this event. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/delinquency-buckets' target = '_blank'>Delinquency buckets</a> guide.",
+  "examples": [
+    {
+      "org_id": "TN-cc8f8b89-233a-4582-9f36-63ee85299999",
+      "program_id": 9500,
+      "program_type_id": 1,
+      "account_id": 111509999,
+      "sender": "delinquency-bucket-worker",
+      "event": "statements-delinquency-bucket-updated",
+      "schema_version": "1.0",
+      "cid": "68725dec-326e-49be-9162-e8817cd492cc",
+      "data": {
+        "program_id": 9500,
+        "account_id": 111509999,
+        "statement_id": 315542538,
+        "delinquency_bucket_id": 9471,
+        "credit_transaction_id": 734529766,
+        "bucket_amount": 127.78,
+        "discharge_amount": 10,
+        "bucket_balance": 7.79,
+        "overdue_amount": 127.78,
+        "created_at": "2023-02-28T14:52:03.416345",
+        "updated_at": "2023-02-28T15:14:26.676620406"
+      }
+    }
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Account ID of the statement's delinquency bucket",
+      "examples": [
+        9832195123
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Program ID of account with statement delinquency bucket",
+      "examples": [
+        9832195123
+      ]
+    },
+    "statement_id": {
+      "type": "integer",
+      "title": "Statement ID",
+      "description": "Statement ID",
+      "examples": [
+        98132196
+      ]
+    },
+    "delinquencybucket_id": {
+      "type": "integer",
+      "title": "Delinquency bucket ID",
+      "description": "Statement's delinquency bucket ID",
+      "examples": [
+        98132196
+      ]
+    },
+    "bucket_amount": {
+      "type": "number",
+      "title": "Delinquency bucket amount",
+      "description": "Delinquency bucket amount. Amount from when the delinquency bucket was created.",
+      "format": "double",
+      "examples": [
+        40.3
+      ]
+    },
+    "bucket_balance": {
+      "type": "number",
+      "title": "Delinquency bucket balance",
+      "description": "Delinquency bucket balance",
+      "format": "double",
+      "examples": [
+        40.3
+      ]
+    },
+    "overdue_amount": {
+      "type": "number",
+      "title": "Delinquency overdue amount",
+      "description": "Delinquency overdue amount",
+      "format": "double",
+      "examples": [
+        40.3
+      ]
+    },
+    "credit_transaction_id": {
+      "type": "integer",
+      "title": "Credit transaction ID",
+      "description": "ID of credit transaction that discharged the bucket",
+      "examples": [
+        98132196
+      ]
+    },
+    "discharge_amount": {
+      "type": "number",
+      "title": "Discharge amount",
+      "description": "Amount of credit transaction that discharged the bucket.",
+      "format": "double",
+      "examples": [
+        40.3
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Delinquency bucket creation date/time",
+      "description": "Date/time of delinquency bucket creation",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Delinquency bucket updated date/time",
+      "description": "Delinquency bucket updated date/time",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    }
+  },
+  "required": [
+    "account_id",
+    "program_id",
+    "statement_id",
+    "bucket_amount",
+    "bucket_balance",
+    "overdue_amount",
+    "created_at",
+    "updated_at",
+    "credit_transaction_id"
+  ]
+}

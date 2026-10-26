@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Late transaction posted",
+  "description": "Event generated when a transaction is posted to an account after the account was closed for delinquency. When an account is closed for delinquency, its balance is adjusted to zero. If a late transaction occurs, it changes the balance to a non-zero value, so the Pismo platform has to create an adjustment transaction to return the balance to zero. Note: The late transaction posted event is only generated if a transaction is posted within 365 days of the account closure (not counting the day of the closure). If a transaction is posted more than 365 days late, no event is generated.",
+  "required": [
+    "delinquent_account_closure_id",
+    "account_id",
+    "org_id",
+    "delinquent_closure_date",
+    "late_transaction_date",
+    "tracking_id",
+    "authorization_id",
+    "processing_code",
+    "balance"
+  ],
+  "properties": {
+    "delinquent_account_closure_id": {
+      "type": "integer",
+      "description": "Delinquent account closure ID",
+      "examples": [
+        8832190143
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "delinquent_closure_date": {
+      "type": "string",
+      "description": "Date the delinquent account was closed, format is yyyy-mm-dd.",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "late_transaction_date": {
+      "type": "string",
+      "description": "Date the late transaction was posted, format is yyyy-mm-dd.",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "description": "Tracking ID for the transaction that returns the balance to zero.",
+      "examples": [
+        "85bead50-f998-11ed-be56-0242ac120002"
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "description": "Authorization ID for the transaction that returns the balance to zero.",
+      "examples": [
+        9832095120
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "description": "Processing code for the transaction that returns the balance to zero.",
+      "examples": [
+        "000800"
+      ]
+    },
+    "balance": {
+      "type": "number",
+      "description": "Balance before transaction creation.",
+      "examples": [
+        240.48
+      ]
+    }
+  }
+}

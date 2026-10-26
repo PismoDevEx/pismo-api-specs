@@ -1,0 +1,581 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Pix recurrence payment order status changed",
+  "description": "Pix recurrence payment order status changed event",
+  "required": [
+    "account_id",
+    "recurrence_id",
+    "end_to_end_id",
+    "transaction_identification",
+    "calendar",
+    "amount",
+    "dynamic_amount",
+    "status",
+    "payee",
+    "payer",
+    "debtor",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "example": "5869300"
+    },
+    "recurrence_id": {
+      "type": "string",
+      "title": "Recurrence ID",
+      "description": "BACEN recurrence ID.",
+      "example": "RN000000012025050500012345678"
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Pix end to end ID",
+      "description": "Pix end-to-end transaction ID. This field is a Brazil Central Bank (BCB) requirement to track Pix transactions.",
+      "examples": [
+        "E0000000020210519134701363533333"
+      ]
+    },
+    "transaction_identification": {
+      "type": "string",
+      "title": "Recurrence transaction ID",
+      "description": "Recurrence transaction ID.",
+      "example": "1a84daf6-a61b-4aba-919a-a9943db7102e"
+    },
+    "calendar": {
+      "type": "object",
+      "title": "",
+      "description": "",
+      "required": [
+        "due_date",
+        "working_day"
+      ],
+      "properties": {
+        "due_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Due date",
+          "description": "Due date, format = yyyy-mm-dd ",
+          "example": "2025-05-10"
+        },
+        "working_day": {
+          "type": "boolean",
+          "title": "Working day",
+          "description": "Will the recurrence only execute on working days?",
+          "example": false
+        }
+      }
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Amount to be transferred.",
+      "example": "1050.44"
+    },
+    "dynamic_amount": {
+      "type": "boolean",
+      "title": "Dynamic amount",
+      "description": "Does recurrence have a dynamic amount?",
+      "example": "false"
+    },
+    "min_payment_amount": {
+      "type": "number",
+      "title": "Minimal payment amount",
+      "description": "Payee-defined minimum payment amount for dynamic amount recurrences.",
+      "example": "10.01"
+    },
+    "max_payment_amount": {
+      "type": "number",
+      "title": "Maximum payment amount",
+      "description": "Payer-defined maximum payment amount for dynamic amount recurrences.",
+      "example": "1050.44"
+    },
+    "type": {
+      "type": "string",
+      "title": "Payment order type",
+      "description": "Payment order type",
+      "enum": [
+        "SCHEDULE",
+        "RETRY_OVERDUE",
+        "RETRY_ERROR"
+      ],
+      "example": "SCHEDULE"
+    },
+    "status": {
+      "type": "string",
+      "title": "Payment order status",
+      "description": "Payment order status",
+      "enum": [
+        "PENDING",
+        "WAITING_CUSTOMER",
+        "ACTIVE",
+        "REJECTED",
+        "CONCLUDED",
+        "EXPIRED",
+        "CANCELLED",
+        "REGISTERED",
+        "CANCELLING"
+      ],
+      "example": "PENDING"
+    },
+    "additional_information": {
+      "type": "string",
+      "title": "Additional Information",
+      "description": "Additional information present about the recurrence",
+      "example": "Gym training monthly payment"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created at",
+      "description": "Created at datetime. RFC 3339 format",
+      "example": "2025-11-14T17:54:40Z"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated at",
+      "description": "Updated at datetime. RFC 3339 format",
+      "example": "2025-11-14T17:54:40Z"
+    },
+    "reason": {
+      "type": "object",
+      "title": "Rejection/Cancelation reason",
+      "description": "Returned when the status is `REJECTED` or `CANCELLED`",
+      "required": [
+        "code",
+        "description"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Code",
+          "description": "Rejection code",
+          "enum": [
+            "AB10",
+            "AC05",
+            "AC06",
+            "AG12",
+            "AM02",
+            "AM09",
+            "AM13",
+            "CRNC",
+            "DENC",
+            "DS27",
+            "DTED",
+            "DTNT",
+            "FCD1",
+            "FCD2",
+            "GRER",
+            "IRNT",
+            "MIDI",
+            "MSUC",
+            "NIEC",
+            "NIPA",
+            "NITX",
+            "QUNT",
+            "RC09",
+            "RR06",
+            "UDEI",
+            "ACCT",
+            "BLCK",
+            "CCLD",
+            "FAIL",
+            "OTHR",
+            "SLCR",
+            "SLDB",
+            "SLBD"
+          ],
+          "example": "AC05"
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Rejection description",
+          "enum": [
+            "AB10 - Transaction interrupted due to an error in the payer user's participant.",
+            "AC05 - Paying user's transactional account closed.",
+            "AC06 - The transactional account of the paying user is blocked",
+            "AG12 - It is not allowed to send the request for scheduling pain.013 for a transactional account in the same institution or in a participant that uses the settlement service of the same settling participant in SPI.",
+            "AM02 - Charge amount exceeds the maximum value set by the payer user.",
+            "AM09 - The amount charged does not correspond to the amount established in the claim.",
+            "AM13 - The sum of the taxes entered results in an invalid value (greater than the transaction value).",
+            "CRNC - Receiver user document number does not match the data contained in the recurrence/authorization",
+            "DENC - CPF/CNPJ of the paying user does not match the data contained in the recurrence/authorization.",
+            "DS27 - Participant is not registered or has not yet started operations on SPI.",
+            "DTED - Discrepancy between the informed due date and the recurrence periodicity and/or product rules.",
+            "DTNT - New post-due date scheduling attempts are not allowed beyond the business rule limit (from D+8, considering D0 as the due date).",
+            "FCD1 - Pain.013 was received more than 10 days before the scheduled settlement date, in violation of the business rules.",
+            "FCD2 - Pain.013 was received less than 2 days before the scheduled settlement date, in violation of the business rules.",
+            "GRER - The reason for the generic/miscellaneous error is used only when there is no other applicable domain.",
+            "IRNT - Recurring billing does not allow new scheduling attempts after the due date (recurrence ID with characteristics that do not allow new attempts).",
+            "MIDI - Recurrence ID does not exist or is incorrect.",
+            "MSUC - StatusRecurrence other than CFDB (confirmed by the paying user).",
+            "NIEC - New payment instruction is invalid because the same charge already has a scheduled payment order pending submission to SPI for settlement.",
+            "NIPA - New payment instruction is invalid, payment has already been made.",
+            "NITX - New payment instruction does not correspond to a previously generated recurring charge (different Receiver Reconciliation Id). Only used for 'NTAG' and 'RIFL' scheduling purposes.",
+            "QUNT - Number of new post-due date scheduling attempts exceeds the limit defined by the business rule (more than 3 attempts within 7 days after the due date, considering D0 as the due date).",
+            "RC09 - Invalid or non-existent ISPB of the paying user participant.",
+            "RR06 - The element block can only be filled when the payer's CPF/CNPJ and payee's CPF/CNPJ fields are both for Legal Entities (14 characters).",
+            "UDEI - Debtor document number is incorrect.",
+            "ACCT - Closing the transactional account of the paying user or the receiving user",
+            "BLCK - Bocking of the paying user's or receiving user's transactional account",
+            "CCLD - Cancel recurrence/authorization",
+            "FAIL - Due to failure or error in the settlement flow",
+            "OTHR - Requested by the paying user participant or the receiving user participant, for other reasons",
+            "SLCR - Requested by the receiving user",
+            "SLDB - Requested by the paying user",
+            "SLBD - ",
+            "SLBD - Requested by the receiving user"
+          ],
+          "example": "AC05 - Paying user's transactional account closed."
+        }
+      }
+    },
+    "payee": {
+      "type": "object",
+      "title": "",
+      "description": "",
+      "required": [
+        "name",
+        "document_number",
+        "document_type",
+        "bank"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Entregas Expressas Ltda"
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "45337989000161"
+        },
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "LEGAL_PERSON"
+          ]
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank code",
+          "description": "<a href=\"https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/\" target=\"_blank\">ISPB (Identifcador do Sistema de Pagamento Brazil)</a> - the Brazilian Payment System ID for the receiving bank, an 8-digit value.",
+          "example": "00000001"
+        }
+      }
+    },
+    "payer": {
+      "type": "object",
+      "title": "",
+      "description": "",
+      "required": [
+        "document_type",
+        "document_number",
+        "bank",
+        "branch",
+        "account_number"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "LEGAL_PERSON"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "27329425028"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Walter Melon"
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank code",
+          "description": "<a href=\"https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/\" target=\"_blank\">ISPB (Identifcador do Sistema de Pagamento Brazil)</a> - the Brazilian Payment System ID for the receiving bank, an 8-digit value.",
+          "example": "00000001"
+        },
+        "branch": {
+          "type": "string",
+          "title": "Bank branch",
+          "description": "This could be a bank-assigned branch ID or the branch's ISPB number.",
+          "example": "1001"
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account number",
+          "description": "Payer's account number.",
+          "example": "98765432"
+        }
+      }
+    },
+    "debtor": {
+      "type": "object",
+      "title": "",
+      "description": "",
+      "required": [
+        "document_type",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "NATURAL_PERSON"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "27329425028"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "John Doe"
+        }
+      }
+    },
+    "attempts": {
+      "title": "Attempts",
+      "description": "Settlement attempts. If some error occurs during the settlement process, the reason code and description will be filled with the pix-out error code and description (can be found here: https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer)",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Attempt date",
+            "description": "Attempt datetime. RFC 3339 format",
+            "example": "2025-11-14T17:54:40Z"
+          },
+          "status": {
+            "title": "Attempt status",
+            "description": "Attempt result status.",
+            "type": [
+              "string"
+            ],
+            "enum": [
+              "SUCCESS",
+              "FAIL"
+            ]
+          },
+          "error_code": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "title": "Attempt Error code",
+            "description": "Error code for attempt status `FAIL`, an 8-digit value. If it occurred in the settlement process, check here for more details: https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer",
+            "maxLength": 8,
+            "examples": [
+              "EPIX0110",
+              "WPIX0047"
+            ]
+          },
+          "reason": {
+            "title": "Validation reason",
+            "description": "Validation result reason for attempt status `FAIL`, an 8-digit value. If it occurred in the settlement process, check here for more details: https://developers.pismo.io/pismo-docs/reference/post-pix-out-transfer",
+            "type": [
+              "null",
+              "string"
+            ],
+            "examples": [
+              "The amount passed is greater than the current balance",
+              "There is no limit"
+            ]
+          }
+        },
+        "required": [
+          "date",
+          "status"
+        ]
+      }
+    },
+    "cycle_start": {
+      "type": "string",
+      "format": "date",
+      "title": "Cycle start date, format = yyyy-mm-dd ",
+      "description": "Cycle start date, format = yyyy-mm-dd. This field is present only when cycle information is available; otherwise, it may be omitted.",
+      "example": "2025-05-10"
+    },
+    "cycle_end": {
+      "type": "string",
+      "format": "date",
+      "title": "Cycle end date, format = yyyy-mm-dd ",
+      "description": "Cycle end date, format = yyyy-mm-dd. This field is present only when cycle information is available; otherwise, it may be omitted. ",
+      "example": "2025-05-10"
+    }
+  },
+  "examples": [
+    {
+      "account_id": 123,
+      "recurrence_id": "4624d75a-7627-46cc-9e22-40c0ce632df3",
+      "end_to_end_id": "E4071059520250505133721826950933",
+      "transaction_identification": "007f587d-01f9-41a6-b4a0-cd16b498a7d3",
+      "calendar": {
+        "due_date": "2025-05-10",
+        "working_day": false
+      },
+      "amount": 100,
+      "dynamic_amount": false,
+      "min_payment_amount": 10.15,
+      "max_payment_amount": 10000.15,
+      "status": "PENDING",
+      "type": "SCHEDULE",
+      "additional_information": "Gym Training Payment",
+      "payee": {
+        "name": "Fulado de Tal",
+        "document_number": "41262621054",
+        "document_type": "LEGAL_PERSON",
+        "bank": "40710595"
+      },
+      "payer": {
+        "document_type": "LEGAL_PERSON",
+        "document_number": "41262621054",
+        "name": "ADQUIRENCIA RESOLUCAO 25",
+        "bank": "40710595",
+        "branch": "1000",
+        "account_number": "117618884"
+      },
+      "debtor": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe"
+      },
+      "created_at": "2025-05-05T13:42:21Z",
+      "updated_at": "2025-05-05T13:42:21Z"
+    },
+    {
+      "account_id": 123,
+      "recurrence_id": "4624d75a-7627-46cc-9e22-40c0ce632df3",
+      "end_to_end_id": "E4071059520250505133721826950933",
+      "transaction_identification": "007f587d-01f9-41a6-b4a0-cd16b498a7d3",
+      "calendar": {
+        "due_date": "2025-05-10",
+        "working_day": false
+      },
+      "amount": 100,
+      "dynamic_amount": false,
+      "min_payment_amount": 10.15,
+      "max_payment_amount": 10000.15,
+      "status": "REJECTED",
+      "type": "RETRY_ERROR",
+      "additional_information": "Gym Training Payment",
+      "reason": {
+        "code": "AC05",
+        "description": "AC05 - Paying user's transactional account closed."
+      },
+      "payee": {
+        "name": "Fulado de Tal",
+        "document_number": "41262621054",
+        "document_type": "LEGAL_PERSON",
+        "bank": "40710595"
+      },
+      "payer": {
+        "document_type": "LEGAL_PERSON",
+        "document_number": "41262621054",
+        "name": "ADQUIRENCIA RESOLUCAO 25",
+        "bank": "40710595",
+        "branch": "1000",
+        "account_number": "117618884"
+      },
+      "debtor": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe"
+      },
+      "attempts": [
+        {
+          "date": "2025-05-05T13:42:21Z",
+          "status": "FAIL",
+          "error_code": "EPIX0008",
+          "reason": "Account blocked or cancelled"
+        }
+      ],
+      "created_at": "2025-05-05T13:42:21Z",
+      "updated_at": "2025-05-05T13:42:21Z"
+    },
+    {
+      "account_id": 123,
+      "recurrence_id": "4624d75a-7627-46cc-9e22-40c0ce632df3",
+      "end_to_end_id": "E4071059520250505133721826950933",
+      "transaction_identification": "007f587d-01f9-41a6-b4a0-cd16b498a7d3",
+      "calendar": {
+        "due_date": "2025-05-10",
+        "working_day": false
+      },
+      "amount": 100,
+      "dynamic_amount": false,
+      "min_payment_amount": 10.15,
+      "max_payment_amount": 10000.15,
+      "status": "CANCELLED",
+      "type": "RETRY_OVERDUE",
+      "additional_information": "Gym Training Payment",
+      "reason": {
+        "code": "SLDB",
+        "description": "SLDB - Requested by the paying user"
+      },
+      "payee": {
+        "name": "Fulado de Tal",
+        "document_number": "41262621054",
+        "document_type": "LEGAL_PERSON",
+        "bank": "40710595"
+      },
+      "payer": {
+        "document_type": "LEGAL_PERSON",
+        "document_number": "41262621054",
+        "name": "ADQUIRENCIA RESOLUCAO 25",
+        "bank": "40710595",
+        "branch": "1000",
+        "account_number": "117618884"
+      },
+      "debtor": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe"
+      },
+      "created_at": "2025-05-05T13:42:21Z",
+      "updated_at": "2025-05-05T13:42:21Z"
+    }
+  ]
+}

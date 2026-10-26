@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/pre_scheduled_transaction_outgoing-1.json",
+  "type": "object",
+  "title": "Pre scheduled transaction migration completed",
+  "description": "Event generated when a pre scheduled transaction migration finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "required": [
+    "status",
+    "code",
+    "message"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "description": "If the pre scheduled transaction migration is a creation or update",
+      "enum": [
+        "CREATION",
+        "UPDATE"
+      ],
+      "examples": [
+        "UPDATE",
+        "CREATION"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "description": "If the result of pre scheduled transaction migration was success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "description": "The code of message for systems",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "description": "Message of pre scheduled transaction migration result",
+      "examples": [
+        "Pre scheduled transaction migrated with success"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "description": "Identifier sent on start of migration process",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "description": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "Version Date of Migration Identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "id": "b57131e5-2449-44f1-be16-466d242d3d70",
+          "version_date": "2024-08-15T15:22:13Z"
+        }
+      ]
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "properties": {
+        "schedule_id": {
+          "$id": "#/properties/entity/properties/schedule_id",
+          "type": "string",
+          "description": "Pismo's pre scheduled transaction id ",
+          "examples": [
+            "b57131e5-2449-44f1-be16-466d242d3d70"
+          ]
+        },
+        "schedule_details": {
+          "$id": "#/properties/entity/properties/schedule_details",
+          "type": "object",
+          "required": [
+            "statement"
+          ],
+          "properties": {
+            "statement": {
+              "$id": "#/properties/entity/properties/schedule_details/properties/statement",
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "$id": "#/properties/entity/properties/schedule_details/properties/statement/properties/id",
+                  "type": "integer",
+                  "description": "This is the id of the statement in which the transaction will be created",
+                  "examples": [
+                    1562374235
+                  ]
+                }
+              },
+              "examples": [
+                {
+                  "id": 1562374235
+                }
+              ]
+            }
+          },
+          "examples": [
+            {
+              "statement": {
+                "id": 1562374235
+              }
+            }
+          ]
+        },
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "integer",
+          "description": "Pismo's account id",
+          "examples": [
+            187480164
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "The processing code of the transaction",
+          "examples": [
+            "00"
+          ]
+        },
+        "ammount": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "number",
+          "description": "The amount of the transaction",
+          "examples": [
+            10.4
+          ]
+        },
+        "currency": {
+          "$id": "#/properties/entity/properties/currency",
+          "type": "string",
+          "description": "The currency code (ISO-4217) of the transaction",
+          "examples": [
+            "USD"
+          ]
+        },
+        "description": {
+          "$id": "#/properties/entity/properties/description",
+          "default": "",
+          "description": "The description of pre scheduled transaction",
+          "examples": [
+            "EMI transaction"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "schedule_id": "b57131e5-2449-44f1-be16-466d242d3d70",
+          "schedule_detatils": {
+            "statement": {
+              "id": 1562374235
+            }
+          },
+          "account_id": 187480164,
+          "processing_code": "00",
+          "ammount": 10.4,
+          "currency": "USD",
+          "description": "EMI transaction"
+        }
+      ],
+      "additionalProperties": true
+    },
+    "error_details": {
+      "$id": "#/properties/entity/error_details",
+      "type": "array",
+      "description": "The pre scheduled transaction errors list",
+      "items": {
+        "type": "object",
+        "required": [
+          "property",
+          "message"
+        ],
+        "properties": {
+          "property": {
+            "$id": "#/properties/entity/error_details/property/property",
+            "type": "string",
+            "description": "The property of incoming event",
+            "examples": [
+              "schedule_id-invalid"
+            ]
+          },
+          "message": {
+            "$id": "#/properties/entity/error_details/property/message",
+            "type": "string",
+            "description": "An error message",
+            "examples": [
+              "schedule_id must be at least 36 characters in length"
+            ]
+          }
+        },
+        "examples": [
+          {
+            "property": "schedule_id-invalid",
+            "message": "schedule_id must be at least 36 characters in length"
+          }
+        ]
+      },
+      "examples": [
+        [
+          {
+            "property": "schedule_id-invalid",
+            "message": "schedule_id must be at least 36 characters in length"
+          }
+        ]
+      ]
+    },
+    "additionalProperties": false
+  },
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Pre schedule processed with success!",
+      "migration": {
+        "id": "b57131e5-2449-44f1-be16-466d242d3d70",
+        "version_date": "2024-08-15T15:22:13Z"
+      },
+      "entity": {
+        "schedule_id": "b57131e5-2449-44f1-be16-466d242d3d70",
+        "schedule_detatils": {
+          "statement": {
+            "id": 1562374235
+          }
+        },
+        "account_id": 187480164,
+        "processing_code": "00",
+        "ammount": 10.4,
+        "currency": "USD",
+        "description": "EMI transaction"
+      }
+    },
+    {
+      "status": "FAIL",
+      "code": "DO0002",
+      "message": "Invalid Request.",
+      "migration": {
+        "id": "b57131e5-2449-44f1-be16-466d242d3d70",
+        "version_date": "2024-08-15T19:32:53Z"
+      },
+      "error_details": [
+        {
+          "property": "schedule_id-invalid",
+          "message": "schedule_id must be at least 36 characters in length"
+        }
+      ]
+    }
+  ]
+}

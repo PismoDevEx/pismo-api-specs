@@ -1,0 +1,84 @@
+{
+  "type": "object",
+  "title": "Card on file exclusion created",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of address updater operation",
+      "default": "",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of address updater operation",
+      "default": "",
+      "examples": [
+        "/v2/cardsonfile/cards"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator that updated address",
+      "default": "",
+      "examples": [
+        "pismo@pismo.com.br"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "title": "The operator roles",
+      "items": {
+        "type": "string",
+        "title": "The Roles",
+        "default": "",
+        "examples": [
+          "backoffice-operator",
+          "crm-operator",
+          "geroficios-operator",
+          "inspetoria-master",
+          "inspetoria-operator",
+          "itibackoffice-master",
+          "itibackoffice-operator",
+          "itinivel1-operator",
+          "treasury-operator"
+        ]
+      }
+    },
+    "object": {
+      "type": "object",
+      "title": "The audit data message",
+      "required": [
+        "account_id",
+        "uuid"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "examples": [
+            22222222,
+            11111122
+          ]
+        },
+        "uuid": {
+          "type": "string",
+          "description": "The card uuid",
+          "maxLength": 40,
+          "examples": [
+            "bbbb9682-06e4-11ea-9d60-52552f8f9999",
+            "aaaa9682-06e4-11ea-9d60-52552f8f1111"
+          ]
+        }
+      }
+    }
+  }
+}

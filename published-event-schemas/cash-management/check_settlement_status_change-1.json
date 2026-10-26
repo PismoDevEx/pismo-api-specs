@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Check settlement status changed",
+  "required": [
+    "check_id",
+    "tracking_id",
+    "settlement_date",
+    "status",
+    "settlement_id",
+    "account_id",
+    "type"
+  ],
+  "properties": {
+    "external_account_id": {
+      "type": "string",
+      "title": "External account ID",
+      "description": "External ID of the account to which the check is posted",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "6b6e32c3-6f67-453e-8221-bafa8993e113"
+      ]
+    },
+    "check_id": {
+      "type": "string",
+      "title": "Check ID",
+      "description": "Check unique identifier",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "c462b2f3-55cc-42b4-ae9a-7614df3e8e72"
+      ]
+    },
+    "settlement_id": {
+      "type": "string",
+      "title": "Settlement ID",
+      "description": "Settlement unique identifier",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "b28f0591-150c-4ddc-9b7d-a4dc897ee239"
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "title": "Tracking ID",
+      "description": "A unique ID to be associated with the check posting transaction",
+      "minLength": 1,
+      "maxLength": 75,
+      "examples": [
+        "e219459f-9a7e-48ec-9c2b-1a40a62d5ca3"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        5501
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Settlement type",
+      "description": "Specifies the settlement type.",
+      "enum": [
+        "DEPOSIT",
+        "PENDING",
+        "HOLD"
+      ],
+      "examples": [
+        "HOLD"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Settlement status",
+      "description": "New status of the settlement",
+      "enum": [
+        "UNSETTLED",
+        "SETTLED",
+        "PAYMENT_FAILED",
+        "PAYMENT_ROLL_BACK_FAILED",
+        "PAYMENT_ROLLED_BACK",
+        "RELEASE_FAILED",
+        "RELEASE_ROLLED_BACK",
+        "RELEASE_ROLLBACK_FAILED",
+        "CANCELED",
+        "CANCEL_FAILED"
+      ],
+      "examples": [
+        "UNSETTLED"
+      ]
+    },
+    "division_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division unique identifier",
+      "description": "Unique ID used to identify the division within your organization.",
+      "minLength": 1,
+      "maxLength": 36,
+      "examples": [
+        "3d1aeaef-0e53-4c18-822d-ce4bd9548785"
+      ]
+    },
+    "division_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division code unique identifier",
+      "description": "Unique code that identifies the division within your organization.",
+      "minLength": 1,
+      "maxLength": 36,
+      "examples": [
+        "45e37e34-ae5d-4962-a053-0785bf58493f"
+      ]
+    },
+    "settlement_date": {
+      "type": "string",
+      "title": "Settlement date",
+      "description": "Date when the settlement amount is expected to be settled",
+      "format": "date",
+      "examples": [
+        "2025-01-31"
+      ]
+    },
+    "event_datetime": {
+      "type": "string",
+      "title": "Event datetime",
+      "description": "Event timestamp in the UTC format (RFC 3339).",
+      "format": "date-time",
+      "minLength": 20,
+      "maxLength": 24,
+      "examples": [
+        "2023-01-01T00:00:00.000Z"
+      ]
+    }
+  }
+}

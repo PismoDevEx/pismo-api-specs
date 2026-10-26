@@ -1,0 +1,702 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Transaction updated [beta]",
+  "description": "This event occurs when a transaction is updated. This event includes a required `external_account_id` field.",
+  "required": [
+    "account_id",
+    "accounting_date",
+    "amount",
+    "authorization",
+    "correlation_id",
+    "event_date",
+    "event_datetime",
+    "external_account_id",
+    "id",
+    "program",
+    "transaction_type"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "minimum": 1,
+      "maximum": 4294967295,
+      "examples": [
+        100000,
+        200000
+      ]
+    },
+    "accounting_date": {
+      "type": "string",
+      "title": "Settlement date in business days.",
+      "description": "Settlement date in business days.",
+      "minLength": 1,
+      "maxLength": 10,
+      "format": "date",
+      "examples": [
+        "2019-02-04"
+      ]
+    },
+    "amount": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "title": "Amount",
+          "description": "Transaction details such as the currency, value, and an optional transaction description.",
+          "required": [
+            "currency",
+            "value"
+          ],
+          "properties": {
+            "currency": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Currency",
+              "description": "ISO 4217 currency code.",
+              "minLength": 0,
+              "maxLength": 3,
+              "examples": [
+                "BRL",
+                "USD"
+              ]
+            },
+            "value": {
+              "type": "number",
+              "title": "Value",
+              "description": "Transaction value.",
+              "minimum": 0,
+              "maximum": 18446744073709551617,
+              "examples": [
+                10.5
+              ]
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Description",
+              "description": "Amount description.",
+              "minLength": 0,
+              "maxLength": 50,
+              "examples": [
+                "TRANSACTION_AMOUNT",
+                "LOCAL_AMOUNT",
+                "SETTLEMENT_CURRENCY_AMOUNT"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "authorization": {
+      "type": "object",
+      "title": "Authorization",
+      "description": "Authorization record after transaction approval.",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "ID",
+          "description": "Authorization ID.",
+          "minimum": 0,
+          "maximum": 18446744073709551617,
+          "examples": [
+            100000,
+            200000
+          ]
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Type",
+          "description": "Authorization type.",
+          "minLength": 0,
+          "maxLength": 30,
+          "examples": [
+            "VISA",
+            "MASTERCARD",
+            "WALLET",
+            "PLATFORM"
+          ]
+        },
+        "authorization_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Authorization code",
+          "description": "Authorization code ID.",
+          "minLength": 0,
+          "maxLength": 20,
+          "examples": [
+            "Y0IKQJ"
+          ]
+        },
+        "card_hash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Card hash",
+          "description": "Hash generated from the card's PAN (Primary Account Number).",
+          "minLength": 0,
+          "maxLength": 255,
+          "examples": [
+            "1231231-123123-1231231"
+          ]
+        },
+        "card_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Card ID",
+          "description": "Card ID.",
+          "minLength": 0,
+          "maxLength": 11,
+          "examples": [
+            300000,
+            400000
+          ]
+        },
+        "correlated_authorization_id": {
+          "title": "Correlated authorization ID",
+          "description": "When the `original_authorization` field is provided, the force or installment operations generates this authorization ID. For more information, refer to <a href='https://developers.pismo.io/pismo-docs/docs/force-operation' target='_blank'>Force operation</a> and <a href='https://developers.pismo.io/pismo-docs/docs/installments-payment' target='_blank'>Installments payment</a>.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 18446744073709551617,
+          "examples": [
+            11443744043709851610,
+            10406740073209351312
+          ]
+        },
+        "principal_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Principal amount",
+          "description": "Principal amount.",
+          "minimum": 0,
+          "maximum": 18446744073709551617,
+          "example": [
+            123.45
+          ]
+        },
+        "retrieval_reference_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Retrieval reference number",
+          "description": "Retrieval reference number. This number is generated from the network operations.",
+          "minLength": 0,
+          "maxLength": 255,
+          "example": [
+            "932614326272"
+          ]
+        },
+        "tid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Transaction ID",
+          "description": "Transaction ID. This is the external ID from the network.",
+          "minLength": 0,
+          "maxLength": 250,
+          "examples": [
+            "1231AB"
+          ]
+        }
+      }
+    },
+    "correlation_id": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "Correlation ID. This ID is Pismo generated and links related API requests and events.",
+      "minLength": 1,
+      "maxLength": 75,
+      "examples": [
+        "3bd713ad-4ffd-93d5-9eaa-2c52f59582e0"
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "title": "Event date",
+      "description": "Event date in ISO 8601 (yyyy-mm-ddThh:mm:ssZ).",
+      "format": "date-time",
+      "examples": [
+        "2019-09-04T22:13:03Z"
+      ]
+    },
+    "event_datetime": {
+      "type": "string",
+      "title": "Event datetime",
+      "description": "Event datetime in ISO 8601 (yyyy-MM-ddThh:mm:ss.SSSZ).",
+      "format": "date-time",
+      "examples": [
+        "2019-09-04T22:13:03.000Z"
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External account ID",
+      "description": "Custom account ID used to identify the account within your organization. This value links the Pismo account to your internal account identifier. This field is a key that links a Pismo account to your account ID.",
+      "examples": [
+        "df8d5b61-3cc0-4ec1-a72d-61860bff8fed"
+      ]
+    },
+    "id": {
+      "type": "integer",
+      "title": "Transaction ID",
+      "description": "Transaction ID.",
+      "minimum": 1,
+      "maximum": 18446744073709551617,
+      "examples": [
+        125252,
+        252513,
+        352525
+      ]
+    },
+    "program": {
+      "type": "object",
+      "title": "Program",
+      "description": "Transaction program.",
+      "required": [
+        "id",
+        "name",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Program ID.",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "examples": [
+            12252,
+            22552
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Program name.",
+          "minLength": 1,
+          "maxLength": 50,
+          "examples": [
+            "Black Card",
+            "Acme Account"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Type",
+          "description": "Program type.",
+          "minLength": 1,
+          "maxLength": 30,
+          "examples": [
+            "CREDIT",
+            "DEBIT",
+            "DIGITAL ACCOUNT"
+          ]
+        }
+      }
+    },
+    "transaction_type": {
+      "type": "object",
+      "title": "Transaction type",
+      "description": "Transaction type information.",
+      "required": [
+        "description",
+        "id",
+        "is_credit",
+        "statement_post"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Transaction type description.",
+          "minLength": 1,
+          "maxLength": 30,
+          "examples": [
+            "PURCHASE"
+          ]
+        },
+        "id": {
+          "title": "ID",
+          "type": "integer",
+          "description": "Transation type ID.",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "examples": [
+            100000,
+            200000
+          ]
+        },
+        "is_credit": {
+          "title": "Is credit",
+          "type": "boolean",
+          "default": "false",
+          "description": "Indicates transaction type: credit (`true`) or debit (`false`).",
+          "minLength": 1,
+          "maxLength": 5,
+          "example": "true"
+        },
+        "statement_post": {
+          "title": "Statement post",
+          "type": "boolean",
+          "default": "true",
+          "description": "Indicates transaction is posted on the statement: yes (`true`) or no (`false`).",
+          "minLength": 1,
+          "maxLength": 5,
+          "example": "true"
+        }
+      }
+    },
+    "authorization_tracking_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization tracking ID",
+      "description": "Authorization tracking ID.",
+      "minLength": 0,
+      "maxLength": 75,
+      "examples": [
+        "b7620539-eb50-46a1-aa2c-cc413cace8ab"
+      ]
+    },
+    "created_at": {
+      "title": "Created at",
+      "description": "Transaction creation date in RFC-3339 format (yyyy-MM-ddThh:mm:ss.SSSZ).",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2025-08-06T22:13:03.000Z"
+      ]
+    },
+    "customer_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Customer ID",
+      "description": "Customer ID.",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "examples": [
+        125252,
+        258292
+      ]
+    },
+    "details": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Details",
+      "description": "Transaction metadata.\n<br> When creating, updating, or canceling an earmark, `corporate_metadata` is generated in the `metadata` field. `corporate_metadata` includes the following subfields:\n * `debit_external_account_id`: Debit account ID in the creation operation.\n * `earmark_id`: Created earmark ID.",
+      "examples": [
+        "{'internal_debit_account_id':'123'}"
+      ]
+    },
+    "due_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Due date",
+      "description": "Statement due date in ISO 8601.",
+      "minLength": 0,
+      "maxLength": 10,
+      "format": "date",
+      "examples": [
+        "2019-02-04"
+      ]
+    },
+    "installment": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Installment",
+      "description": "Installment index.",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "examples": [
+        1,
+        2
+      ]
+    },
+    "interest_rate": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Interest rate",
+      "description": "Transaction interest rate.",
+      "minimum": 0,
+      "maximum": 18446744073709551617,
+      "examples": [
+        20.5,
+        0.0
+      ]
+    },
+    "number_of_installments": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Number of installments",
+      "description": "Installments count.",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "examples": [
+        4,
+        5
+      ]
+    },
+    "origin": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Origin",
+      "default": null,
+      "description": "Transaction origin. When value is `null`, the transaction originated from the Pismo platform. Other values indicate the transaction came from another platform and was migrated to the Pismo platform.",
+      "minLength": 0,
+      "maxLength": 75,
+      "examples": [
+        "MIGRATION"
+      ]
+    },
+    "payment_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Payment date",
+      "description": "Payment date in ISO 8601 (yyyy-MM-ddThh:mm:ssZ).",
+      "format": "date-time",
+      "examples": [
+        "2019-09-04T22:13:03Z"
+      ]
+    },
+    "payment_datetime": {
+      "title": "Payment datetime",
+      "description": "Payment datetime in RFC3339 (yyyy-MM-ddThh:mm:ss.SSSZ).",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "examples": [
+        "2019-09-04T22:13:03.000Z"
+      ]
+    },
+    "processing_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Processing code",
+      "description": "Transaction processing code.",
+      "minLength": 0,
+      "maxLength": 6,
+      "examples": [
+        "PC_123"
+      ]
+    },
+    "processing_description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Processing description",
+      "description": "Processing code description. For more information, refer to [Processing codes and transaction types](doc:processing-codes-and-transaction-types).",
+      "minLength": 0,
+      "maxLength": 50,
+      "examples": [
+        "DEBIT PURCHASE"
+      ]
+    },
+    "rates": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": [
+        {
+          "type": "object",
+          "title": "Rates",
+          "description": "Rates applied to transaction amount (`null` if no rates).",
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "title": "Type",
+              "description": "Rates type: `settlement_conversion_rate` (local currency exchange rate) or `reference_to_cardholder_exchange_rate` (local currency conversion rate to the cardholder currency).",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40,
+              "enum": [
+                "settlement_conversion_rate",
+                "reference_to_cardholder_exchange_rate"
+              ],
+              "examples": [
+                "settlement_conversion_rate"
+              ]
+            },
+            "value": {
+              "title": "Value",
+              "description": "Rate value.",
+              "type": "number",
+              "example": 1.99,
+              "minimum": 1,
+              "maximum": 18446744073709551617
+            }
+          }
+        }
+      ]
+    },
+    "reference_to_cardholder_exchange_rate": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Reference to cardholder exchange rate",
+      "description": "Local currency conversation rate to the cardholder currency.",
+      "examples": [
+        5.23,
+        0.0
+      ]
+    },
+    "soft_descriptor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Soft descriptor",
+      "description": "Temporary description that appears on the statement after a transaction. This value is replaced by a permanent billing descriptor after the transaction settles.",
+      "minLength": 0,
+      "maxLength": 100,
+      "examples": [
+        "Adjustment made by a operator."
+      ]
+    },
+    "statement_id": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Statement ID",
+      "description": "Statement transaction ID.",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "examples": [
+        1,
+        955
+      ]
+    },
+    "tax": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": [
+        {
+          "title": "Tax",
+          "type": "object",
+          "description": "Transaction tax.",
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "description": "Tax type \u2013 IOF, DAILY_IOF, or INTEREST.",
+              "minLength": 1,
+              "maxLength": 20,
+              "enum": [
+                "IOF",
+                "DAILY_IOF",
+                "INTEREST"
+              ],
+              "examples": [
+                "IOF"
+              ]
+            },
+            "value": {
+              "type": "number",
+              "title": "Value",
+              "description": "Tax value.",
+              "minimum": 0,
+              "maximum": 18446744073709551617,
+              "example": 100
+            }
+          }
+        }
+      ]
+    },
+    "transaction_group": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Transaction group",
+      "description": "Program transaction group. Create a customized label to link `program` and `transactionType`.",
+      "minLength": 0,
+      "maxLength": 50,
+      "examples": [
+        "TAXES_AND_FEES",
+        "NATIONAL",
+        "INSTALLMENT"
+      ]
+    },
+    "user_category": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "User category",
+      "description": "Account user transaction category.",
+      "minLength": 0,
+      "maxLength": 58,
+      "examples": [
+        "health",
+        "sports"
+      ]
+    }
+  }
+}

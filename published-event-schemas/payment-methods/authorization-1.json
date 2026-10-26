@@ -1,0 +1,362 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Payment methods authorization created",
+  "description": "This event represents a payment methods authorization request. This can be a request to a purchase authorization but also to a cancellation or confirmation. This is differentiated by the MTI of the operation.",
+  "required": [
+    "tracking_id"
+  ],
+  "properties": {
+    "tracking_id": {
+      "title": "Tracking ID of the authorization",
+      "description": "Unique tracking id used to identify an authorization request. If payment methods API doesn't receive one, it will generate a new one and the request will be handled as a new Request. Different requests using the same tracking id will be considered the same request and will return the same result.",
+      "type": "string",
+      "examples": [
+        "99999999-1234-4321-5678-123456789012"
+      ]
+    },
+    "category": {
+      "title": "Event Category",
+      "description": "Describe the action this event represents over an Authorization.",
+      "type": "string",
+      "enum": [
+        "AUTHORIZATION",
+        "DECLINED",
+        "CANCELLATION",
+        "CONFIRMATION"
+      ]
+    },
+    "mti": {
+      "title": "Message Type Identifier",
+      "description": "It will identify if it is an Authorization, Cancellation or Confirmation request.",
+      "type": "string",
+      "examples": [
+        "0100",
+        "0400",
+        "0202"
+      ]
+    },
+    "clearing_type": {
+      "title": "Clearing Type",
+      "description": "Define whether the confirmation of the authorization will be performed online at request time or it will wait for a confirmation request. If not present, MTI is considered to define this behavior.",
+      "type": "string",
+      "enum": [
+        "",
+        "ONLINE",
+        "OFFLINE"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo ID of the account to be used as the owner of this request.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        15500,
+        1000
+      ]
+    },
+    "program_id": {
+      "title": "Program ID",
+      "description": "Pismo ID of the program related to the owner of this request.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        99,
+        123
+      ]
+    },
+    "card_id": {
+      "title": "Card Identifier",
+      "description": "Pismo ID of the card related to the owner of this request.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        536743,
+        94628393
+      ]
+    },
+    "card_mode_id": {
+      "title": "Card Mode Identifier",
+      "description": "Pismo ID of the card mode related to the card used on this request.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        6443298,
+        7566890
+      ]
+    },
+    "document_number_present": {
+      "title": "Document Number Presence",
+      "description": "Identifies whether the Document Number was present as the authorization identification of the account holder.",
+      "type": "boolean"
+    },
+    "authentication_token_present": {
+      "title": "Authentication Token Presence",
+      "description": "Identifies whether the Authentication Token was present as the authorization identification of the account holder.",
+      "type": "boolean"
+    },
+    "processing_code": {
+      "title": "Processing Code",
+      "description": "Unique alphanumeric identifier that defines how the Pismo platform handles this financial authorization.",
+      "type": "string",
+      "examples": [
+        "00",
+        "00AABB"
+      ]
+    },
+    "network": {
+      "title": "Network Identifier",
+      "description": "Identify the Network/Partner where this request has come from.",
+      "type": "string",
+      "examples": [
+        "Mastercard",
+        "Partner"
+      ]
+    },
+    "entry_mode": {
+      "title": "Entry Mode",
+      "description": "Defines the authorization entry mode.",
+      "type": "string",
+      "examples": [
+        "01",
+        "05"
+      ]
+    },
+    "card_number_present": {
+      "title": "Card Number Presence",
+      "description": "Identifies whether the Card Number was present as the authorization identification of the account holder.",
+      "type": "boolean"
+    },
+    "cvv2_present": {
+      "title": "Cvv2 Presence",
+      "description": "Identifies whether the CVV 2 was present as the cardholder verification method.",
+      "type": "boolean"
+    },
+    "track1_data_present": {
+      "title": "Track1 Data Presence",
+      "description": "Identifies whether the Track1 Data was present as the cardholder verification method.",
+      "type": "boolean"
+    },
+    "track2_data_present": {
+      "title": "Track1 Data Presence",
+      "description": "Identifies whether the Track2 Data was present as the cardholder verification method.",
+      "type": "boolean"
+    },
+    "pin_present": {
+      "title": "Pin Block Presence",
+      "description": "Identifies whether the Pin Block was present as the cardholder verification method.",
+      "type": "boolean"
+    },
+    "cryptogram_data_present": {
+      "title": "Pin Block Presence",
+      "description": "Identifies whether the Cryptogram Data was present as the cardholder verification method.",
+      "type": "boolean"
+    },
+    "merchant_id": {
+      "title": "Merchant Identifier",
+      "description": "Identifies the card acceptor that defines the point of the transaction in both local and interchange environments. This is used as a merchant ID to uniquely identify the merchant in a POS transaction.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "merchant_category_code": {
+      "title": "MCC",
+      "description": "This is the classification (MCC) of the merchant\u2019s type of business or service.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "merchant_name": {
+      "title": "Merchant Name",
+      "description": "Name of the Merchant where the authorization is performed.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "merchant_city": {
+      "title": "Merchant City",
+      "description": "City of the Merchant where the authorization is performed.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "merchant_country": {
+      "title": "Merchant Country",
+      "description": "Country Code of the Merchant where the authorization is performed.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "merchant_terminal_id": {
+      "title": "Merchant Terminal ID",
+      "description": "This uniquely identifies a terminal at the card acceptor location.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authorization_code": {
+      "title": "Authorization Code",
+      "description": "Alphanumeric code generated in an authorization request and assigned to the authorization response. Used on cancellation or advices requests to match the original authorization.",
+      "type": "string",
+      "examples": [
+        "ABC123"
+      ]
+    },
+    "response_code": {
+      "title": "Authorization Response Code",
+      "description": "Response code indicating the decision taken over an authorization request. Used in advice requests to identify the decision taken outside Pismo platform.",
+      "type": "string",
+      "examples": [
+        "ABC123"
+      ]
+    },
+    "denial_code": {
+      "title": "Authorization Denial Code",
+      "description": "Denial code that indicates the reason why the request was denied.",
+      "type": "string",
+      "examples": [
+        "SED",
+        "IAD"
+      ]
+    },
+    "installment_plan_id": {
+      "title": "Installment Plan Identifier",
+      "description": "Identifier of the installment plan that should be used to calculate this purchase.",
+      "type": "string"
+    },
+    "nsu": {
+      "title": "NSU",
+      "description": "Sequential unique number that identifies this authorization.",
+      "type": "string",
+      "examples": [
+        "123456789"
+      ]
+    },
+    "authorization_datetime": {
+      "title": "Acquirer Authorization Date Time",
+      "description": "Date and time when the authorization request took place on acquirer side.",
+      "type": "string",
+      "format": "date-time",
+      "examples": [
+        "2020-01-01T10:10:00Z"
+      ]
+    },
+    "amount": {
+      "title": "Authorization Amount",
+      "description": "Total Amount of the authorization being requested in the local currency of the acquirer or source location of the transaction.",
+      "type": "number",
+      "examples": [
+        10.0,
+        123.99
+      ]
+    },
+    "currency_code": {
+      "title": "Alphabetic authorization currency code",
+      "description": "ISO-4217 alphabetic code (3 characters) for local authorization's currency used in the `amount` field.",
+      "type": "string",
+      "examples": [
+        "USD"
+      ]
+    },
+    "currency_num_code": {
+      "title": "Numeric authorization currency code",
+      "description": "ISO-4217 numeric code (3 digits) for local authorization's currency used in the `amount` field.",
+      "type": "string",
+      "examples": [
+        "840"
+      ]
+    },
+    "authorization_mode": {
+      "title": "Authorization Mode",
+      "description": "Defines the mode of the authorization being requested.",
+      "type": "string",
+      "examples": [
+        "CREDIT",
+        "DEBIT"
+      ]
+    },
+    "pre_authorization": {
+      "title": "Pre Authorization Indicator",
+      "description": "Defines whether this authorization request is a pre authorization or not.",
+      "type": "boolean"
+    },
+    "number_of_installments": {
+      "title": "Number Of Installments",
+      "description": "Number of installments of this authorization request. Purchases without installments should have the value 1.",
+      "type": "integer",
+      "examples": [
+        1,
+        12
+      ]
+    },
+    "atc": {
+      "title": "Application transaction counter",
+      "description": "The ATC (application transaction counter) is a counter, maintained by the chip card application (incremented by the chip), that provides a sequential reference to each transaction.  This field is the ATC value for this card  on this authorization. Only authorization requests with cryptogram information contain this counter.",
+      "type": "integer",
+      "examples": [
+        100,
+        0
+      ]
+    },
+    "labels": {
+      "title": "Authorization Labels",
+      "description": "List with all labels related to this authorization. Each label identifies an authorization characteristic.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "INCREMENT_ATC",
+          "INCREMENT_PASSWORD_TRIES",
+          "BLOCK_CARD",
+          "CLEAR_PASSWORD_TRIES"
+        ]
+      }
+    },
+    "card_validations": {
+      "title": "Card validations",
+      "description": "Object Additional card validations data, if applicable.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "bin": {
+          "type": "string",
+          "title": "Card BIN",
+          "description": "Card BIN (Bank Identification Number) used in the authorization.",
+          "examples": [
+            "123456",
+            "654321"
+          ]
+        },
+        "last_4_digits": {
+          "type": "string",
+          "title": "Card last 4 digits",
+          "description": "Last 4 digits of the card used in the authorization.",
+          "examples": [
+            "1234",
+            "5678"
+          ]
+        }
+      }
+    }
+  }
+}

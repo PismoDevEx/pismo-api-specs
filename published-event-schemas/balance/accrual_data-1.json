@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Accrual created",
+  "description": "Event generated when an accrual is created",
+  "required": [
+    "program_id",
+    "account_id",
+    "statement_id",
+    "transaction_id",
+    "transaction_balance",
+    "interest_rate",
+    "accrual_day",
+    "accrual_type",
+    "status",
+    "accrual_value",
+    "event_date",
+    "accrual_date",
+    "created_at"
+  ],
+  "properties": {
+    "program_id": {
+      "type": "integer",
+      "description": "Program ID",
+      "examples": [
+        1010
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        1010
+      ]
+    },
+    "statement_id": {
+      "type": "integer",
+      "description": "Statement ID",
+      "examples": [
+        1010
+      ]
+    },
+    "transaction_id": {
+      "type": "integer",
+      "description": "Transaction ID",
+      "examples": [
+        1010
+      ]
+    },
+    "transaction_balance": {
+      "type": "number",
+      "description": "Transaction balance",
+      "examples": [
+        540.45
+      ]
+    },
+    "interest_rate": {
+      "type": "number",
+      "description": "Accrual interest rate",
+      "examples": [
+        1e-05
+      ]
+    },
+    "accrual_day": {
+      "type": "integer",
+      "description": "Accrual day",
+      "examples": [
+        21
+      ]
+    },
+    "accrual_type": {
+      "type": "string",
+      "description": "Accrual type.",
+      "examples": [
+        "REFINANCING",
+        "OVERDUE",
+        "DAILY_IOF",
+        "FINE",
+        "DEFAULT_INTEREST",
+        "FIXED_IOF"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Status",
+      "examples": [
+        "PENDING",
+        "STOP_ACCRUAL"
+      ]
+    },
+    "accrual_value": {
+      "type": "number",
+      "description": "Accrual value",
+      "examples": [
+        1.2
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "description": "Event date. Format = yyyy-mm-dd",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "accrual_date": {
+      "type": "string",
+      "description": "Reference date of the accrual. It may be in the future for projection. Format = yyyy-mm-dd.",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Accrual creation date/time. Format = yyyy-MM-ddTHH:mm:ss.fffZ",
+      "format": "datetime",
+      "examples": [
+        "2023-04-14T15:15:40.123Z"
+      ]
+    },
+    "additional_info": {
+      "type": "object",
+      "properties": {
+        "account_financial_classification": {
+          "type": "integer",
+          "description": "Customer-defined number representing the financial classification of the account. (Default: 0)",
+          "examples": [
+            2
+          ]
+        }
+      }
+    }
+  }
+}

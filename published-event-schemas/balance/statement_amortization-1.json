@@ -1,0 +1,217 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Statement amortization discharge",
+  "description": "This event is generated for each credit transaction that goes through the discharge process and impacts an account statement. Each event can contain one or more statements that were impacted by the discharge.",
+  "required": [
+    "account_id",
+    "credit_transaction_id",
+    "transaction_type_id",
+    "transaction_amount",
+    "previous_balance",
+    "final_balance",
+    "statements_discharged"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        5106089
+      ]
+    },
+    "credit_transaction_id": {
+      "type": "integer",
+      "description": "Credit transaction ID",
+      "examples": [
+        60659309
+      ]
+    },
+    "transaction_type_id": {
+      "type": "integer",
+      "description": "Credit transaction type ID",
+      "examples": [
+        201
+      ]
+    },
+    "transaction_amount": {
+      "type": "number",
+      "description": "Credit transaction total amount",
+      "examples": [
+        240.48
+      ]
+    },
+    "previous_balance": {
+      "type": "number",
+      "description": "Credit transaction previous balance",
+      "examples": [
+        300.52
+      ]
+    },
+    "final_balance": {
+      "type": "number",
+      "description": "Credit transaction final balance",
+      "examples": [
+        100.0
+      ]
+    },
+    "statements_discharged": {
+      "type": [
+        "array",
+        "null",
+        "object"
+      ],
+      "title": "Statements discharged",
+      "description": "Statements that were impacted by the credit transaction discharge",
+      "items": {
+        "type": "object",
+        "title": "Statement discharged",
+        "description": "One or more debit statements discharged by credit transaction",
+        "required": [
+          "statement_id",
+          "status",
+          "cycle",
+          "previous_balance",
+          "debits",
+          "credits",
+          "current_balance",
+          "minimum_payment",
+          "previous_amount_due",
+          "discharged_amount",
+          "final_amount_due",
+          "calendar"
+        ],
+        "properties": {
+          "statement_id": {
+            "type": "integer",
+            "description": "Discharged statement ID",
+            "examples": [
+              100002556
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Statement status",
+            "examples": [
+              "CLOSED",
+              "CLOSED_NOT_DUE",
+              "OPEN",
+              "FUTURE"
+            ]
+          },
+          "cycle": {
+            "type": "integer",
+            "description": "Statement cycle",
+            "examples": [
+              3
+            ]
+          },
+          "previous_balance": {
+            "type": "number",
+            "description": "Previous balance of the statement",
+            "examples": [
+              118.9
+            ]
+          },
+          "debits": {
+            "type": "number",
+            "description": "Total debits of the statement",
+            "examples": [
+              118.9
+            ]
+          },
+          "credits": {
+            "type": "number",
+            "description": "Total credits of the statement",
+            "examples": [
+              118.9
+            ]
+          },
+          "current_balance": {
+            "type": "number",
+            "description": "Current balance of the statement",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "minimum_payment": {
+            "type": "number",
+            "description": "Minimum amount due of the statement",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "previous_amount_due": {
+            "type": "number",
+            "description": "Amount due value before the discharge",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "previous_statements_discharge_amount": {
+            "type": "number",
+            "description": "Amount discharged from previous statements",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "discharged_amount": {
+            "type": "number",
+            "description": "Amount discharged of the statement",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "final_amount_due": {
+            "type": "number",
+            "description": "Amount due value after the discharge",
+            "format": "double",
+            "examples": [
+              210.0
+            ]
+          },
+          "calendar": {
+            "type": "object",
+            "title": "Statement calendar",
+            "description": "Statement calendar details",
+            "required": [
+              "cycle_closing_date",
+              "due_date"
+            ],
+            "properties": {
+              "cycle_closing_date": {
+                "type": "string",
+                "description": "Statement cycle closing date",
+                "format": "date",
+                "examples": [
+                  "2021-06-21"
+                ]
+              },
+              "due_date": {
+                "type": "string",
+                "description": "Statement due date",
+                "format": "date",
+                "examples": [
+                  "2021-06-21"
+                ]
+              },
+              "real_due_date": {
+                "type": "string",
+                "description": "Statement real due date",
+                "format": "date",
+                "examples": [
+                  "2021-06-21"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

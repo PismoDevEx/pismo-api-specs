@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unit receivable confirm pre contracted operation failed",
+  "description": "Event that represents failure from pre contracted operation confirmation",
+  "required": [
+    "acquirer_document_number",
+    "communication_id",
+    "message"
+  ],
+  "properties": {
+    "acquirer_document_number": {
+      "type": "string",
+      "title": "Acquirer Document Number",
+      "description": "Acquirer document number",
+      "examples": [
+        "20481714683595"
+      ]
+    },
+    "communication_id": {
+      "type": "string",
+      "title": "Communication ID",
+      "description": "Communication identifier",
+      "examples": [
+        "comm-123456"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Message refers to the process of failure when trying to confirm pre contracted operation",
+      "examples": [
+        "Failed to confirm operation",
+        "Registrar callback failed"
+      ]
+    }
+  }
+}

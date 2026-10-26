@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/merchants_transactions_outgoing-1.json",
+  "type": "object",
+  "title": "Merchant transactions migration completed",
+  "description": "Event generated when a merchant transaction migration finishes and the result is reported.",
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Merchant transaction is migrated successfully",
+      "migration": {
+        "id": "5165",
+        "version_date": "2023-05-30T16:22:29.000Z"
+      },
+      "entity": {
+        "processed_at": "2023-07-07T19:55:49.294Z",
+        "transaction_id": 39094,
+        "entity": "TRANSACTION"
+      }
+    }
+  ],
+  "required": [
+    "operation",
+    "status",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "Whether or not the merchants migration is a creation or an update",
+      "enum": [
+        "CREATION",
+        "UPDATE"
+      ],
+      "examples": [
+        "UPDATE"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "Whether or not the result of the merchant transaction migration was successful",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "The migration message code",
+      "default": "",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Message of the merchant migration result",
+      "default": "",
+      "examples": [
+        "Merchant transaction is migrated successfully"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Transaction Identifiers Object",
+      "description": "Identifier sent at the start of the migration process",
+      "examples": [
+        {
+          "id": "migration-id",
+          "version_date": "2021-08-11T11:25:00.000Z"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "title": "Version date of the migration Identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Pismo-generated merchant transactions information",
+      "examples": [
+        {
+          "processed_at": "2023-07-07T19:55:49.294Z",
+          "transaction_id": "12321",
+          "entity": "MERCHANT"
+        }
+      ],
+      "required": [
+        "transaction_id",
+        "processed_at"
+      ],
+      "properties": {
+        "transaction_id": {
+          "$id": "#/properties/entity/properties/transaction_id",
+          "type": "integer",
+          "title": "Transaction Id",
+          "description": "Transaction Id",
+          "examples": [
+            39093
+          ]
+        },
+        "entity": {
+          "$id": "#/properties/entity/properties/entity",
+          "type": "string",
+          "title": "Entity type",
+          "description": "Entity data",
+          "examples": [
+            39093
+          ]
+        },
+        "processed_at": {
+          "$id": "#/properties/entity/properties/processed_at",
+          "type": "string",
+          "title": "Processing date",
+          "description": "Processing date",
+          "examples": [
+            "2023-07-07T19:55:49.294Z"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

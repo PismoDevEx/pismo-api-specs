@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bank account registered",
+  "description": "Bank account registered. The following endpoints generate this event: <a href='https://developers.pismo.io/pismo-docs/reference/post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-iban'>Register IBAN account</a>, <a href='https://developers.pismo.io/pismo-docs/reference/post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-uk-scan'>Register UK bank acount</a>, and <a href='https://developers.pismo.io/pismo-docs/reference/post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-brazil'>Register Brazilian bank account</a> and <a href='https://developers.pismo.io/pismo-docs/reference/post-intl-bank-accounts-v2-accounts-account-id-bank-accounts-bban'>Register BBAN account</a>",
+  "required": [
+    "account_id",
+    "creation_datetime",
+    "scheme"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account identifier",
+      "description": "Pismo account ID.",
+      "examples": [
+        8675309
+      ]
+    },
+    "creation_datetime": {
+      "type": "string",
+      "title": "Bank account creation datetime",
+      "description": "Bank account creation datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "scheme": {
+      "type": "object",
+      "title": "International bank account scheme. A scheme is what identifies the account, such as a scan code and account number (SCAN) in the UK.",
+      "description": "International bank account scheme",
+      "examples": [
+        {
+          "sort_code": "100000",
+          "account_number": "31510604"
+        },
+        {
+          "iban": "GB24BKEN10000031510604"
+        }
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "International bank account type",
+      "description": "International bank account type: `CACC` - Checking account, `SVGS` - Savings account, `TRAN` - Brazilian specific account, `SLRY` - Salary account, employer deposits salary.",
+      "enum": [
+        "CACC",
+        "SVGS",
+        "TRAN",
+        "SLRY"
+      ],
+      "examples": [
+        "CACC"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "title": "International bank account metadata",
+      "description": "International Bank Account Metadata",
+      "examples": [
+        {
+          "custom_field_1": "custom data 1",
+          "custom_field_2": "custom data 2"
+        }
+      ]
+    }
+  }
+}

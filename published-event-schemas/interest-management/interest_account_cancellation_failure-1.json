@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest account cancellation failure",
+  "description": "This event occurs when an attempt to cancel an account fails with product interest management.",
+  "required": [
+    "external_account_cancellation_id",
+    "program_id",
+    "account_id",
+    "message"
+  ],
+  "properties": {
+    "external_account_cancellation_id": {
+      "type": "string",
+      "title": "External account cancellation ID",
+      "description": "Customer-defined identifier for account cancellation operation",
+      "examples": [
+        "6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "program_id": {
+      "type": "string",
+      "title": "Program ID",
+      "description": "Unique ID used to identify the program in the Pismo platform APIs.",
+      "examples": [
+        "1234"
+      ]
+    },
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        "123"
+      ]
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Customer document number",
+      "description": "Number of asset quota owner's legal document",
+      "examples": [
+        "00000000012"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Cancellation date",
+      "description": "Date when account was cancelled by client",
+      "format": "date",
+      "examples": [
+        "2025-01-01"
+      ]
+    },
+    "metadata": {
+      "type": "array",
+      "title": "List of metadata fields"
+    }
+  }
+}

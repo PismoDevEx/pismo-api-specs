@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unicity credit rights receivable validation succeeded",
+  "description": "Event that represents a successfully Unicity Credit Rights Receivable validation",
+  "required": [
+    "interop_holding_number",
+    "lender_document_number",
+    "debtor_document_number",
+    "maturity_date",
+    "face_value"
+  ],
+  "properties": {
+    "interop_holding_number": {
+      "type": "string",
+      "title": "Interop Holding Number",
+      "description": "Credit Rights Receivable recurring code with letter",
+      "examples": [
+        "ABCY"
+      ]
+    },
+    "lender_document_number": {
+      "type": "string",
+      "title": "Lender document number",
+      "description": "Document number of lender",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "debtor_document_number": {
+      "type": "string",
+      "title": "Debtor document number",
+      "description": "Document number of debtor",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "Refers to the date that the Credit Rights Receivable will be expired, finishing his cycle.",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "face_value": {
+      "type": "number",
+      "title": "Face value",
+      "description": "Value of units that this Credit Rights Receivable has.",
+      "format": "double",
+      "examples": [
+        10.0
+      ]
+    },
+    "interop_response": {
+      "type": "object",
+      "title": "Items referring to interops response"
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Recurring scheduled charge updated",
+  "description": "Event generated when a recurring charge is updated.",
+  "required": [
+    "recurring_scheduled_charge_id",
+    "recurring_charge_link_id",
+    "org_id",
+    "account_id",
+    "statement_id",
+    "status",
+    "created_at",
+    "processing_code",
+    "installment_amount",
+    "description",
+    "cycle",
+    "updated_at",
+    "cid"
+  ],
+  "properties": {
+    "recurring_scheduled_charge_id": {
+      "type": "number",
+      "description": "The charge identifier",
+      "examples": [
+        9832195123
+      ]
+    },
+    "recurring_charge_link_id": {
+      "type": "number",
+      "description": "The link which generated the following charge",
+      "examples": [
+        9832195123
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "account_id": {
+      "type": "number",
+      "description": "The account identifier associated with the charge",
+      "examples": [
+        2232442
+      ]
+    },
+    "statement_id": {
+      "type": "number",
+      "description": "The statement identifier associated with the charge",
+      "examples": [
+        3435345
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Charges`s status",
+      "examples": [
+        "The actual status which triggered the event."
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Charge creation date and time in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "description": "Charge update event date and time in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "description": "Charactere sequence that represents a group of resultant transactions.",
+      "examples": [
+        "009999"
+      ]
+    },
+    "installment_amount": {
+      "type": "number",
+      "description": "Credit transaction total amount",
+      "examples": [
+        12.0
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "Charge`s description",
+      "examples": [
+        "Description of the recurring charge plan."
+      ]
+    },
+    "cycle": {
+      "type": "integer",
+      "description": "The cycle associated with the following charge",
+      "exemples": [
+        3
+      ]
+    },
+    "secondary_processing_code": {
+      "type": "string",
+      "description": "Charactere sequence that represents a group of resultant transactions.",
+      "examples": [
+        "009999"
+      ]
+    },
+    "secondary_installment_amount": {
+      "type": "number",
+      "description": "Credit transaction total amount",
+      "examples": [
+        12.0
+      ]
+    },
+    "secondary_description": {
+      "type": "string",
+      "description": "Charge`s secondary description",
+      "examples": [
+        "Description of the  secondary item of the recurring charge plan."
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Correlational ID of event",
+      "description": "This is not a unique value, so different events (from same domain+event_type or not) can share same cid. This is usefull to identify all events produced from same request or processing.",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    }
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Prepayment status changed",
+  "description": "This event signals when a prepayment has changed its status.",
+  "required": [
+    "org_id",
+    "loan_id",
+    "prepayment_id",
+    "previous_status",
+    "current_status",
+    "amount_paid",
+    "reduce_option",
+    "currency",
+    "account_id",
+    "program_id",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "org_id": {
+      "title": "Org/tenant ID",
+      "description": "Pismo organization/tenant ID",
+      "type": "string",
+      "examples": [
+        "TN-da19df8f-06cf-4ab0-bc7d-9907205a822d"
+      ]
+    },
+    "loan_id": {
+      "title": "Loan ID",
+      "description": "Loan ID",
+      "type": "string",
+      "examples": [
+        "10007708506"
+      ]
+    },
+    "prepayment_id": {
+      "title": "Prepayment ID",
+      "description": "System-generated unique prepayment ID",
+      "type": "string",
+      "examples": [
+        "e9bad03e-d08e-4423-b157-732e5b35c627"
+      ]
+    },
+    "previous_status": {
+      "title": "Previous status",
+      "description": "Prepayment status before the change",
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "PROCESSING",
+        "REGISTERED"
+      ]
+    },
+    "current_status": {
+      "title": "Current status",
+      "description": "Prepayment status after the change",
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "PROCESSING",
+        "REGISTERED"
+      ]
+    },
+    "amount_paid": {
+      "title": "Amount paid",
+      "description": "Amount paid for the prepayment",
+      "type": "number",
+      "examples": [
+        150
+      ]
+    },
+    "reduce_option": {
+      "title": "Reduce option",
+      "description": "Option for reducing the loan (such as, `TERM` or `INSTALLMENT`)",
+      "type": "string",
+      "enum": [
+        "TERM",
+        "INSTALLMENT"
+      ]
+    },
+    "currency": {
+      "title": "Currency",
+      "description": "ISO 4217 currency code",
+      "type": "string",
+      "examples": [
+        "BRL"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": "integer",
+      "examples": [
+        327650152
+      ]
+    },
+    "program_id": {
+      "title": "Program ID",
+      "description": "Program ID",
+      "type": "integer",
+      "examples": [
+        44252
+      ]
+    },
+    "created_at": {
+      "title": "DateTime creation in UTC",
+      "description": "ISO 8601 / RFC 3339 format: `YYYY-MM-DDThh:mm:ss.sssZ` (UTC)",
+      "type": "string",
+      "format": "date-time",
+      "examples": [
+        "2026-05-28T12:18:35.031Z"
+      ]
+    },
+    "updated_at": {
+      "title": "DateTime last update in UTC",
+      "description": "ISO 8601 / RFC 3339 format: `YYYY-MM-DDThh:mm:ss.sssZ` (UTC)",
+      "type": "string",
+      "format": "date-time",
+      "examples": [
+        "2026-05-28T12:18:35.031Z"
+      ]
+    }
+  }
+}

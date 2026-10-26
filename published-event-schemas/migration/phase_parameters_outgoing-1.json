@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/phase_parameters_outgoing-1.json",
+  "type": "object",
+  "title": "Phase parameters migration completed",
+  "description": "Event generated when phase parameters processing is completed and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Phase ID parameters successfully saved",
+      "migration": {
+        "phase_id": "Rollout_Jan2022"
+      },
+      "entity": {
+        "parameters": {
+          "allow_cards_migration": false
+        }
+      }
+    }
+  ],
+  "required": [
+    "operation",
+    "status",
+    "code",
+    "message",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "description": "The phase ID parameters operation. For this event, the operation is always CREATION.",
+      "const": "CREATION",
+      "examples": [
+        "CREATION"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "description": "If the result of phase ID parameters processing was successful or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "description": "A result code that uniquely identifies a success result (MIGR-0001) or each error class (other codes). All codes have the format `MIGR-\\d{4}`.",
+      "default": "",
+      "pattern": "^MIGR-\\d{4}$",
+      "examples": [
+        "MIGR-0001",
+        "MIGR-0400"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "description": "Freeform, human-readable message describing the phase ID parameters processing result. When filtering events, prefer using `code` and `status` instead of relying on this attribute",
+      "default": "",
+      "examples": [
+        "Phase ID parameters successfully saved",
+        "Invalid PhaseIdParameters: parameters are required"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "description": "Migration identifier data",
+      "examples": [
+        {
+          "phase_id": "Rollout_Jan2022"
+        }
+      ],
+      "properties": {
+        "phase_id": {
+          "$id": "#/properties/migration/properties/phase_id",
+          "type": "string",
+          "description": "Migration phase identifier",
+          "examples": [
+            "Rollout_Jan2022"
+          ]
+        }
+      },
+      "required": [
+        "phase_id"
+      ],
+      "additionalProperties": false
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Contains the entity data with parameters",
+      "examples": [
+        {
+          "parameters": {
+            "allow_cards_migration": false
+          }
+        }
+      ],
+      "properties": {
+        "parameters": {
+          "$id": "#/properties/entity/properties/parameters",
+          "type": "object",
+          "description": "Key-value pairs of phase ID parameters",
+          "examples": [
+            {
+              "allow_cards_migration": false
+            }
+          ],
+          "properties": {
+            "allow_cards_migration": {
+              "$id": "#/properties/entity/properties/parameters/properties/allow_cards_migration",
+              "type": "boolean",
+              "description": "Indicates whether cards migration is allowed for this phase",
+              "examples": [
+                false
+              ]
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

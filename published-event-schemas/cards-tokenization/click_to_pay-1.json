@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Click to Pay event generated",
+  "description": "Click to Pay event generated. All non-GET Click to Pay endpoints generate this event. For more information, refer to [Click to Pay](https://developers.pismo.io/pismo-docs/docs/click-to-pay)",
+  "required": [
+    "status",
+    "event_type",
+    "org_id",
+    "account_id",
+    "customer_id"
+  ],
+  "properties": {
+    "status": {
+      "title": "Status",
+      "description": "Operation status",
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "FAILURE"
+      ]
+    },
+    "event_type": {
+      "title": "Event type",
+      "description": "Event type",
+      "type": "string",
+      "enum": [
+        "ENROLL_CUSTOMER",
+        "ENROLL_CARD",
+        "UPDATE_CUSTOMER_INFORMATION",
+        "UPDATE_CARD_INFORMATION",
+        "DELETE_CUSTOMER_INFORMATION",
+        "DELETE_CARD_INFORMATION"
+      ]
+    },
+    "org_id": {
+      "title": "Organization ID",
+      "description": "Organization/tenant ID",
+      "type": "string",
+      "examples": [
+        "TN-6aec613f-44ba-4184-9488-bf0343e123123"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": "integer",
+      "examples": [
+        42488654
+      ]
+    },
+    "customer_id": {
+      "title": "Customer ID",
+      "description": "Pismo customer ID",
+      "type": "integer",
+      "examples": [
+        11188654
+      ]
+    },
+    "message": {
+      "title": "Message",
+      "description": "Message",
+      "type": "string",
+      "examples": [
+        "SUCCESS"
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "Event card ID.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        42488842
+      ]
+    },
+    "error_details": {
+      "title": "Error Details",
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "Error details",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "Code": {
+            "type": "integer",
+            "title": "Error code",
+            "description": "Error code",
+            "examples": [
+              500
+            ]
+          },
+          "Message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Error message"
+          },
+          "Details": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "title": "Error details",
+              "description": "Error details"
+            }
+          }
+        }
+      }
+    }
+  }
+}

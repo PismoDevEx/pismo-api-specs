@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/recurring_charge_link_incoming-1.json",
+  "type": "object",
+  "title": "Recurring Charge link migration started",
+  "description": "Event generated when a recurring charge link migration is started. Contains the payload with the data to be migrated.",
+  "additionalProperties": true,
+  "examples": [
+    {
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "1",
+      "line_number": "1",
+      "entity": {
+        "migration": {
+          "account_id": "57707e82-cc0e-427f-8423-dff96285ec3d"
+        },
+        "links": [
+          {
+            "migration_id": "9b8c1829-4e12-486a-9a28-e4f87a25b5d2",
+            "migration_version": "2024-01-08T14:41:42Z",
+            "recurring_charge_plan_id": 1573,
+            "recurring_charge_plan_migration_id": "97d9e5e4-358e-42ff-b56b-78c5be51af84",
+            "description": "Card Annuity",
+            "post_installment_charge_on_current_cycle": false,
+            "start_installment_charge_in": 3,
+            "renew": true
+          }
+        ]
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity/properties/entity",
+      "type": "object",
+      "description": "This field represents a set of recurring charge links associated to an account.",
+      "required": [
+        "migration",
+        "links"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "This field contains data that identifies the migration's related entities.",
+          "examples": [
+            {
+              "account_id": "00046429504363683042022"
+            }
+          ],
+          "required": [
+            "account_id"
+          ],
+          "properties": {
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "Migration identifier of the account associated with the links being migrated",
+              "examples": [
+                "00046429504363683042022"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "links": {
+          "$id": "#/properties/entity/properties/links",
+          "type": "array",
+          "description": "List of links being migrated",
+          "items": {
+            "type": "object",
+            "required": [
+              "migration_id",
+              "migration_version"
+            ],
+            "properties": {
+              "migration_id": {
+                "$id": "#/properties/entity/properties/links/properties/migration_id",
+                "type": "string",
+                "description": "Unique migration identifier for the link being migrated",
+                "examples": [
+                  "dab11a5c-c5f7-477c-ab2f-8fbd5a609400"
+                ]
+              },
+              "migration_version": {
+                "$id": "#/properties/entity/properties/links/properties/migration_version",
+                "type": "string",
+                "description": "A record identifier for update data. Valid format (yyyy-MM-ddTHH:mm:ss.sssZ).",
+                "format": "date-time",
+                "examples": [
+                  "2021-07-19T09:55:00.000Z"
+                ]
+              },
+              "recurring_charge_plan_id": {
+                "$id": "#/properties/entity/properties/links/properties/recurring_charge_plan_id",
+                "type": "integer",
+                "description": "Platform ID of the Recurring Charge Plan associated with the link. If provided, the value of `recurring_charge_plan_migration_id` is ignored.",
+                "examples": [
+                  1312
+                ]
+              },
+              "recurring_charge_plan_migration_id": {
+                "$id": "#/properties/entity/properties/links/properties/recurring_charge_plan_migration_id",
+                "type": "string",
+                "description": "Migration ID of the Recurring Charge Plan associated with the link, if the plan was also created via migration.",
+                "examples": [
+                  "97d9e5e4-358e-42ff-b56b-78c5be51af84"
+                ]
+              },
+              "description": {
+                "$id": "#/properties/entity/properties/links/properties/description",
+                "type": "string",
+                "description": "A description for the recurring charge transactions created due to this link. When provided, this overrides the description set in the Recurring Charge Plan.",
+                "examples": [
+                  "Link-specific recurring charge description"
+                ]
+              },
+              "post_installment_charge_on_current_cycle": {
+                "$id": "#/properties/entity/properties/links/properties/post_installment_charge_on_current_cycle",
+                "type": "boolean",
+                "description": "Whether to apply the recurring charge from the current account cycle onwards. In case this is `true`, the value in `start_installment_charge_in` is ignored.",
+                "examples": [
+                  true
+                ]
+              },
+              "start_installment_charge_in": {
+                "$id": "#/properties/entity/properties/links/properties/start_installment_charge_in",
+                "type": "integer",
+                "description": "Indicates in which installment to start applying the recurring charge. Required when `post_installment_charge_on_current_cycle` is `false`. Must be between 1 and the `number of cycles defined in the Recurring Charge Plan`",
+                "examples": [
+                  3
+                ]
+              },
+              "renew": {
+                "$id": "#/properties/entity/properties/links/properties/renew",
+                "type": "boolean",
+                "description": "Whether the Recurring Charge Link is a renewal",
+                "examples": [
+                  false
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field identifies the name file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the size file.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "string",
+      "description": "This field identifies the line of the file that originated the event (can be 0 when origin is API).",
+      "examples": [
+        "0",
+        "2",
+        "11"
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "FILE",
+        "API"
+      ],
+      "examples": [
+        "FILE"
+      ]
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "account-operations-hub-event-data",
+  "title": "Account operations status changed",
+  "description": "This event applies to lending or credit cycle accounts and gets triggered when the account collection status changes, such as when a loan or credit account passes a due date. This event also occurs when the collection status is updated to `NORMAL`, which can happen when a loan or credit account has a payment made after the due date.",
+  "type": "object",
+  "required": [
+    "account_id",
+    "origin",
+    "collection_status",
+    "created_at"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        1010
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "description": "The origin of the event",
+      "examples": [
+        "credit_cycle",
+        "lending"
+      ]
+    },
+    "program_due_date_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Program due date ID",
+      "minimum": 0,
+      "examples": [
+        1010
+      ]
+    },
+    "current_cycle": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Current cycle",
+      "examples": [
+        20
+      ]
+    },
+    "open_due_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Open due date",
+      "examples": [
+        "2023-07-01"
+      ]
+    },
+    "collection_status": {
+      "type": "string",
+      "description": "Account overdue status",
+      "examples": [
+        "NORMAL",
+        "OVERDUE"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "examples": [
+        "2023-04-14T15:15:40.123Z"
+      ]
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "examples": [
+        "2023-04-14T16:30:22.123Z"
+      ]
+    }
+  }
+}

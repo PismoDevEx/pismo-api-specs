@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://pismo.io/events/migration/delinquency_bucket_incoming-1.json",
+  "type": "object",
+  "default": {},
+  "title": "Delinquency bucket migration started",
+  "description": "Event generated when a delinquency bucket migration is started. Contains the payload with the data to be migrated.",
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Delinquency bucket migration object",
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "Delinquency bucket migration extra information.",
+          "required": [
+            "id",
+            "version_date",
+            "account_id"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "Record identifier for migration purposes.",
+              "examples": [
+                "13e0ea50-5acf-4b26-a429-6140c89fc666"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "description": "Record identifier for an update to a migrated entity. Valid format (yyyy-MM-ddTHH:mm:ssZ).",
+              "examples": [
+                "2024-03-09T15:23:00Z"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "Migration identifier of the account associated with the delinquency bucket being migrated",
+              "examples": [
+                "00046429504363683042022"
+              ]
+            },
+            "additionalProperties": true
+          },
+          "examples": [
+            {
+              "id": "13e0ea50-5acf-4b26-a429-6140c89fc666",
+              "version_date": "2024-03-09T15:23:00Z",
+              "account_id": "00046429504363683042022"
+            }
+          ]
+        },
+        "due_date": {
+          "$id": "#/properties/entity/properties/due_date",
+          "type": "string",
+          "title": "Due Date",
+          "description": "Due date from statement calendar.",
+          "format": "date",
+          "examples": [
+            "2024-04-30"
+          ]
+        },
+        "bucket_amount": {
+          "$id": "#/properties/entity/properties/bucket_amount",
+          "type": "number",
+          "title": "Delinquency bucket amount",
+          "description": "Bucket amount is the statement minimum amount due (MAD) subtracted by the previous bucket balance.",
+          "format": "double",
+          "examples": [
+            40.3
+          ]
+        },
+        "bucket_balance": {
+          "$id": "#/properties/entity/properties/bucket_balance",
+          "type": "number",
+          "title": "Delinquency bucket balance",
+          "description": "Current bucket balance. It starts as equal as the bucket amount and will decrease if the account receives any credit.",
+          "format": "double",
+          "examples": [
+            60.0
+          ]
+        },
+        "overdue_amount": {
+          "$id": "#/properties/entity/properties/overdue_amount",
+          "type": "number",
+          "title": "Overdue amount",
+          "description": "The outstanding balance after the due date considering only the minimum amount due (MAD) of the statement.",
+          "format": "double",
+          "examples": [
+            140.11
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "Delinquency bucket metadata",
+          "default": {},
+          "examples": [
+            {
+              "key1": "value1",
+              "key2": "value2"
+            }
+          ],
+          "additionalProperties": true
+        },
+        "additionalProperties": true
+      },
+      "examples": [
+        {
+          "migration": {
+            "id": "13e0ea50-5acf-4b26-a429-6140c89fc666",
+            "version_date": "2024-03-09T15:23:00Z",
+            "account_id": "00046429504363683042022"
+          },
+          "due_date": "2024-04-30",
+          "bucket_amount": 40.3,
+          "bucket_balance": 60.0,
+          "overdue_amount": 140.11,
+          "metadata": {
+            "key": "value",
+            "key2": "value2"
+          }
+        }
+      ]
+    },
+    "additionalProperties": true
+  },
+  "examples": [
+    {
+      "entity": {
+        "migration": {
+          "id": "13e0ea50-5acf-4b26-a429-6140c89fc666",
+          "version_date": "2024-03-09T15:23:00Z",
+          "account_id": "00046429504363683042022"
+        },
+        "due_date": "2024-04-30",
+        "bucket_amount": 40.3,
+        "bucket_balance": 60.0,
+        "overdue_amount": 140.11,
+        "metadata": {
+          "key": "value",
+          "key2": "value2"
+        }
+      }
+    }
+  ]
+}

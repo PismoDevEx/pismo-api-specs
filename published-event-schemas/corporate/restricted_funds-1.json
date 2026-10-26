@@ -1,0 +1,273 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Restricted Funds created, released, or executed",
+  "required": [
+    "restricted_funds_id",
+    "account_id",
+    "hold_method",
+    "type",
+    "requested_amount",
+    "held_amount",
+    "operations"
+  ],
+  "properties": {
+    "restricted_funds_id": {
+      "title": "Restricted Funds identifier",
+      "description": "A unique identifier for the restricted funds.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "pattern": "^[a-zA-Z0-9._-]+$",
+      "examples": [
+        "626d0a8e-b68a-4557-9002-dd24abb8508b"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        5501
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External Account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within your organization.",
+      "examples": [
+        "UK1-2e6e6817-92b2-4ab8-a23e-a50e2f0e6d90"
+      ]
+    },
+    "hold_method": {
+      "type": "string",
+      "title": "Hold Method",
+      "description": "Defines how the balance hold should be applied. STRICT: fully blocks the requested amount. FLEXIBLE: only blocks the available balance. RECURRENT: allows the held amount to be increased over time, up to increase_datetime_limit, for recurring restriction use cases.",
+      "enum": [
+        "STRICT",
+        "FLEXIBLE",
+        "RECURRENT"
+      ],
+      "examples": [
+        "STRICT"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Restricted Funds Type",
+      "description": "Defines the type of restriction applied to the funds. REGULATORY: a regulatory-driven restriction. JUDICIAL: a restriction resulting from a judicial block order.",
+      "enum": [
+        "REGULATORY",
+        "JUDICIAL"
+      ],
+      "examples": [
+        "REGULATORY"
+      ]
+    },
+    "increase_datetime_limit": {
+      "title": "Increase Datetime Limit",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "For RECURRENT hold method restrictions, the datetime limit until which the held amount may be automatically increased, in ISO 8601 format.",
+      "examples": [
+        "2024-06-15T13:45:30Z"
+      ]
+    },
+    "release_datetime": {
+      "title": "Release Datetime",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Scheduled date for the automatic release of the remaining restricted funds balance, in ISO 8601 format.",
+      "examples": [
+        "2024-06-15T13:45:30Z"
+      ]
+    },
+    "requested_amount": {
+      "title": "Requested Amount",
+      "type": "number",
+      "description": "The amount requested at the time of creating the funds restriction",
+      "examples": [
+        200.0
+      ],
+      "minimum": 0.01,
+      "maximum": 100000000000000000
+    },
+    "held_amount": {
+      "title": "Held Amount",
+      "type": "number",
+      "description": "The actual amount currently held. This value may be less than the requested_amount when the hold_method is FLEXIBLE, or when part of the held balance has already been released.",
+      "examples": [
+        150.75
+      ],
+      "minimum": 0,
+      "maximum": 100000000000000000
+    },
+    "soft_descriptor": {
+      "title": "Soft Descriptor",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "A short description provided by the client for the funds restriction.",
+      "maxLength": 100,
+      "examples": [
+        "Security Deposit"
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Key-value fields that contain any related data your organization needs to store at Pismo. Maximum size: 1 KB when serialized to JSON.",
+      "examples": [
+        {
+          "custom_info": "value"
+        }
+      ],
+      "additionalProperties": true
+    },
+    "operations": {
+      "type": "array",
+      "description": "List of related operations for this funds restriction.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tracking_id": {
+            "type": "string",
+            "title": "A unique operation tracking number",
+            "minLength": 1,
+            "maxLength": 60,
+            "examples": [
+              "123e4567-e89b-12d3-a456-426614174000"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "title": "Operation Status",
+            "description": "Current status of the operation.",
+            "enum": [
+              "PROCESSING",
+              "SUCCEEDED",
+              "FAILED",
+              "TIMED_OUT"
+            ],
+            "examples": [
+              "SUCCEEDED"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "title": "Operation Type",
+            "description": "Type of the operation related to this funds restriction.",
+            "enum": [
+              "RESTRICT_FUNDS",
+              "RELEASE_FUNDS",
+              "EXECUTE_FUNDS"
+            ],
+            "examples": [
+              "RELEASE_FUNDS"
+            ]
+          },
+          "processing_code": {
+            "type": "string",
+            "title": "Processing Code",
+            "description": "Processing code used to create the underlying restriction. Each operation type uses a default processing code.",
+            "minLength": 1,
+            "maxLength": 6,
+            "examples": [
+              "123456"
+            ]
+          },
+          "requested_amount": {
+            "type": "number",
+            "title": "Requested Amount",
+            "description": "The amount requested specifically for this operation.",
+            "examples": [
+              100.0
+            ],
+            "minimum": 0.01,
+            "maximum": 100000000000000000
+          },
+          "applied_amount": {
+            "type": "number",
+            "title": "Applied Amount",
+            "description": "The exact amount applied in this operation. It may be less than the requested_amount only if the hold_method is FLEXIBLE and the available balance is lower than requested_amount.",
+            "examples": [
+              95.5
+            ],
+            "minimum": 0,
+            "maximum": 100000000000000000
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp indicating when this operation was created, in ISO 8601 format.",
+            "examples": [
+              "2024-06-15T13:45:30Z"
+            ]
+          },
+          "applied_at": {
+            "title": "Applied At",
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Timestamp indicating when this operation was actually applied, in ISO 8601 format.",
+            "examples": [
+              "2024-06-16T10:15:30Z"
+            ]
+          },
+          "soft_descriptor": {
+            "title": "Soft Descriptor",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A short description provided by the client for the funds restriction.",
+            "maxLength": 100,
+            "examples": [
+              "Security Deposit"
+            ]
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "title": "Key-value fields that contain any related data your organization needs to store at Pismo. Maximum size: 1 KB when serialized to JSON.",
+            "examples": [
+              {
+                "custom_info": "value"
+              }
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "tracking_id",
+          "status",
+          "type",
+          "created_at",
+          "processing_code",
+          "requested_amount",
+          "applied_amount"
+        ]
+      },
+      "minItems": 1
+    }
+  }
+}

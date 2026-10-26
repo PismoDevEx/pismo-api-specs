@@ -1,0 +1,207 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Program created",
+  "description": "Program created. A program can be [created](https://developers.pismo.io/pismo-docs/reference/createprogrambasedontemplateasync), [copied](https://developers.pismo.io/pismo-docs/reference/copyprogramasync) or [imported](https://developers.pismo.io/pismo-docs/reference/postprogramimport) ",
+  "required": [
+    "org_id",
+    "name"
+  ],
+  "properties": {
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Program ID",
+      "examples": [
+        10
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "title": "Organization ID",
+      "description": "Organization/tenant ID",
+      "examples": [
+        "TN-00000000-0000-0000-0000-000000000000"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "title": "Program name",
+      "description": "Program name",
+      "examples": [
+        "My credit program"
+      ]
+    },
+    "program_type": {
+      "type": "object",
+      "title": "Program type",
+      "description": "Program type. For more information, refer to [Program types](https://developers.pismo.io/pismo-docs/docs/program-types)",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Program type ID",
+          "description": "Program type ID:\n1 = CREDITO,\n2 = PRE-PAGO,\n3 = DEBITO,\n5 = MERCHANT,\n7 = CREDITO ZERO-BALANCE,\n8 = PRE-PAGO ZERO-BALANCE,\n9 = DEBITO ZERO-BALANCE,\n11 = CURRENT ACCOUNTS,\n12 = INTERNAL ACCOUNTS,\n13 = CORRESPONDENT ACCOUNTS,\n15 = VOUCHER",
+          "enum": [
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            9,
+            11,
+            12,
+            13,
+            15
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "title": "Mode",
+          "description": "Identifier if mode is Debit or Credit",
+          "enum": [
+            "DEBIT",
+            "CREDIT",
+            ""
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Program type description"
+        }
+      }
+    },
+    "brand": {
+      "type": "object",
+      "title": "Card network brand",
+      "description": "Card network brand",
+      "properties": {
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Card network description",
+          "examples": [
+            "VISA"
+          ]
+        },
+        "pci": {
+          "type": "boolean",
+          "title": "PCI",
+          "description": "Is card network Payment Card Industry (PCI) compliant?",
+          "examples": [
+            true,
+            false
+          ]
+        }
+      }
+    },
+    "bin": {
+      "type": "object",
+      "title": "Bin",
+      "description": "Bank Identification Number (BIN) object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "title": "BIN value",
+          "description": "Six to eight-digit card network-issued Bank Identification Number (BIN) that identifies card network, provider, and program.",
+          "examples": [
+            "999999"
+          ]
+        },
+        "start_range": {
+          "type": "string",
+          "title": "Start range",
+          "description": "BIN range start.",
+          "examples": [
+            "0"
+          ]
+        },
+        "end_range": {
+          "type": "string",
+          "title": "End range",
+          "description": "BIN range end.",
+          "examples": [
+            "999999"
+          ]
+        }
+      }
+    },
+    "base_program_id": {
+      "type": "integer",
+      "title": "Base program ID",
+      "description": "Source program ID in case of copy or import",
+      "examples": [
+        1753733171
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Program status",
+      "description": "Program status:\n* `ACTIVE` - A program is active when PCI settings and accounting stages are configured.\n* `PENDING` - A program is pending when PCI settings and accounting stages are not configured. A program that is pending is not ready for use.",
+      "examples": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    "currency_numeric_code": {
+      "type": "string",
+      "title": "Currency numeric code",
+      "description": "Program ISO 4217 currency code.",
+      "examples": [
+        "986"
+      ]
+    },
+    "timezone": {
+      "type": "string",
+      "title": "Timezone",
+      "description": "Program timezone. This is the [IANA (Internet Assigned Numbers Authority) time zone database] (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) in Region/City format.",
+      "examples": [
+        "America/Anchorage",
+        "America/Sao_Paulo"
+      ]
+    },
+    "country_code": {
+      "type": "string",
+      "title": "Country code",
+      "description": "[ISO 3166 Alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) program country code",
+      "examples": [
+        "BRA",
+        "USA"
+      ]
+    },
+    "language": {
+      "type": "string",
+      "title": "Language",
+      "description": "Program language: * `en-US` - US English * `pt-BR` - Brazilian Portuguese. Default is `en-US`",
+      "examples": [
+        "en-US",
+        "pt-BR"
+      ]
+    },
+    "cycle_closing": {
+      "type": "string",
+      "title": "End of day",
+      "description": "Program end of day. This field is used for things like accrual basis, interest calculation, taxes, penalties, tiers, and more. Format = HH:MM:SS. Default is null.",
+      "examples": [
+        "23:59:59"
+      ]
+    },
+    "holiday_calendar_id": {
+      "type": "integer",
+      "title": "Holiday calendar ID",
+      "description": "Program holiday calendar ID. This field is used to define the holidays calendar for a specific program.",
+      "examples": [
+        120
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created at datetime",
+      "description": "Program creation datetime. Format = yyyy-mm-ddThh:mm:ss.",
+      "examples": [
+        "2021-07-06T13:11:05Z"
+      ]
+    }
+  }
+}

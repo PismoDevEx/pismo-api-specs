@@ -1,0 +1,323 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "On-us dispute created",
+  "description": "This event occurs when an [on-us dispute is created](https://developers.pismo.io/pismo-docs/reference/post-v1-on-us-dispute)",
+  "examples": [
+    {
+      "dispute_id": 1234,
+      "source": {
+        "id": "1234567890",
+        "type": "AUTHORIZATION"
+      },
+      "dispute_reason": {
+        "description": "Services Not Provided or Product Not Received",
+        "reason_code": 1,
+        "type": "ON_US"
+      },
+      "dispute_status": {
+        "description": "PENDING",
+        "type": "PRIMITIVE_ON_US",
+        "group": "CREATED"
+      },
+      "protocol": "20251128111532456",
+      "account_id": 24141240,
+      "comment": "comment",
+      "metadata": {
+        "field1": 1,
+        "field2": "test"
+      },
+      "disputed_amount": 123.45,
+      "created_at": "2026-03-26 12:48:01",
+      "created_at_utc": "2026-03-26T12:48:01.532292494Z",
+      "is_partial": true
+    },
+    {
+      "dispute_id": 1234,
+      "source": {
+        "id": "1234567890",
+        "type": "TRANSACTION"
+      },
+      "dispute_reason": {
+        "description": "Services Not Provided or Product Not Received",
+        "reason_code": 1,
+        "type": "ON_US"
+      },
+      "dispute_status": {
+        "description": "PENDING",
+        "type": "PRIMITIVE_ON_US",
+        "group": "CREATED"
+      },
+      "protocol": "20251128111532456",
+      "account_id": 24141240,
+      "comment": "comment",
+      "metadata": {
+        "field1": 1,
+        "field2": "test"
+      },
+      "disputed_amount": 123.45,
+      "created_at": "2026-03-26 12:48:01",
+      "created_at_utc": "2026-03-26T12:48:01.532292494Z",
+      "is_partial": true
+    }
+  ],
+  "required": [
+    "dispute_id",
+    "source",
+    "dispute_reason",
+    "dispute_status",
+    "account_id",
+    "disputed_amount",
+    "created_at"
+  ],
+  "properties": {
+    "dispute_id": {
+      "$id": "#/properties/dispute_id",
+      "type": "integer",
+      "title": "Dispute ID",
+      "description": "Dispute ID",
+      "examples": [
+        1234
+      ]
+    },
+    "source": {
+      "$id": "#/properties/source",
+      "type": "object",
+      "title": "Source object",
+      "description": "Source object containing the origin ID and dispute type",
+      "examples": [
+        {
+          "id": "1234567890",
+          "type": "AUTHORIZATION"
+        },
+        {
+          "id": "1234567890",
+          "type": "TRANSACTION"
+        }
+      ],
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/source/properties/id",
+          "type": "string",
+          "title": "Source ID",
+          "description": "Source ID - authorization or transaction ID",
+          "examples": [
+            "1234567890"
+          ]
+        },
+        "type": {
+          "$id": "#/properties/source/properties/type",
+          "type": "string",
+          "title": "Source type",
+          "description": "Source type enum - dispute origin",
+          "enum": [
+            "AUTHORIZATION",
+            "TRANSACTION"
+          ],
+          "examples": [
+            "AUTHORIZATION",
+            "TRANSACTION"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "dispute_reason": {
+      "$id": "#/properties/dispute_reason",
+      "type": "object",
+      "title": "Dispute reason object",
+      "description": "Dispute reason object containing the reason details",
+      "examples": [
+        {
+          "description": "Services not provided or product not received",
+          "reason_code": 1,
+          "type": "ON_US"
+        }
+      ],
+      "required": [
+        "description",
+        "reason_code",
+        "type"
+      ],
+      "properties": {
+        "description": {
+          "$id": "#/properties/dispute_reason/properties/description",
+          "type": "string",
+          "title": "Dispute reason description",
+          "description": "Dispute reason description",
+          "examples": [
+            "Services Not Provided or Product Not Received"
+          ]
+        },
+        "reason_code": {
+          "$id": "#/properties/dispute_reason/properties/reason_code",
+          "type": "integer",
+          "title": "Dispute reason code",
+          "description": "Dispute reason code",
+          "examples": [
+            1
+          ]
+        },
+        "type": {
+          "$id": "#/properties/dispute_reason/properties/type",
+          "type": "string",
+          "title": "Dispute reason type",
+          "description": "Dispute reason type",
+          "examples": [
+            "ON_US"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "dispute_status": {
+      "$id": "#/properties/dispute_status",
+      "type": "object",
+      "title": "Dispute status object",
+      "description": "Dispute status object containing the current status details",
+      "examples": [
+        {
+          "description": "PENDING",
+          "type": "PRIMITIVE_ON_US",
+          "group": "CREATED"
+        }
+      ],
+      "required": [
+        "description",
+        "type",
+        "group"
+      ],
+      "properties": {
+        "description": {
+          "$id": "#/properties/dispute_status/properties/description",
+          "type": "string",
+          "title": "Dispute status description",
+          "description": "Dispute status description",
+          "examples": [
+            "PENDING"
+          ]
+        },
+        "type": {
+          "$id": "#/properties/dispute_status/properties/type",
+          "type": "string",
+          "title": "Dispute status type",
+          "description": "Dispute status state machine type",
+          "examples": [
+            "PRIMITIVE",
+            "PRIMITIVE_ON_US"
+          ]
+        },
+        "group": {
+          "$id": "#/properties/dispute_status/properties/group",
+          "type": "string",
+          "title": "Dispute status group",
+          "description": "Dispute status group",
+          "examples": [
+            "CREATED"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "protocol": {
+      "$id": "#/properties/protocol",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Protocol",
+      "description": "Dispute protocol number",
+      "examples": [
+        null,
+        "20251128111532456"
+      ]
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        24141240
+      ]
+    },
+    "comment": {
+      "$id": "#/properties/comment",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Comment",
+      "description": "Dispute comment",
+      "examples": [
+        null,
+        "comment"
+      ]
+    },
+    "metadata": {
+      "$id": "#/properties/metadata",
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Metadata object",
+      "description": "Dispute metadata object",
+      "examples": [
+        {
+          "field1": 1,
+          "field2": "test"
+        }
+      ]
+    },
+    "disputed_amount": {
+      "$id": "#/properties/disputed_amount",
+      "type": "number",
+      "title": "Disputed amount",
+      "description": "Disputed amount",
+      "examples": [
+        123.45
+      ]
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "title": "Created at date/time",
+      "description": "Dispute creation date/time",
+      "examples": [
+        "2026-03-26 12:48:01"
+      ]
+    },
+    "created_at_utc": {
+      "$id": "#/properties/created_at_utc",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Created at UTC date/time",
+      "description": "Dispute creation date/time in UTC",
+      "examples": [
+        null,
+        "2026-03-26T12:48:01.532292494Z"
+      ]
+    },
+    "is_partial": {
+      "$id": "#/properties/is_partial",
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Is dispute partial?",
+      "description": "Indicates if the dispute is partial",
+      "examples": [
+        true,
+        false
+      ]
+    }
+  },
+  "additionalProperties": false
+}

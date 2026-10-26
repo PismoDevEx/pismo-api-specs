@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Embossing rejection file processed",
+  "description": "This event occurs when the embossing rejection file (currently, only from EM1) is processed. See our <a href='https://developers.pismo.io/pismo-docs/docs/physical-card-embossing'>Physical card embossing</a> guide for more information.",
+  "required": [
+    "card_id"
+  ],
+  "properties": {
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        12345
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        11849411
+      ]
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Customer ID",
+      "description": "Pismo customer ID.",
+      "examples": [
+        166894111
+      ]
+    },
+    "error_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error code",
+      "description": "Error code from rejection file.",
+      "examples": [
+        "012"
+      ]
+    },
+    "error_description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error description",
+      "description": "Error description from rejection file.",
+      "examples": [
+        "Unregistered plastic"
+      ]
+    },
+    "error_message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error message",
+      "description": "Error message when card fails to be sent to embossing service",
+      "examples": [
+        "Card 12345 doesn't have any elected config on embossing service"
+      ]
+    },
+    "error_type": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error type",
+      "description": "Error type when a card is removed from embossing. This field exists only in case of failure.",
+      "examples": [
+        "account_not_found",
+        "account_address_not_found",
+        "account_address_inactive",
+        "account_phone_not_found",
+        "customer_not_found",
+        "card_pci_not_found",
+        "card_pci_password_unchanged",
+        "card_not_found",
+        "card_status_invalid",
+        "card_type_invalid",
+        "internal_error",
+        "embossing_line_not_formatted",
+        "embossing_line_not_encrypted",
+        "embossing_line_invalid_format",
+        "embossing_undelivered"
+      ]
+    },
+    "field_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Field code",
+      "description": "Field code from rejection file.",
+      "examples": [
+        "004"
+      ]
+    },
+    "field_description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Field description",
+      "description": "Field description from rejection file.",
+      "examples": [
+        "cod admin"
+      ]
+    }
+  },
+  "definitions": {}
+}

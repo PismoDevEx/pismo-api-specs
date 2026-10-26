@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Average balance calculated",
+  "description": "This event is triggered when the average balance for an account is successfully calculated for the specified date range and selected balance types.",
+  "required": [
+    "account_id",
+    "begin_date_datetime",
+    "end_date_datetime",
+    "balance_types_to_calculate",
+    "average_balance",
+    "created_at"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        118245087
+      ]
+    },
+    "begin_date_datetime": {
+      "type": "string",
+      "title": "Begin date datetime",
+      "description": "The starting datetime of the period for which the average balance was calculated.",
+      "examples": [
+        "2021-06-01T00:00:00Z"
+      ]
+    },
+    "end_date_datetime": {
+      "type": "string",
+      "title": "End date datetime",
+      "description": "The end datetime of the period for which the average balance was calculated.",
+      "examples": [
+        "2021-06-30T23:59:59Z"
+      ]
+    },
+    "balance_types_to_calculate": {
+      "type": "array",
+      "title": "Balance types to calculate",
+      "description": "List of balances you select for calculating its average balance.",
+      "items": {
+        "$ref": "#/definitions/balance_types"
+      }
+    },
+    "average_balance": {
+      "type": "number",
+      "title": "Average balance",
+      "description": "The average balance calculated for the specified period.",
+      "examples": [
+        100.0
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created at datetime",
+      "description": "Datetime when the average balance calculation started",
+      "examples": [
+        "2021-07-01T00:00:00Z"
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency",
+      "description": "ISO 4217 Currency code for the average balance",
+      "examples": [
+        "986"
+      ]
+    },
+    "update_at": {
+      "type": "string",
+      "title": "Update at datetime",
+      "description": "The datetime when the average balance was last completed.",
+      "examples": [
+        "2021-07-01T00:00:00Z"
+      ]
+    },
+    "external_account_id": {
+      "type": "string",
+      "title": "External account ID",
+      "description": "Custom account ID used to identify the account within your organization. This value links the Pismo account to your internal account identifier.",
+      "examples": [
+        "iba-386146-2ce6fb2c-ca1f-48b4-bec2-aa52f472201e"
+      ]
+    }
+  },
+  "definitions": {
+    "balance_types": {
+      "type": "string",
+      "title": "balance types to calculate",
+      "description": "The balance type selected for calculating the average balance.",
+      "examples": [
+        "available",
+        "savings",
+        "held_funds"
+      ]
+    }
+  }
+}

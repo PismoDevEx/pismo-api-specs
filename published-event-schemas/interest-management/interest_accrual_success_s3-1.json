@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest accrual succeeded and uploaded to S3",
+  "description": "This event occurs when a quota is accrued with product interest management. . The event data get uploaded to s3.",
+  "required": [
+    "s3_url",
+    "bucket_name",
+    "object_name"
+  ],
+  "properties": {
+    "s3_url": {
+      "type": "string",
+      "title": "S3 URL",
+      "description": "S3 URL.",
+      "examples": [
+        "s3://pismo-dataplatform-org123/application/psm-interestmgt/2023/10/05/123e4567-e89b-12d3-a456-426614174000.json"
+      ]
+    },
+    "bucket_name": {
+      "type": "string",
+      "title": "Bucket name",
+      "description": "Bucket name.",
+      "examples": [
+        "pismo-dataplatform-org123"
+      ]
+    },
+    "object_name": {
+      "type": "string",
+      "title": "Object ame",
+      "description": "Object name.",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000.json"
+      ]
+    },
+    "object_size": {
+      "type": "number",
+      "title": "Object size",
+      "description": "Object size in bytes.",
+      "format": "int",
+      "examples": [
+        123478987
+      ]
+    }
+  },
+  "definitions": {}
+}

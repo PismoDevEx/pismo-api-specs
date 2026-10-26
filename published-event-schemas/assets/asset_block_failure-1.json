@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset block failed",
+  "description": "This event occurs when an asset block fails.",
+  "required": [
+    "asset_id",
+    "issuer_id",
+    "status",
+    "units"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions and cancellations.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Asset status",
+      "description": "Whether asset is blocked or unblocked",
+      "examples": [
+        "block",
+        "unblock"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "title": "Reason",
+      "description": "Reason asset was blocked or unblocked.",
+      "examples": [
+        "Court block"
+      ]
+    },
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation. Optional field provided by customer in asset block operation.",
+      "examples": [
+        "00000000013"
+      ]
+    },
+    "units": {
+      "type": "number",
+      "title": "Units",
+      "format": "double",
+      "description": "Number of units blocked or unblocked",
+      "examples": [
+        100.0
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of error that occured when trying to block or unblock asset",
+      "examples": [
+        "This asset does not have any more available units to block."
+      ]
+    }
+  }
+}

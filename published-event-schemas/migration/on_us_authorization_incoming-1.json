@@ -1,0 +1,520 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/on_us_authorization_incoming-1.json",
+  "type": "object",
+  "title": "On-us authorization migration started",
+  "description": "Event generated when the migration of an on-us authorization starts. Contains the payload with the data to be migrated.",
+  "additionalProperties": true,
+  "examples": [
+    {
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "1",
+      "line_number": 1,
+      "entity": {
+        "authorization_code": "961597",
+        "authorization_denial_code": "AU001",
+        "authorization_response_code": "00",
+        "authorization_status_id": 1,
+        "contract_amount": 25,
+        "currency": "BRL",
+        "datetime_utc": "2023-07-12T16:00:00Z",
+        "description": "Brief description",
+        "destination_currency": "BRL",
+        "entry_mode": "01",
+        "installment_amount": 25,
+        "installments_plan": "91403ceb",
+        "local_amount": 25,
+        "marketplace_id": 123,
+        "merchant_id": 124,
+        "metadata": {
+          "key1": "value1",
+          "key2": "value2"
+        },
+        "network": "VISA",
+        "nsu": "6862227",
+        "number_of_installments": 1,
+        "payment_datetime": "2022-08-12T16:00:00Z",
+        "principal_amount": 25,
+        "processing_code": "00",
+        "terminal_id": "1",
+        "tid": "tid",
+        "tracking_id": "001",
+        "ledger_impact": [
+          "AvailableInstallmentLimit"
+        ],
+        "migration": {
+          "id": "migration_id",
+          "account_id": "account_migration_id",
+          "card_id": "card_migration_id",
+          "merchant_id": "merchant_migration_id",
+          "version_date": "2024-06-20T14:49:46Z"
+        },
+        "update_limit": false,
+        "update_flexcontrol": false,
+        "installments_details": [
+          {
+            "number": 1,
+            "amortization_amount": 0,
+            "installment_amount": 33.09,
+            "principal_amount": 33.09
+          }
+        ]
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents an on-us authorization.",
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "authorization_response_code": {
+          "$id": "#/properties/entity/properties/authorization_response_code",
+          "type": "string",
+          "description": "This field identifies the response code of authorization.",
+          "examples": [
+            "00"
+          ]
+        },
+        "authorization_status_id": {
+          "$id": "#/properties/entity/properties/authorization_status_id",
+          "type": "integer",
+          "description": "This field identifies the authorization status. It can be one of the following: 1 (TO BE PROCESSED), 2 (PROCESSED), 3 (DENIED), 4 (CANCELED), 6 (CANCEL AUTHORIZATION), 7 (PRE-AUTHORIZATION).",
+          "enum": [
+            1,
+            2,
+            3,
+            4,
+            6,
+            7
+          ],
+          "examples": [
+            1,
+            2,
+            3,
+            4,
+            6,
+            7
+          ]
+        },
+        "contract_amount": {
+          "$id": "#/properties/entity/properties/contract_amount",
+          "type": "number",
+          "description": "This field identifies the contract amount of authorization.",
+          "examples": [
+            15.0
+          ]
+        },
+        "currency": {
+          "$id": "#/properties/entity/properties/currency",
+          "type": "string",
+          "description": "This field identifies the currency code of authorization.",
+          "examples": [
+            "BRL",
+            "USD"
+          ]
+        },
+        "datetime_utc": {
+          "$id": "#/properties/entity/properties/datetime_utc",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the date and hour of the authorization.",
+          "examples": [
+            "2022-04-08T17:07:03Z",
+            "2022-04-08T17:07:03.500599Z"
+          ]
+        },
+        "destination_currency": {
+          "$id": "#/properties/entity/properties/destination_currency",
+          "type": "string",
+          "description": "This field identifies the destination currency code for authorization.",
+          "examples": [
+            "BRL",
+            "USD"
+          ]
+        },
+        "entry_mode": {
+          "$id": "#/properties/entity/properties/entry_mode",
+          "type": "string",
+          "description": "This field identifies the entry mode of authorization.",
+          "enum": [
+            "00",
+            "01",
+            "05",
+            "07",
+            "10",
+            "81",
+            "90",
+            ""
+          ],
+          "examples": [
+            "00",
+            "01"
+          ]
+        },
+        "local_amount": {
+          "$id": "#/properties/entity/properties/local_amount",
+          "type": "number",
+          "description": "This field identifies the local amount of authorization.",
+          "examples": [
+            15.0
+          ]
+        },
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "required": [
+            "account_id",
+            "id",
+            "version_date"
+          ],
+          "properties": {
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "This field identifies the external account the authorization belongs to.",
+              "examples": [
+                "a_unique_account_migration_id"
+              ]
+            },
+            "card_id": {
+              "$id": "#/properties/entity/properties/migration/properties/card_id",
+              "type": "string",
+              "description": "This field identifies the external card the authorization belongs to.",
+              "examples": [
+                "a unique card migration id"
+              ]
+            },
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "This field is the unique identifier of migration.",
+              "examples": [
+                "123"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "This field is the version date of migration.",
+              "examples": [
+                "2022-05-02T16:47:06Z",
+                "2022-05-02T16:47:06.555222Z"
+              ]
+            },
+            "merchant_id": {
+              "$id": "#/properties/entity/properties/migration/properties/merchant_id",
+              "type": "string",
+              "description": "This field identifies the external merchant the authorization belongs to, taking precedence over the merchant_id on the entity root",
+              "examples": [
+                "a_unique_merchant_migration_id"
+              ]
+            },
+            "original_authorization_id": {
+              "$id": "#/properties/entity/properties/original_authorization_id",
+              "type": "string",
+              "description": "Used for cancellation, this field identifies the original authorization.",
+              "examples": [
+                "another_migration_id"
+              ]
+            }
+          }
+        },
+        "number_of_installments": {
+          "$id": "#/properties/entity/properties/number_of_installments",
+          "type": "integer",
+          "default": 0,
+          "description": "This field identifies the number of installments for authorization.",
+          "examples": [
+            0
+          ]
+        },
+        "payment_datetime": {
+          "$id": "#/properties/entity/properties/payment_datetime",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the date and hour of the authorized payment.",
+          "examples": [
+            "2022-04-08T17:07:03Z",
+            "2022-04-08T17:07:03.500599Z"
+          ]
+        },
+        "principal_amount": {
+          "$id": "#/properties/entity/properties/principal_amount",
+          "type": "number",
+          "description": "This field identifies the principal amount of authorization.",
+          "examples": [
+            15.0
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "This field identifies the processing code of authorization.",
+          "examples": [
+            "00",
+            "01"
+          ]
+        },
+        "tracking_id": {
+          "$id": "#/properties/entity/properties/tracking_id",
+          "type": "string",
+          "description": "Unique identifier of the authorization.",
+          "examples": [
+            "123"
+          ]
+        },
+        "authorization_code": {
+          "$id": "#/properties/entity/properties/authorization_code",
+          "type": "string",
+          "description": "This field identifies the authorization code for the authorization.",
+          "examples": [
+            "020340"
+          ]
+        },
+        "authorization_denial_code": {
+          "$id": "#/properties/entity/properties/authorization_denial_code",
+          "type": "string",
+          "description": "This optional field is used when the authorization is denied.",
+          "examples": [
+            "AU001"
+          ]
+        },
+        "description": {
+          "$id": "#/properties/entity/properties/description",
+          "type": "string",
+          "description": "This field gives a brief description of the on-us authorization.",
+          "examples": [
+            "Description"
+          ]
+        },
+        "installment_amount": {
+          "$id": "#/properties/entity/properties/installment_amount",
+          "type": "number",
+          "description": "This field identifies the installment amount of the authorization. It should be the same value as the contract amount.",
+          "examples": [
+            15.0
+          ]
+        },
+        "installments_plan": {
+          "$id": "#/properties/entity/properties/installments_plan",
+          "type": "string",
+          "description": "This field identifies the installment plan that should be used to calculate the purchase.",
+          "examples": [
+            "uuid"
+          ]
+        },
+        "marketplace_id": {
+          "$id": "#/properties/entity/properties/marketplace_id",
+          "type": "integer",
+          "description": "This field identifies the marketplace linked to the merchant.",
+          "examples": [
+            1
+          ]
+        },
+        "merchant_id": {
+          "$id": "#/properties/entity/properties/merchant_id",
+          "type": "integer",
+          "description": "This field identifies the external merchant the authorization belongs to.",
+          "examples": [
+            1
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "This field contains other authorization details.",
+          "default": {},
+          "additionalProperties": true,
+          "examples": [
+            {
+              "RESPONSE_CODE": "62",
+              "TERMINAL_CAPABILITY": "0"
+            }
+          ]
+        },
+        "network": {
+          "$id": "#/properties/entity/properties/network",
+          "type": "string",
+          "description": "This field identifies the card network of authorization.",
+          "examples": [
+            "MASTERCARD",
+            "VISA",
+            "PERNAMBUCANAS"
+          ]
+        },
+        "nsu": {
+          "$id": "#/properties/entity/properties/nsu",
+          "type": "string",
+          "description": "This field identifies the Network Settlement Utility (NSU) of the authorization.",
+          "examples": [
+            "6423667"
+          ]
+        },
+        "terminal_id": {
+          "$id": "#/properties/entity/properties/terminal_id",
+          "type": "string",
+          "description": "Point Of Sale (POS) Terminal ID associated with the merchant. Terminal ID identifies where an authorization is processed.",
+          "examples": [
+            "ceec1236-e702-4d04-89fd-4310c4bde35e"
+          ]
+        },
+        "tid": {
+          "$id": "#/properties/entity/properties/tid",
+          "type": "string",
+          "description": "This field identifies the transaction ID of authorization.",
+          "examples": [
+            "transaction_id",
+            "1ab8h11"
+          ]
+        },
+        "update_limit": {
+          "$id": "#/properties/entity/properties/update_limit",
+          "type": "boolean",
+          "description": "Indicates if the authorization should affect the account's credit limit (true) or not (false).",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "update_flexcontrol": {
+          "$id": "#/properties/entity/properties/update_flexcontrol",
+          "type": "boolean",
+          "description": "Indicates whether the flex control limits/rules configured for this account should be updated based on this authorization (true) or left unchanged (false).",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "ledger_impact": {
+          "$id": "#/properties/entity/properties/ledger_impact",
+          "type": "array",
+          "description": "Limits that were impacted by the ledger during the authorization.",
+          "examples": [
+            [
+              "AVAILABLE_INSTALLMENT_LIMIT"
+            ]
+          ]
+        },
+        "installments_details": {
+          "$id": "#/properties/entity/properties/installments_details",
+          "type": "array",
+          "description": "InstallmentsDetails is an object inside on us authorization migration endpoint that contains a list of information of the installment related to the authorization that is being migrated.",
+          "examples": [
+            [
+              {
+                "number": 1,
+                "amortization_amount": 0,
+                "installment_amount": 33.09,
+                "principal_amount": 33.09
+              }
+            ]
+          ],
+          "properties": {
+            "number": {
+              "$id": "#/properties/entity/properties/installments_details/properties/number",
+              "type": "integer",
+              "description": "Number of each installment in this calculation.",
+              "examples": [
+                1
+              ]
+            },
+            "amortization_amount": {
+              "$id": "#/properties/entity/properties/installments_details/properties/amortization_amount",
+              "type": "number",
+              "description": "Amortization amount related to this installment.",
+              "examples": [
+                33.09
+              ]
+            },
+            "installment_amount": {
+              "$id": "#/properties/entity/properties/installments_details/properties/installment_amount",
+              "type": "number",
+              "description": "the amount of this installment (note: the sum of the installments will be the total contract purchase amount).",
+              "examples": [
+                33.09
+              ]
+            },
+            "principal_amount": {
+              "$id": "#/properties/entity/properties/installments_details/properties/principal_amount",
+              "type": "number",
+              "description": "Total amount of the authorization after calculation without the addition of any fees.",
+              "examples": [
+                33.09
+              ]
+            }
+          }
+        }
+      }
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Name of the file from which the event was parsed, if applicable.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Size of the file from which the event was parsed, if applicable.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null or absent when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the line of the file that originated the event (can be null or absent when origin is API).",
+      "examples": [
+        2,
+        11
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "FILE",
+        "API"
+      ],
+      "examples": [
+        "FILE"
+      ]
+    }
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://pismo.io/events/migration/customer_incoming-1.json",
+  "type": "object",
+  "title": "Customer migration started",
+  "description": "Event generated when an customer migration is started. Contains the payload with the data to be migrated.",
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "default": {},
+      "title": "The entity Schema",
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/migration",
+          "type": "object",
+          "title": "The migration Schema",
+          "description": "This field contains the data that identifies a migration.",
+          "required": [
+            "id",
+            "account_id",
+            "version_date"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/migration/id",
+              "type": "string",
+              "description": "This field is the unique identifier of migration.",
+              "examples": [
+                "31a2d"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/migration/account_id",
+              "type": "string",
+              "description": "This field is the migration id of the account ",
+              "examples": [
+                "a7c3f"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/migration/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "This field is the date of version of migration.",
+              "examples": [
+                "2023-10-03T17:25:45Z"
+              ]
+            },
+            "additionalProperties": false
+          }
+        },
+        "social_name": {
+          "$id": "#/properties/entity/social_name",
+          "type": "string",
+          "description": "This field is the social name of customer",
+          "examples": [
+            "Mario Bros"
+          ]
+        },
+        "email": {
+          "$id": "#/properties/entity/email",
+          "type": "string",
+          "description": "This field is the e-mail of customer",
+          "examples": [
+            "mario.bros@this-is-an-email.com"
+          ]
+        },
+        "is_active": {
+          "$id": "#/properties/entity/is_active",
+          "type": "boolean",
+          "description": "It shows whether the customer is active. The program used on the account creation may block multiple cardholder according to the its configuration. However, if the `is_active` is false the configuration will be skipped.",
+          "examples": [
+            true
+          ]
+        },
+        "entity": {
+          "$id": "#/properties/entity/entity",
+          "type": "object",
+          "properties": {
+            "name": {
+              "$id": "#/properties/entity/entity/name",
+              "type": "string",
+              "description": "This field is the name of customer",
+              "examples": [
+                "Super Mario Bros"
+              ]
+            },
+            "document_number": {
+              "$id": "#/properties/entity/entity/document_number",
+              "type": "string",
+              "description": "This field is the document number of customer",
+              "examples": [
+                "59769445746"
+              ]
+            },
+            "registration": {
+              "$id": "#/properties/entity/entity/registration",
+              "type": "string",
+              "description": "This field is the registration of customer",
+              "examples": [
+                "registration"
+              ]
+            },
+            "birth_date": {
+              "$id": "#/properties/entity/entity/birth_date",
+              "type": "string",
+              "description": "This field is the customer birth date",
+              "examples": [
+                "2022-01-01"
+              ]
+            },
+            "gender": {
+              "$id": "#/properties/entity/entity/gender",
+              "type": "string",
+              "description": "This field is the customer gender",
+              "examples": [
+                "M"
+              ]
+            },
+            "mother_name": {
+              "$id": "#/properties/entity/entity/mother_name",
+              "type": "string",
+              "description": "This field is the customer mother's name",
+              "examples": [
+                "Jane Doe"
+              ]
+            },
+            "marital_status": {
+              "$id": "#/properties/entity/entity/marital_status",
+              "type": "string",
+              "description": "This field is the customer marital status",
+              "examples": [
+                "Single"
+              ]
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "examples": [
+    {
+      "entity": {
+        "migration": {
+          "id": "31a2d",
+          "account_id": "a7c3f",
+          "version_date": "2023-10-03T17:25:45Z"
+        },
+        "social_name": "Mario Bros",
+        "email": "mario.bros@this-is-an-email.com",
+        "is_active": true,
+        "entity": {
+          "name": "Super Mario Bros",
+          "document_number": "59769445746",
+          "registration": "registration",
+          "birth_date": "2022-01-01",
+          "gender": "M",
+          "mother_name": "Jane Doe",
+          "marital_status": "Single"
+        }
+      }
+    }
+  ]
+}

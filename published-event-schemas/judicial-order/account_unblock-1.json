@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://pismo.io/events/judicial-order/account_unblock.json",
+  "type": "object",
+  "title": "Judicial order account unblocked",
+  "description": "This event occurs when a previously blocked account is unblocked by a judicial order",
+  "required": [
+    "external_id",
+    "status",
+    "protocol_number",
+    "sequence_number",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "external_id": {
+      "title": "External ID",
+      "description": "Partner Id of the unblocked judicial order",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "status": {
+      "title": "Status",
+      "description": "Account unblock status",
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "PENDING",
+        "UNBLOCKED",
+        "FAILED",
+        "CANCELED"
+      ]
+    },
+    "protocol_number": {
+      "title": "Protocol number",
+      "description": "Legal protocol number for the judicial order",
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence_number": {
+      "title": "Sequence number",
+      "description": "Protocol sequence number",
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "title": "Created at",
+      "description": "Date when the judicial order account unblock was created",
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "title": "Updated at",
+      "description": "Date when the judicial order account unblock was last updated",
+      "type": "string",
+      "format": "date-time"
+    },
+    "accounts": {
+      "title": "Accounts",
+      "description": "List of account IDs that are unblocked",
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      }
+    }
+  }
+}

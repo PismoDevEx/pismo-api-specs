@@ -1,0 +1,224 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/example.json",
+  "title": "Bulletin rule created or retrieved",
+  "description": "This event occurs when a Protection Bulletin rule is <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-bulletin-setup'>created</a> or <a href='https://developers.pismo.io/pismo-docs/reference/get-v1-bulletin-rule'>retrieved</a>.<br><br>The Protection Bulletin is used before a transaction takes place in cases where the issuer is temporarily offline and unable to provide an authorization. In a process known as <i>stand-in</i>, the card network authorizes the transaction to avoid creating problems for the cardholder and merchant. Once the issuer is back online, the card network lets them know what was authorized while they were down.",
+  "type": "object",
+  "required": [
+    "active",
+    "allowed_status",
+    "brand_type",
+    "event_type",
+    "org_id",
+    "program_id"
+  ],
+  "properties": {
+    "active": {
+      "$id": "#/properties/active",
+      "type": [
+        "boolean",
+        "string"
+      ],
+      "title": "Active",
+      "description": "Is rule enabled for Protection Bulletin?",
+      "examples": [
+        "true",
+        "false"
+      ]
+    },
+    "allowed_status": {
+      "$id": "#/properties/allowed_status",
+      "type": "array",
+      "title": "Allowed status",
+      "description": "Protection Bulletin rule statuses and configuration",
+      "items": {
+        "type": "object",
+        "properties": {
+          "default_purge_days": {
+            "title": "Default purge configuration",
+            "description": "How many days before card is removed from the Protection Bulletin?",
+            "type": [
+              "integer",
+              "null"
+            ],
+            "examples": [
+              30,
+              10,
+              1
+            ]
+          },
+          "status_network": {
+            "title": "Status network",
+            "description": "Network card status equivalent to Pismo card status. For more information, see the `status_network` field for the <a href='https://developers.pismo.io/pismo-docs/reference/post-v1-bulletin-setup'>Create Protection Bulletin rule</a> endpoint.  **REQUIRED** for Mastercard.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "examples": [
+              "L",
+              "B"
+            ]
+          },
+          "status_pismo": {
+            "title": "Pismo card status",
+            "description": "Pismo card status. For more information, see  <a href='https://developers.pismo.io/pismo-docs/docs/card-lifecycle-and-statuses'>Card lifecycle and statuses</a>.",
+            "type": "string",
+            "examples": [
+              "BLOCKED",
+              "LOST"
+            ]
+          }
+        },
+        "required": [
+          "status_pismo"
+        ]
+      }
+    },
+    "brand_type": {
+      "$id": "#/properties/brand_type",
+      "title": "Network brand.",
+      "description": "Card's network brand.",
+      "type": "string",
+      "enum": [
+        "ELO",
+        "MASTERCARD",
+        "VISA"
+      ]
+    },
+    "event_type": {
+      "$id": "#/properties/event_type",
+      "title": "API type",
+      "description": "REST API type (`POST`, `GET`) that generated event.",
+      "type": "string",
+      "enum": [
+        "POST",
+        "GET"
+      ]
+    },
+    "ica": {
+      "$id": "#/properties/ica",
+      "title": "Interbank Card Association (ICA) number",
+      "description": "Interbank Card Association (ICA) number - a six-digit account number that identifies a financial institution or third-party processor operating in the Mastercard network. **REQUIRED** for Mastercard.",
+      "type": "string",
+      "examples": [
+        "012345",
+        "null"
+      ]
+    },
+    "bid": {
+      "$id": "#/properties/bid",
+      "title": "Business ID (BID) number",
+      "description": "Business ID (BID) number - a six to eleven digit account number through which Visa bills their clients. **REQUIRED** for Visa.",
+      "type": "string",
+      "examples": [
+        "012345",
+        "null"
+      ]
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "title": "Organization ID",
+      "description": "Organization/tenant ID.",
+      "type": "string",
+      "examples": [
+        "TN-1234..."
+      ]
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "title": "Program Id",
+      "description": "Pismo program ID",
+      "type": "integer",
+      "examples": [
+        1234
+      ]
+    },
+    "region_code": {
+      "$id": "#/properties/region_code",
+      "title": "Region Code",
+      "description": "Region code contains one or more Account Screen Authorization File (ASAF) region codes that define the distribution of a Visa cardholder account number in Card Recovery Bulletin Service files. Refer to the `BULLETIN_SETUP_VISA_MODEL.region_code` field in the [Create Protection Bulletin rule](https://developers.pismo.io/pismo-docs/reference/post-v1-bulletin-setup) endpoint for enum documentation.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "string"
+        ],
+        "enum": [
+          "0",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ]
+      }
+    }
+  },
+  "examples": [
+    {
+      "active": "true",
+      "allowed_status": [
+        {
+          "status_pismo": "LOST"
+        },
+        {
+          "default_purge_days": 30,
+          "status_pismo": "BLOCKED"
+        }
+      ],
+      "brand_type": "ELO",
+      "event_type": "POST",
+      "org_id": "TN-1234",
+      "program_id": 123456
+    },
+    {
+      "active": "true",
+      "allowed_status": [
+        {
+          "status_pismo": "LOST",
+          "status_network": "L"
+        },
+        {
+          "status_pismo": "BLOCKED",
+          "status_network": "B",
+          "default_purge_days": 30
+        }
+      ],
+      "brand_type": "MASTERCARD",
+      "event_type": "GET",
+      "ica": "123456",
+      "org_id": "TN-1234",
+      "program_id": 123456
+    },
+    {
+      "active": "true",
+      "allowed_status": [
+        {
+          "status_pismo": "LOST",
+          "status_network": "L"
+        },
+        {
+          "status_pismo": "BLOCKED",
+          "status_network": "B",
+          "default_purge_days": 30
+        }
+      ],
+      "brand_type": "VISA",
+      "event_type": "GET",
+      "bid": "123456",
+      "region_code": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "org_id": "TN-1234",
+      "program_id": 123456
+    }
+  ]
+}

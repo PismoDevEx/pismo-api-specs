@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/account_overlimit_outgoing-1.json",
+  "type": "object",
+  "title": "Account overlimit migration completed",
+  "description": "Event generated when an account migration finishes, if the account has had its overlimit status updated",
+  "required": [
+    "operation",
+    "status",
+    "code",
+    "message",
+    "migration",
+    "entity"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "description": "Migration operation",
+      "examples": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "description": "Migration status",
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "description": "Migration message code",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "description": "Migration result",
+      "examples": [
+        "The Overlimit for account_id \"1234\" was disabled"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "description": "Migration Identifiers Object",
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/id",
+          "type": "string",
+          "description": "Migration Identifier",
+          "examples": [
+            "4ed3858a-6a2a-425f-a3ad-b4425492615f"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/version_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "Version Date of Migration Identifier",
+          "examples": [
+            "2022-09-12T15:02:45Z"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Account overlimit toggle information",
+      "properties": {
+        "account_id": {
+          "$id": "#/properties/entity/account_id",
+          "type": "string",
+          "description": "The Pismo id for the account being migrated",
+          "examples": [
+            "1",
+            "123564"
+          ]
+        },
+        "toggle": {
+          "$id": "#/properties/entity/toggle",
+          "type": "boolean",
+          "description": "Whether the overlimit toggle for the account was set to TRUE or FALSE",
+          "examples": [
+            false
+          ]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "The Overlimit for account_id \"1234\" was disabled",
+      "migration": {
+        "id": "102030",
+        "version_date": "2022-09-12T15:02:45Z"
+      },
+      "entity": {
+        "account_id": 1234,
+        "toggle": false
+      }
+    }
+  ]
+}

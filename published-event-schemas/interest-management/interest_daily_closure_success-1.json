@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest daily closure succeeded",
+  "description": "This event occurs when the steps in processing the closing request are successful with product interest management.",
+  "required": [
+    "cid",
+    "operation_date",
+    "message"
+  ],
+  "properties": {
+    "cid": {
+      "type": "string",
+      "title": "CID ",
+      "description": "Identification Number.",
+      "examples": [
+        "6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "operation_date": {
+      "type": "string",
+      "title": "Operation date",
+      "description": "Operation date, represents the day to be closed.",
+      "format": "date",
+      "examples": [
+        "2023-12-01"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Message",
+      "description": "Return message about the request",
+      "examples": [
+        "The file is available"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date closure operation",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    }
+  }
+}

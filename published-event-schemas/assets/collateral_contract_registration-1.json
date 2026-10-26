@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Collateral contract registration request event",
+  "description": "This event occurs when a client request a register of a collateral contract.",
+  "required": [
+    "systemId",
+    "defaultContractCode",
+    "signatureDateText",
+    "dueDateText",
+    "participantOriginAccountIdentification",
+    "participantOriginDocumentNumber",
+    "participantDestinationAccountIdentification",
+    "participantDestinationDocumentNumber",
+    "typeConstitutionEncumbranceCode",
+    "requesterId",
+    "externalId",
+    "correlationId"
+  ],
+  "properties": {
+    "systemId": {
+      "type": "string",
+      "title": "System ID",
+      "description": "Identifier of Pismo on Partner. Composition is prefix pismo + domain",
+      "examples": [
+        "pismo_assets_collateral"
+      ]
+    },
+    "defaultContractCode": {
+      "type": "string",
+      "title": "Default Contract Code",
+      "description": "Is a default contract code where collateral contract will be attached.",
+      "examples": [
+        "23PB3L00000011"
+      ]
+    },
+    "signatureDateText": {
+      "type": "string",
+      "title": "Signature Date",
+      "description": "Is a date of Contract Signature",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "dueDateText": {
+      "type": "string",
+      "title": "Due Date",
+      "description": "Is a due date of Contract",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "participantOriginAccountIdentification": {
+      "type": "string",
+      "title": "Participant Origin Account Identification",
+      "description": "Is a account number of who is providing the resources (Origin)",
+      "examples": [
+        "2310901910"
+      ]
+    },
+    "participantOriginDocumentNumber": {
+      "type": "string",
+      "title": "Participant Origin Document Number",
+      "description": "Is a Origin participant document number",
+      "examples": [
+        "00.000.000/0000-00"
+      ]
+    },
+    "participantDestinationAccountIdentification": {
+      "type": "string",
+      "title": "Participant Destination Account Identification",
+      "description": "Is a account number of who is receiving the resources (Destination)",
+      "examples": [
+        "2310901910"
+      ]
+    },
+    "participantDestinationDocumentNumber": {
+      "type": "string",
+      "title": "Participant Destination Document Number",
+      "description": "Is a Destination participant document number",
+      "examples": [
+        "00.000.000/0000-00"
+      ]
+    },
+    "typeConstitutionEncumbranceCode": {
+      "type": "number",
+      "format": "int",
+      "title": "Type Constitution encumbrance code",
+      "description": "Is a number that defines the type of constitution. 1-Asset 2-Account 3-Collateral Account Management",
+      "examples": [
+        1,
+        2,
+        3
+      ]
+    },
+    "requesterId": {
+      "type": "string",
+      "title": "Requester ID",
+      "description": "Is a identifier from who is requesting the register of a default contract as according with partner this requesterId is our issuerId",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "externalId": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation provided by client.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    },
+    "correlationId": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "External identifier for a request provided by client or by us. This ID will be used handle response events from Partner.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    }
+  }
+}

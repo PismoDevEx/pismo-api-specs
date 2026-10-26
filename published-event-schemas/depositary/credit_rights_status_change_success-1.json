@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Credit rights receivable status change succeeded",
+  "description": "Successful credit rights receivable status change event. The <a href='https://developers.pismo.io/pismo-docs/reference/update' target='_blank'>Update receivable</a> endpoint generates this event.",
+  "required": [
+    "internal_number",
+    "status"
+  ],
+  "properties": {
+    "internal_number": {
+      "type": "string",
+      "title": "Internal number",
+      "description": "Client-assigned Internal number for managing credit rights receivable",
+      "examples": [
+        "56789012"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Credit Rights Receivable status",
+      "description": "Credit rights receivable status.",
+      "enum": [
+        "PENDING",
+        "CONFIRMED",
+        "COMPLETED",
+        "INACTIVATED",
+        "REJECTED"
+      ],
+      "example": "PENDING"
+    }
+  }
+}

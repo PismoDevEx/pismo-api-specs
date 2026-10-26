@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Financial transaction occurred",
+  "required": [
+    "account_id",
+    "authorization_id",
+    "new_status",
+    "old_status",
+    "transaction_id",
+    "external_bank_id",
+    "external_bank_code",
+    "external_bank_account",
+    "external_bank_account_type",
+    "external_bank_branch",
+    "external_type",
+    "external_document_number",
+    "external_name",
+    "internal_bank_id",
+    "internal_bank_code",
+    "internal_bank_account",
+    "internal_bank_account_type",
+    "internal_bank_branch",
+    "internal_type",
+    "internal_document_number",
+    "internal_name",
+    "amount"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account Identifier",
+      "description": "Unique account identifier at Pismo Platform",
+      "examples": [
+        31700
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization Identifier",
+      "description": "Authorization Identifier on Pismo platform",
+      "examples": [
+        123
+      ]
+    },
+    "new_status": {
+      "type": "string",
+      "title": "New register status",
+      "description": "The new register status",
+      "examples": [
+        "PROCESSING",
+        "SETTLED",
+        "CANCELLED",
+        "ERROR"
+      ]
+    },
+    "old_status": {
+      "type": "string",
+      "title": "Old transaction status",
+      "description": "The old transaction status",
+      "examples": [
+        "PROCESSING",
+        "SETTLED",
+        "CANCELLED",
+        "ERROR"
+      ]
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction Identifier",
+      "description": "Integrated payments transaction identifier",
+      "examples": [
+        "0a2a85a3-ca26-4f00-97a6-c23825f1df7e"
+      ]
+    },
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction Type",
+      "description": "Integrated payments transaction type",
+      "examples": [
+        "CASHOUT",
+        "CASHIN"
+      ]
+    },
+    "external_bank_id": {
+      "type": "string",
+      "title": "External's Bank identification",
+      "description": "The main bank identifier of external account, for example, in brazil is ISPB.",
+      "examples": [
+        "30306294"
+      ]
+    },
+    "external_bank_code": {
+      "type": "string",
+      "title": "External's Alternative Bank identification",
+      "description": "Alternative bank identifier of external account, for example, in brazil is COMPE.",
+      "examples": [
+        "30306294"
+      ]
+    },
+    "external_bank_account": {
+      "type": "string",
+      "title": "External's Account identification",
+      "description": "Unique account identifier of external account, for example a bank account number.",
+      "examples": [
+        "98765432"
+      ]
+    },
+    "external_bank_account_type": {
+      "type": "string",
+      "title": "External's Account type",
+      "description": "Account type of external account.",
+      "examples": [
+        "CC"
+      ]
+    },
+    "external_bank_branch": {
+      "type": "string",
+      "title": "External's Bank branch",
+      "description": "Bank branch of external account.",
+      "examples": [
+        "CC"
+      ]
+    },
+    "external_type": {
+      "type": "string",
+      "title": "External's Juridical person type",
+      "description": "Juridical person type of client of external account, for example 'F' = 'Legal person'.",
+      "examples": [
+        "F",
+        "J"
+      ]
+    },
+    "external_document_number": {
+      "type": "string",
+      "title": "External's Client identification",
+      "description": "Document number or another unique identifier of client of external account.",
+      "examples": [
+        "12345678900"
+      ]
+    },
+    "external_name": {
+      "type": "string",
+      "title": "External's Client name",
+      "description": "Client name of external account.",
+      "examples": [
+        "12345678900"
+      ]
+    },
+    "internal_bank_id": {
+      "type": "string",
+      "title": "Internal's Bank identification",
+      "description": "The main bank identifier of internal account, for example, in brazil is ISPB.",
+      "examples": [
+        "30306294"
+      ]
+    },
+    "internal_bank_code": {
+      "type": "string",
+      "title": "Internal's Alternative Bank identification",
+      "description": "Alternative bank identifier of internal account, for example, in brazil is COMPE.",
+      "examples": [
+        "30306294"
+      ]
+    },
+    "internal_bank_account": {
+      "type": "string",
+      "title": "Internal's Account identification",
+      "description": "Unique account identifier of internal account, for example a bank account number.",
+      "examples": [
+        "98765432"
+      ]
+    },
+    "internal_bank_account_type": {
+      "type": "string",
+      "title": "Internal's Account type",
+      "description": "Account type of internal account.",
+      "examples": [
+        "CC"
+      ]
+    },
+    "internal_bank_branch": {
+      "type": "string",
+      "title": "Internal's Bank branch",
+      "description": "Bank branch of internal account.",
+      "examples": [
+        "CC"
+      ]
+    },
+    "internal_type": {
+      "type": "string",
+      "title": "Internal's Juridical person type",
+      "description": "Juridical person type of client of internal account, for example 'F' = 'Legal person'.",
+      "examples": [
+        "F",
+        "J"
+      ]
+    },
+    "internal_document_number": {
+      "type": "string",
+      "title": "Internal's Client identification",
+      "description": "Document number or another unique identifier of client of internal account.",
+      "examples": [
+        "12345678900"
+      ]
+    },
+    "internal_name": {
+      "type": "string",
+      "title": "Internal's Client name",
+      "description": "Client name of internal account.",
+      "examples": [
+        "12345678900"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Transaction amount",
+      "description": "The amount of the Transaction",
+      "examples": [
+        20.15
+      ]
+    }
+  }
+}

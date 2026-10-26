@@ -1,0 +1,103 @@
+{
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "User setup created",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The operation HTTP method",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The API operation URI",
+      "examples": [
+        "/v1/users/setup"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The operator email",
+      "default": null,
+      "examples": [
+        "backoffice-operator@pismo.com.br"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "title": "The operator roles",
+      "items": {
+        "type": "string",
+        "title": "The roles",
+        "default": null,
+        "examples": [
+          "backoffice-operator",
+          "crm-operator",
+          "geroficios-operator",
+          "inspetoria-master",
+          "inspetoria-operator",
+          "itibackoffice-master",
+          "itibackoffice-operator",
+          "itinivel1-operator",
+          "treasury-operator"
+        ]
+      }
+    },
+    "origin": {
+      "type": "string",
+      "title": "The Origin Schema",
+      "default": "APP",
+      "examples": [
+        "CRM",
+        "APP"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The audit data message",
+      "required": [
+        "email",
+        "name",
+        "roles"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "title": "The user email ",
+          "examples": [
+            "userEmail@teste.io"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "The user name",
+          "examples": [
+            "UserName"
+          ]
+        },
+        "roles": {
+          "type": "array",
+          "title": "The user roles",
+          "items": {
+            "type": "string",
+            "title": "The roles",
+            "default": "",
+            "examples": [
+              "crm-operator"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

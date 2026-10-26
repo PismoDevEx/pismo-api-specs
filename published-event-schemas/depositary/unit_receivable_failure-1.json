@@ -1,0 +1,223 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unit receivable failed",
+  "description": "Event that represents failure from  Unit Receivable",
+  "required": [
+    "message",
+    "operation_type",
+    "operation_status"
+  ],
+  "properties": {
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "Identifier for a receivable unit given by the client",
+      "examples": [
+        "external-id"
+      ]
+    },
+    "merchant_document_number": {
+      "type": "string",
+      "title": "Merchant document number",
+      "description": "Document number of merchant",
+      "examples": [
+        "62543463000157"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Represents the status of a processed Receivable Unit",
+      "examples": [
+        "PENDING"
+      ]
+    },
+    "payment_arrangement": {
+      "type": "string",
+      "title": "Payment Arrangement",
+      "description": "Represents code of payment arrangement",
+      "examples": [
+        "MCC"
+      ]
+    },
+    "settlement_date": {
+      "type": "string",
+      "title": "Settlement Date",
+      "description": "Settlement date for payment",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "owner_document_number": {
+      "type": "string",
+      "title": "Owner Document Number",
+      "description": "Document number of owner",
+      "examples": [
+        "20481714000176"
+      ]
+    },
+    "composed_value": {
+      "type": "number",
+      "title": "Composed Value",
+      "description": "Represents the composed value to pay",
+      "format": "double",
+      "examples": [
+        10.0
+      ]
+    },
+    "retained_composed_value": {
+      "type": "number",
+      "title": "Retained Composed Value",
+      "description": "Represents the retained composed value to pay",
+      "format": "double",
+      "examples": [
+        10.0
+      ]
+    },
+    "blocked_value": {
+      "type": "number",
+      "title": "Blocked Value",
+      "description": "Represents the blocked value",
+      "format": "double",
+      "examples": [
+        10.0
+      ]
+    },
+    "acquirer_document_number": {
+      "type": "string",
+      "title": "Acquirer Document Number",
+      "description": "Acquirer document number",
+      "examples": [
+        "20481714683595"
+      ]
+    },
+    "payments": {
+      "type": "array",
+      "title": "List of payments",
+      "items": {
+        "$ref": "#/definitions/payments"
+      }
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Message refers to the process of failure when trying to update Receivable Unit",
+      "examples": [
+        "Receivable Unit not found",
+        "Unit Receivable Create Success"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation Type",
+      "description": "Operation Type identifiers which type is this event",
+      "examples": [
+        "CREATE",
+        "UPDATE",
+        "LIQUIDATION",
+        "INACTIVATION",
+        "EARLY_LIQUIDATION"
+      ]
+    },
+    "operation_status": {
+      "type": "string",
+      "title": "Operation Status",
+      "description": "Operation Status identifiers which status is this event",
+      "examples": [
+        "FAILURE"
+      ]
+    }
+  },
+  "definitions": {
+    "payments": {
+      "type": "object",
+      "title": "Payment",
+      "required": [
+        "residence_owner_document_number",
+        "account_type",
+        "ispb",
+        "account_number"
+      ],
+      "description": "List of payments linked to Receivable Unit",
+      "properties": {
+        "residence_owner_document_number": {
+          "type": "string",
+          "title": "Residence Owner Document Number",
+          "description": "Document number of residence owner",
+          "examples": [
+            "20481714000176"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account Type",
+          "description": "Represents the type of an account",
+          "examples": [
+            "CC, CD, PG, PP"
+          ]
+        },
+        "compe_code": {
+          "type": "string",
+          "title": "COMPE Code",
+          "description": "COMPE Code of Institution",
+          "examples": [
+            "compe-code"
+          ]
+        },
+        "ispb": {
+          "type": "integer",
+          "title": "ISPB",
+          "description": "ISPB number of Institution",
+          "examples": [
+            20481714
+          ]
+        },
+        "branch_bank": {
+          "type": "string",
+          "title": "Branch Bank",
+          "description": "Represents the branch bank",
+          "examples": [
+            "branch-bank"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account Number",
+          "description": "Represents the number of bank account",
+          "examples": [
+            "20481714000176"
+          ]
+        },
+        "amount_to_pay": {
+          "type": "number",
+          "title": "Amount to Pay",
+          "description": "Represents the amount value to pay",
+          "format": "double",
+          "examples": [
+            10.0
+          ]
+        },
+        "real_settlement_date": {
+          "type": "string",
+          "title": "Real Settlement Date",
+          "description": "Real settlement date for payment",
+          "format": "date",
+          "examples": [
+            "2022-12-01"
+          ]
+        },
+        "real_settlement_value": {
+          "type": "number",
+          "title": "Real Settlement value",
+          "description": "Real settlement value",
+          "format": "double",
+          "examples": [
+            10.0
+          ]
+        }
+      }
+    }
+  }
+}

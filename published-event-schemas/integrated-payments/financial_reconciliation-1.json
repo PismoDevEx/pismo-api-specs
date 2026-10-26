@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Integrated payments financial reconciliation",
+  "description": "This event occurs after an integrated payments transaction has been cleared and accounts debited and credited. The [Pay bank slip](https://developers.pismo.io/pismo-docs/reference/post-integrated-payments-api-v1-bankslips-pay) and [Cash-out transfer](https://developers.pismo.io/pismo-docs/reference/post-integrated-payments-api-v1-bankslips-cashout) endpoints generate this event.",
+  "required": [
+    "provider",
+    "result",
+    "result_description",
+    "transaction_id"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "title": "Provider",
+      "description": "Provider that created the external transfer.",
+      "examples": [
+        "BTG"
+      ]
+    },
+    "provider_authorization_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Provider authorization ID",
+      "description": "Provider's authorization ID.",
+      "examples": [
+        "0a2a85a3-ca26-4f00-97a6-c23825f1df7e"
+      ]
+    },
+    "provider_id": {
+      "type": "string",
+      "title": "Provider bank slip ID",
+      "description": "Provider's bank slip ID",
+      "examples": [
+        "78ebbdeb-5084-4741-b2af-0b531f9d1099"
+      ]
+    },
+    "authorization_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID",
+      "examples": [
+        123
+      ]
+    },
+    "currency_code": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "Currency code of the transaction",
+      "examples": [
+        "BRL",
+        "USD",
+        "EUR"
+      ]
+    },
+    "authorization_datetime": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Authorization datetime",
+      "description": "Authorization datetime on Pismo platform",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "result": {
+      "type": "boolean",
+      "title": "Result",
+      "description": "Financial reconciliation result.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "result_description": {
+      "type": "string",
+      "title": "ResultdDescription",
+      "description": "Financial reconciliation result description",
+      "examples": [
+        "OK",
+        "PISMO_TRANSACTION_NOT_FOUND",
+        "PROVIDER_TRANSACTION_INVALID_STATUS",
+        "TRANSACTION_AMOUNT_DIVERGENT"
+      ]
+    },
+    "amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double",
+      "title": "Amount authorized",
+      "description": "Authorization amount on Pismo platform",
+      "examples": [
+        125.5
+      ]
+    },
+    "provider_amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double",
+      "title": "Provider amount",
+      "description": "Provider returned amount",
+      "examples": [
+        125.5
+      ]
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction Identifier",
+      "description": "Integrated payments transaction ID",
+      "examples": [
+        "0a2a85a3-ca26-4f00-97a6-c23825f1df7e"
+      ]
+    },
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction type",
+      "description": "Integrated payments transaction type",
+      "enum": [
+        "CASHOUT",
+        "CASHIN",
+        "BANKSLIP"
+      ],
+      "example": "CASHOUT"
+    }
+  }
+}

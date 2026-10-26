@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Common event fields",
+  "description": "Fields common to every Pismo platform generated event. Also known as the <b><i>base contract</i></b>. The Pismo API data platform consumes, treats, and validates events. Events occur during the course of normal processing (account actions, transactions, payments, auditing, and so on). The data these events generate provide you with comprehensive information for reporting and analytics, enabling you to monitor product success, create metrics, send notifications, and generate business intelligence. For more information, see <a href='https://developers.pismo.io/pismo-docs/docs/data-reporting-overview' target='_blank'>Data and reporting</a> and <a href='https://developers.pismo.io/pismo-docs/docs/event-data' target='_blank'>Event data</a>",
+  "required": [
+    "event_id",
+    "schema_version",
+    "domain",
+    "event_type",
+    "org_id",
+    "cid",
+    "timestamp",
+    "data"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Event ID",
+      "description": "Unique Pismo-generated event ID - can be used to identify duplicate events",
+      "example": [
+        "ebda6b87-b24d-46e8-9a71-775d5c3c1ee3"
+      ]
+    },
+    "schema_version": {
+      "type": [
+        "integer",
+        "string"
+      ],
+      "title": "Event JSON schema version",
+      "description": "Every Pismo-generated event has its own JSON schema used for validation. The version is incremented when breaking changes occur.",
+      "default": 1
+    },
+    "domain": {
+      "type": "string",
+      "title": "Pismo application domain",
+      "description": "A Pismo application domain. Examples include account, authorization, cards, and so on. You can see a complete domain list in the navigation tab when you view Pismo's JSON schemas in HTML."
+    },
+    "event_type": {
+      "type": "string",
+      "title": "Event type",
+      "description": "Represents a processing action within a domain. For example, for account, these could include customer-creation, limit-change, and status-change. The number at the end represents the schema version. You can see a complete event type list in the navigation tab when you view Pismo's JSON schemas in HTML. Event types are unique inside the same domain."
+    },
+    "org_id": {
+      "type": "string",
+      "title": "Organization/tenant ID",
+      "description": "Organization/tenant ID  on the Pismo platform. For example: TN-34778262-f4f0-464d-b4c6-a14e2dc6f4be",
+      "oneOf": [
+        {
+          "pattern": "TN-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        },
+        {
+          "pattern": "08102A0B-D4F8-42A2-8B0E-2052D05577D7"
+        }
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Correlational ID",
+      "description": "The correlation identifier is used to link related API requests and events. For example, if a user makes an authorization request with 10 installments, this generates 1 authorization event and 10 transaction events all containing the same correlation ID. The correlation ID helps the Pismo engineering team trace all events related to a transaction."
+    },
+    "timestamp": {
+      "type": "string",
+      "title": "Event timestamp",
+      "description": " Indicates when the event occurred in ISO-8601 format.",
+      "format": "date-time"
+    },
+    "data": {
+      "type": "object",
+      "title": "Event payload",
+      "description": "Contains the event data (format free) itself. This content varies according to domain, event type and schema version. See Pismo's JSON schemas in HTML for details on event data."
+    },
+    "pismo_metadata": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "eBill notification generated",
+  "description": "This event notifies the customer when a bill is issued to a customer whose document was successfully registered in ebill.",
+  "required": [
+    "provider",
+    "account_id"
+  ],
+  "properties": {
+    "provider": {
+      "title": "Provider",
+      "type": "string",
+      "description": "Provider's name",
+      "examples": [
+        "CELCOIN"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "type": "string",
+      "description": "Customer's account ID",
+      "examples": [
+        "1234567"
+      ]
+    },
+    "beneficiary": {
+      "type": "object",
+      "title": "Beneficiary",
+      "properties": {
+        "issuer": {
+          "title": "Issuer",
+          "type": "string",
+          "description": "Bankslip issuer",
+          "examples": [
+            "assignor"
+          ]
+        },
+        "ispb": {
+          "title": "ISPB",
+          "type": "integer",
+          "description": "Brazilian payment system ID",
+          "examples": [
+            1
+          ]
+        },
+        "bank_code": {
+          "title": "Bank Code",
+          "type": "string",
+          "description": "Beneficiary's bank code",
+          "examples": [
+            "123"
+          ]
+        }
+      }
+    },
+    "primary_beneficiary": {
+      "type": "object",
+      "title": "Primary beneficiary",
+      "properties": {
+        "type": {
+          "title": "Person Type",
+          "type": "string",
+          "description": "Type of person (legal entity or individual) of the original beneficiary",
+          "examples": [
+            "personType"
+          ]
+        },
+        "document_number": {
+          "title": "Document Number",
+          "type": "string",
+          "description": "CPF or CNPJ of the original beneficiary",
+          "examples": [
+            "documentNumber"
+          ]
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "description": "Name of the original beneficiary",
+          "examples": [
+            "name"
+          ]
+        },
+        "company_name": {
+          "title": "Company Name",
+          "type": "string",
+          "description": "Trade name of the original beneficiary",
+          "examples": [
+            "fantasyName"
+          ]
+        }
+      }
+    },
+    "debtor": {
+      "type": "object",
+      "title": "Debtor",
+      "properties": {
+        "type": {
+          "title": "Person Type",
+          "type": "string",
+          "description": "Type of person (legal entity or individual) of the debtor",
+          "examples": [
+            "payerPersonType"
+          ]
+        },
+        "document_number": {
+          "title": "Document Number",
+          "type": "string",
+          "description": "CPF or CNPJ of the debtor",
+          "examples": [
+            "payerDocumentNumber"
+          ]
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "description": "Debtor's name",
+          "examples": [
+            "payerName"
+          ]
+        },
+        "company_name": {
+          "title": "Company name",
+          "type": "string",
+          "description": "Debtor's company name",
+          "examples": [
+            "payerFantasyName"
+          ]
+        }
+      }
+    },
+    "due_date": {
+      "title": "Due date",
+      "type": "string",
+      "format": "date-time",
+      "description": "Bankslip expiration date",
+      "examples": [
+        "2023-10-10"
+      ]
+    },
+    "issuance_date": {
+      "title": "Issue date",
+      "type": "string",
+      "format": "date-time",
+      "description": "Bankslip registration date",
+      "examples": [
+        "2023-09-10"
+      ]
+    },
+    "discount": {
+      "title": "Has discount",
+      "type": "boolean",
+      "description": "Definition of discount application; for example,  `true` if a discount exists",
+      "examples": [
+        true
+      ]
+    },
+    "interest": {
+      "title": "Has interest",
+      "type": "boolean",
+      "description": "Definition of interest application; for example, `true` if there is interest",
+      "examples": [
+        false
+      ]
+    },
+    "description": {
+      "title": "Description",
+      "type": "string",
+      "description": "Bankslip payment type",
+      "examples": [
+        "description"
+      ]
+    },
+    "amount": {
+      "title": "Amount",
+      "type": "number",
+      "description": "Bill value",
+      "examples": [
+        100.5
+      ]
+    },
+    "digitable_line": {
+      "title": "Digitable line",
+      "type": "string",
+      "description": "Bankslip typeable line",
+      "examples": [
+        "digitableLine"
+      ]
+    },
+    "bar_code": {
+      "title": "Bar code",
+      "type": "string",
+      "description": "Bankslip barcode",
+      "examples": [
+        "barCode"
+      ]
+    },
+    "provider_status": {
+      "title": "Provider status",
+      "type": "string",
+      "description": "Bankslip payment status",
+      "examples": [
+        "status"
+      ]
+    },
+    "payment_status": {
+      "title": "Payment status",
+      "type": "string",
+      "description": "Bankslip payment status",
+      "examples": [
+        "paymentStatus"
+      ]
+    },
+    "external_id": {
+      "title": "External ID",
+      "type": "string",
+      "description": "Provider's bankslip ID",
+      "examples": [
+        "transactionID"
+      ]
+    }
+  }
+}

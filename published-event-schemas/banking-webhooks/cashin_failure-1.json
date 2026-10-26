@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Cash-in processing failed",
+  "description": "This event notifies the customer when a cash-in message fails to process.",
+  "required": [
+    "client_request_id",
+    "external_id",
+    "provider",
+    "amount",
+    "error_message"
+  ],
+  "properties": {
+    "client_request_id": {
+      "title": "Client request ID",
+      "type": "string",
+      "description": "The ID associated with the client request",
+      "examples": [
+        "12345"
+      ]
+    },
+    "external_id": {
+      "title": "External ID",
+      "type": "string",
+      "description": "The external ID associated with the transaction",
+      "examples": [
+        "67890"
+      ]
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "string",
+      "description": "Provider's name",
+      "examples": [
+        "ProviderName"
+      ]
+    },
+    "amount": {
+      "title": "Amount",
+      "type": "number",
+      "description": "Transaction amount",
+      "examples": [
+        100.5
+      ]
+    },
+    "error_message": {
+      "title": "Error Message",
+      "type": "string",
+      "description": "Detailed error message",
+      "examples": [
+        "detailed error message"
+      ]
+    }
+  }
+}

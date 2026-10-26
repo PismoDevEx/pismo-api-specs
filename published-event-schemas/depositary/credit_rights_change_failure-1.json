@@ -1,0 +1,205 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Credit rights receivable change failed",
+  "description": "Failed credit rights receivable change event. The <a href='https://developers.pismo.io/pismo-docs/reference/update' target='_blank'>Update receivable</a> endpoint generates this event.",
+  "required": [
+    "internal_number",
+    "message"
+  ],
+  "properties": {
+    "internal_number": {
+      "type": "string",
+      "title": "Internal number",
+      "description": "Client-assigned internal number for managing credit rights receivable",
+      "examples": [
+        "56789012"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Message about failure to update a credit rights receivable",
+      "examples": [
+        "Credit rights receivable INTERNAL_NUMBER exceeded total amount value from invoice"
+      ]
+    },
+    "access_key": {
+      "type": "string",
+      "title": "Access key",
+      "description": "Client-assigned access key identifier",
+      "examples": [
+        "access-key"
+      ]
+    },
+    "collateral_type": {
+      "type": "number",
+      "title": "Collateral type",
+      "description": "Collateral type: 1 - Aval collateral",
+      "examples": [
+        1
+      ]
+    },
+    "credit_operations": {
+      "type": "array",
+      "title": "Credit operations list",
+      "items": {
+        "$ref": "#/definitions/credit_operations"
+      }
+    },
+    "debtor_signing_date": {
+      "type": "string",
+      "title": "Debtor signing date",
+      "description": "When debtor signed credit rights receivable",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Detailed description.",
+      "examples": [
+        "Description"
+      ]
+    },
+    "guarantor_name": {
+      "type": "string",
+      "title": "Guarantor name",
+      "description": "Name of guarantor",
+      "examples": [
+        "Tai Kuhn"
+      ]
+    },
+    "ibge_code": {
+      "type": "number",
+      "title": "IBGE Code",
+      "description": "IBGE stands for Instituto Brasileiro de Geografia e Estat\u00edstica, which translates to the Brazilian Institute of Geography and Statistics. This Brazilian national statistical agency is responsible for collecting and providing official data on various aspects of the country. An IBGE code is a specific numerical code assigned to various administrative divisions and geographical areas in Brazil. Federative Unit + Town Name",
+      "examples": [
+        1234567,
+        7654321
+      ]
+    },
+    "lender_signing_date": {
+      "type": "string",
+      "title": "Lender signing date",
+      "description": "When lender signed credit rights receivable.",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "owner_document_number": {
+      "type": "string",
+      "title": "Owner document number",
+      "description": "Account owner document number. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil).",
+      "examples": [
+        "10358728000143"
+      ]
+    },
+    "owner_name": {
+      "type": "string",
+      "title": "Owner name",
+      "description": "Name of account owner",
+      "examples": [
+        "Sam Sung"
+      ]
+    },
+    "payment_method": {
+      "type": "number",
+      "title": "Payment method",
+      "description": "Payment method. Number between 1-6. See detailed descriptions in <a href='https://developers.pismo.io/pismo-docs/reference/create-receivable' target='_blank'>Create receivable</a> endpoint documentation.",
+      "examples": [
+        1
+      ]
+    },
+    "payment_status": {
+      "type": "number",
+      "title": "Payment status",
+      "description": "Payment status: 1 = Paid, 2 = Unpaid",
+      "examples": [
+        1
+      ]
+    },
+    "updated_face_value": {
+      "type": "number",
+      "title": "Updated Face value",
+      "description": "Updated face value. Face value refers to the nominal or stated value of a financial instrument or asset, typically printed or stated on the instrument itself. It represents the initial value assigned to the instrument at the time of issuance or purchase.",
+      "format": "double",
+      "examples": [
+        10.0
+      ]
+    },
+    "updated_maturity_date": {
+      "type": "string",
+      "title": "Updated Issuing date",
+      "description": "Updated maturity date for credit rights receivable.",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    }
+  },
+  "definitions": {
+    "credit_operations": {
+      "type": "object",
+      "title": "Credit Operations",
+      "description": "Payments linked to receivable.",
+      "properties": {
+        "operation_type": {
+          "type": "string",
+          "title": "Operation type",
+          "description": "Credit operation type. You need to configure operation types with Pismo",
+          "examples": [
+            "operation-type"
+          ]
+        },
+        "operation_date": {
+          "type": "string",
+          "title": "Operation date",
+          "description": "Date operation occurred.",
+          "format": "date",
+          "examples": [
+            "2022-01-01"
+          ]
+        },
+        "contact_number": {
+          "type": "string",
+          "title": "Contact number",
+          "description": "Contact Number",
+          "examples": [
+            "0123456789"
+          ]
+        },
+        "operation_maturity": {
+          "type": "string",
+          "title": "Operation maturity date",
+          "description": "Date operation expires, finishing cycle.",
+          "format": "date",
+          "examples": [
+            "2022-01-01"
+          ]
+        },
+        "operation_value": {
+          "type": "number",
+          "title": "Operation amount value",
+          "description": "Operation amount value",
+          "format": "double",
+          "examples": [
+            10.0
+          ]
+        },
+        "guarantee_percentage": {
+          "type": "number",
+          "title": "Guaranteed percentage",
+          "description": "Operation percentage",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        }
+      }
+    }
+  }
+}

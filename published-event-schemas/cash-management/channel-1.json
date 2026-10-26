@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Channel created, updated, or deleted",
+  "required": [
+    "action",
+    "channel"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "title": "Action",
+      "description": "Current channel action",
+      "enum": [
+        "CREATE",
+        "UPDATE",
+        "DELETE"
+      ],
+      "examples": [
+        "UPDATE"
+      ]
+    },
+    "channel": {
+      "type": "string",
+      "title": "Channel",
+      "description": "Channel identifier",
+      "minLength": 1,
+      "maxLength": 20,
+      "examples": [
+        "GCE"
+      ]
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Description",
+      "description": "Channel description",
+      "maxLength": 255,
+      "examples": [
+        "GCE sweep operations channel"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created at",
+      "description": "Timestamp when the channel was created",
+      "format": "date-time",
+      "examples": [
+        "2026-02-24T04:50:25.270066Z"
+      ]
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Updated at",
+      "description": "Timestamp when the channel was last updated",
+      "format": "date-time",
+      "examples": [
+        "2026-02-24T04:50:25.270066Z"
+      ]
+    },
+    "deleted_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Deleted at",
+      "description": "Timestamp when the channel was soft deleted",
+      "format": "date-time",
+      "examples": [
+        "2026-02-24T04:50:25.270066Z"
+      ]
+    }
+  }
+}

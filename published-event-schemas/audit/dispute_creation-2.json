@@ -1,0 +1,151 @@
+{
+  "type": "object",
+  "title": "Dispute created",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of dispute creation operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of dispute creation operation",
+      "examples": [
+        "/v1/networkauthorization-disputes",
+        "/v1/authorization-disputes"
+      ]
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "The operator email of dispute creation operation",
+      "examples": [
+        "pismo@pismo.com"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The object that represents the dispute creation operation",
+      "required": [
+        "authorization_id",
+        "account_id",
+        "modality",
+        "amount",
+        "dispute_id",
+        "reason_code",
+        "dispute_modality",
+        "created_at",
+        "update_at",
+        "status"
+      ],
+      "properties": {
+        "authorization_id": {
+          "type": "integer",
+          "title": "The authorization identifier",
+          "examples": [
+            14123
+          ]
+        },
+        "account_id": {
+          "type": "integer",
+          "title": "The account identifier",
+          "examples": [
+            12314
+          ]
+        },
+        "modality": {
+          "type": "string",
+          "title": "The disputes modality",
+          "examples": [
+            "00123"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "The dispute amount",
+          "examples": [
+            305.0
+          ]
+        },
+        "comment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The operator comment in dispute operation",
+          "examples": [
+            "Some comment"
+          ]
+        },
+        "protocol": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The protocol given from CRM platform",
+          "examples": [
+            "24042020M"
+          ]
+        },
+        "dispute_id": {
+          "type": "integer",
+          "title": "The dispute identifier",
+          "examples": [
+            724
+          ]
+        },
+        "reason_code": {
+          "type": "integer",
+          "title": "The reason code",
+          "examples": [
+            4855
+          ]
+        },
+        "dispute_modality": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The dispute modality",
+          "examples": [
+            "Non-receipt of merchandise"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "title": "The dispute creation date, returned in UTC format (RFC 3339)",
+          "examples": [
+            "2020-05-29T20:51:23.000000000Z"
+          ]
+        },
+        "update_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The dispute update date, returned in UTC format (RFC 3339)",
+          "examples": [
+            "2020-05-29T20:51:23.000000000Z"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "The status schema",
+          "examples": [
+            "OPEN"
+          ]
+        }
+      }
+    }
+  }
+}

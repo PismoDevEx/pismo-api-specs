@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Noname cancellation",
+  "description": "This event occurs when cancelling an external_id and its associated noname card, if present.",
+  "required": [
+    "program_id",
+    "bulk_id",
+    "external_id",
+    "status",
+    "message_code",
+    "message"
+  ],
+  "properties": {
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        12345
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo program ID.",
+      "examples": [
+        100
+      ]
+    },
+    "bulk_id": {
+      "type": "string",
+      "title": "Noname bulk ID",
+      "description": "Noname bulk ID.",
+      "examples": [
+        "01361c81-9911-4c28-8e44-36371b982657"
+      ]
+    },
+    "external_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External ID",
+      "description": "Noname card external_id.",
+      "examples": [
+        "2354dba6-e92d-417b-9cfa-edee52504564"
+      ]
+    },
+    "status": {
+      "type": [
+        "string"
+      ],
+      "title": "Event status",
+      "description": "Event status.",
+      "enum": [
+        "SUCCESS",
+        "FAILURE",
+        "success"
+      ]
+    },
+    "message_code": {
+      "type": [
+        "string"
+      ],
+      "title": "Event message code",
+      "description": "Code that describes the event.",
+      "enum": [
+        "ALREADY_CANCELED",
+        "EXTERNAL_ID_NOT_FOUND",
+        "EXTERNAL_ID_CANCELED",
+        "EXTERNAL_ID_AND_CARD_CANCELED",
+        "INVALID_BULK_ITEM_STATUS",
+        "CARD_NOT_FOUND_FOR_CANCELLATION",
+        "INVALID_CARD_STATUS_FOR_CANCELLATION"
+      ]
+    },
+    "message": {
+      "type": [
+        "string"
+      ],
+      "title": "Event message",
+      "description": "Message that describes the event.",
+      "examples": [
+        "External_id and card_id were canceled"
+      ]
+    }
+  },
+  "definitions": {}
+}

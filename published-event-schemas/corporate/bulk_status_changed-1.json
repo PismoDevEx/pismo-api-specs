@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bulk payment processing status changed",
+  "required": [
+    "bulk_id",
+    "operation_type",
+    "status"
+  ],
+  "properties": {
+    "bulk_id": {
+      "title": "Unique identifier for bulk processing",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 43,
+      "examples": [
+        "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0"
+      ]
+    },
+    "operation_type": {
+      "title": "The type of the operation executed.\n\nIt accepts the following values:\n\n`PAYMENT`: Payment and transfer operation type.\n\n`FUTURE_DATED`: Future dated bulk settlement operation type.\n\n`RESTRICT_FUNDS`: Restricted funds operation type.\n\n`RELEASE_RESTRICTION`: Release restricted funds operation type.\n\n`UNKNOWN`: Unknown operation type.\n\n",
+      "type": "string",
+      "enum": [
+        "PAYMENT",
+        "FUTURE_DATED",
+        "RESTRICT_FUNDS",
+        "RELEASE_RESTRICTION",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "PAYMENT"
+      ]
+    },
+    "output": {
+      "title": "Output related information",
+      "type": "object",
+      "required": [
+        "base_path",
+        "signature_file",
+        "original_file",
+        "key_id"
+      ],
+      "properties": {
+        "base_path": {
+          "title": "The output and signature file base path",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "outgoing/TN-b5019bed-38f0-44a8-b177-3837fc961880/bulk-payments"
+          ]
+        },
+        "signature_file": {
+          "title": "Signature of the output file",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "2024-09-10-15-58-06-2f0dc5e9-2025-4faa-8f00-4ec31a16c88e-out.sign"
+          ]
+        },
+        "original_file": {
+          "title": "The original output file",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": [
+            "2024-09-10-15-58-06-2f0dc5e9-2025-4faa-8f00-4ec31a16c88e-out.original"
+          ]
+        },
+        "key_id": {
+          "title": "ID of the Pismo's public key used for signing the output file",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "examples": [
+            "b6cdccc4-f6bf-4218-9e5e-7fb8f66008e3"
+          ]
+        }
+      }
+    },
+    "status": {
+      "title": "Bulk processing status",
+      "description": "\n\nIt only accepts the following values:\n\n`CREATED`: When the bulk payment has started processing.\n\n`FINISHED`:When the bulk payment has finished processing.\n\n`FAILED`: When an error occurred.\n\n`WAITING_SIGNATURE`: Waiting for Pismo's digital signature to validate the output file's authenticity.\n\n",
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "FINISHED",
+        "FAILED",
+        "WAITING_SIGNATURE"
+      ],
+      "examples": [
+        "FINISHED"
+      ]
+    }
+  }
+}

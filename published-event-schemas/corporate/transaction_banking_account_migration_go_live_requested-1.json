@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Transaction banking account migration go live requested",
+  "description": "This event occurs when a go-live is requested for a migrated account. It is emitted by bank-statements-migration-worker after processing a go-live request.",
+  "required": [
+    "migration_id",
+    "status"
+  ],
+  "properties": {
+    "migration_id": {
+      "type": "string",
+      "title": "Migration ID",
+      "description": "Unique ID of the migration.",
+      "minLength": 1,
+      "maxLength": 100,
+      "examples": [
+        "222222",
+        "df8d5b61-3cc0-4ec1-a72d-61860bff8fed"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        100602614
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External Account ID",
+      "description": "Custom account ID that uniquely identifies the account within your organization.",
+      "minLength": 0,
+      "maxLength": 60,
+      "examples": [
+        "ext-22222"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Status of the go-live request. Indicates the result of the go-live processing.",
+      "enum": [
+        "SUCCESS",
+        "ERROR",
+        "PENDING"
+      ],
+      "minLength": 1,
+      "maxLength": 20,
+      "examples": [
+        "SUCCESS",
+        "ERROR",
+        "PENDING"
+      ]
+    },
+    "code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Code",
+      "description": "Response code for the go-live operation. Populated on ERROR status.",
+      "minLength": 0,
+      "maxLength": 100,
+      "examples": [
+        ""
+      ]
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Message",
+      "description": "Response message for the go-live operation. Populated on ERROR status with detailed error description.",
+      "minLength": 0,
+      "maxLength": 500,
+      "examples": [
+        ""
+      ]
+    },
+    "phase_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Phase ID",
+      "description": "Identifier for the migration phase.",
+      "minLength": 0,
+      "maxLength": 60,
+      "examples": [
+        "ROLLOUT_Dec25"
+      ]
+    },
+    "program_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Program ID",
+      "description": "Unique ID used to identify the program in the Pismo platform APIs.",
+      "minimum": 1,
+      "maximum": 99999999999,
+      "examples": [
+        10768
+      ]
+    }
+  }
+}

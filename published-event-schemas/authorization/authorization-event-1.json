@@ -1,0 +1,703 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Authorization created",
+  "description": "This event occurs asynchronously when the Pismo platform calls the following endpoints and creates an authorization. <br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v1-payments' target='_blank'>Transfer funds</a><br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v1-installments' target='_blank'>Create installments payment</a><br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v1-force' target='_blank'>Force operation</a><br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v1-hold-funds-block' target='_blank'>Block amount</a><br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v1-hold-funds-unblock' target='_blank'>Unblock held amount</a><br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v1-hold-funds-transfer-cancel' target='_blank'>Cancel transfer of held amount</a><br><a href='https://developers.pismo.io/pismo-docs/reference/post-integrated-payments-api-v1-bankslips-pay' target='_blank'>Pay bank slip</a>",
+  "required": [
+    "amount",
+    "authorization",
+    "tracking_id"
+  ],
+  "properties": {
+    "amount": {
+      "type": "number",
+      "title": "Authorized amount",
+      "description": "Authorized amount minus added fees and charges",
+      "maximum": 18446744073709551617,
+      "examples": [
+        20.1,
+        100.0,
+        50
+      ]
+    },
+    "authorization": {
+      "$ref": "#/definitions/authorization"
+    },
+    "tracking_id": {
+      "type": "string",
+      "title": "Tracking ID",
+      "description": "GUID of the transaction",
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "beneficiary_id": {
+      "type": "string",
+      "title": "Beneficiary ID",
+      "description": "The beneficiary ID is a string identifier for the beneficiary associated with the account.",
+      "examples": [
+        "5db9aaee-c53a-478a-85fb-e0050b3afb6c"
+      ]
+    },
+    "capture": {
+      "type": "boolean",
+      "title": "Auto-captured",
+      "description": "Indicates whether an authorization will be auto-captured by the acquirer. Used in communication with REDE.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "split_iof": {
+      "type": "boolean",
+      "title": "Split IOF",
+      "description": "When set to `true`, the value of the iof fee will be splitted over each installment of the transaction. (Default: false",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "contract_amount": {
+      "type": "number",
+      "title": "Contract amount",
+      "description": "Authorization amount with added fees and charges, when applicable.",
+      "maximum": 18446744073709551617,
+      "examples": [
+        25.75,
+        125.0,
+        57.25
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "GUID used to correlate operations related to the same transaction",
+      "examples": [
+        "2b190358-d339-4a69-b313-944e189c0a85"
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "Three-letter currency code (ISO 4217)",
+      "minLength": 1,
+      "maxLength": 3,
+      "examples": [
+        "CLP",
+        "USD",
+        "BRL"
+      ]
+    },
+    "destination_currency": {
+      "type": "string",
+      "title": "Destination currency",
+      "description": "Three-letter currency code (ISO 4217) of the destination currency. This is the currency assigned to an account that is impacted in a particular transaction. It is considered the destination currency when handling international operations.",
+      "minLength": 1,
+      "maxLength": 3,
+      "examples": [
+        "CLP",
+        "USD",
+        "BRL"
+      ]
+    },
+    "entry_mode": {
+      "type": "string",
+      "title": "Entry mode",
+      "description": "How the payment was entered",
+      "examples": [
+        "QRCODE",
+        "WALLET",
+        "POS"
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "title": "Event timestamp (ISO 8601)",
+      "description": "Event timestamp in the UTC (zero-hour offset) ISO 8601 format (yyyy-MM-ddThh:mm:ssZ).",
+      "format": "date-time",
+      "minLength": 1,
+      "maxLength": 25,
+      "examples": [
+        "2021-06-04T10:37:37Z"
+      ]
+    },
+    "event_datetime": {
+      "type": "string",
+      "title": "Event timestamp (RFC 3339)",
+      "description": "Event timestamp in the UTC (zero-hour offset) RFC 3339 format, which includes milliseconds (yyyy-MM-ddThh:mm:ss.SSSZ).",
+      "format": "date-time",
+      "minLength": 1,
+      "maxLength": 25,
+      "examples": [
+        "2021-06-04T10:37:37.830Z"
+      ]
+    },
+    "installments": {
+      "$ref": "#/definitions/installments"
+    },
+    "location": {
+      "$ref": "#/definitions/location"
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Metadata",
+      "description": "Additional information relevant to the customer. No business rule validation is performed on it.",
+      "examples": [
+        {
+          "metadata": {
+            "customer-data": {
+              "any": "fields"
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "nsu": {
+      "type": "string",
+      "title": "nsu",
+      "description": "Unique sequential number",
+      "examples": [
+        "12345"
+      ]
+    },
+    "original_authorization": {
+      "$ref": "#/definitions/original_authorization"
+    },
+    "authorization_validations": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Authorization validations",
+      "description": "Object with the authorization validation data. Currently supports the `is_device_registered` boolean, which indicates whether the device used for the operation is registered according to the financial institution's security policies.",
+      "examples": [
+        {
+          "authorization_validations": {
+            "is_device_registered": false
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "payment_datetime": {
+      "type": "string",
+      "title": "Payment timestamp",
+      "description": "Payment timestamp in the UTC (zero-hour offset) ISO 8601 format (yyyy-MM-ddThh:mm:ssZ).",
+      "format": "date-time",
+      "examples": [
+        "2021-06-04T10:37:37.83Z"
+      ]
+    }
+  },
+  "definitions": {
+    "authorization": {
+      "type": "object",
+      "title": "Authorization",
+      "description": "Information about authorization",
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Authorization ID",
+          "description": "Authorization unique identifier",
+          "examples": [
+            123,
+            456,
+            789
+          ]
+        },
+        "code": {
+          "type": "string",
+          "title": "Authorization code",
+          "description": "Authorization code identifier",
+          "examples": [
+            "143726",
+            "113526"
+          ]
+        },
+        "descriptor": {
+          "type": "string",
+          "title": "Payment descriptor",
+          "description": "Descriptor of the payment. This is the description that appears on the cardholder's statement.",
+          "examples": [
+            "P2P",
+            "P2P Card on File",
+            "Pagamento de Contas",
+            "Cashout",
+            "Cashin",
+            "Cashin Card on File"
+          ]
+        },
+        "operation_description": {
+          "type": "string",
+          "title": "Operation description",
+          "description": "Short description of operation",
+          "examples": [
+            "ONE INSTALLMENT",
+            "INTEREST-FREE INSTALLMENTS",
+            "TRANSFER",
+            "WITHDRAWAL",
+            "PAYMENT"
+          ]
+        },
+        "processing_code": {
+          "type": "string",
+          "title": "Processing code",
+          "description": "Processing code used for authorization",
+          "examples": [
+            "007700",
+            "009900",
+            "007200"
+          ]
+        },
+        "balance_impact": {
+          "type": "integer",
+          "title": "Balance impact",
+          "description": "Type of operation impact on the account balance: `-1` debit, `1` credit, and `0` no impact.",
+          "enum": [
+            -1,
+            1,
+            0
+          ]
+        },
+        "destination_currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Destination currency",
+          "description": "Three-letter currency code (ISO 4217) of the destination currency. This is the currency assigned to an account that is impacted in a particular transaction. It is considered the destination currency when handling international operations.",
+          "examples": [
+            "CLP",
+            "USD",
+            "BRL"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Operation type",
+          "description": "Type of authorization operation",
+          "examples": [
+            "FORCE"
+          ]
+        },
+        "account": {
+          "$ref": "#/definitions/account"
+        },
+        "program": {
+          "$ref": "#/definitions/program"
+        },
+        "card": {
+          "$ref": "#/definitions/card"
+        },
+        "custom": {
+          "$ref": "#/definitions/custom"
+        },
+        "merchant": {
+          "$ref": "#/definitions/merchant"
+        },
+        "available_change": {
+          "$ref": "#/definitions/available_change"
+        },
+        "first_installment_date": {
+          "type": "string",
+          "description": "Date on which the first installment will be posted in the nearest open credit account invoice for operations with installments.",
+          "format": "date",
+          "examples": [
+            "2023-12-31"
+          ]
+        }
+      }
+    },
+    "account": {
+      "type": "object",
+      "title": "Account",
+      "description": "Information about account used for the payment",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Account unique identifier",
+          "examples": [
+            123,
+            456,
+            789
+          ]
+        }
+      }
+    },
+    "program": {
+      "type": "object",
+      "title": "Program",
+      "description": "Identification of the program in the Pismo platform.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Program unique identifier",
+          "examples": [
+            123,
+            456,
+            789
+          ]
+        }
+      }
+    },
+    "card": {
+      "type": "object",
+      "title": "Card",
+      "description": "Card information",
+      "additionalProperties": false,
+      "properties": {
+        "tid": {
+          "type": "string",
+          "title": "Transaction ID",
+          "description": "Transaction ID provided by the acquirer",
+          "examples": [
+            "123456789",
+            "987654321"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "title": "Card ID",
+          "description": "GUID of card",
+          "examples": [
+            "b8bb8116-e7f4-46b2-b71b-bfb81ce9ce41",
+            "bbd3912a-eb71-4467-ad8f-2942ee4cc403"
+          ]
+        }
+      }
+    },
+    "custom": {
+      "type": "object",
+      "title": "Custom object",
+      "description": "Object representing the custom (cashin/cashout) where the money came from or went to, respectively.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Custom ID",
+          "description": "Custom ID",
+          "examples": [
+            123,
+            456,
+            789
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Custom type",
+          "description": "Type of the custom information.",
+          "examples": [
+            "TED/TEF",
+            "Cashin via Boleto"
+          ]
+        },
+        "external_id": {
+          "type": "string",
+          "title": " External ID",
+          "description": "External unique identifier",
+          "examples": [
+            "uuid"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Custom name",
+          "description": "Name for the custom information",
+          "examples": [
+            "Paul's boleto"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Custom description",
+          "description": "Description of the custom information",
+          "examples": [
+            "Boleto paid via internet banking"
+          ]
+        },
+        "origin": {
+          "type": "string",
+          "title": "Custom origin",
+          "description": "Origin used in migrations",
+          "examples": [
+            "STRIKER"
+          ]
+        },
+        "accounting_date": {
+          "type": "string",
+          "title": "Accounting date",
+          "description": "Accounting date used in migrations processes.",
+          "format": "date-time",
+          "examples": [
+            "2021-06-04"
+          ]
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "title": "Location",
+      "description": "Latitude and longitude where the authorization occurred",
+      "additionalProperties": false,
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "title": "Latitude",
+          "description": "Latitude where the authorization occurred",
+          "examples": [
+            24.12,
+            -23.1
+          ]
+        },
+        "longitude": {
+          "type": "number",
+          "title": "Longitude",
+          "description": "Longitude where the authorization occurred",
+          "examples": [
+            24.12,
+            -23.1
+          ]
+        }
+      }
+    },
+    "installments": {
+      "type": "object",
+      "title": "Installments information",
+      "description": "Information about installments",
+      "additionalProperties": false,
+      "properties": {
+        "number_of_installments": {
+          "type": "integer",
+          "title": "Number of installments",
+          "description": "Number of installments customer agreed to",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "examples": [
+            1,
+            10
+          ]
+        },
+        "deferred_months": {
+          "type": "integer",
+          "title": "Deferred months",
+          "description": "Number of months before first payment is due",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "examples": [
+            0,
+            1,
+            12
+          ]
+        },
+        "details": {
+          "type": "array",
+          "default": [],
+          "title": "Details about each installment",
+          "description": "Array of installment details",
+          "items": {
+            "type": "object",
+            "title": "Installment details",
+            "description": "Each item represents the details for one installment.",
+            "required": [
+              "installment_number",
+              "total_amount",
+              "principal_amount"
+            ],
+            "properties": {
+              "installment_number": {
+                "type": "integer",
+                "title": "Installment number",
+                "description": "The number of the installment in the sequence",
+                "minimum": 1,
+                "maximum": 4294967295,
+                "examples": [
+                  1,
+                  2
+                ]
+              },
+              "total_amount": {
+                "type": "number",
+                "title": "Total amount",
+                "description": "Total amount of the installment",
+                "minimum": 1,
+                "maximum": 18446744073709551617,
+                "examples": [
+                  11.15
+                ]
+              },
+              "principal_amount": {
+                "type": "number",
+                "title": "Principal amount",
+                "description": "Amount of principal included in the installment",
+                "minimum": 1,
+                "maximum": 18446744073709551617,
+                "examples": [
+                  10.0
+                ]
+              },
+              "interest_amount": {
+                "type": "number",
+                "title": "Interest amount",
+                "description": "Amount of interest included in the installment",
+                "maximum": 18446744073709551617,
+                "examples": [
+                  1.0
+                ]
+              },
+              "interest_rate": {
+                "type": "number",
+                "title": "Interest rate",
+                "description": "Rate used to determine the interest on the principal",
+                "minimum": 1,
+                "maximum": 18446744073709551617,
+                "examples": [
+                  0.1
+                ]
+              },
+              "tax_amount": {
+                "type": "number",
+                "title": "Tax amount",
+                "description": "Amount of tax included in the installment",
+                "minimum": 1,
+                "maximum": 18446744073709551617,
+                "examples": [
+                  0.15,
+                  0.05
+                ]
+              }
+            },
+            "examples": [
+              {
+                "installment_number": 1,
+                "total_amount": 11.15,
+                "principal_amount": 10.0,
+                "interest_amount": 1.0,
+                "interest_rate": 0.1,
+                "tax_amount": 0.15
+              },
+              {
+                "installment_number": 2,
+                "total_amount": 11.15,
+                "principal_amount": 10.0,
+                "interest_amount": 1.0,
+                "interest_rate": 0.1,
+                "tax_amount": 0.05
+              }
+            ]
+          },
+          "examples": [
+            [
+              {
+                "installment_number": 1,
+                "total_amount": 11.15,
+                "principal_amount": 10.0,
+                "interest_amount": 1.0,
+                "interest_rate": 0.1,
+                "tax_amount": 0.15
+              },
+              {
+                "installment_number": 2,
+                "total_amount": 11.15,
+                "principal_amount": 10.0,
+                "interest_amount": 1.0,
+                "interest_rate": 0.1,
+                "tax_amount": 0.05
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "merchant": {
+      "type": "object",
+      "title": "Merchant",
+      "description": "Merchant that receives the payments",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Merchant ID",
+          "description": "Unique identifier for merchant",
+          "examples": [
+            123,
+            456
+          ]
+        },
+        "marketplace_id": {
+          "type": "integer",
+          "title": "Marketplace ID",
+          "description": "Unique identifier for device that initiated request",
+          "examples": [
+            789,
+            101
+          ]
+        }
+      }
+    },
+    "available_change": {
+      "type": "object",
+      "title": "Available change",
+      "description": "How available balance is impacted by transaction",
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Balance impact ID",
+          "description": "GUID of balance impact",
+          "examples": [
+            "4b636e57-3a53-4825-85ff-09a436f06cb4",
+            "9bb78991-9597-4766-a631-b299bec6358b"
+          ]
+        },
+        "update_datetime": {
+          "type": "string",
+          "title": "Update timestamp",
+          "description": "Timestamp of balance impact in the UTC (zero-hour offset) ISO 8601 format (yyyy-MM-ddThh:mm:ssZ).",
+          "examples": [
+            "2022-05-24T14:53:57Z",
+            "2022-05-24T14:53:57Z"
+          ]
+        }
+      }
+    },
+    "original_authorization": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Original authorization",
+      "description": "This optional field identifies the original authorization. When this field is provided, both `id` and `type` fields need to be filled.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Original authorization ID",
+          "description": "Original authorization ID in the Pismo platform.",
+          "examples": [
+            123,
+            456
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Original authorization type",
+          "description": "Original authorization type.",
+          "enum": [
+            "NETWORK",
+            "PLATFORM",
+            ""
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,375 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Pix recurrence authorization status changed",
+  "description": "Pix recurrence authorization status changed event",
+  "required": [
+    "authorization_id",
+    "role_type",
+    "account_id",
+    "payer",
+    "recurrence",
+    "status",
+    "expiration_datetime"
+  ],
+  "properties": {
+    "authorization_id": {
+      "type": "string",
+      "title": "Recurrence authorization ID",
+      "description": "BACEN recurrence authorization ID",
+      "example": "9a84e9cf-5f19-49b1-9e3e-d0e186c94c90"
+    },
+    "role_type": {
+      "type": "string",
+      "title": "Role type",
+      "description": "Role type",
+      "enum": [
+        "PAYEE",
+        "PAYER"
+      ],
+      "example": [
+        "PAYEE"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "example": "5869300"
+    },
+    "expiration_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expiration date time",
+      "description": "Authorization expiration date time. RFC 3339 format",
+      "example": "2025-09-07T17:54:40Z"
+    },
+    "max_payment_amount": {
+      "type": "number",
+      "title": "Maximum payment amount",
+      "description": "Payer-defined maximum payment amount for dynamic amount recurrences.",
+      "example": "1050.44"
+    },
+    "status": {
+      "type": "string",
+      "title": "Authorization status",
+      "description": "Authorization status",
+      "enum": [
+        "CREATED",
+        "RECEIVED",
+        "ACCEPTED",
+        "REJECTED",
+        "EXPIRED",
+        "CANCELLED"
+      ],
+      "example": "CREATED"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created at",
+      "description": "Created at datetime. RFC 3339 format",
+      "example": "2025-11-14T17:54:40Z"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated at",
+      "description": "Updated at datetime. RFC 3339 format",
+      "example": "2025-11-14T17:54:40Z"
+    },
+    "recurrence": {
+      "type": "object",
+      "required": [
+        "recurrence_id",
+        "contract_id",
+        "frequency_type",
+        "dates",
+        "status",
+        "payee",
+        "debtor"
+      ],
+      "properties": {
+        "recurrence_id": {
+          "type": "string",
+          "title": "Recurrence ID",
+          "description": "Bacen recurrence ID.",
+          "example": "RN000000012025050500012345678"
+        },
+        "contract_id": {
+          "type": "string",
+          "title": "Contract ID",
+          "description": "Payee-created external ID for their reference.",
+          "example": "5509-uroo-78944-9987"
+        },
+        "description": {
+          "type": "string",
+          "title": "Recurrence description",
+          "description": "Recurrence payment description",
+          "example": "Gym membership"
+        },
+        "allow_attempts_after_expiration": {
+          "type": "boolean",
+          "title": "Allow attempts after expiration",
+          "description": "Will charge continue after due date?",
+          "example": "true"
+        },
+        "amount": {
+          "type": "number",
+          "title": "Amount",
+          "description": "Amount to be transferred.",
+          "example": "1050.44"
+        },
+        "min_payment_amount": {
+          "type": "number",
+          "title": "Minimal payment amount",
+          "description": "Minimum payment amount for dynamic amount recurrences, defined by payee.",
+          "example": "10.01"
+        },
+        "dynamic_amount": {
+          "type": "boolean",
+          "title": "Dynamic amount",
+          "description": "Does recurrence have a dynamic amount?",
+          "example": "false"
+        },
+        "frequency_type": {
+          "type": "string",
+          "title": "Frequency type",
+          "description": "Recurrence payment type",
+          "enum": [
+            "WEEK",
+            "MONTH",
+            "QUARTER",
+            "SEMESTER",
+            "YEAR"
+          ],
+          "example": [
+            "MONTH"
+          ]
+        },
+        "dates": {
+          "type": "object",
+          "required": [
+            "first_payment_date"
+          ],
+          "properties": {
+            "first_payment_date": {
+              "type": "string",
+              "format": "date",
+              "title": "Firt payment date",
+              "description": "First charge/payment date. Format = yyyy-mm-dd",
+              "example": "2025-09-07"
+            },
+            "last_payment_date": {
+              "type": "string",
+              "format": "date",
+              "title": "Last payment date",
+              "description": "Last charge/payment date. Format = yyyy-mm-dd",
+              "example": "2025-09-07"
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "title": "Recurrence status",
+          "description": "Recurrence status",
+          "enum": [
+            "CREATED",
+            "ACCEPTED",
+            "APPROVED",
+            "REJECTED",
+            "FINISHED",
+            "EXPIRED",
+            "CANCELLED"
+          ],
+          "example": [
+            "CREATED"
+          ]
+        },
+        "payee": {
+          "type": "object",
+          "required": [
+            "name",
+            "document_number",
+            "document_type",
+            "bank"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "description": "Payee name",
+              "example": "Entregas Expressas Ltda"
+            },
+            "document_number": {
+              "type": "string",
+              "title": "Document number",
+              "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+              "example": "45337989000161"
+            },
+            "document_type": {
+              "type": "string",
+              "title": "Document type",
+              "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+              "enum": [
+                "LEGAL_PERSON",
+                "NATURAL_PERSON"
+              ],
+              "example": [
+                "LEGAL_PERSON"
+              ]
+            },
+            "bank": {
+              "type": "string",
+              "title": "Bank code",
+              "description": "<a href=\"https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/\" target=\"_blank\">ISPB (Identifcador do Sistema de Pagamento Brazil)</a> - the Brazilian Payment System ID for the receiving bank, an 8-digit value.",
+              "example": "00000001"
+            }
+          }
+        },
+        "debtor": {
+          "type": "object",
+          "required": [
+            "document_type",
+            "document_number",
+            "name"
+          ],
+          "properties": {
+            "document_type": {
+              "type": "string",
+              "title": "Document type",
+              "description": "Document type:<br>- `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+              "enum": [
+                "LEGAL_PERSON",
+                "NATURAL_PERSON"
+              ],
+              "example": [
+                "NATURAL_PERSON"
+              ]
+            },
+            "document_number": {
+              "type": "string",
+              "title": "Document number",
+              "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+              "example": "27329425028"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "description": "Payee name",
+              "example": "Cee Biskit"
+            }
+          }
+        }
+      }
+    },
+    "payer": {
+      "type": "object",
+      "required": [
+        "document_type",
+        "document_number",
+        "bank",
+        "branch",
+        "account_number"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type:<br> - `LEGAL_PERSON` - An actual person with legal rights.<br>- `NATURAL_PERSON` - An entity, such as an organization or company.",
+          "enum": [
+            "LEGAL_PERSON",
+            "NATURAL_PERSON"
+          ],
+          "example": [
+            "LEGAL_PERSON"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "example": "45337989000161"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Payee name",
+          "example": "Entregas Expressas Ltda"
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank code",
+          "description": "<a href=\"https://bank.codes/numero-do-banco/bank/banco-central-do-brasil/\" target=\"_blank\">ISPB (Identifcador do Sistema de Pagamento Brazil)</a> - the Brazilian Payment System ID for the receiving bank, an 8-digit value.",
+          "example": "00000001"
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "This could be a bank-assigned branch ID or the branch's ISPB number.",
+          "example": "2050"
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account Number",
+          "description": "Payer's account number",
+          "example": "98765432"
+        },
+        "city_code": {
+          "type": "string",
+          "title": "City code",
+          "description": "The <a href='https://www.ibge.gov.br/explica/codigos-dos-municipios.php'>IBGE</a> (Instituto Brasileiro de Geografia e Estat\u00edstica) city code",
+          "example": "3550308"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "authorization_id": "53034438-c350-4e5d-af4e-d24d009aeff4",
+      "role_type": "PAYEE",
+      "account_id": 254539210,
+      "recurrence_id": "RN272141122025050815965a45c80",
+      "expiration_datetime": "0001-01-01T00:00:00Z",
+      "max_payment_amount": 10000.15,
+      "status": "CREATED",
+      "recurrence": {
+        "recurrence_id": "RN272141122025050815965a45c80",
+        "contract_id": "00000000010",
+        "description": "Gym Training Payment",
+        "allow_attempts_after_expiration": false,
+        "amount": 10,
+        "min_payment_amount": 10.15,
+        "dynamic_amount": false,
+        "frequency_type": "MONTH",
+        "dates": {
+          "first_payment_date": "2025-05-21",
+          "last_payment_date": "2025-12-21"
+        },
+        "status": "CREATED",
+        "payee": {
+          "name": "Diane Ross",
+          "document_number": "00539493000132",
+          "document_type": "LEGAL_PERSON",
+          "bank": "27214112"
+        },
+        "debtor": {
+          "document_type": "NATURAL_PERSON",
+          "document_number": "00100200300",
+          "name": "John Doe"
+        }
+      },
+      "payer": {
+        "document_type": "NATURAL_PERSON",
+        "document_number": "00100200300",
+        "name": "John Doe",
+        "bank": "00000341",
+        "branch": "2050",
+        "account_number": "9000003",
+        "city_code": "3550308"
+      },
+      "created_at": "2025-05-08T16:59:12Z",
+      "updated_at": "2025-05-08T16:59:12Z"
+    }
+  ]
+}

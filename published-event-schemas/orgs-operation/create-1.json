@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Orgs operation created",
+  "description": "Orgs operation created. An orgs operation can be [creating a processing code](https://developers.pismo.io/pismo-docs/reference/createprocessingcode), or [creating a reversal processing code](https://developers.pismo.io/pismo-docs/reference/reversalprocessingcode)",
+  "required": [
+    "created_at",
+    "org_id",
+    "processing_code",
+    "balance_impact",
+    "description",
+    "reversal_processing_code",
+    "partial_reversal_processing_code",
+    "standard",
+    "status",
+    "type",
+    "is_productive",
+    "authorization_processing_codes",
+    "correlation_id",
+    "acknowledges",
+    "updated_at",
+    "tags"
+  ],
+  "properties": {
+    "created_at": {
+      "type": "integer",
+      "title": "Created at datetime",
+      "description": "Orgs operation creation datetime - Epoch timestamp",
+      "examples": [
+        1753733171
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "title": "Organization ID",
+      "description": "Organization/tenant ID",
+      "examples": [
+        "TN-00000000-0000-0000-0000-000000000000"
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code. For more information, refer to <a href='https://developers.pismo.io/pismo-docs/docs/processing-codes-and-transaction-types'>Processing codes</a>",
+      "examples": [
+        "PSM02"
+      ]
+    },
+    "balance_impact": {
+      "type": "integer",
+      "title": "Balance impact",
+      "description": "Processing code's balance impact: `1` = account credited, `0` = no impact, `-1` = account debited",
+      "enum": [
+        1,
+        0,
+        -1
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Operation description",
+      "examples": [
+        "Operation archiver modified"
+      ]
+    },
+    "reversal_processing_code": {
+      "type": "string",
+      "title": "Reversal processing code",
+      "description": "Reversal processing code",
+      "examples": [
+        "PSM00"
+      ]
+    },
+    "partial_reversal_processing_code": {
+      "type": "string",
+      "title": "Partial reversal processing code",
+      "description": "Partial reversal processing code",
+      "examples": [
+        "PSM01"
+      ]
+    },
+    "standard": {
+      "type": "boolean",
+      "title": "Standard",
+      "description": "Standard processing code or custom?",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Operation status",
+      "enum": [
+        "SUCCESS",
+        "PENDING"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Type",
+      "description": "Processing code type",
+      "enum": [
+        "AUTHORIZATION",
+        "REVERSAL"
+      ]
+    },
+    "is_productive": {
+      "type": "boolean",
+      "title": "Is productive",
+      "description": "Is productive - internal",
+      "example": true
+    },
+    "translations": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Translations",
+      "description": "Translations",
+      "additionalProperties": true
+    },
+    "authorization_processing_codes": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Authorization processing codes",
+      "description": "Authorization processing codes",
+      "examples": [
+        [
+          "PSM002"
+        ]
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "Correlation ID used for operation tracking on the Pismo platform",
+      "examples": [
+        "eaaf5b1f-1048-4dc9-9eec-926ce664dcc2"
+      ]
+    },
+    "acknowledges": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Acknowledges ",
+      "description": "Acknowledges - internal",
+      "examples": [
+        [
+          "PSM10",
+          "PSM11",
+          "PSM12"
+        ]
+      ]
+    },
+    "updated_at": {
+      "type": "integer",
+      "title": "Orgs operation updated datetime",
+      "description": "Orgs operation updated datetime - Epoch timestamp",
+      "examples": [
+        1753733171
+      ]
+    },
+    "tags": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "title": "Tags",
+      "description": "Metadata tags",
+      "examples": [
+        [
+          "Tag1",
+          "Tag2",
+          "Tag3"
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bank account updated",
+  "description": "Bank account updated. The <a href='https://developers.pismo.io/pismo-docs/reference/delete-intl-bank-accounts-v2-accounts-account-id-bank-accounts-scheme-name'>Bank account updated</a> endpoint generates this event.",
+  "required": [
+    "account_id",
+    "scheme",
+    "status",
+    "updated_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        8675309
+      ]
+    },
+    "scheme": {
+      "type": "object",
+      "title": "International bank account scheme",
+      "description": "International bank account scheme. A scheme is how a bank account is identified, such as sort code + account number (SCAN) in the UK.",
+      "examples": [
+        {
+          "sort_code": "100000",
+          "account_number": "31510604"
+        },
+        {
+          "iban": "GB24BKEN10000031510604"
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "International bank account status",
+      "description": "International Bank Account Status",
+      "enum": [
+        "ACTIVE",
+        "DELETED"
+      ],
+      "examples": [
+        "DELETED"
+      ]
+    },
+    "updated_datetime": {
+      "type": "string",
+      "title": "Bank account update datetime",
+      "description": "Bank account updated datetime, RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "International bank account type",
+      "description": "International bank account type: `CACC` - Checking account, `SVGS` - Savings account, `TRAN` - Brazilian specific account, `SLRY` - Salary account, employer deposits salary.",
+      "enum": [
+        "CACC",
+        "SVGS",
+        "TRAN",
+        "SLRY"
+      ],
+      "examples": [
+        "CACC"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "title": "International bank account metadata",
+      "description": "International bank account metadata",
+      "examples": [
+        {
+          "custom_field_1": "custom data 1",
+          "custom_field_2": "custom data 2"
+        }
+      ]
+    }
+  }
+}

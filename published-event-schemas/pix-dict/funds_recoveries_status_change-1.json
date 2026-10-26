@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix funds recovery status changed",
+  "description": "Pix funds recovery status changed. ",
+  "required": [
+    "funds_recovery_id",
+    "status",
+    "root_transaction_id",
+    "situation_type",
+    "reporter_participant",
+    "changed_at"
+  ],
+  "properties": {
+    "funds_recovery_id": {
+      "type": "string",
+      "title": "Funds recovery ID",
+      "description": "Funds recovery ID",
+      "examples": [
+        "+550e8400-e29b-41d4-a716-446655440000"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Account Id",
+      "description": "Pismo account ID",
+      "examples": [
+        1234567890
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Funds recovery status",
+      "description": "Funds recovery status",
+      "enum": [
+        "CREATED",
+        "AWAITING_ANALYSIS",
+        "TRACKED",
+        "ANALYSED",
+        "REFUNDING",
+        "COMPLETED",
+        "CANCELLED"
+      ]
+    },
+    "root_transaction_id": {
+      "type": "string",
+      "title": "Root transaction ID",
+      "description": "Root transaction ID. Fraudulent transaction end-to-end-id",
+      "examples": [
+        "E1234567890123456789012345678901"
+      ]
+    },
+    "situation_type": {
+      "type": "string",
+      "title": "Situation type",
+      "description": "Situation type. Reason for funds recovery",
+      "enum": [
+        "SCAM",
+        "ACCOUNT_TAKEOVER",
+        "COERCION",
+        "FRAUDULENT_ACCESS",
+        "OTHER"
+      ]
+    },
+    "reporter_participant": {
+      "type": "string",
+      "title": "Reporter participant",
+      "description": "Reporter participant ID",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "changed_at": {
+      "type": "string",
+      "title": "Status changed datetime",
+      "description": "Status changed datetime",
+      "examples": [
+        "2025-10-23T10:00:00Z"
+      ]
+    }
+  }
+}

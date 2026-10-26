@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset status changed",
+  "description": "This event occurs when an asset's status changes with product interest management.",
+  "required": [
+    "asset_id",
+    "external_asset_id",
+    "issuer_id",
+    "status",
+    "updated_at"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by Pismo.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "external_asset_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External asset ID",
+      "description": "Unique asset short identifier defined by Pismo.",
+      "examples": [
+        "kxBHNMCAYDnQav"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer id",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Asset status",
+      "description": "Status of asset",
+      "enum": [
+        "ACTIVE"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Updated date",
+      "description": "Date asset was last updated",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    }
+  }
+}

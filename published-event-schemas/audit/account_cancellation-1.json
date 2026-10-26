@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Account cancelled",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "Operation HTTP method",
+      "examples": [
+        "PUT"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "API operation URI",
+      "examples": [
+        "/v2/accounts/:accountId/status"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "Operator email",
+      "examples": [
+        "backoffice-operator@pismo.com.br"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "title": "Operator roles",
+      "items": {
+        "type": "string",
+        "title": "Roles",
+        "examples": [
+          "backoffice-operator",
+          "crm-operator",
+          "geroficios-operator",
+          "inspetoria-master",
+          "inspetoria-operator",
+          "itibackoffice-master",
+          "itibackoffice-operator",
+          "itinivel1-operator",
+          "treasury-operator"
+        ]
+      }
+    },
+    "origin": {
+      "type": "string",
+      "title": "Event come from",
+      "examples": [
+        "CRM"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "Audit data message",
+      "required": [
+        "account_id",
+        "reason_description"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "Account id",
+          "examples": [
+            171238
+          ]
+        },
+        "reason_description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Reason description",
+          "examples": [
+            "DETERMINACAO LEGAL / JUDICIAL"
+          ]
+        }
+      }
+    }
+  }
+}

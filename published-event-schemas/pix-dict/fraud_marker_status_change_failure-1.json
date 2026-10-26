@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix fraud marker status change failure",
+  "description": "Pix fraud marker integrity status change failure. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-fraud-marker-cancel'>Create fraud marker</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events'>Pix payments data events</a> guide.",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "ID",
+      "description": "Fraud marker ID.",
+      "maxLength": 36,
+      "examples": [
+        "1fe71b28-a5eb-4d3d-8781-823205c76aa3"
+      ]
+    },
+    "new_status": {
+      "type": "string",
+      "title": "New status",
+      "description": "The new status expected to be changed to.",
+      "enum": [
+        "REGISTERED",
+        "CANCELLED"
+      ],
+      "examples": [
+        "CANCELLED"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error message.",
+      "description": "Error message that occurred during processing in the integrity stream.",
+      "examples": [
+        "Error on provider"
+      ]
+    }
+  }
+}

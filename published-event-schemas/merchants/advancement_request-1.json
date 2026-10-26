@@ -1,0 +1,324 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant advancement request created",
+  "required": [
+    "type",
+    "begin_date",
+    "request_date",
+    "advanced_gross_amount",
+    "advanced_net_amount",
+    "advanced_discount_amount",
+    "interest_method",
+    "status"
+  ],
+  "properties": {
+    "simulation_id": {
+      "$id": "#/properties/simulation_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "uuid",
+      "title": "Simulation ID",
+      "description": "This field contains the simulation identifier if the advancement is not confirmed yet.",
+      "examples": [
+        null,
+        "9d451fb5-8968-45bf-8cdd-37e05aaaf102"
+      ]
+    },
+    "advancement_request_id": {
+      "$id": "#/properties/advancement_request_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Advancement request ID",
+      "description": "This field identifies the advancement request if it is confirmed by the user.",
+      "examples": [
+        null,
+        7
+      ]
+    },
+    "type": {
+      "$id": "#/properties/type",
+      "type": "string",
+      "title": "Type",
+      "description": "This field identifies the type of advancement transaction.",
+      "enum": [
+        "SIMULATION",
+        "EFFECTIVE"
+      ],
+      "examples": [
+        "SIMULATION",
+        "EFFECTIVE"
+      ]
+    },
+    "begin_date": {
+      "$id": "#/properties/begin_date",
+      "type": "string",
+      "format": "date",
+      "title": "Begin date",
+      "description": "This field identifies the start date of the period used for searching for advanceable transactions.",
+      "examples": [
+        "2023-10-20"
+      ]
+    },
+    "end_date": {
+      "$id": "#/properties/end_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "End date",
+      "description": "This field identifies the end date of the period used for searching for advanceable transactions.",
+      "examples": [
+        null,
+        "2023-11-19"
+      ]
+    },
+    "request_date": {
+      "$id": "#/properties/request_date",
+      "type": "string",
+      "format": "date",
+      "title": "Request date",
+      "description": "This field identifies the date when the advancement was requested.",
+      "examples": [
+        "2023-10-18"
+      ]
+    },
+    "advancement_fee": {
+      "$id": "#/properties/advancement_fee",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Advancement fee",
+      "description": "This field contains the amount of fee payed for the advancement.",
+      "examples": [
+        null,
+        "0.0",
+        "10.0"
+      ]
+    },
+    "campaign_advancement_fee": {
+      "$id": "#/properties/campaign_advancement_fee",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Advancement fee",
+      "description": "This field contains the amount of fee payed for the advancement if using specific campaign.",
+      "examples": [
+        null,
+        "0.0",
+        "10.0"
+      ]
+    },
+    "advanced_gross_amount": {
+      "$id": "#/properties/advanced_gross_amount",
+      "type": "string",
+      "title": "Advanced gross amount",
+      "description": "This field identifies the gross amount advanced.",
+      "examples": [
+        "309.74"
+      ]
+    },
+    "advanced_net_amount": {
+      "$id": "#/properties/advanced_net_amount",
+      "type": "string",
+      "title": "Advanced net amount",
+      "description": "This field identifies the net amount advanced.",
+      "examples": [
+        "300.0"
+      ]
+    },
+    "advanced_discount_amount": {
+      "$id": "#/properties/advanced_discount_amount",
+      "type": "string",
+      "title": "Advanced discount amount",
+      "description": "This field identifies the discount amount for the advancement.",
+      "examples": [
+        "7.74"
+      ]
+    },
+    "currency_code": {
+      "$id": "#/properties/currency_code",
+      "title": "Currency code",
+      "description": "ISO 4217 alphabetic currency code.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 0,
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD"
+      ]
+    },
+    "interest_method": {
+      "$id": "#/properties/interest_method",
+      "type": "string",
+      "title": "Interest method",
+      "description": "This field identifies the interest method used for this advancement request.",
+      "enum": [
+        "SIMPLIFIED",
+        "SIMPLE",
+        "COMPOUND"
+      ],
+      "examples": [
+        "SIMPLIFIED",
+        "SIMPLE",
+        "COMPOUND"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Status",
+      "description": "This field identifies the current status of the advancement request.",
+      "enum": [
+        "PENDING",
+        "PROCESSED",
+        "ERROR"
+      ],
+      "examples": [
+        "PENDING",
+        "PROCESSED",
+        "ERROR"
+      ]
+    },
+    "error_message": {
+      "$id": "#/properties/error_message",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Error message",
+      "description": "This field identifies the error if something goes wrong during the advancement process.",
+      "examples": [
+        null,
+        "Not enough receivables to advance"
+      ]
+    },
+    "details": {
+      "$id": "#/properties/details",
+      "type": [
+        "array"
+      ],
+      "title": "Details",
+      "items": {
+        "type": "object",
+        "properties": {
+          "merchant_id": {
+            "type": "integer",
+            "title": "Merchant ID",
+            "description": "This field identifies one merchant related to advancement request.",
+            "examples": [
+              1
+            ]
+          },
+          "merchant_name": {
+            "type": "string",
+            "title": "Merchant name",
+            "description": "This field identifies the name of the merchant.",
+            "examples": [
+              "Seller A"
+            ]
+          },
+          "advanced_gross_amount": {
+            "type": "string",
+            "title": "Advanced gross amount",
+            "description": "This field identifies the gross amount advanced from this merchant.",
+            "examples": [
+              "309.74"
+            ]
+          },
+          "advanced_net_amount": {
+            "type": "string",
+            "title": "Advanced net amount",
+            "description": "This field identifies the net amount advanced from this merchant.",
+            "examples": [
+              "302"
+            ]
+          },
+          "advanced_discount_amount": {
+            "type": "string",
+            "title": "Advanced discount amount",
+            "description": "This field identifies the discounted amount for this merchant in this advancement.",
+            "examples": [
+              "7.74"
+            ]
+          },
+          "discount_rate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "double",
+            "title": "Discount rate",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "This field identifies the discount rate of this merchant in advancements.",
+            "examples": [
+              "0.025"
+            ]
+          },
+          "campaign_discount_rate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "title": "Campaign discount rate",
+            "description": "This field identifies the discount rate for a specific campaign.",
+            "examples": [
+              "0.03"
+            ]
+          },
+          "maximum_advancement_percentage": {
+            "type": "string",
+            "format": "double",
+            "title": "Maximum advancement percentage",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "This field identifies the discounted rate of this merchant in advancements.",
+            "examples": [
+              "0.8",
+              "1.0"
+            ]
+          },
+          "transactions_ids": {
+            "type": "array",
+            "title": "Transactions IDs",
+            "description": "This field contains a list of transactions of this merchant used in this advancement.",
+            "items": {
+              "type": "number"
+            },
+            "examples": [
+              111,
+              211,
+              311
+            ]
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Metadata",
+      "description": "Customer-provided information - no business rule validation is done.",
+      "examples": [
+        {
+          "customer-data": {
+            "simulation-id": "09c9a143-d816-4145-b7cb-a8012cc02b4b"
+          }
+        }
+      ]
+    }
+  }
+}

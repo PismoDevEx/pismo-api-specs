@@ -1,0 +1,323 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix-in notification received",
+  "description": "Internal-only endpoint. This flow is started by our partner's webhook, after successfully cashing in, this event is sent. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments' target='_blank'>Pix instant payments</a> guide.",
+  "examples": [
+    {
+      "domain": "pix",
+      "event_type": "pix_in",
+      "schema_version": 1,
+      "org_id": "TN-34778262-f4f0-464d-b4c6-a14e2dc6xxx",
+      "cid": "468fa881-fee5-4d6e-aa17-bbac0a1df0a5",
+      "timestamp": "2023-10-25T18:34:27Z",
+      "data": {
+        "account_id": 9837,
+        "authorization_id": 123456789,
+        "end_to_end_id": "E2198371298371",
+        "amount": 15.34,
+        "initiation_type": "MANUAL",
+        "transaction_type": "TRANSFER",
+        "status": "SETTLED",
+        "authorization_datetime": "2022-01-01T12:00:00Z",
+        "payer_name": "Warren Piece",
+        "internal": false,
+        "payer": {
+          "account_number": "12345678",
+          "branch": "001",
+          "bank": "00992014",
+          "account_type": "CACC",
+          "document_number": "12312312390",
+          "name": "Tad Pohl"
+        },
+        "payee": {
+          "key": "email@email.com"
+        },
+        "description": "c45e06de-4dca-49a6-a5b0-c4799851cb0a",
+        "external_movement_id": "12345678"
+      }
+    }
+  ],
+  "required": [
+    "account_id",
+    "amount",
+    "end_to_end_id",
+    "payer",
+    "payer_name",
+    "payer_participant",
+    "initiation_type",
+    "status",
+    "internal"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Pix-in Amount",
+      "description": "Pix-in amount",
+      "examples": [
+        125.5
+      ]
+    },
+    "authorization_datetime": {
+      "type": "string",
+      "title": "Authorization Datetime",
+      "description": "Pismo authorization datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'. This field will only be mandatory when the status is SETTLED.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID, This field will only be mandatory when the status is SETTLED.",
+      "examples": [
+        123
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Pix end to end ID",
+      "description": "Pix end to end transaction ID. This field is a Brazil Central Bank (BCB) requirement to track Pix transactions. Basically, there are two steps to a Pix transaction: 1. Initialize a transaction and 2. Confirm a transaction. This field is sent to the BCB in both steps in order to identify all transaction information.",
+      "examples": [
+        "E0000000020210519134701363533333"
+      ]
+    },
+    "initiation_type": {
+      "type": "string",
+      "title": "Initiation type",
+      "description": "The type of PIX initiation",
+      "enum": [
+        "MANUAL",
+        "DICT",
+        "STATIC_QRCODE",
+        "DYNAMIC_QRCODE",
+        "PAYMENT_INITIATOR",
+        "AUTOMATIC_PIX",
+        "DYNAMIC_PROXIMITY_PIX",
+        "STATIC_PROXIMITY_PIX"
+      ],
+      "examples": [
+        "DICT"
+      ]
+    },
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction type",
+      "description": "Type of transaction: `TRANSFER` = simple transfer (purchases or cash only); `CHANGE` = transfer of cash in addition to purchase amount (only when initiated by a `CHANGE` type QR code); `WITHDRAWAL` = cash-only transaction (only when initiated by a `WITHDRAWAL` type QR code); `REFUND_AUTOMATIC_PIX` = refund a pix to the PSP payer  (only when initiated by a `MANUAL`); `REFUND` = total or partial refund to the paying user within the scope of MED 2.0, when this refund occurs from the PI Account of the user's PSP who participated in the distribution chain of the resources of the original transaction (only when initiated by a `MANUAL`); `INSTALLMENT_PIX` = For INSTALLMENT PIX transactions",
+      "enum": [
+        "TRANSFER",
+        "CHANGE",
+        "WITHDRAWAL",
+        "REFUND_AUTOMATIC_PIX",
+        "REFUND",
+        "INSTALLMENT_PIX"
+      ],
+      "example": "TRANSFER"
+    },
+    "transaction_identification": {
+      "type": "string",
+      "title": "Transaction identification code",
+      "description": "Transaction ID. This field is returned from the Validate QR code endpoint.",
+      "maxLength": 32,
+      "examples": [
+        "16484851846841"
+      ]
+    },
+    "payer": {
+      "type": "object",
+      "required": [
+        "account_number",
+        "bank",
+        "branch",
+        "account_type",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "account_number": {
+          "type": "string",
+          "title": "Account Number",
+          "description": "Pix payer's account number including verifier",
+          "maxLength": 20,
+          "examples": [
+            "98765432"
+          ]
+        },
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Pix payer's bank code- ISPB (Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier, an 8-digit value.",
+          "maxLength": 8,
+          "examples": [
+            "30306294"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Pix payer's branch code without digit",
+          "maxLength": 4,
+          "examples": [
+            "1234"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account Type",
+          "description": "Pix payer's account type",
+          "maxLength": 4,
+          "examples": [
+            "CACC",
+            "SLRY",
+            "SVGS",
+            "TRAN"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Pix payer's document number",
+          "description": "Pix payer's federal document number, A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Pix payer's account name",
+          "description": "Pix payer's account name",
+          "examples": [
+            "Rick Shaw"
+          ]
+        }
+      }
+    },
+    "payee": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "title": "Key value",
+          "description": "Key value of key type. For example: email@email.com (`EMAIL` key type)",
+          "examples": [
+            "12345678901",
+            "12345678901234",
+            "+5511912345678",
+            "email@email.com",
+            "fe8de11a-6d5e-4133-a4ec-7583a6e7182a"
+          ]
+        }
+      }
+    },
+    "payer_name": {
+      "type": "string",
+      "title": "Pix-in Payer Name",
+      "description": "Name of payer in Pix-in transaction",
+      "examples": [
+        "Sonny Day"
+      ]
+    },
+    "payer_participant": {
+      "type": "string",
+      "title": "Payer Participant ID",
+      "description": "Payer's ISPB (Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier for the receiving bank, an 8-digit value.",
+      "maxLength": 8,
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Pix-in status",
+      "description": "Pix-in status",
+      "enum": [
+        "CANCELLED",
+        "SETTLED"
+      ],
+      "examples": [
+        "CANCELLED"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Transaction description shown to the payer so that they can enter relevant information to be sent to the payee.",
+      "examples": [
+        "Transaction description"
+      ]
+    },
+    "external_movement_id": {
+      "type": "string",
+      "title": "External movement id",
+      "description": "Payer participant's movement identifier",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "internal": {
+      "type": "boolean",
+      "title": "Internal transaction",
+      "description": "Internal transaction informs if the transaction was made inside Pismo (between accounts at the same Org), in this case, the SPI was not called",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Pix In Cancellation Error code",
+      "description": "Error code for Pix-in status `CANCELLED`, an 8-digit value.",
+      "examples": [
+        "ESPI20003",
+        "ESPI20012",
+        "ESPI20013",
+        "ESPI20014",
+        "ESPI20015",
+        "ESPI20016",
+        "ESPI20017",
+        "ESPI20020",
+        "ESPI20022",
+        "ESPI20023",
+        "ESPI20025",
+        "ESPI20029",
+        "ESPI20082",
+        "ESPI20088",
+        "ESPI20090",
+        "ESPI20092"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "title": "Pix-in Cancellation Reason",
+      "description": "Reason for Pix-in status `CANCELLED`",
+      "examples": [
+        "Duplicated EndToEndId",
+        "Transaction stopped due to error at the Creditor Agent",
+        "Creditor account number invalid or missing",
+        "Account specified is blocked, prohibiting posting of transactions against it",
+        "Creditor account number closed",
+        "Creditor account type missing or invalid",
+        "Transaction type not supported/authorized on this account",
+        "Amount received is not the amount agreed or expected",
+        "Identification of end customer is not consistent with associated account number. (formerly CreditorConsistency)",
+        "Value in Creditor Identifier is incorrect",
+        "The order was rejected by the bank side (for reasons concerning content)",
+        "Settlement of the transaction has failed",
+        "Cash-in denied due to validation API timeout.",
+        "Confirmation time expired for this transaction",
+        "Service is temporarily unavailable. Please try again.",
+        "Waiting time expired due to incomplete order."
+      ]
+    }
+  }
+}

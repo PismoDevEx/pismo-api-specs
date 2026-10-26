@@ -1,0 +1,706 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/authorization_incoming-1.json",
+  "type": "object",
+  "title": "Authorization migration started",
+  "description": "Event generated when an authorization migration is started. Contains the payload with the data to be migrated.",
+  "additionalProperties": true,
+  "examples": [
+    {
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "1",
+      "line_number": 1,
+      "entity": {
+        "migration": {
+          "id": "00046429504363683042022-04-25-17.07.03.734484",
+          "version_date": "2022-05-02T16:47:06Z",
+          "account_id": "00252341785",
+          "card_id": "D7D9163538914473CDA",
+          "tokenization_id": ""
+        },
+        "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+        "cid": "9be0486e-073a-4f56-80bb-5c400337e721",
+        "file_id": "1",
+        "processing_code": "00",
+        "local_amount": 15.0,
+        "local_currency_code": "986",
+        "settlement_amount": 68.1,
+        "settlement_currency_code": "840",
+        "cardholder_amount": 0.0,
+        "cardholder_currency_code": "986",
+        "cardholder_currency_conversion_rate": 4.54e-06,
+        "currency_conversion_date": "2022-05-02T16:47:06Z",
+        "entry_mode": "01",
+        "number_of_installments": 0,
+        "installment_amount": 0.0,
+        "principal_amount": 15.0,
+        "contract_amount": 15.0,
+        "authorization_code": "020340",
+        "event_date_hour": "2022-04-08T17:07:03Z",
+        "authorization_response_code": "00",
+        "nsu": "+6423667",
+        "network": "VISA",
+        "retrieval_reference_number": "209826423667",
+        "merchant_city": "SAO PAULO",
+        "merchant_name": "MERCHANT DEFAULT ITAUCARD",
+        "merchant_state_or_country": "SP",
+        "acquirer_bin": "000004",
+        "merchant_id": "004999999998",
+        "merchant_category_code": "05411",
+        "postings": {
+          "TAXA_CONV_MOEDA": "+000000454",
+          "TAXA_PARC": "+00000",
+          "TAXA_IOF": "+0000000"
+        },
+        "transaction_identifier": "000209826423667",
+        "authorization_status": "PENDING",
+        "mti": "0100",
+        "custom_response_code": "000",
+        "terminal_capability": "0",
+        "pin_presence": false,
+        "cvv_presence": false,
+        "arqc_presence": false,
+        "track1_presence": false,
+        "track2_presence": false,
+        "wallet_identifier": "",
+        "update_limit": false,
+        "update_flexcontrol": false,
+        "pre_authorization": false,
+        "token_requestorid": "+00000000000",
+        "referral_updated_at": "1985-10-09T07:45:01Z",
+        "metadata": {
+          "ADVICE_BANDEIRA": "000",
+          "ATC_CHIP": "00000",
+          "ATC_DATABASE": "00000",
+          "AVAILABLE_LIMIT": "+0000000000104.99",
+          "AVISO_VIAGEM": "N",
+          "CARDHOLDER_POSTAL_CODE": "0000000000",
+          "CHIP_TRANSACTION_TYPE": "00000000000",
+          "DATA_EMISSAO_CARTAO": "20170425",
+          "DENIAL_CODE": "CND",
+          "DEVICE_ID_WALLET": "",
+          "INDICADOR_CARTAO_ADICIONAL": "1",
+          "INDICADOR_CARTAO_VIRTUAL": "0",
+          "MCC": "05411",
+          "MERCHANT_TERMINAL_ID": "6063 ",
+          "NETWORK_SCORE": "0000000000",
+          "NIVEL_RISCO_AUTENTICACAO_CNP_SEGURO": "0000",
+          "POS_POSTAL_CODE": "0000054130",
+          "RESPONSE_CODE": "62",
+          "TERMINAL_CAPABILITY": "0",
+          "TOKEN_ID": " ",
+          "TOTAL_LIMIT": "+0000000000105.00",
+          "TRANSACAO_RECORRENTE_ESTABELECIMENTO": "0",
+          "TRANSACTION_TYPE": "0100",
+          "TRANSACTION_WITH_PASSWORD": "0",
+          "WALLET_ID": "",
+          "cardholderAmount": "+0000000000000",
+          "cardholderCurrencyCode": "+0986",
+          "cardholderCurrencyConversionRate": "+000000454",
+          "contractAmount": "+0000000001500",
+          "entryMode": "012",
+          "installmentAmount": "+0000000",
+          "localAmount": "+0000000001500",
+          "localCurrencyCode": "+0986",
+          "numberOfInstallments": "00",
+          "postings": "TAXA_CONV_MOEDA:+000000454;TAXA_PARC:+00000;TAXA_IOF:+0000000",
+          "principalAmount": "+0000000001500",
+          "settlementAmount": "+0000000006810",
+          "settlementCurrencyRate": "+0000000006810",
+          "settlementCurrencyCode": "+0840",
+          "arqcPresence": "0",
+          "cvvPresence": "0",
+          "pinPresence": "0",
+          "track1Presence": "0",
+          "track2Presence": "0",
+          "updateLimit": "0",
+          "preAuthorization": "0"
+        }
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity/properties/entity",
+      "type": "object",
+      "description": "This field represents an authorization.",
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "This field contains the data that identifies a migration.",
+          "examples": [
+            {
+              "id": "00046429504363683042022",
+              "version_date": "2022-05-02T16:47:06Z",
+              "account_id": "000000252341785",
+              "card_id": "D7D9163538914473CDA",
+              "tokenization_id": "XYZD9163538914473"
+            }
+          ],
+          "required": [
+            "id",
+            "version_date",
+            "account_id"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "This field is the unique identifier of migration.",
+              "examples": [
+                "authorization-external-01",
+                "00046429504363683042022"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "This field is the date of version of migration.",
+              "examples": [
+                "2022-05-02T16:47:06Z",
+                "2022-05-02T16:47:06.555222Z"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "This field identifies the external account the auhtorization belongs to.",
+              "examples": [
+                "account-external-01",
+                "000000252341785"
+              ]
+            },
+            "card_id": {
+              "$id": "#/properties/entity/properties/migration/properties/card_id",
+              "type": "string",
+              "description": "This field identifies the external card the auhtorization belongs to.",
+              "examples": [
+                "card-external-01",
+                "D7D9163538914473CDA"
+              ]
+            },
+            "tokenization_id": {
+              "$id": "#/properties/entity/properties/migration/properties/tokenization_id",
+              "type": "string",
+              "description": "This field identifies the external tokenization the auhtorization belongs to.",
+              "examples": [
+                "tokenization-external-01",
+                "XYZD9163538914473ABC"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "org_id": {
+          "$id": "#/properties/entity/properties/org_id",
+          "type": "string",
+          "description": "Internal identifier of the client organization registered into the platform.",
+          "examples": [
+            "TN_c642ca23-4ea8-4218-a00d-8331a496253c"
+          ]
+        },
+        "cid": {
+          "$id": "#/properties/entity/properties/cid",
+          "type": "string",
+          "format": "uuid",
+          "description": "This field identifies a file processing or an API request.",
+          "examples": [
+            "9be0486e-073a-4f56-80bb-5c400337e721"
+          ]
+        },
+        "file_id": {
+          "$id": "#/properties/entity/properties/file_id",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+          "examples": [
+            "5832868-ca4d-475f-888b-02bb44f84d19",
+            null
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "This field identifies the processing code of authorization.",
+          "examples": [
+            "00",
+            "01"
+          ]
+        },
+        "local_amount": {
+          "$id": "#/properties/entity/properties/local_amount",
+          "type": "number",
+          "description": "This field identifies the local amount of authorization.",
+          "examples": [
+            15.0
+          ]
+        },
+        "local_currency_code": {
+          "$id": "#/properties/entity/properties/local_currency_code",
+          "type": "string",
+          "description": "This field identifies the local currency code of authorization.",
+          "examples": [
+            "986"
+          ]
+        },
+        "settlement_amount": {
+          "$id": "#/properties/entity/properties/settlement_amount",
+          "type": "number",
+          "description": "This field identifies the settlement amount of authorization.",
+          "examples": [
+            68.1
+          ]
+        },
+        "settlement_currency_rate": {
+          "$id": "#/properties/entity/properties/settlement_currency_rate",
+          "type": "number",
+          "description": "This field identifies the settlement currency rate of authorization.",
+          "examples": [
+            1.50000112
+          ]
+        },
+        "settlement_currency_code": {
+          "$id": "#/properties/entity/properties/settlement_currency_code",
+          "type": "string",
+          "description": "This field identifies the settlement_currency_code of authorization.",
+          "examples": [
+            "840"
+          ]
+        },
+        "cardholder_amount": {
+          "$id": "#/properties/entity/properties/cardholder_amount",
+          "type": "number",
+          "description": "This field identifies the cardholder_amount of authorization.",
+          "examples": [
+            0.0
+          ]
+        },
+        "cardholder_currency_code": {
+          "$id": "#/properties/entity/properties/cardholder_currency_code",
+          "type": "string",
+          "description": "This field identifies the cardholder_currency_code of authorization.",
+          "examples": [
+            "986"
+          ]
+        },
+        "cardholder_currency_conversion_rate": {
+          "$id": "#/properties/entity/properties/cardholder_currency_conversion_rate",
+          "type": "number",
+          "description": "This field identifies the cardholder_currency_conversion_rate of authorization.",
+          "examples": [
+            4.54e-06
+          ]
+        },
+        "currency_conversion_date": {
+          "$id": "#/properties/entity/properties/currency_conversion_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the currency conversion date of authorization.",
+          "examples": [
+            "2022-05-02T16:47:06Z",
+            "2022-05-02T16:47:06.500600Z"
+          ]
+        },
+        "entry_mode": {
+          "$id": "#/properties/entity/properties/entry_mode",
+          "type": "string",
+          "description": "This field identifies the entry mode of authorization.",
+          "examples": [
+            "00",
+            "01",
+            "05",
+            "07",
+            "10",
+            "81",
+            "90"
+          ]
+        },
+        "number_of_installments": {
+          "$id": "#/properties/entity/properties/number_of_installments",
+          "type": "integer",
+          "default": 0,
+          "description": "This field identifies the number of installments of authorization.",
+          "examples": [
+            0
+          ]
+        },
+        "installment_amount": {
+          "$id": "#/properties/entity/properties/installment_amount",
+          "type": "number",
+          "description": "This field identifies the installment amount of authorization.",
+          "examples": [
+            0.0
+          ]
+        },
+        "principal_amount": {
+          "$id": "#/properties/entity/properties/principal_amount",
+          "type": "number",
+          "description": "This field identifies the principal amount of authorization.",
+          "examples": [
+            15.0
+          ]
+        },
+        "contract_amount": {
+          "$id": "#/properties/entity/properties/contract_amount",
+          "type": "number",
+          "description": "This field identifies the contract amount of authorization.",
+          "examples": [
+            15.0
+          ]
+        },
+        "authorization_code": {
+          "$id": "#/properties/entity/properties/authorization_code",
+          "type": "string",
+          "description": "This field identifies the authorization code of authorization.",
+          "examples": [
+            "020340"
+          ]
+        },
+        "event_date_hour": {
+          "$id": "#/properties/entity/properties/event_date_hour",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the event date hour of authorization.",
+          "examples": [
+            "2022-04-08T17:07:03Z",
+            "2022-04-08T17:07:03.500599Z"
+          ]
+        },
+        "authorization_response_code": {
+          "$id": "#/properties/entity/properties/authorization_response_code",
+          "type": "string",
+          "description": "This field identifies the response code of authorization.",
+          "examples": [
+            "00"
+          ]
+        },
+        "nsu": {
+          "$id": "#/properties/entity/properties/nsu",
+          "type": "string",
+          "description": "This field identifies the nsu of authorization.",
+          "examples": [
+            "6423667"
+          ]
+        },
+        "network": {
+          "$id": "#/properties/entity/properties/network",
+          "type": "string",
+          "description": "This field identifies the network of authorization.",
+          "examples": [
+            "MASTERCARD",
+            "VISA",
+            "ELO",
+            "TECBAN"
+          ]
+        },
+        "retrieval_reference_number": {
+          "$id": "#/properties/entity/properties/retrieval_reference_number",
+          "type": "string",
+          "description": "This field identifies the retrieval reference number of authorization.",
+          "examples": [
+            "209826423667"
+          ]
+        },
+        "merchant_city": {
+          "$id": "#/properties/entity/properties/merchant_city",
+          "type": "string",
+          "description": "This field identifies the merchant city of authorization.",
+          "examples": [
+            "SAO PAULO"
+          ]
+        },
+        "merchant_name": {
+          "$id": "#/properties/entity/properties/merchant_name",
+          "type": "string",
+          "description": "This field identifies the merchant name of authorization.",
+          "examples": [
+            "MERCHANT DEFAULT ITAUCARD"
+          ]
+        },
+        "merchant_state_or_country": {
+          "$id": "#/properties/entity/properties/merchant_state_or_country",
+          "type": "string",
+          "description": "This field identifies the merchant state or country of authorization.",
+          "examples": [
+            "SP"
+          ]
+        },
+        "acquirer_bin": {
+          "$id": "#/properties/entity/properties/acquirer_bin",
+          "type": "string",
+          "description": "This field identifies the acquirer bin of authorization.",
+          "examples": [
+            "000004"
+          ]
+        },
+        "merchant_id": {
+          "$id": "#/properties/entity/properties/merchant_id",
+          "type": "string",
+          "description": "This field identifies the merchant id of authorization.",
+          "examples": [
+            "004999999998"
+          ]
+        },
+        "merchant_category_code": {
+          "$id": "#/properties/entity/properties/merchant_category_code",
+          "type": "string",
+          "description": "This field identifies the merchant category code of authorization.",
+          "examples": [
+            "05411"
+          ]
+        },
+        "postings": {
+          "$id": "#/properties/entity/properties/postings",
+          "type": "object",
+          "default": {},
+          "additionalProperties": true,
+          "description": "This field identifies the postings of authorization.",
+          "examples": [
+            {
+              "TAXA_CONV_MOEDA": "+000000454",
+              "TAXA_PARC": "+00000",
+              "TAXA_IOF": "+0000000"
+            }
+          ]
+        },
+        "transaction_identifier": {
+          "$id": "#/properties/entity/properties/transaction_identifier",
+          "type": "string",
+          "description": "This field identifies the transaction_identifier of authorization.",
+          "examples": [
+            "000209826423667"
+          ]
+        },
+        "authorization_status": {
+          "$id": "#/properties/entity/properties/authorization_status",
+          "type": "string",
+          "description": "This field identifies the authorization_status of authorization.",
+          "examples": [
+            "PENDING"
+          ]
+        },
+        "mti": {
+          "$id": "#/properties/entity/properties/mti",
+          "type": "string",
+          "description": "This field identifies the mti of authorization.",
+          "examples": [
+            "0100"
+          ]
+        },
+        "custom_response_code": {
+          "$id": "#/properties/entity/properties/custom_response_code",
+          "type": "string",
+          "description": "This field identifies the custom response code of authorization.",
+          "examples": [
+            "000"
+          ]
+        },
+        "terminal_capability": {
+          "$id": "#/properties/entity/properties/terminal_capability",
+          "type": "string",
+          "description": "This field identifies the terminal capability of authorization.",
+          "examples": [
+            "0"
+          ]
+        },
+        "pin_presence": {
+          "$id": "#/properties/entity/properties/pin_presence",
+          "type": "boolean",
+          "description": "This field identifies the pin presence of authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "cvv_presence": {
+          "$id": "#/properties/entity/properties/cvv_presence",
+          "type": "boolean",
+          "description": "This field identifies the cvv presence of authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "arqc_presence": {
+          "$id": "#/properties/entity/properties/arqc_presence",
+          "type": "boolean",
+          "description": "This field identifies the arqc presence of authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "track1_presence": {
+          "$id": "#/properties/entity/properties/track1_presence",
+          "type": "boolean",
+          "description": "This field identifies the track1 presence of authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "track2_presence": {
+          "$id": "#/properties/entity/properties/track2_presence",
+          "type": "boolean",
+          "description": "This field identifies the track2 presence of authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "pre_authorization": {
+          "$id": "#/properties/entity/properties/pre_authorization",
+          "type": "boolean",
+          "description": "This field identifies if authorization is a pre_authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "wallet_identifier": {
+          "$id": "#/properties/entity/properties/wallet_identifier",
+          "type": [
+            "string"
+          ],
+          "description": "This field identifies the wallet identifier of authorization.",
+          "examples": [
+            "wallet-identifier-01"
+          ]
+        },
+        "token_requestorid": {
+          "$id": "#/properties/entity/properties/token_requestorid",
+          "type": "string",
+          "description": "This field identifies the token requestorId of authorization.",
+          "examples": [
+            "token-requestor-id-01s"
+          ]
+        },
+        "referral_updated_at": {
+          "$id": "#/properties/entity/properties/referral_updated_at",
+          "type": "string",
+          "description": "This field identifies when a fraud suspicion is not valid anymore",
+          "examples": [
+            "1985-10-09T07:45:01Z"
+          ]
+        },
+        "update_limit": {
+          "$id": "#/properties/entity/properties/update_limit",
+          "type": "boolean",
+          "description": "This field identifies the update limit of authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "update_flexcontrol": {
+          "$id": "#/properties/entity/properties/update_flexcontrol",
+          "type": "boolean",
+          "description": "This field identifies the update flex control of the authorization.",
+          "examples": [
+            false,
+            true
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "This field contains others authorization information.",
+          "default": {},
+          "additionalProperties": true,
+          "examples": [
+            {
+              "RESPONSE_CODE": "62",
+              "TERMINAL_CAPABILITY": "0",
+              "TOTAL_LIMIT": "+0000000000105.00",
+              "TRANSACTION_TYPE": "0100",
+              "WALLET_ID": "",
+              "cardholderAmount": "+0000000000000",
+              "cardholderCurrencyCode": "+0986",
+              "cardholderCurrencyConversionRate": "+000000454",
+              "contractAmount": "+0000000001500",
+              "entryMode": "012",
+              "installmentAmount": "+0000000",
+              "localAmount": "+0000000001500",
+              "localCurrencyCode": "+0986",
+              "numberOfInstallments": "00",
+              "postings": "TAXA_CONV_MOEDA:+000000454;TAXA_PARC:+00000;TAXA_IOF:+0000000",
+              "principalAmount": "+0000000001500",
+              "settlementAmount": "+0000000006810",
+              "settlementCurrencyCode": "+0840"
+            }
+          ]
+        }
+      }
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field identifies the name file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the size file.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "string",
+      "description": "This field identifies the line of the file that originated the event (can be 0 when origin is API).",
+      "examples": [
+        "0",
+        "2",
+        "11"
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "FILE",
+        "API"
+      ],
+      "examples": [
+        "FILE"
+      ]
+    }
+  }
+}

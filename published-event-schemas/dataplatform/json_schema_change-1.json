@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "JSON schema change",
+  "description": "This event occurs whenever a JSON schema is added, updated, or removed. \n More information: <a href='https://developers.pismo.io/pismo-docs/docs/event-data' target='_blank'>Understanding data events</a>.",
+  "required": [
+    "change_type",
+    "schema_domain",
+    "schema_event_type",
+    "schema_name",
+    "schema_version"
+  ],
+  "properties": {
+    "change_type": {
+      "type": "string",
+      "title": "Change type identifier",
+      "enum": [
+        "INSERT",
+        "MODIFY",
+        "REMOVE"
+      ]
+    },
+    "schema_domain": {
+      "type": "string",
+      "title": "Event domain of the JSON schema",
+      "examples": [
+        "authorization",
+        "dataplatform",
+        "transaction"
+      ]
+    },
+    "schema_event_type": {
+      "type": "string",
+      "title": "Event type of the JSON schema",
+      "examples": [
+        "authorization-event",
+        "json_schema_change",
+        "creation"
+      ]
+    },
+    "schema_name": {
+      "type": "string",
+      "title": "Complete name of the JSON schema",
+      "examples": [
+        "authorization/authorization-event-1",
+        "dataplatform/json_schema_change-1",
+        "transaction/creation-1"
+      ]
+    },
+    "schema_version": {
+      "type": "string",
+      "title": "Event schema version of the JSON schema",
+      "examples": [
+        "1",
+        "2"
+      ]
+    },
+    "new_schema": {
+      "type": "string",
+      "title": "New JSON Schema (after MODIFY or INSERT operation)",
+      "examples": [
+        "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"title\":\"Example JSON Schema\",\"description\":\"Example new description\",\"required\":[\"some_field\"],\"properties\":{\"some_field\":{\"type\":\"string\",\"title\":\"Some field title\"}}}"
+      ]
+    },
+    "old_schema": {
+      "type": "string",
+      "title": "Previous JSON Schema (before MODIFY or REMOVE operation)",
+      "examples": [
+        "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"title\":\"Example JSON Schema\",\"description\":\"Example old description\",\"required\":[\"some_field\"],\"properties\":{\"some_field\":{\"type\":\"string\",\"title\":\"Some field title\"}}}"
+      ]
+    }
+  }
+}

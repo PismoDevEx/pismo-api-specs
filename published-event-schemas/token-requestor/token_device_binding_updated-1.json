@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Token Device Binding Updated event",
+  "description": "Event emitted when a token's device binding status changes.",
+  "properties": {
+    "date": {
+      "type": "integer",
+      "description": "Event creation timestamp in UTC format."
+    },
+    "v_provisioned_token_id": {
+      "type": "string"
+    },
+    "v_pan_enrollment_id": {
+      "type": "string"
+    },
+    "token_type": {
+      "type": "string",
+      "enum": [
+        "ECOMMERCE_COF",
+        "DEVICE",
+        "SCAN"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "APPROVED",
+        "DECLINED",
+        "DELETED"
+      ]
+    },
+    "v_notification_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "date",
+    "v_provisioned_token_id",
+    "v_pan_enrollment_id",
+    "token_type",
+    "status"
+  ],
+  "additionalProperties": false
+}

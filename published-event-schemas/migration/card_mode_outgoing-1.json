@@ -1,0 +1,287 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/card_mode_outgoing-1.json",
+  "type": "object",
+  "title": "Combo card mode migration completed",
+  "description": "Event generated when a combo card is migrated. A combo card is a CREDIT and DEBIT card at the same time",
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Combo card was successfully migrated",
+      "migration": {
+        "id": "5165",
+        "version_date": "2023-12-20T16:22:29.000Z"
+      },
+      "entity": {
+        "card_mode": [
+          {
+            "id": 128876,
+            "mode": "CREDIT",
+            "program_id": 88490,
+            "customer_id": 102377856,
+            "account_id": 102378693,
+            "password_tries": 3,
+            "transaction_limit": 750.05,
+            "number_of_transactions": 40,
+            "status": "SUSPENDED",
+            "card_owner": "TN-f878e4a1-2879-48ba-be16-821e73ac98db"
+          },
+          {
+            "id": 128877,
+            "mode": "DEBIT",
+            "program_id": 44490,
+            "customer_id": 102377856,
+            "account_id": 102378695,
+            "password_tries": 3,
+            "transaction_limit": 750.05,
+            "number_of_transactions": 40,
+            "status": "SUSPENDED",
+            "card_owner": "TN-f878e4a1-2879-48ba-be16-821e73ac98db"
+          }
+        ],
+        "metadata": {
+          "key": "value",
+          "key2": "value2"
+        }
+      }
+    }
+  ],
+  "required": [
+    "operation",
+    "status",
+    "code",
+    "message",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "If the Card Mode migration is a creation or update",
+      "enum": [
+        "CREATION",
+        "UPDATE"
+      ],
+      "examples": [
+        "UPDATE"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the result of account migration was success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "The code of message for systems",
+      "default": "",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Message of combo card mode migration result",
+      "default": "",
+      "examples": [
+        "Combo card mode migrated with success"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Identifiers Object",
+      "description": "Identifier sent on start of migration process",
+      "examples": [
+        {
+          "id": "migration-id",
+          "version_date": "2021-08-11T11:25:00.000Z"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "title": "Version Date of Migration Identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Pismo generated card mode information",
+      "examples": [
+        {
+          "card_mode": [
+            {
+              "id": 128876,
+              "mode": "CREDIT",
+              "program_id": 88490,
+              "customer_id": 102377856,
+              "account_id": 102378693,
+              "password_tries": 3,
+              "transaction_limit": 750.05,
+              "number_of_transactions": 40,
+              "status": "SUSPENDED",
+              "card_owner": "TN-f878e4a1-2879-48ba-be16-821e73ac98db"
+            },
+            {
+              "id": 128877,
+              "mode": "DEBIT",
+              "program_id": 44490,
+              "customer_id": 102377856,
+              "account_id": 102378695,
+              "password_tries": 3,
+              "transaction_limit": 750.05,
+              "number_of_transactions": 40,
+              "status": "SUSPENDED",
+              "card_owner": "TN-f878e4a1-2879-48ba-be16-821e73ac98db"
+            }
+          ],
+          "metadata": {
+            "key1": "value1",
+            "key2": "value2"
+          }
+        }
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/entity/properties/id",
+          "type": "integer",
+          "title": "Card mode Id",
+          "description": "Combo Card Mode Id",
+          "examples": [
+            39093
+          ]
+        },
+        "mode": {
+          "$id": "#/properties/entity/properties/mode",
+          "type": "string",
+          "title": "Card mode description",
+          "description": "Card mode enum - DEBIT or CREDIT",
+          "examples": [
+            "CREDIT"
+          ]
+        },
+        "program_id": {
+          "$id": "#/properties/entity/properties/program_id",
+          "type": "integer",
+          "title": "First program ID",
+          "description": "First program ID",
+          "examples": [
+            2345
+          ]
+        },
+        "customer_id": {
+          "$id": "#/properties/entity/properties/customer_id",
+          "type": "integer",
+          "title": "Customer ID",
+          "description": "Credit customer ID",
+          "examples": [
+            4321321
+          ]
+        },
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Credit account ID",
+          "examples": [
+            "CREDIT"
+          ]
+        },
+        "password_tries": {
+          "$id": "#/properties/entity/properties/password_tries",
+          "type": "string",
+          "title": "Password tries",
+          "description": "Maximum enter password attempts",
+          "examples": [
+            "CREDIT"
+          ]
+        },
+        "transaction_limit": {
+          "$id": "#/properties/entity/properties/transaction_limit",
+          "type": "number",
+          "title": "Transaction Limit",
+          "description": "Maximum transaction amount. Set up to the approved limit. For TEMPORARY cards",
+          "examples": [
+            100.0
+          ]
+        },
+        "number_of_transactions": {
+          "$id": "#/properties/entity/properties/number_of_transactions",
+          "type": "integer",
+          "title": "Number of transactions allowed",
+          "description": "Maximum transactions allowed",
+          "examples": [
+            10
+          ]
+        },
+        "status": {
+          "$id": "#/properties/entity/properties/status",
+          "type": "string",
+          "title": "Mode status",
+          "description": "Mode status - ACTIVE or SUSPENDED",
+          "examples": [
+            "ACTIVE"
+          ]
+        },
+        "card_owner": {
+          "$id": "#/properties/entity/properties/card_owner",
+          "type": "string",
+          "title": "Card owner",
+          "description": "Org ID from card's root",
+          "examples": [
+            "342144"
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "Other combo card mode information.",
+          "default": {},
+          "examples": [
+            {
+              "key1": "value1",
+              "key2": "value2"
+            }
+          ],
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

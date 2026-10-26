@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://pismo.io/events/anti-fraud/authentication-result.json",
+  "title": "3DS authentication result received",
+  "description": "3DS authentication result received",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "provider",
+    "raw_provider"
+  ],
+  "properties": {
+    "external_id": {
+      "type": "string",
+      "title": "External transaction identifier"
+    },
+    "type": {
+      "type": "string",
+      "title": "Event type"
+    },
+    "provider": {
+      "type": "string",
+      "title": "Provider identifier"
+    },
+    "raw_provider": {
+      "type": "object",
+      "title": "Received provider data without PCI fields",
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Credit accrual processing failed",
+  "description": "This event occurs when a credit accrual fails to be processed.",
+  "required": [
+    "accumulator_id",
+    "account_id",
+    "program_id",
+    "product_id",
+    "accumulated_amount",
+    "estimated_settlement_date",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "accumulator_id": {
+      "type": "string",
+      "title": "Accumulator ID",
+      "description": "Accumulator ID",
+      "examples": [
+        "02c1f997-e57a-488a-9ace-7731f5b7e25d"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Program ID",
+      "examples": [
+        123
+      ]
+    },
+    "product_id": {
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID",
+      "examples": [
+        "4aa5556f-8062-4705-9aca-7246c4d1f36d"
+      ]
+    },
+    "accumulated_amount": {
+      "type": "number",
+      "title": "Accumulated amount",
+      "description": "Accumulated credit amount",
+      "examples": [
+        10.14
+      ]
+    },
+    "estimated_settlement_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Estimated settlement date",
+      "description": "Estimated settlement date",
+      "examples": [
+        "2024-10-15"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Event status",
+      "examples": [
+        "SETTLEMENT_ERROR"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created at",
+      "description": "Creation timestamp",
+      "examples": [
+        "2024-10-15T13:26:25Z"
+      ]
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "title": "Updated at",
+      "description": "Updated timestamp",
+      "examples": [
+        "2024-10-15T13:30:25Z"
+      ]
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Document copies submitted",
+  "description": "This event occurs when the customer submits copies of their documents for validation.",
+  "required": [
+    "id",
+    "provider",
+    "client_document_number",
+    "status",
+    "message",
+    "url"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Banking prospect provisioning unique identifier",
+      "description": "A unique identifier of the new prospect creation process ",
+      "examples": [
+        "12387965::TN-d6fe9b36-6a14-432e-b177"
+      ]
+    },
+    "provider": {
+      "type": "string",
+      "title": "Provider",
+      "description": "Provider's Name",
+      "examples": [
+        "Celcoin"
+      ]
+    },
+    "client_document_number": {
+      "type": "string",
+      "title": "Client Document Number",
+      "description": "Document number used to relate the customer to the creation of the new prospect account",
+      "examples": [
+        "123456789"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Provider's status",
+      "examples": [
+        "REJECTED",
+        "APPROVED"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Message",
+      "description": "Message containing instructions of needed steps to complete the prospect account creation",
+      "examples": [
+        "Action required. Send a copy of required documents"
+      ]
+    },
+    "url": {
+      "type": "string",
+      "title": "URL",
+      "description": "URL for sending documents",
+      "examples": [
+        "www.example.com"
+      ]
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Delinquent account scheduled to be closed",
+  "description": "Event generated X number of days before a delinquent account is closed. The value of X is specified in the program parameter with ID 503. Multiple values can be configured for X, so that multiple warning events are sent before the account is closed. See <a href=\"https://developers.pismo.io/pismo-docs/docs/credit-liquidation#how-to-automate-closing-delinquent-accounts\" target=\"_blank\">How to automate closing delinquent accounts</a> for more information.",
+  "required": [
+    "account_id",
+    "org_id",
+    "cid",
+    "open_due_date",
+    "expected_delinquent_closure_date",
+    "days_before_delinquent_closure"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "description": "CID",
+      "examples": [
+        "85bead50-f998-11ed-be56-0242ac120002"
+      ]
+    },
+    "open_due_date": {
+      "type": "string",
+      "description": "Open due date, format = yyyy-mm-dd",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "expected_delinquent_closure_date": {
+      "type": "string",
+      "description": "Expected Delinquent Closure Date, format = yyyy-mm-dd",
+      "format": "date",
+      "examples": [
+        "2021-08-21"
+      ]
+    },
+    "days_before_delinquent_closure": {
+      "type": "integer",
+      "description": "Days Before Delinquent Closure",
+      "examples": [
+        10
+      ]
+    }
+  }
+}

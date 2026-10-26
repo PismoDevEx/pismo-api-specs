@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Negotiable instrument act processed successfully",
+  "description": "Emitted as the negotiable_instrument_act_processed_success event type once per negotiable instrument act when an asynchronous create (CREATE_INSTRUMENT_ACT, sent by the instrument act callback flow once the act is linked to its digital receivables), update (UPDATE_INSTRUMENT_ACT) or termination (DELETE_INSTRUMENT_ACT) requested through the negotiable instrument act API succeeds. The payload is a snapshot of the stored act, so consumers can confirm the operation and keep their view of the act, its mandates and assurances up to date.",
+  "required": [
+    "negotiable_instrument_act_id",
+    "operation_number",
+    "mandate_types",
+    "assurance_types"
+  ],
+  "properties": {
+    "requester_document_number": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Requester document number",
+      "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the participant that requested the act creation, as stored on the act. Null for acts stored without a requester.",
+      "examples": [
+        "00000000000191",
+        null
+      ]
+    },
+    "negotiable_instrument_act_id": {
+      "type": "string",
+      "title": "Negotiable instrument act ID",
+      "description": "Client-provided identifier of the negotiable instrument act, up to 45 characters and unique per organization.",
+      "examples": [
+        "aec93861-ccc6-41c4-aa80-3fe2e416d34e"
+      ]
+    },
+    "ipoc_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "IPOC code",
+      "description": "Client-provided IPOC code of the operation behind the act, up to 67 characters. Null when it was not informed.",
+      "examples": [
+        "IPOC12345",
+        null
+      ]
+    },
+    "end_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "title": "End date",
+      "description": "Client-provided end date of the negotiable instrument act, formatted as yyyy-MM-dd. Null when it was not informed.",
+      "examples": [
+        "2027-12-31",
+        null
+      ]
+    },
+    "total_guarantee_value": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Total guarantee value",
+      "description": "Client-provided total value in BRL, with up to 5 decimals, guaranteed by the act; zero or positive. Null when it was not informed.",
+      "format": "decimal",
+      "examples": [
+        10000.0,
+        null
+      ]
+    },
+    "operation_number": {
+      "type": "string",
+      "title": "Operation number",
+      "description": "Client-provided operation identification code of the act, up to 36 characters, assigned by the signatory responsible for controlling the negotiable instrument act.",
+      "examples": [
+        "aec93861-ccc6-41c4-aa80-3fe2e416d34e"
+      ]
+    },
+    "mandate_types": {
+      "type": "array",
+      "title": "Mandate types",
+      "description": "Mandate types granted by the act endorsement, serialized from the MandateType enum. Empty array when the act has no endorsement mandate.",
+      "items": {
+        "type": "string",
+        "description": "Mandate type code from the MandateType enum. COBR grants collection powers and, when a banking domicile is informed, swaps the domicile of the linked receivables while the act is active. NEGC grants negotiation powers and never changes the banking domicile. ACOB and ANEG are accepted codes of the same enum.",
+        "enum": [
+          "ACOB",
+          "ANEG",
+          "COBR",
+          "NEGC"
+        ]
+      },
+      "examples": [
+        [
+          "ACOB",
+          "ANEG",
+          "COBR",
+          "NEGC"
+        ],
+        []
+      ]
+    },
+    "assurance_types": {
+      "type": "array",
+      "title": "Assurance types",
+      "description": "Client-provided assurance types of the act. AVAL: aval, a personal guarantee given by a guarantor. AVAC: aval com anu\u00eancia do c\u00f4njuge, a guarantee given with the consent of the guarantor's spouse. Empty array when the act has no assurances.",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        [
+          "AVAL",
+          "AVAC"
+        ],
+        []
+      ]
+    },
+    "feature_type": {
+      "type": "string",
+      "title": "Feature type",
+      "description": "Operation group that produced the event, serialized from the FeatureType enum. CREATE_CONTRACT: contract creation (not used by this event). UPDATE_CONTRACT: contract update (not used by this event). DELETE_CONTRACT: contract deletion (not used by this event). CREATE_INSTRUMENT_ACT: negotiable instrument act creation. UPDATE_INSTRUMENT_ACT: negotiable instrument act update. DELETE_INSTRUMENT_ACT: negotiable instrument act termination.",
+      "enum": [
+        "CREATE_CONTRACT",
+        "UPDATE_CONTRACT",
+        "DELETE_CONTRACT",
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT",
+        "DELETE_INSTRUMENT_ACT"
+      ],
+      "examples": [
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT",
+        "DELETE_INSTRUMENT_ACT"
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Detailed operation, serialized from the OperationType enum. CREATE_INSTRUMENT_ACT for creation; UPDATE_INSTRUMENT_ACT_INCL, UPDATE_INSTRUMENT_ACT_ALTE or UPDATE_INSTRUMENT_ACT_EXCL for an inclusion, alteration or exclusion update; CANCELLATION_ERROR, CLOSING_ENEP, CLOSING_ENEM, CLOSING_ENES or CLOSING_DJUD for a termination, mapped from the termination reason CNOP, ENEP, ENEM, ENES or DJUD.",
+      "examples": [
+        "CREATE_INSTRUMENT_ACT",
+        "UPDATE_INSTRUMENT_ACT_INCL",
+        "CLOSING_DJUD"
+      ]
+    },
+    "payment": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Payment details",
+      "description": "Payment instruments registered for the negotiable instrument act, with at most one TED account, one PIX key and one bank slip. Null when the negotiable instrument act has no payment details; each instrument is omitted when it is not registered.",
+      "properties": {
+        "ted": {
+          "$ref": "#/definitions/ted",
+          "title": "TED account",
+          "description": "Bank account registered to receive payments of the negotiable instrument act by TED. Omitted when not registered."
+        },
+        "pix": {
+          "$ref": "#/definitions/pix",
+          "title": "PIX key",
+          "description": "PIX key registered to receive payments of the negotiable instrument act. Omitted when not registered."
+        },
+        "bank_slip": {
+          "$ref": "#/definitions/bank_slip",
+          "title": "Bank slip",
+          "description": "Bank slip (boleto) registered for payments of the negotiable instrument act. Omitted when not registered."
+        }
+      }
+    }
+  },
+  "definitions": {
+    "bank_slip": {
+      "type": "object",
+      "title": "Bank slip",
+      "description": "Bank slip (boleto) registered as a payment instrument.",
+      "properties": {
+        "bar_code": {
+          "type": "string",
+          "title": "Bar code",
+          "description": "Bar code number of the bank slip, digits only.",
+          "examples": [
+            "00000000000000000000000000000000000000000000000"
+          ]
+        }
+      }
+    },
+    "pix": {
+      "type": "object",
+      "title": "PIX",
+      "description": "PIX key registered as a payment instrument.",
+      "properties": {
+        "type": {
+          "type": "integer",
+          "title": "PIX key type",
+          "description": "Numeric code of the PIX key type, taken from the PixType enum value. 1: CPF key. 2: CNPJ key. 3: phone number key. 4: email key. 5: random key. 6: copy and paste (QR code) key.",
+          "enum": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "examples": [
+            1,
+            5
+          ]
+        },
+        "value": {
+          "type": "string",
+          "title": "PIX key value",
+          "description": "Value of the PIX key, in the format of its key type.",
+          "examples": [
+            "00000000000"
+          ]
+        }
+      }
+    },
+    "ted": {
+      "type": "object",
+      "title": "TED",
+      "description": "Bank account registered as a TED payment instrument.",
+      "properties": {
+        "compe": {
+          "type": "string",
+          "title": "COMPE",
+          "description": "COMPE bank code (3 digits) of the receiving financial institution.",
+          "examples": [
+            "001"
+          ]
+        },
+        "ispb": {
+          "type": "string",
+          "title": "ISPB",
+          "description": "ISPB code (8 digits) identifying the receiving financial institution.",
+          "examples": [
+            "00000000"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Bank branch number of the receiving account, without check digit.",
+          "examples": [
+            "0001"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account number",
+          "description": "Number of the receiving bank account, without check digit.",
+          "examples": [
+            "00000000"
+          ]
+        },
+        "account_digit": {
+          "type": "string",
+          "title": "Account digit",
+          "description": "Check digit of the receiving bank account.",
+          "examples": [
+            "0"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account type",
+          "description": "Type code of the receiving bank account, as provided by the client.",
+          "examples": [
+            "CC",
+            "PG",
+            "CCOR"
+          ]
+        },
+        "owner_document_number": {
+          "type": "string",
+          "title": "Account owner document number",
+          "description": "Unformatted CPF (11 digits) or CNPJ (14 digits) of the bank account owner.",
+          "examples": [
+            "00000000000191"
+          ]
+        }
+      }
+    }
+  }
+}

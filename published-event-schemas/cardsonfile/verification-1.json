@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card on file validation result received",
+  "description": "Card on file validation event. The <a href='https://developers.pismo.io/pismo-docs/reference/create-a-cardsonfile-v3' target='_blank'>Create card on file</a>, <a href='https://developers.pismo.io/pismo-docs/reference/submit-a-validation-try' target='_blank'>Submit validation try</a> and <a href='https://developers.pismo.io/pismo-docs/reference/create-a-new-validation-for-a-given-card' target='_blank'>Create card validation</a> endpoints generate this event. If the validation fails, an <a href='https://json-schemas.data.pismo.io/docs/cardsonfile/exclusion-1.html' target='_blank'>exclusion-1</a> event is generated.",
+  "required": [
+    "account_id",
+    "status",
+    "uuid"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        "2888762"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Card verification status.",
+      "examples": [
+        "VERIFIED",
+        "PENDING",
+        "FAILED"
+      ]
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Card token",
+      "description": "Card UUID token",
+      "examples": [
+        "bbbb9682-06e4-11ea-9d60-52552f8f9999"
+      ]
+    },
+    "creation_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Creation date",
+      "description": "Card creation date/time in RFC3339 format, i.e., 2019-07-03T17:23:18Z,",
+      "examples": [
+        "2020-03-03T12:03:00.000Z"
+      ]
+    },
+    "issuer_card": {
+      "type": "boolean",
+      "title": "Card issuer flag.",
+      "description": "Is card issued by this issuer flag.",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Metadata added when card on file created. Client-created - no business rule validation is done."
+    },
+    "verification_start_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Verification start date",
+      "description": "Verification start date/time  RFC3339 format, i.e., 2019-07-03T17:23:18Z",
+      "examples": [
+        "2020-03-03T12:03:00.000Z"
+      ]
+    }
+  }
+}

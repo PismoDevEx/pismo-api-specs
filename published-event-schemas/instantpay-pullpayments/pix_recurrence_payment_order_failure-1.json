@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Payment order failed",
+  "description": "Payment order failed event.",
+  "required": [
+    "account_id",
+    "recurrence_id"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "recurrence_id": {
+      "type": "string",
+      "title": "Recurrence ID",
+      "description": "Recurrence ID",
+      "examples": [
+        "RR000000012025022400000000001"
+      ]
+    },
+    "reason": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Error code",
+          "description": "Payment order processing error code.",
+          "examples": [
+            "IPPAY0015",
+            "IPPAY0006",
+            "IPPAY0042"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "Error message",
+          "description": "Payment order processing error message.",
+          "examples": [
+            "IPPAY0015 - Account is not active",
+            "IPPAY0006 - Recurrence id not found",
+            "IPPAY0042 - Recurrence is not ACTIVE"
+          ]
+        }
+      }
+    },
+    "idempotency_key": {
+      "type": "string",
+      "title": "Idempotency key",
+      "description": "Idempotency key. Use this field when a payment order write action will continue asynchronously to match the `payment_order` on your side",
+      "examples": [
+        "3DBEAE82-FF35-48A3-97D9-BFB4B06C3E43"
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "End to end ID",
+      "description": "Transaction's end-to-end ID. This field is a Brazil Central Bank requirement for Pix transactions.",
+      "examples": [
+        "E000000012025022400000000001"
+      ]
+    },
+    "cycle_start": {
+      "type": "string",
+      "format": "date",
+      "title": "Cycle start date, format = yyyy-mm-dd ",
+      "description": "Cycle start date, format = yyyy-mm-dd. This field is present only when cycle information is available; otherwise, it may be omitted.",
+      "example": "2025-05-10"
+    },
+    "cycle_end": {
+      "type": "string",
+      "format": "date",
+      "title": "Cycle end date, format = yyyy-mm-dd ",
+      "description": "Cycle end date, format = yyyy-mm-dd. This field is present only when cycle information is available; otherwise, it may be omitted.",
+      "example": "2025-05-10"
+    }
+  },
+  "examples": [
+    {
+      "domain": "pullpayments",
+      "event_type": "pix_automatic_payee_payment_order",
+      "schema_version": 1,
+      "org_id": "TN-34778262-f4f0-464d-b4c6-a14e2dc6xxx",
+      "cid": "468fa881-fee5-4d6e-aa17-bbac0a1df0a5",
+      "timestamp": "2023-10-25T18:34:27Z",
+      "data": {
+        "org_id": "TN-34778262-f4f0-464d-b4c6-a14e2dc6xxx",
+        "idempotency_key": "34778262-f4f0-464d-c5d1-a14e2dc63321",
+        "account_id": 123,
+        "recurrence_id": "RR000000012025022400000000001",
+        "end_to_end_id": "E000000012025022400000000001",
+        "error": {
+          "code": "",
+          "description": "Recurrence not active"
+        }
+      }
+    }
+  ]
+}

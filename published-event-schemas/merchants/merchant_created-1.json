@@ -1,0 +1,362 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant created",
+  "required": [
+    "id",
+    "name",
+    "document_number"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": [
+        "integer"
+      ],
+      "title": "Merchant identifier",
+      "description": "This field contains the identifier of the merchant created.",
+      "examples": [
+        1
+      ]
+    },
+    "document_number": {
+      "$id": "#/properties/document_number",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Document number",
+      "description": "This field contains the document number of the merchant created.",
+      "examples": [
+        null,
+        "40533164000107"
+      ]
+    },
+    "brand_name": {
+      "$id": "#/properties/brand_name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Brand name",
+      "description": "This field contains the brand name of the merchant created.",
+      "examples": [
+        null,
+        "Super Merchant"
+      ]
+    },
+    "name": {
+      "$id": "#/properties/name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Merchant name",
+      "description": "This field contains the name of the merchant created.",
+      "examples": [
+        null,
+        "Super Merchant LTDA"
+      ]
+    },
+    "municipal_registration": {
+      "$id": "#/properties/municipal_registration",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Municipal registration",
+      "description": "The municipal registration of merchant",
+      "examples": [
+        null,
+        "ISENTO"
+      ]
+    },
+    "creditor_id": {
+      "$id": "#/properties/creditor_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Creditor identifier",
+      "description": "This field identifies the creditor related to merchant created.",
+      "examples": [
+        5
+      ]
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Program identifier",
+      "description": "This field identifies program in which the merchant was registered in.",
+      "examples": [
+        null,
+        123
+      ]
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Account identifier",
+      "description": "This field identifies account related to the merchant created.",
+      "examples": [
+        null,
+        1234
+      ]
+    },
+    "external_id": {
+      "$id": "#/properties/external_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "External merchant identifier",
+      "description": "This field contains the identifier provided by an external system for the the merchant.",
+      "examples": [
+        null,
+        "2312312"
+      ]
+    },
+    "external_code": {
+      "$id": "#/properties/external_code",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Business category external code",
+      "description": "This field contains the external code for the merchant business category.",
+      "examples": [
+        null,
+        "1213"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Status",
+      "description": "This field contains the current merchant status.",
+      "examples": [
+        null,
+        "PENDING",
+        "ACTIVE"
+      ]
+    },
+    "address": {
+      "$id": "#/properties/address",
+      "type": "object",
+      "title": "Address",
+      "required": [],
+      "properties": {
+        "address": {
+          "$id": "#/properties/address",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Address",
+          "description": "This field contains the address of the merchant.",
+          "examples": [
+            null,
+            "Doctor Douglas Adams Street"
+          ]
+        },
+        "number": {
+          "$id": "#/properties/number",
+          "type": [
+            "null",
+            "integer"
+          ],
+          "title": "Number",
+          "description": "This field contains number that composes the address.",
+          "examples": [
+            null,
+            42
+          ]
+        },
+        "complementary_address": {
+          "$id": "#/properties/complementary_address",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Complementary address",
+          "description": "This field contains information that complements the address.",
+          "examples": [
+            null,
+            "2nd floor"
+          ]
+        },
+        "neighborhood": {
+          "$id": "#/properties/neighborhood",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Neighborhood",
+          "description": "This field contains the name of the neighborhood.",
+          "examples": [
+            null,
+            "Vila Ol\u00edmpia"
+          ]
+        },
+        "zip_code": {
+          "$id": "#/properties/zip_code",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Zip code",
+          "description": "This field contains the zip code of the merchant's address.",
+          "examples": [
+            null,
+            "04545050"
+          ]
+        },
+        "city": {
+          "$id": "#/properties/city",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "City",
+          "description": "This field contains the city where the merchant is located.",
+          "examples": [
+            null,
+            "S\u00e3o Paulo"
+          ]
+        },
+        "state": {
+          "$id": "#/properties/state",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "State",
+          "description": "This field contains the state where the merchant's city is located.",
+          "examples": [
+            null,
+            "SP"
+          ]
+        },
+        "country": {
+          "$id": "#/properties/country",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Country",
+          "description": "This field contains the merchant country.",
+          "examples": [
+            null,
+            "Brazil"
+          ]
+        },
+        "city_code": {
+          "$id": "#/properties/city_code",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "City code",
+          "description": "This field contains the national code that identifies a city.",
+          "examples": [
+            null,
+            "12312321"
+          ]
+        }
+      }
+    },
+    "contact": {
+      "$id": "#/properties/contact",
+      "type": "object",
+      "title": "Contact",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "contact": {
+          "$id": "#/properties/contact",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Contact name",
+          "description": "This field contains the merchant contact name.",
+          "examples": [
+            null,
+            "ACTIVE"
+          ]
+        },
+        "area_code": {
+          "$id": "#/properties/area_code",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Area code",
+          "description": "The area code of the merchant phone.",
+          "examples": [
+            null,
+            "11"
+          ]
+        },
+        "phone": {
+          "$id": "#/properties/phone",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Phone",
+          "description": "This field contains merchant phone number.",
+          "examples": [
+            null,
+            "27912678"
+          ]
+        },
+        "additional_area_code": {
+          "$id": "#/properties/additional_area_code",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Additional area code",
+          "description": "This field contains area code for an additional phone number.",
+          "examples": [
+            null,
+            "47"
+          ]
+        },
+        "additional_phone": {
+          "$id": "#/properties/additional_phone",
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Additional phone",
+          "description": "This field contains an additional phone number.",
+          "examples": [
+            null,
+            "27912678"
+          ]
+        },
+        "email": {
+          "$id": "#/properties/email",
+          "type": "string",
+          "title": "E-mail",
+          "description": "This field contains the merchant e-mail address.",
+          "examples": [
+            "merchant@pismo.io"
+          ]
+        }
+      }
+    }
+  }
+}

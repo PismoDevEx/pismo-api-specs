@@ -1,0 +1,655 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Incremental authorization timeline event added",
+  "description": "Incremental authorization event added to user's timeline. For more information, see [Timeline events overview](https://developers.pismo.io/pismo-docs/docs/timeline-overview).",
+  "required": [
+    "id",
+    "account_id",
+    "cardholderbilling_amount",
+    "contract_amount",
+    "currency_code",
+    "customer_id",
+    "entry_mode",
+    "installment_amount",
+    "installments",
+    "interest_rate",
+    "local_amount",
+    "merchant_category_code",
+    "network",
+    "number_of_installments",
+    "org_operation",
+    "pre_authorization",
+    "principal_amount",
+    "response_code"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "title": "Internal Authorization ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "User's account ID at Pismo Platform",
+      "default": 0,
+      "examples": [
+        12345678
+      ]
+    },
+    "card_name": {
+      "type": "string",
+      "title": "Printed name on card",
+      "examples": [
+        "HOMER SIMPSON"
+      ]
+    },
+    "card_type": {
+      "type": "string",
+      "title": "Card type used in authorization",
+      "examples": [
+        "PLASTIC",
+        "VIRTUAL"
+      ]
+    },
+    "card_id": {
+      "type": "integer",
+      "title": "Card id used in authorization",
+      "examples": [
+        12345678
+      ]
+    },
+    "cardholder_currency_rate": {
+      "type": "number",
+      "title": "Factor used in the conversion from transaction to cardholder billing amount",
+      "examples": [
+        0.1933263
+      ]
+    },
+    "cardholderbilling_amount": {
+      "type": "number",
+      "title": "Indicates the transaction amount in the issuer\u2019s currency",
+      "examples": [
+        108.711498
+      ]
+    },
+    "contract_amount": {
+      "type": "number",
+      "title": "Total amount of the transaction, including all taxes and fees, in the cardholder currency",
+      "examples": [
+        115.651498
+      ]
+    },
+    "currency_code": {
+      "type": "string",
+      "title": "Currency code of the place where the transaction was done. ISO_4217 numeric code",
+      "examples": [
+        "840",
+        "986"
+      ]
+    },
+    "currency_literal": {
+      "type": "string",
+      "title": "Currency code country iso code. ISO3166-1 literal 3-digit code",
+      "examples": [
+        "USD",
+        "BRL"
+      ]
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Customer id used in authorization",
+      "examples": [
+        12345678
+      ]
+    },
+    "entry_mode": {
+      "type": "string",
+      "title": "Indicates which entry mode code was used in the transaction",
+      "examples": [
+        "01",
+        "05"
+      ]
+    },
+    "entry_mode_literal": {
+      "type": "string",
+      "title": "Indicates the name of the entry mode used in the transaction",
+      "examples": [
+        "MANUAL",
+        "CHIP"
+      ]
+    },
+    "installment_amount": {
+      "type": "number",
+      "title": "Installment amount of the authorization",
+      "examples": [
+        108.711498
+      ]
+    },
+    "installments": {
+      "type": "array",
+      "title": "List of installments of this authorization",
+      "items": {
+        "type": "object",
+        "title": "Installment information",
+        "required": [
+          "amount",
+          "date"
+        ],
+        "properties": {
+          "amount": {
+            "type": "number",
+            "title": "Installment amount",
+            "examples": [
+              108.711498
+            ]
+          },
+          "date": {
+            "type": "string",
+            "title": "Installment date",
+            "examples": [
+              "2020-01-28"
+            ]
+          }
+        }
+      }
+    },
+    "interest_rate": {
+      "type": "number",
+      "title": "Contains the rate that the issuer assesses the cardholder for the installment payment",
+      "examples": [
+        0
+      ]
+    },
+    "is_referral": {
+      "type": "boolean",
+      "title": "Indicates whether the transaction is suspected of fraud"
+    },
+    "local_amount": {
+      "type": "number",
+      "title": "Amount of funds the cardholder requested in the local currency of the acquirer or source location of the transaction",
+      "examples": [
+        24.99
+      ]
+    },
+    "merchant_category_code": {
+      "type": "string",
+      "title": "Identifies the card acceptor that defines the point of the transaction in both local and interchange environments",
+      "examples": [
+        "0000"
+      ]
+    },
+    "merchant_category_group": {
+      "type": "string",
+      "title": "Mapped group based on category code",
+      "examples": [
+        "RETAIL"
+      ]
+    },
+    "merchant_city": {
+      "type": "string",
+      "title": "City field from merchant",
+      "examples": [
+        "NEW YORK"
+      ]
+    },
+    "merchant_state_or_country": {
+      "type": "string",
+      "title": "State or country field from merchant",
+      "examples": [
+        "USA"
+      ]
+    },
+    "tid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Transaction identifier received on the authorization message.",
+      "description": "This identifier is generated by the Card Network. It will be null in case where the card network doesn't send this value.",
+      "examples": [
+        "10119031908214800419",
+        "10219040207333200054"
+      ]
+    },
+    "network": {
+      "type": "string",
+      "title": "Network brand name",
+      "examples": [
+        "Mastercard",
+        "Visa"
+      ]
+    },
+    "number_of_installments": {
+      "type": "integer",
+      "title": "Number of installments in authorization",
+      "examples": [
+        1,
+        10,
+        12
+      ]
+    },
+    "org_operation": {
+      "type": "object",
+      "title": "Includes the processing code of the authorization",
+      "required": [
+        "processing_code"
+      ],
+      "properties": {
+        "processing_code": {
+          "type": "string",
+          "title": "Describes the effect of a transaction on the customer account and the type of accounts affected",
+          "examples": [
+            "000000"
+          ]
+        }
+      }
+    },
+    "pre_authorization": {
+      "type": "boolean",
+      "title": "Define whether it is a pre-authorization request or not",
+      "examples": [
+        true
+      ]
+    },
+    "principal_amount": {
+      "type": "number",
+      "title": "Amount of transaction without taxes and fees",
+      "examples": [
+        108.711498
+      ]
+    },
+    "response_code": {
+      "type": "string",
+      "title": "Defines the disposition of a previous message or an action taken as a result of receipt of a previous message",
+      "examples": [
+        "00"
+      ]
+    },
+    "settlement_currency_amount": {
+      "type": "number",
+      "title": "Amount of funds to be transferred between the acquirer and the issuer equal to the transaction amount in the settlement currency",
+      "examples": [
+        24.99
+      ]
+    },
+    "settlement_currency_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Currency code defined by the issuer",
+      "examples": [
+        "840",
+        "986"
+      ]
+    },
+    "settlement_currency_literal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Currency code country description for settlement",
+      "examples": [
+        "USD",
+        "BRL"
+      ]
+    },
+    "settlement_currency_rate": {
+      "type": "number",
+      "title": "Factor used in the conversion from transaction to settlement amount",
+      "examples": [
+        0.1955
+      ]
+    },
+    "soft_descriptor": {
+      "type": "string",
+      "title": "Merchant description including name, city and country code",
+      "examples": [
+        "MOE'S BAR           "
+      ]
+    },
+    "to_name": {
+      "type": "string",
+      "title": "",
+      "examples": [
+        "MOE'S BAR"
+      ]
+    },
+    "nsu": {
+      "type": "string",
+      "title": "Message initiator assigns to uniquely identify a transaction",
+      "examples": [
+        "000001"
+      ]
+    },
+    "retrieval_reference_number": {
+      "type": "string",
+      "title": "Document reference number assigned by the acquirer",
+      "examples": [
+        "085000100001"
+      ]
+    },
+    "authorization_code": {
+      "type": "string",
+      "title": "Transaction response ID code assigned by authorizing institution",
+      "examples": [
+        "ABC123"
+      ]
+    },
+    "ledger_update_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Id of update performed on Ledger API",
+      "description": "Id returned by the Ledger API which identifies the account limit impact. This field may be null since some transactions generate timeline but doesn't have any financial impact.",
+      "examples": [
+        "dc123453-4444-1111-9999-53699d123456"
+      ]
+    },
+    "card_acceptor_id": {
+      "type": "string",
+      "title": "Identifies the card acceptor that defines the point of the transaction in both local and interchange environments",
+      "examples": [
+        "013335009996001"
+      ]
+    },
+    "airport_tax": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Amount of airport tax on the authorization",
+      "examples": [
+        109.14
+      ]
+    },
+    "cash_back_amount": {
+      "type": "number",
+      "title": "Amount of Cash Back of the Authorization",
+      "description": "In purchase with cash back or POS withdrawal, this is the amount related to the withdrawal/cash back. The principal amount is the sum of this amount with the purchase amount.",
+      "examples": [
+        200
+      ]
+    },
+    "token_information": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Token information for tokenized authorizations",
+      "description": "Contains information of the token which did authenticate authorization",
+      "properties": {
+        "id": {
+          "type": [
+            "null",
+            "integer"
+          ],
+          "title": "Token ID",
+          "description": "The sequential internal identifier that is generated automatically",
+          "examples": [
+            17084,
+            17085
+          ]
+        },
+        "requestor_id": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Requestor ID",
+          "description": "A string that identifies the wallet which request the token provisioning",
+          "examples": [
+            "APPLE_PAY",
+            "GOOGLE_PAY"
+          ]
+        },
+        "type": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Token Type",
+          "description": "A string that identifies the type of the token",
+          "examples": [
+            "CARD_ON_FILE",
+            "EMBEDDED_SECURE_ELEMENT"
+          ]
+        },
+        "network_token": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Network Token",
+          "description": "Token identifier as coming from the network. For Visa requests, this field represents the value received in the F123, Usage 2, Dataset ID 68 (Token Data), Tag 01. For Mastercard requests, it is DE48, SE 33 PanMappingFileInformation, SF2 Account Number.",
+          "examples": [
+            "17084",
+            "17085"
+          ]
+        },
+        "network_requestor_id": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "title": "Network Requestor ID",
+          "description": "A string that identifies the wallet which request the token provisioning, as coming from the network. For Visa requests, this field represents the value received in the F123, Usage 2, Dataset ID 68 (Token Data), Tag 03. For Mastercard requests, it is DE48, SE 33 PanMappingFileInformation, SF6 Token Requestor ID.",
+          "examples": [
+            "40010043095",
+            "40010083219"
+          ]
+        }
+      }
+    },
+    "mti": {
+      "type": "string",
+      "title": "Message Type Identifier",
+      "description": "Indicates the type of message.",
+      "examples": [
+        "0100"
+      ]
+    },
+    "cancelled_by_elapsed_time": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Cancelled by Elapsed Time",
+      "description": "This flag indicates whether a authorization was cancelled because of the elapsed time without a confirmation message. If so, its value will be 'true'. If the authorization was cancelled by the acquirer, its value will be false. For events other than Cancellation timelines, its value will be 'null'.",
+      "examples": [
+        true,
+        false,
+        null
+      ]
+    },
+    "metadata": {
+      "title": "Metadata from Anti Fraud",
+      "description": "Contains any valid json sent into the response of the Anti Fraud request. This information is saved and sent into this event as it was received into the platform, without any processing over it.",
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "validation_results": {
+      "title": "Validation results",
+      "description": "Contains all executed validations with details for each result.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "title": "Validation name",
+            "description": "The name which identifies the validation.",
+            "type": [
+              "string"
+            ],
+            "examples": [
+              "CVV2_INVALID",
+              "EXPIRATION_DATE_INVALID",
+              "ARQC_SIGNATURE_VALID"
+            ]
+          },
+          "status": {
+            "title": "Validation status",
+            "description": "Represents the result of the validation.",
+            "type": [
+              "string"
+            ],
+            "enum": [
+              "SKIPPED",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "reason": {
+            "title": "Validation reason",
+            "description": "Identifies the reason why a validation has that result.",
+            "type": [
+              "null",
+              "string"
+            ],
+            "examples": [
+              "TERMINAL_CAPABILITY_VALID",
+              "PIN_AND_CVV_VALID"
+            ]
+          },
+          "description": {
+            "title": "Description",
+            "description": "Contains a more detailed information about the validation result.",
+            "type": [
+              "string"
+            ],
+            "examples": [
+              "TERMINAL_CAPABILITY_VALID",
+              "PIN_AND_CVV_VALID"
+            ]
+          },
+          "additional_data": {
+            "title": "Additional Data",
+            "description": "Contains additional information that is relevant to identify how the validation was performed. Every validation will have its own additional data, so please refer to Pismo Developers Guide to identify every possibility.",
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "status",
+          "reason",
+          "description"
+        ]
+      }
+    },
+    "dcc": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Flag indicating a DCC authorization",
+      "description": "This flag identifies if an authorization is DCC. This flag is true when the local amount is in the cardholder currency but the Merchant is International. It identifies that even though the authorization is in the local currency, it was considered an International authorization.",
+      "examples": [
+        true,
+        false,
+        null
+      ]
+    },
+    "incoming_response_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Incoming Response Code from Card Network",
+      "description": "Represents the value received in the field 39 of the Card Network specification and indicates the Response Code they assigned to this authorization. For cancellation messages, if present, this value may indicate the reason of the cancellation.",
+      "examples": [
+        "00",
+        "05"
+      ]
+    },
+    "incoming_authorization_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Incoming Authorization Code from Card Network",
+      "description": "Represents the value received in the field 38 of the Card Network specification and indicates the Authorization Code they assigned to this authorization.",
+      "examples": [
+        "00",
+        "05"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID used in the authorization.",
+      "description": "Represents the internal id of the Program of the card used on this authorization.",
+      "examples": [
+        82,
+        93,
+        131
+      ]
+    },
+    "rates": {
+      "type": "object",
+      "title": "Currency conversion",
+      "additionalProperties": true,
+      "properties": {
+        "cardholderConversionRate": {
+          "type": "number",
+          "title": "Cardholder conversion rate",
+          "examples": [
+            6.31176
+          ]
+        },
+        "conversionRate": {
+          "type": "number",
+          "title": "Conversion rate",
+          "examples": [
+            5.46
+          ]
+        },
+        "settlementConversionRate": {
+          "type": "number",
+          "title": "Settlement conversion rate",
+          "examples": [
+            1.156
+          ]
+        }
+      },
+      "examples": [
+        {
+          "cardholderConversionRate": 6.31176,
+          "conversionRate": 5.46,
+          "settlementConversionRate": 1.156
+        }
+      ]
+    },
+    "postings": {
+      "type": "object",
+      "title": "Related fees",
+      "additionalProperties": true,
+      "properties": {
+        "cashBackAmount": {
+          "type": "number",
+          "title": "Cash back amount",
+          "examples": [
+            0
+          ]
+        }
+      },
+      "examples": [
+        {
+          "cashBackAmount": 0
+        }
+      ]
+    }
+  },
+  "definitions": {}
+}

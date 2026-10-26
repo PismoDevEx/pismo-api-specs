@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unit receivable confirm pre contracted operation succeeded",
+  "description": "Event emitted when the pre-contracted operation confirmation has been fully completed, including a successful callback to the Registrar",
+  "required": [
+    "communication_id",
+    "acquirer_document_number",
+    "date_confirmed"
+  ],
+  "properties": {
+    "communication_id": {
+      "type": "string",
+      "title": "Communication ID",
+      "description": "Communication identifier",
+      "examples": [
+        "comm-123456"
+      ]
+    },
+    "acquirer_document_number": {
+      "type": "string",
+      "title": "Acquirer Document Number",
+      "description": "Acquirer document number",
+      "examples": [
+        "20481714683595"
+      ]
+    },
+    "date_confirmed": {
+      "type": "string",
+      "title": "Date Confirmed",
+      "description": "Date when the operation was confirmed",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    }
+  }
+}

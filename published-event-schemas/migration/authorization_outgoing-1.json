@@ -1,0 +1,648 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/authorization_outgoing-1.json",
+  "type": "object",
+  "additionalProperties": true,
+  "title": "Authorization migration completed",
+  "description": "Event generated when an authorization migration finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "examples": [
+    {
+      "operation": "CREATION",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Authorization has been migrated with success!",
+      "migration": {
+        "id": "0000001238929602022-03-14",
+        "version_date": "2022-03-14T09:38:18Z"
+      },
+      "entity": {
+        "network_authorization_id": 15784073194,
+        "network_authorization_history_id": 362326167,
+        "card_id": 90600221,
+        "card_hash": "XnS63+t1U86V7GGQFsemY9L/WjlR8nTQzztcnC6vyWI+sxilTlV3zVzJibpK+sv2uhRmgpgDxqmeSIPpCqV3uA==",
+        "customer_id": 186716507,
+        "program_id": 9442,
+        "account_id": 186808839,
+        "wallet_identifier": "",
+        "processing_code": "00",
+        "local_amount": 900.0,
+        "local_currency_code": "986",
+        "settlement_amount": 108.96,
+        "settlement_currency_code": "840",
+        "settlement_currency_rate": 4.54e-06,
+        "cardholder_amount": 0.0,
+        "cardholder_currency_code": "986",
+        "cardholder_conversion_rate": 4.54e-06,
+        "currency_conversion_date": "2022-07-14T16:36:18.00000Z",
+        "entry_mode": "01",
+        "number_of_installments": 1,
+        "installment_amount": 0.0,
+        "principal_amount": 24.0,
+        "contract_amount": 930.0,
+        "postings": "{\"TAXA_PARC\":\"+00000\",\"TAXA_IOF\":\"+0000000\"}",
+        "authorization_code": "f46fbf",
+        "event_date_hour": "2022-06-25T14:24:51.00000Z",
+        "authorization_date_hour": "2022-06-25T14:24:51.00000Z",
+        "event_date_hour_utc": "2022-06-25T17:24:51.00000Z",
+        "authorization_response_code": "00",
+        "retrieval_reference_number": "000214304691743",
+        "merchant_city": "SAO PAULO",
+        "merchant_name": "MERCHANT DEFAULT ITAUCARD",
+        "merchant_state_or_country": "SP",
+        "merchant_id": "af88bfcc-98b8-4d03",
+        "merchant_category_code": "05411",
+        "acquirer_bin": "4",
+        "transaction_identifier": "000214304691743",
+        "authorization_status": "PROCESSED",
+        "mti": "0100",
+        "update_limit": false,
+        "update_flexcontrol": false,
+        "network": "VISA",
+        "terminal_capability": "0",
+        "pin_presence": false,
+        "cvv_presence": false,
+        "arcq_presence": false,
+        "track1_presence": false,
+        "track2_presence": false,
+        "nsu": "+4691743",
+        "pre_authorization": false,
+        "origin": "MIGRATION",
+        "custom_code": "000"
+      }
+    },
+    {
+      "status": "FAIL",
+      "code": "001",
+      "message": "Authorization not migrated!",
+      "migration": {
+        "id": "21390232942-authorizations",
+        "version_date": "2021-11-27T20:54:41Z"
+      }
+    }
+  ],
+  "required": [
+    "code",
+    "message",
+    "migration",
+    "status"
+  ],
+  "properties": {
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "description": "The code of message for systems",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "description": "Message of migration result",
+      "examples": [
+        "Authorization migrated with success"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/entity/properties/migration",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "This field contains the data that identifies a migration.",
+      "examples": [
+        {
+          "id": "migration-id",
+          "version_date": "2021-08-11T11:25:00.000Z"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "description": "This field is the unique identifier of migration.",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field is the date of version of migration.",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      }
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "description": "If the result of authorization migration was success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "additionalProperties": true,
+      "title": "Pismo generated Authorization information",
+      "examples": [
+        {
+          "network_authorization_id": 15784073194,
+          "network_authorization_history_id": 362326167,
+          "card_id": 90600221,
+          "card_hash": "XnS63+t1U86V7GGQFsemY9L/WjlR8nTQzztcnC6vyWI+sxilTlV3zVzJibpK+sv2uhRmgpgDxqmeSIPpCqV3uA==",
+          "customer_id": 186716507,
+          "program_id": 9442,
+          "account_id": 186808839,
+          "wallet_identifier": "",
+          "processing_code": "00",
+          "local_amount": 900.0,
+          "local_currency_code": "986",
+          "settlement_amount": 108.96,
+          "settlement_currency_code": "840",
+          "settlement_currency_rate": 4.54e-06,
+          "cardholder_amount": 0.0,
+          "cardholder_currency_code": "986",
+          "cardholder_conversion_rate": 4.54e-06,
+          "currency_conversion_date": "2022-07-14T16:36:18.00000Z",
+          "entry_mode": "01",
+          "number_of_installments": 1,
+          "installment_amount": 0.0,
+          "principal_amount": 24.0,
+          "contract_amount": 930.0,
+          "postings": "{\"TAXA_PARC\":\"+00000\",\"TAXA_IOF\":\"+0000000\"}",
+          "authorization_code": "f46fbf",
+          "event_date_hour": "2022-06-25T14:24:51.00000Z",
+          "authorization_date_hour": "2022-06-25T14:24:51.00000Z",
+          "event_date_hour_utc": "2022-06-25T17:24:51.00000Z",
+          "authorization_response_code": "00",
+          "retrieval_reference_number": "000214304691743",
+          "merchant_city": "SAO PAULO",
+          "merchant_name": "MERCHANT DEFAULT ITAUCARD",
+          "merchant_state_or_country": "SP",
+          "merchant_id": "af88bfcc-98b8-4d03",
+          "merchant_category_code": "05411",
+          "acquirer_bin": "4",
+          "transaction_identifier": "000214304691743",
+          "authorization_status": "PROCESSED",
+          "mti": "0100",
+          "update_limit": false,
+          "update_flexcontrol": false,
+          "network": "VISA",
+          "terminal_capability": "0",
+          "pin_presence": false,
+          "cvv_presence": false,
+          "arcq_presence": false,
+          "track1_presence": false,
+          "track2_presence": false,
+          "nsu": "+4691743",
+          "pre_authorization": false,
+          "origin": "MIGRATION",
+          "custom_code": "000"
+        }
+      ],
+      "required": [
+        "account_id",
+        "card_id"
+      ],
+      "properties": {
+        "network_authorization_id": {
+          "$id": "#/properties/entity/properties/network_authorization_id",
+          "type": "integer",
+          "description": "Authorization identifier generated by pismo.",
+          "examples": [
+            9999
+          ]
+        },
+        "account_id": {
+          "$id": "#/properties/entity/properties/network_authorization_id",
+          "type": "integer",
+          "description": "Account identifier in pismo plataform.",
+          "examples": [
+            4269666
+          ]
+        },
+        "card_id": {
+          "$id": "#/properties/entity/properties/network_authorization_id",
+          "type": "integer",
+          "description": "Card identifier in pismo plataform.",
+          "examples": [
+            555
+          ]
+        },
+        "network_authorization_history_id": {
+          "$id": "#/properties/entity/properties/network_authorization_history_id",
+          "type": "integer",
+          "description": "Network authorization history identifier in pismo plataform.",
+          "examples": [
+            362326167
+          ]
+        },
+        "card_hash": {
+          "$id": "#/properties/entity/properties/card_hash",
+          "type": "string",
+          "description": "Card hash used in authorization.",
+          "examples": [
+            "XnS63+t1U86V7GGQFsemY"
+          ]
+        },
+        "customer_id": {
+          "$id": "#/properties/entity/properties/customer_id",
+          "type": "integer",
+          "description": "Customer id used in pismo plataform.",
+          "examples": [
+            186716507
+          ]
+        },
+        "program_id": {
+          "$id": "#/properties/entity/properties/program_id",
+          "type": "integer",
+          "description": "This field represents the internal id of the Program of the card used on this authorization.",
+          "examples": [
+            9442
+          ]
+        },
+        "wallet_identifier": {
+          "$id": "#/properties/entity/properties/wallet_identifier",
+          "type": "string",
+          "description": "This field identifies the wallet identifier which request the token provisioning",
+          "examples": [
+            "9442"
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "Describes the effect of a transaction on the customer account and the type of accounts",
+          "examples": [
+            "00"
+          ]
+        },
+        "local_amount": {
+          "$id": "#/properties/entity/properties/local_amount",
+          "type": "number",
+          "description": "Amount of funds the cardholder requested in the local currency of the acquirer or source location of the transaction.",
+          "examples": [
+            900.0
+          ]
+        },
+        "local_currency_code": {
+          "$id": "#/properties/entity/properties/local_currency_code",
+          "type": "string",
+          "description": "Local currency code defined by the issuer.",
+          "examples": [
+            "986"
+          ]
+        },
+        "settlement_amount": {
+          "$id": "#/properties/entity/properties/settlement_amount",
+          "type": "number",
+          "description": "Amount of funds to be transferred between the acquirer and the issuer equal to the transaction amount in the settlement currency.",
+          "examples": [
+            900.0
+          ]
+        },
+        "settlement_currency_code": {
+          "$id": "#/properties/entity/properties/settlement_currency_code",
+          "type": "string",
+          "description": "Currency code defined by the issuer.",
+          "examples": [
+            "986"
+          ]
+        },
+        "cardholder_amount": {
+          "$id": "#/properties/entity/properties/cardholder_amount",
+          "type": "number",
+          "description": "Indicates the transaction amount in the issuer\u2019s currency.",
+          "examples": [
+            20.0
+          ]
+        },
+        "cardholder_currency_code": {
+          "$id": "#/properties/entity/properties/cardholder_currency_code",
+          "type": "string",
+          "description": "Currency code for the cardholder.",
+          "examples": [
+            "986"
+          ]
+        },
+        "cardholder_conversion_rate": {
+          "$id": "#/properties/entity/properties/cardholder_conversion_rate",
+          "type": "number",
+          "description": "Factor used in the conversion from transaction to cardholder billing amount.",
+          "examples": [
+            20.0
+          ]
+        },
+        "currency_conversion_date": {
+          "$id": "#/properties/entity/properties/currency_conversion_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "Currency conversion date.",
+          "examples": [
+            "2021-08-11T11:25:00.00000Z"
+          ]
+        },
+        "entry_mode": {
+          "$id": "#/properties/entity/properties/entry_mode",
+          "type": "string",
+          "description": "Indicates which entry mode code was used in the transaction.",
+          "examples": [
+            "01"
+          ]
+        },
+        "number_of_installments": {
+          "$id": "#/properties/entity/properties/number_of_installments",
+          "type": "integer",
+          "description": "Number of installments in authorization.",
+          "examples": [
+            1
+          ]
+        },
+        "installment_amount": {
+          "$id": "#/properties/entity/properties/installment_amount",
+          "type": "number",
+          "description": "Installment amount of the authorization.",
+          "examples": [
+            100.0
+          ]
+        },
+        "principal_amount": {
+          "$id": "#/properties/entity/properties/principal_amount",
+          "type": "number",
+          "description": "Amount of transaction without taxes and fees.",
+          "examples": [
+            100.0
+          ]
+        },
+        "contract_amount": {
+          "$id": "#/properties/entity/properties/contract_amount",
+          "type": "number",
+          "description": "Total amount of the transaction, including all taxes and fees, in the cardholder currency.",
+          "examples": [
+            100.0
+          ]
+        },
+        "postings": {
+          "$id": "#/properties/entity/properties/postings",
+          "type": "string",
+          "description": "Postings of the authorization.",
+          "examples": [
+            "389127"
+          ]
+        },
+        "authorization_code": {
+          "$id": "#/properties/entity/properties/authorization_code",
+          "type": "string",
+          "description": "Transaction response ID code assigned by authorizing institution.",
+          "examples": [
+            "100"
+          ]
+        },
+        "event_date_hour": {
+          "$id": "#/properties/entity/properties/event_date_hour",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the event date hour of event.",
+          "examples": [
+            "2021-08-11T11:25:00.00000Z"
+          ]
+        },
+        "authorization_date_hour": {
+          "$id": "#/properties/entity/properties/authorization_date_hour",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the event date hour of Authorization.",
+          "examples": [
+            "2021-08-11T11:25:00.00000Z"
+          ]
+        },
+        "event_date_hour_utc": {
+          "$id": "#/properties/entity/properties/event_date_hour_utc",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the event date hour UTC of authorization.",
+          "examples": [
+            "2021-08-11T11:25:00.00000Z"
+          ]
+        },
+        "authorization_response_code": {
+          "$id": "#/properties/entity/properties/authorization_response_code",
+          "type": "string",
+          "description": "This field identifies the response code of authorization.",
+          "examples": [
+            "00"
+          ]
+        },
+        "retrieval_reference_number": {
+          "$id": "#/properties/entity/properties/retrieval_reference_number",
+          "type": "string",
+          "description": "Document reference number assigned by the acquirer.",
+          "examples": [
+            "000214304691743"
+          ]
+        },
+        "merchant_city": {
+          "$id": "#/properties/entity/properties/merchant_city",
+          "type": "string",
+          "description": "This field identifies the merchant city of authorization.",
+          "examples": [
+            "BELO HORIZONTE"
+          ]
+        },
+        "merchant_name": {
+          "$id": "#/properties/entity/properties/merchant_name",
+          "type": "string",
+          "description": "This field identifies the merchant name of authorization.",
+          "examples": [
+            "Merchant Name"
+          ]
+        },
+        "merchant_state_or_country": {
+          "$id": "#/properties/entity/properties/merchant_state_or_country",
+          "type": "string",
+          "description": "This field identifies the merchant state or country of authorization.",
+          "examples": [
+            "BH"
+          ]
+        },
+        "merchant_id": {
+          "$id": "#/properties/entity/properties/merchant_id",
+          "type": "string",
+          "description": "Merchant identifier.",
+          "examples": [
+            "af88bfcc-98b8-4d03"
+          ]
+        },
+        "merchant_category_code": {
+          "$id": "#/properties/entity/properties/merchant_category_code",
+          "type": "string",
+          "description": "This field identifies the merchant id of authorization.",
+          "examples": [
+            "BH"
+          ]
+        },
+        "acquirer_bin": {
+          "$id": "#/properties/entity/properties/acquirer_bin",
+          "type": "string",
+          "description": "This field identifies the acquirer bin of authorization.",
+          "examples": [
+            "547654"
+          ]
+        },
+        "transaction_identifier": {
+          "$id": "#/properties/entity/properties/transaction_identifier",
+          "type": "string",
+          "description": "Transaction Identifier.",
+          "examples": [
+            "9374"
+          ]
+        },
+        "authorization_status": {
+          "$id": "#/properties/entity/properties/authorization_status",
+          "type": "string",
+          "description": "Represents the status of the authorization.",
+          "examples": [
+            "BH"
+          ]
+        },
+        "mti": {
+          "$id": "#/properties/entity/properties/mti",
+          "type": "string",
+          "description": "Message Type Identifier.",
+          "examples": [
+            "0100"
+          ]
+        },
+        "update_limit": {
+          "$id": "#/properties/entity/properties/update_limit",
+          "type": "boolean",
+          "description": "The limit updated status.",
+          "examples": [
+            false
+          ]
+        },
+        "update_flexcontrol": {
+          "$id": "#/properties/entity/properties/update_flexcontrol",
+          "type": "boolean",
+          "description": "The flex control updated status.",
+          "examples": [
+            false
+          ]
+        },
+        "network": {
+          "$id": "#/properties/entity/properties/network",
+          "type": "string",
+          "description": "Network brand name.",
+          "examples": [
+            "VISA"
+          ]
+        },
+        "terminal_capability": {
+          "$id": "#/properties/entity/properties/terminal_capability",
+          "type": "string",
+          "description": "Terminal capability description.",
+          "examples": [
+            "0"
+          ]
+        },
+        "pin_presence": {
+          "$id": "#/properties/entity/properties/pin_presence",
+          "type": "boolean",
+          "description": "Pin presence.",
+          "examples": [
+            false
+          ]
+        },
+        "cvv_presence": {
+          "$id": "#/properties/entity/properties/cvv_presence",
+          "type": "boolean",
+          "description": "Cvv presence.",
+          "examples": [
+            false
+          ]
+        },
+        "arqc_presence": {
+          "$id": "#/properties/entity/properties/arqc_presence",
+          "type": "boolean",
+          "description": "This field identifies the arqc presence of authorization.",
+          "examples": [
+            false
+          ]
+        },
+        "track1_presence": {
+          "$id": "#/properties/entity/properties/track1_presence",
+          "type": "boolean",
+          "description": "This field identifies the track1 presence of authorization.",
+          "examples": [
+            false
+          ]
+        },
+        "track2_presence": {
+          "$id": "#/properties/entity/properties/track2_presence",
+          "type": "boolean",
+          "description": "This field identifies the track2 presence of authorization.",
+          "examples": [
+            false
+          ]
+        },
+        "nsu": {
+          "$id": "#/properties/entity/properties/nsu",
+          "type": "string",
+          "description": "Message initiator assigns to uniquely identify a transaction.",
+          "examples": [
+            "4691743"
+          ]
+        },
+        "pre_authorization": {
+          "$id": "#/properties/entity/properties/pre_authorization",
+          "type": "boolean",
+          "description": "This field identifies if authorization is a pre_authorization.",
+          "examples": [
+            false
+          ]
+        },
+        "origin": {
+          "$id": "#/properties/entity/properties/origin",
+          "type": "string",
+          "description": "The origin used in migrations.",
+          "examples": [
+            "0"
+          ]
+        },
+        "custom_code": {
+          "$id": "#/properties/entity/properties/custom_code",
+          "type": "string",
+          "description": "This field identifies the custom response code of authorization.",
+          "examples": [
+            "000"
+          ]
+        }
+      }
+    },
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "description": "If the Authorization migration is a creation or update",
+      "enum": [
+        "CREATION",
+        "UPDATE"
+      ],
+      "examples": [
+        "UPDATE",
+        "CREATION"
+      ]
+    }
+  }
+}

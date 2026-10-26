@@ -1,0 +1,224 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset status changed to completed",
+  "description": "This event occurs when an asset's status changes to `completed` with product interest management.",
+  "required": [
+    "asset_id",
+    "external_asset_id",
+    "status",
+    "updated_at",
+    "quotas"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by Pismo.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "external_asset_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External asset ID",
+      "description": "Unique asset short identifier defined by Pismo.",
+      "examples": [
+        "kxBHNMCAYDnQav"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Asset status",
+      "description": "Status of asset",
+      "enum": [
+        "COMPLETED"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Updated date",
+      "description": "Date asset was last updated",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    },
+    "quotas": {
+      "type": "array",
+      "title": "List of quotas",
+      "items": {
+        "$ref": "#/definitions/quota"
+      }
+    }
+  },
+  "definitions": {
+    "quota": {
+      "type": "object",
+      "title": "Quota",
+      "description": "Quota.",
+      "required": [
+        "external_quota_id",
+        "external_account_id",
+        "issuing_date",
+        "maturity_date",
+        "issued_units",
+        "current_units",
+        "net_unit_value",
+        "gross_unit_value",
+        "accum_net_amount",
+        "accum_gross_amount",
+        "taxes"
+      ],
+      "properties": {
+        "external_quota_id": {
+          "type": "string",
+          "title": "External quota ID",
+          "description": "Unique quota identifier defined by client. It can be used to redeem quotas.",
+          "examples": [
+            "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+          ]
+        },
+        "external_account_id": {
+          "type": "string",
+          "title": "External account identifier",
+          "description": "A custom account ID string that uniquely identifies the account within your organization.",
+          "examples": [
+            "00011122200"
+          ]
+        },
+        "issuing_date": {
+          "type": "string",
+          "title": "Issuing date",
+          "description": "Date asset was effectively issued by client.",
+          "format": "date",
+          "examples": [
+            "2020-12-01"
+          ]
+        },
+        "maturity_date": {
+          "type": "string",
+          "title": "Maturity date",
+          "description": "Date asset expires, finishing `issued_units` cycle.",
+          "format": "date",
+          "examples": [
+            "2022-12-01"
+          ]
+        },
+        "issued_units": {
+          "type": "number",
+          "title": "Issued units",
+          "description": "Number of units asset can support.",
+          "format": "int",
+          "examples": [
+            10000
+          ]
+        },
+        "current_units": {
+          "type": "number",
+          "title": "Current units",
+          "description": "Number of units asset has.",
+          "format": "int",
+          "examples": [
+            10000
+          ]
+        },
+        "net_unit_value": {
+          "type": "number",
+          "title": "Net Unit Value",
+          "description": "Accrued net unit value by quota.",
+          "format": "double",
+          "examples": [
+            0.01000085
+          ]
+        },
+        "gross_unit_value": {
+          "type": "number",
+          "title": "Gross Unit Value",
+          "description": "Accrued gross unit value by quota.",
+          "format": "double",
+          "examples": [
+            0.01001575
+          ]
+        },
+        "accum_net_amount": {
+          "type": "number",
+          "title": "Accrual Accum Net Amount",
+          "description": "Accrual Accum Net Amount.",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        },
+        "accum_gross_amount": {
+          "type": "number",
+          "title": "Accrual Accum Gross Amount",
+          "description": "Accrual Accum Gross Amount.",
+          "format": "double",
+          "examples": [
+            100.15
+          ]
+        },
+        "taxes": {
+          "type": "array",
+          "title": "List of taxes",
+          "items": {
+            "$ref": "#/definitions/tax"
+          }
+        }
+      }
+    },
+    "tax": {
+      "type": "object",
+      "title": "Tax",
+      "description": "Tax.",
+      "required": [
+        "name",
+        "amount",
+        "unit_value",
+        "rate"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Tax Name",
+          "description": "Tax Name.",
+          "examples": [
+            "IR",
+            "IOF"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tax Amount",
+          "description": "Tax Amount.",
+          "format": "double",
+          "examples": [
+            0.15
+          ]
+        },
+        "unit_value": {
+          "type": "number",
+          "title": "Tax Unit Value",
+          "description": "Tax Unit Value.",
+          "format": "double",
+          "examples": [
+            1.49e-05
+          ]
+        },
+        "rate": {
+          "type": "number",
+          "title": "Tax Rate",
+          "description": "Tax Rate.",
+          "format": "double",
+          "examples": [
+            22.5
+          ]
+        }
+      }
+    }
+  }
+}

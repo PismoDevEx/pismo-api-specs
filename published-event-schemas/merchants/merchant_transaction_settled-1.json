@@ -1,0 +1,296 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Merchant transaction settled",
+  "description": "This event occurs when a merchant's transactions are settled. \n See <a href='https://developers.pismo.io/pismo-docs/docs/how-merchant-settlements-are-processed' target='_blank'>How merchant settlements are processed</a> for more information about how settlements work.",
+  "type": "object",
+  "required": [
+    "creditor_id",
+    "merchant_id",
+    "merchant_transaction_id",
+    "org_operation_id",
+    "scheduled_payment_date",
+    "transaction_amount",
+    "transaction_status"
+  ],
+  "properties": {
+    "creditor_id": {
+      "$id": "#/properties/creditor_id",
+      "type": "integer",
+      "title": "The creditor identifier",
+      "description": "This field identifies the creditor related to merchant thats requires the settlement transaction.",
+      "examples": [
+        5
+      ]
+    },
+    "merchant_id": {
+      "$id": "#/properties/merchant_id",
+      "type": "integer",
+      "title": "The merchant identifier",
+      "description": "This field identifies the merchant related to settlement transaction.",
+      "examples": [
+        4
+      ]
+    },
+    "marketplace_id": {
+      "$id": "#/properties/marketplace_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The marketplace identifier",
+      "description": "This field identifies the marketplace related to settlement transaction.",
+      "examples": [
+        null,
+        6
+      ]
+    },
+    "merchant_transaction_id": {
+      "$id": "#/properties/merchant_transaction_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The merchant transaction identifier",
+      "description": "This field identifies the merchant settlement transaction.",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "org_operation_id": {
+      "$id": "#/properties/org_operation_id",
+      "type": "integer",
+      "title": "The operation identifier relate to organization",
+      "description": "This field identifies the operation related to settlement transaction.",
+      "examples": [
+        3
+      ]
+    },
+    "scheduled_payment_date": {
+      "$id": "#/properties/scheduled_payment_date",
+      "type": "string",
+      "format": "date",
+      "title": "The scheduled payment date of settlement transaction",
+      "description": "This field identifies the scheduled payment date related to settlement transaction.",
+      "examples": [
+        "2021-03-25"
+      ]
+    },
+    "transaction_amount": {
+      "$id": "#/properties/transaction_amount",
+      "type": "number",
+      "title": "The transaction amount of settlement transaction",
+      "description": "This field identifies the transaction amount related to settlement transaction.",
+      "examples": [
+        100.0
+      ]
+    },
+    "transaction_status": {
+      "$id": "#/properties/transaction_status",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "title": "The transaction status of settlement transaction",
+      "description": "This field identifies the status of settlement transaction.",
+      "examples": [
+        "PAID",
+        "SCHEDULED",
+        "SETTLED"
+      ]
+    },
+    "advanced_amount": {
+      "$id": "#/properties/advanced_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The advanced amount of settlement transaction",
+      "description": "This field identifies the transaction advanced amount related to settlement transaction.",
+      "examples": [
+        null,
+        0.0
+      ]
+    },
+    "advancement_request_id": {
+      "$id": "#/properties/advancement_request_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The advancement request identifier if the transaction was created for an advancement",
+      "description": "This field identifies the advancement request that generated this transaction.",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The authorization identifier",
+      "description": "This field identifies the authorization identifier related to settlement transaction.",
+      "examples": [
+        null,
+        2
+      ]
+    },
+    "event_date": {
+      "$id": "#/properties/event_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time",
+      "title": "The settlement event date",
+      "description": "This field identifies the settlement event date (in UTC RFC 3339 format).",
+      "examples": [
+        null,
+        "2021-03-25T00:00:00.000Z"
+      ]
+    },
+    "mdr_amount": {
+      "$id": "#/properties/mdr_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The mdr amount of settlement transaction",
+      "description": "This field identifies the transaction mdr amount related to settlement transaction.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "mdr_tax": {
+      "$id": "#/properties/mdr_tax",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Amount of Merchant Discount Rate (MDR) tax",
+      "description": "Merchant Discount Rate (MDR) tax amount",
+      "minimum": -9223372036854775807,
+      "maximum": 9223372036854775807,
+      "examples": [
+        null,
+        0.0,
+        1.0
+      ]
+    },
+    "origin_transaction_id": {
+      "$id": "#/properties/origin_transaction_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The identifier of original transaction related to settlement transaction",
+      "description": "This field identifies the original transaction identifier related to settlement transaction.",
+      "examples": [
+        null,
+        6
+      ]
+    },
+    "processing_code": {
+      "$id": "#/properties/processing_code",
+      "type": "string",
+      "title": "The processing code relate to transaction",
+      "description": "This field identifies the processing code related to transaction.",
+      "examples": [
+        "0001234"
+      ]
+    },
+    "scheduled_payment_date_adjusted": {
+      "$id": "#/properties/scheduled_payment_date_adjusted",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "The scheduled payment date adjusted of settlement transaction",
+      "description": "This field identifies the scheduled payment date adjusted related to settlement transaction.",
+      "examples": [
+        null,
+        "2021-03-25"
+      ]
+    },
+    "scheduled_settlement_date": {
+      "$id": "#/properties/scheduled_settlement_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "The scheduled settlement date of settlement transaction",
+      "description": "This field identifies the scheduled settlement date related to settlement transaction.",
+      "examples": [
+        null,
+        "2021-03-25"
+      ]
+    },
+    "settlement_amount": {
+      "$id": "#/properties/settlement_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The settlement amount of settlement transaction",
+      "description": "This field identifies the transaction settlement amount related to settlement transaction.",
+      "examples": [
+        null,
+        0.0
+      ]
+    },
+    "settlement_authorization": {
+      "$id": "#/properties/settlement_authorization",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The settlement authorization identifier",
+      "description": "This field identifies the settlement authorization related to settlement transaction.",
+      "examples": [
+        null,
+        2
+      ]
+    },
+    "settlement_date": {
+      "$id": "#/properties/settlement_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "The settlement date of settlement transaction",
+      "description": "This field identifies the settlement date related to settlement transaction.",
+      "examples": [
+        null,
+        "2021-03-25"
+      ]
+    },
+    "settlement_id": {
+      "$id": "#/properties/settlement_id",
+      "type": [
+        "string"
+      ],
+      "title": "The merchant settlement identifier",
+      "description": "This field identifies the settlement that changed the transaction status.",
+      "examples": [
+        null,
+        "9d451fb5-8968-45bf-8cdd-37e05aaaf102"
+      ]
+    },
+    "account_id_settled": {
+      "$id": "#/properties/account_id_settled",
+      "type": "integer",
+      "title": "The account identifier settled",
+      "description": "This field identifies the account that was received the payment of this transaction.",
+      "examples": [
+        5
+      ]
+    }
+  }
+}

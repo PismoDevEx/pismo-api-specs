@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bank account updated (deprecated)",
+  "required": [
+    "account_id",
+    "updated_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account Identifier",
+      "description": "Account Identifier on Pismo platform",
+      "examples": [
+        123
+      ]
+    },
+    "region": {
+      "type": "string",
+      "title": "Region",
+      "description": "Bank account country abbreviation. Will be used to convert to international formats",
+      "examples": [
+        "BR"
+      ]
+    },
+    "bank_code": {
+      "type": "string",
+      "title": "Bank Code",
+      "description": "Bank code",
+      "examples": [
+        "0010"
+      ]
+    },
+    "updated_datetime": {
+      "type": "string",
+      "title": "Bank Account Update Datetime",
+      "description": "Bank Account Update Datetime",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "International Bank Account Status",
+      "description": "International Bank Account Status",
+      "examples": [
+        "ACTIVE",
+        "UPDATED"
+      ]
+    }
+  }
+}

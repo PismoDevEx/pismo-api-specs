@@ -1,0 +1,265 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Marketplace created",
+  "required": [
+    "brand_name",
+    "marketplace_name",
+    "document_number"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The marketplace id",
+      "description": "This field represents the marketplace id",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "document_number": {
+      "$id": "#/properties/document_number",
+      "type": "string",
+      "title": "The marketplace document number",
+      "description": "This field represents the marketplace document number",
+      "examples": [
+        "42845458000191"
+      ]
+    },
+    "registration": {
+      "$id": "#/properties/registration",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "The marketplace registration",
+      "description": "This field represents the marketplace municipal registration",
+      "examples": [
+        null,
+        "123.456.789"
+      ]
+    },
+    "registration2": {
+      "$id": "#/properties/registration2",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "The marketplace second registration",
+      "description": "This field represents the marketplace another registration",
+      "examples": [
+        null,
+        "123.456.789"
+      ]
+    },
+    "brand_name": {
+      "$id": "#/properties/brand_name",
+      "type": "string",
+      "title": "The marketplace brand name",
+      "description": "This field represents the marketplace brand name (Nome Fantasia)",
+      "examples": [
+        "Marketplace"
+      ]
+    },
+    "marketplace_name": {
+      "$id": "#/properties/marketplace_name",
+      "type": "string",
+      "title": "The marketplace name",
+      "description": "This field represents the marketplace name (Raz\u00e3o Social)",
+      "examples": [
+        "Marketplace"
+      ]
+    },
+    "address": {
+      "$id": "#/properties/address",
+      "type": "object",
+      "title": "The marketplace address",
+      "description": "This field represents the marketplace address",
+      "required": [],
+      "properties": {
+        "street": {
+          "$id": "#/properties/address/street",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace address street",
+          "description": "This field represents the marketplace address street",
+          "examples": [
+            null,
+            "Rua das Palmeiras"
+          ]
+        },
+        "number": {
+          "$id": "#/properties/address/number",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "The marketplace address number",
+          "description": "This field represents the marketplace address number",
+          "examples": [
+            null,
+            1
+          ]
+        },
+        "complementary_address": {
+          "$id": "#/properties/address/id",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace complementary address",
+          "description": "This field represents the marketplace complementary address. Second line of address (if needed)",
+          "examples": [
+            null,
+            "Near to somewhere."
+          ]
+        },
+        "neighborhood": {
+          "$id": "#/properties/address/neighborhood",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace address neighborhood",
+          "description": "This field represents the marketplace address neighborhood",
+          "examples": [
+            null,
+            "Neighborhood"
+          ]
+        },
+        "zip_code": {
+          "$id": "#/properties/address/zip_code",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace address zip code",
+          "description": "This field represents the marketplace address postal code",
+          "examples": [
+            null,
+            "12345-678"
+          ]
+        },
+        "city": {
+          "$id": "#/properties/address/city",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace address city",
+          "description": "This field represents the marketplace address city",
+          "examples": [
+            null,
+            "S\u00e3o Paulo"
+          ]
+        },
+        "state": {
+          "$id": "#/properties/address/state",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace address state",
+          "description": "This field represents the marketplace address state",
+          "examples": [
+            null,
+            "SP"
+          ]
+        },
+        "country": {
+          "$id": "#/properties/address/country",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace address country",
+          "description": "This field represents the marketplace address country",
+          "examples": [
+            null,
+            "Brazil"
+          ]
+        }
+      }
+    },
+    "contact": {
+      "$id": "#/properties/contact",
+      "type": "object",
+      "title": "The marketplace contact",
+      "description": "This field represents the marketplace contact",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "name": {
+          "$id": "#/properties/contact/name",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace contact name",
+          "description": "This field represents the marketplace contact name",
+          "examples": [
+            null,
+            "Marketplace Name"
+          ]
+        },
+        "email": {
+          "$id": "#/properties/contact/email",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace contact email",
+          "description": "This field represents the marketplace contact email",
+          "examples": [
+            "marketplace@email.com"
+          ]
+        },
+        "phone_number": {
+          "$id": "#/properties/contact/phone_number",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace contact phone number",
+          "description": "This field represents the marketplace contact phone number",
+          "examples": [
+            null,
+            "111234567890"
+          ]
+        },
+        "additional_phone_number": {
+          "$id": "#/properties/contact/additional_phone_number",
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "The marketplace contact additional phone number",
+          "description": "This field represents the marketplace contact additional phone number",
+          "examples": [
+            null,
+            "111234567890"
+          ]
+        }
+      }
+    },
+    "external_id": {
+      "$id": "#/properties/external_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External identifier",
+      "description": "This field represents the marketplace identifier in an external system",
+      "examples": [
+        null,
+        "",
+        "123",
+        "123AB"
+      ]
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Dispute status changed",
+  "description": "This event occurs when a dispute transitions between statuses. The disputes endpoint generates this event after every accepted state-machine transition.",
+  "examples": [
+    {
+      "dispute_id": 1234,
+      "previous_status": "PENDING",
+      "current_status": "OPENED",
+      "event": "OPEN",
+      "reason": "Opening dispute for investigation",
+      "updated_at": "2026-06-09T12:34:56.789Z"
+    },
+    {
+      "dispute_id": 5678,
+      "previous_status": "OPENED",
+      "current_status": "CANCELED",
+      "event": "CANCEL",
+      "reason": null,
+      "updated_at": "2026-06-09T13:00:00.000Z"
+    }
+  ],
+  "required": [
+    "dispute_id",
+    "previous_status",
+    "current_status",
+    "event",
+    "updated_at"
+  ],
+  "properties": {
+    "dispute_id": {
+      "$id": "#/properties/dispute_id",
+      "type": "integer",
+      "title": "Dispute ID",
+      "description": "Pismo dispute ID",
+      "examples": [
+        1234
+      ]
+    },
+    "previous_status": {
+      "$id": "#/properties/previous_status",
+      "type": "string",
+      "title": "Previous status",
+      "description": "Dispute status name before the transition.",
+      "examples": [
+        "PENDING",
+        "OPENED",
+        "PENDING_DOCUMENTATION",
+        "REJECTED",
+        "CANCELED",
+        "ISSUER_LOSS",
+        "STORE_OWNER_LOSS",
+        "CARDHOLDER_LOSS",
+        "EXPIRED"
+      ]
+    },
+    "current_status": {
+      "$id": "#/properties/current_status",
+      "type": "string",
+      "title": "Current status",
+      "description": "Dispute status name after the transition.",
+      "examples": [
+        "PENDING",
+        "OPENED",
+        "PENDING_DOCUMENTATION",
+        "REJECTED",
+        "CANCELED",
+        "ISSUER_LOSS",
+        "STORE_OWNER_LOSS",
+        "CARDHOLDER_LOSS",
+        "EXPIRED"
+      ]
+    },
+    "event": {
+      "$id": "#/properties/event",
+      "type": "string",
+      "title": "State machine event",
+      "description": "State-machine event that triggered the transition.",
+      "examples": [
+        "OPEN",
+        "CANCEL",
+        "REJECTS",
+        "EXPIRE",
+        "REOPEN",
+        "PENDING_DOCUMENTATION",
+        "RESEND",
+        "ISSUER_LOSS",
+        "STORE_OWNER_LOSS",
+        "CARDHOLDER_LOSS"
+      ]
+    },
+    "reason": {
+      "$id": "#/properties/reason",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Reason",
+      "description": "Optional free-text reason supplied by the caller of the status change endpoint.",
+      "examples": [
+        null,
+        "Opening dispute for investigation"
+      ]
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated at UTC date/time",
+      "description": "Timestamp the status transition was applied. ISO-8601 UTC, RFC 3339, stamped by the publisher at event-build time.",
+      "examples": [
+        "2026-06-09T12:34:56.789Z"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

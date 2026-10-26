@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Payment agreement simulation processed",
+  "description": "Event generated when a payment agreement simulation is processed.",
+  "required": [
+    "payment_agreement_simulation_id",
+    "account_id",
+    "created_at",
+    "first_installment_as_down_payment",
+    "payment_date",
+    "type",
+    "interest_cap",
+    "simulation"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Event ID",
+      "examples": [
+        "event-id-xxx"
+      ]
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Event type",
+      "examples": [
+        "payment-agreement-simulation-processed"
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Org ID",
+      "examples": [
+        "org-id-xxxx"
+      ]
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version",
+      "examples": [
+        "1.0.0"
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "description": "Correlation ID used to link related API requests and events",
+      "examples": [
+        "cid-xxx"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp in ISO 8601. Format = YYYY-MM-DDThhmmss.ssssssssZ.",
+      "examples": [
+        "2025-07-22T13:34:36.77806097Z"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "description": "Domain of the event",
+      "examples": [
+        "statement-refinancing"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the simulation processing",
+      "enum": [
+        "PENDING",
+        "PROCESSED",
+        "ERROR"
+      ],
+      "examples": [
+        "PROCESSED"
+      ]
+    },
+    "payment_agreement_simulation_id": {
+      "type": "integer",
+      "description": "The payment agreement simulation identifier",
+      "examples": [
+        2365
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        242840308
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation date of the simulation. Format = YYYY-MM-DDThhmmss.ssssssss.",
+      "examples": [
+        "2025-06-17T15:22:51.978005295"
+      ]
+    },
+    "plan_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of plan IDs",
+      "examples": [
+        [
+          "5",
+          "6",
+          "7"
+        ]
+      ]
+    },
+    "first_installment_as_down_payment": {
+      "type": "boolean",
+      "description": "Is the first installment used as a down payment?",
+      "examples": [
+        false
+      ]
+    },
+    "down_payment": {
+      "type": "number",
+      "format": "float",
+      "description": "Down payment amount",
+      "examples": [
+        500.99
+      ]
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Payment date. Format = YYYY-MM-DD.",
+      "examples": [
+        "2025-06-20"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "description": "Payment agreement type",
+      "enum": [
+        "STATEMENT_AGREEMENT",
+        "STATEMENT_INSTALLMENT",
+        "STATEMENT_INSTALLMENT_COMPULSORY"
+      ],
+      "examples": [
+        "STATEMENT_INSTALLMENT"
+      ]
+    },
+    "interest_cap": {
+      "type": "boolean",
+      "format": "float",
+      "description": "Interest cap amount",
+      "examples": [
+        200.0
+      ]
+    },
+    "simulation": {
+      "type": "object",
+      "description": "Simulation details",
+      "required": [
+        "plan_id",
+        "id",
+        "options"
+      ],
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "description": "Plan ID",
+          "examples": [
+            "planId6"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "description": "Simulation ID",
+          "examples": [
+            "3dcc515a-28fd-4ace-ac11-8ed9ad0fefd7"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "description": "List of simulation options",
+          "items": {
+            "type": "object",
+            "required": [
+              "installments",
+              "contract_amount",
+              "principal_amount",
+              "effective_annual_cost",
+              "effective_monthly_cost",
+              "first_installment_value",
+              "installment_value",
+              "postings",
+              "rates"
+            ],
+            "properties": {
+              "installments": {
+                "type": "integer",
+                "format": "float",
+                "description": "Number of installments",
+                "examples": [
+                  10
+                ]
+              },
+              "contract_amount": {
+                "type": "number",
+                "description": "Total contract amount",
+                "examples": [
+                  155.2
+                ]
+              },
+              "principal_amount": {
+                "type": "number",
+                "format": "float",
+                "description": "Principal amount",
+                "examples": [
+                  80
+                ]
+              },
+              "effective_annual_cost": {
+                "type": "number",
+                "format": "float",
+                "description": "Effective annual cost",
+                "examples": [
+                  392.75
+                ]
+              },
+              "effective_monthly_cost": {
+                "type": "number",
+                "format": "float",
+                "description": "Effective monthly cost",
+                "examples": [
+                  20.33
+                ]
+              },
+              "first_installment_value": {
+                "type": "number",
+                "format": "float",
+                "description": "Value of the first installment",
+                "examples": [
+                  15.52
+                ]
+              },
+              "installment_value": {
+                "type": "number",
+                "format": "float",
+                "description": "Value of each subsequent installment (after the first one)",
+                "examples": [
+                  15.52
+                ]
+              },
+              "postings": {
+                "type": "object",
+                "description": "Postings details",
+                "required": [
+                  "iof_amount",
+                  "fixed_iof_amount",
+                  "fee_amount",
+                  "interest_amount"
+                ],
+                "properties": {
+                  "iof_amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "IOF amount",
+                    "examples": [
+                      1.65
+                    ]
+                  },
+                  "fixed_iof_amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Fixed IOF amount",
+                    "examples": [
+                      0.31
+                    ]
+                  },
+                  "fee_amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Fee amount",
+                    "examples": [
+                      0
+                    ]
+                  },
+                  "interest_amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Interest amount",
+                    "examples": [
+                      73.55
+                    ]
+                  }
+                }
+              },
+              "rates": {
+                "type": "object",
+                "description": "Rate details",
+                "required": [
+                  "conversion_rate",
+                  "daily_iof_rate",
+                  "fixed_iof_rate",
+                  "interest_rate"
+                ],
+                "properties": {
+                  "conversion_rate": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Conversion rate",
+                    "examples": [
+                      1.0
+                    ]
+                  },
+                  "daily_iof_rate": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Daily IOF rate",
+                    "examples": [
+                      0.0082
+                    ]
+                  },
+                  "fixed_iof_rate": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Fixed IOF rate",
+                    "examples": [
+                      0.38
+                    ]
+                  },
+                  "interest_rate": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Interest rate",
+                    "examples": [
+                      13.49
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

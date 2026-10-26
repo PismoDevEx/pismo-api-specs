@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Invoice validation succeeded",
+  "description": "Successful invoice validation event. The <a href='https://developers.pismo.io/pismo-docs/reference/findbyaccesskey' target='_blank'>Get invoice</a> endpoint generates this event.",
+  "required": [
+    "b3_response"
+  ],
+  "properties": {
+    "b3_response": {
+      "type": "object",
+      "title": "B3 response. B3 is a major financial market infrastructure company in Brazil."
+    }
+  }
+}

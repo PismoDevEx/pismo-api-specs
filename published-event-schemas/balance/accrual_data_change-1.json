@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Accrual data changed",
+  "description": "Event generated when accrual status has changed. It contains a list of accrual IDs grouped by `accrual_type`, `old_status`, and `new_status`.",
+  "required": [
+    "accrual_type",
+    "old_status",
+    "new_status",
+    "interest_accrual_ids"
+  ],
+  "properties": {
+    "accrual_type": {
+      "type": "string",
+      "title": "Accrual type of this group",
+      "pattern": "REFINANCING|OVERDUE|FINE|IOF"
+    },
+    "old_status": {
+      "type": "string",
+      "title": "Old status of this group"
+    },
+    "new_status": {
+      "type": "string",
+      "title": "New status of this group",
+      "pattern": "SETTLED|STOP_ACCRUAL|PENDING"
+    },
+    "interest_accrual_ids": {
+      "type": "array",
+      "title": "Accrual IDs that changed",
+      "minItems": 1,
+      "items": {
+        "type": "integer"
+      },
+      "examples": [
+        [
+          1,
+          15,
+          325,
+          4568
+        ]
+      ]
+    }
+  }
+}

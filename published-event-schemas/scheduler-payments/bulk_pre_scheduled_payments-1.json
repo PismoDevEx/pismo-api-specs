@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bulk pre-schedules created",
+  "description": "This event occurs when bulk pre-schedule processing has finished. If errors occur, no schedules are registered. Errors for each schedule will be described in its `violations` field.<br><br>More information: <a href='https://developers.pismo.io/pismo-docs/docs/payment-scheduler'>Payment scheduler</a>",
+  "required": [
+    "schedule_status",
+    "schedules"
+  ],
+  "properties": {
+    "schedule_status": {
+      "type": "string",
+      "title": "Schedule status",
+      "description": "Indicates whether all schedules were processed successfully or with errors",
+      "enum": [
+        "SUCCESS",
+        "ERROR"
+      ],
+      "examples": [
+        "SUCCESS"
+      ]
+    },
+    "schedules": {
+      "type": "array",
+      "title": "Schedules",
+      "description": "Array of schedule objects",
+      "items": {
+        "$ref": "#/definitions/schedule"
+      }
+    }
+  },
+  "definitions": {
+    "schedule": {
+      "type": "object",
+      "title": "Schedule object",
+      "description": "Object with schedule information",
+      "required": [
+        "schedule_id",
+        "description",
+        "account_id",
+        "processing_code",
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "schedule_id": {
+          "$ref": "#/definitions/schedule_id"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "account_id": {
+          "$ref": "#/definitions/account_id"
+        },
+        "processing_code": {
+          "$ref": "#/definitions/processing_code"
+        },
+        "amount": {
+          "$ref": "#/definitions/amount"
+        },
+        "currency": {
+          "$ref": "#/definitions/currency"
+        },
+        "pre_schedule_details": {
+          "$ref": "#/definitions/pre_schedule_details"
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadata"
+        },
+        "violations": {
+          "$ref": "#/definitions/violations"
+        }
+      }
+    },
+    "schedule_id": {
+      "type": "string",
+      "title": "Schedule ID",
+      "description": "Schedule ID",
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Schedule description",
+      "description": "Schedule description",
+      "examples": [
+        "Monthly purchase",
+        "Daily purchase"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        100602614
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code used for the authorization",
+      "examples": [
+        "007700",
+        "009900",
+        "007200"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Authorization amount",
+      "minimum": 1,
+      "examples": [
+        20.1,
+        100.0,
+        50
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "Three-letter currency code (ISO 4217)",
+      "examples": [
+        "CLP",
+        "USD",
+        "BRL"
+      ]
+    },
+    "pre_schedule_details": {
+      "type": "object",
+      "title": "Details object",
+      "description": "Object with schedule details",
+      "required": [
+        "statement"
+      ],
+      "properties": {
+        "statement": {
+          "$ref": "#/definitions/statement"
+        }
+      }
+    },
+    "statement": {
+      "type": "object",
+      "title": "Details object",
+      "description": "Object with statement",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Statement ID",
+          "description": "Statement ID",
+          "examples": [
+            100602614
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Additional information relevant to the customer. No business rule validation is performed on it.",
+      "examples": [
+        {
+          "metadata": {
+            "customer-data": {
+              "any": "fields"
+            }
+          }
+        }
+      ]
+    },
+    "violations": {
+      "type": "array",
+      "title": "Violations",
+      "description": "List of violations encountered while processing each pre-schedule",
+      "properties": {
+        "violation": {
+          "$ref": "#/definitions/violation"
+        }
+      }
+    },
+    "violation": {
+      "type": "object",
+      "title": "Violation",
+      "description": "Object with violation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Violation type",
+          "description": "Violation type",
+          "enum": [
+            "ACCOUNT",
+            "STATEMENT",
+            "PROCESSING_CODE",
+            "ALREADY_EXISTS"
+          ],
+          "examples": [
+            "ACCOUNT"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "title": "Violation message",
+          "description": "Error message related to the violation type",
+          "examples": [
+            "[AC001] Account not found."
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Group payment confirmation observed after expiration",
+  "description": "This event occurs when a group-payment confirmation carries an effective payment date on or before the covered quote's expiration date, but the worker only observes/processes that confirmation after the quote has already expired.",
+  "required": [
+    "org_id",
+    "program_id",
+    "account_id",
+    "payment_id",
+    "tracking_id",
+    "effective_payment_date",
+    "quote_expiration_date",
+    "observed_at",
+    "payment_status"
+  ],
+  "properties": {
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID. Organization associated with authorization.",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo platform program ID",
+      "examples": [
+        540
+      ]
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "example": 12176
+    },
+    "payment_id": {
+      "$id": "#/properties/payment_id",
+      "type": "string",
+      "title": "Payment ID",
+      "description": "Group payment/quote ID that this confirmation is associated with",
+      "example": "gag913af-abc9-4769-b179-068ed6171ec6"
+    },
+    "tracking_id": {
+      "$id": "#/properties/tracking_id",
+      "type": "string",
+      "title": "Tracking ID",
+      "description": "Authorization tracking ID for the confirmation that triggered this observation",
+      "example": "5a6b08d0-83ba-46ee-9f62-72a6a5d404aa"
+    },
+    "effective_payment_date": {
+      "$id": "#/properties/effective_payment_date",
+      "type": "string",
+      "format": "date",
+      "title": "Effective payment date",
+      "description": "Effective payment date supplied on the incoming authorization (UTC calendar day), on or before the quote expiration date",
+      "example": "2026-09-22"
+    },
+    "quote_expiration_date": {
+      "$id": "#/properties/quote_expiration_date",
+      "type": "string",
+      "format": "date",
+      "title": "Quote expiration date",
+      "description": "Expiration date of the group-payment quote covered by this confirmation",
+      "example": "2026-09-25"
+    },
+    "observed_at": {
+      "$id": "#/properties/observed_at",
+      "type": "string",
+      "format": "date-time",
+      "title": "Observed at",
+      "description": "Timestamp when the worker observed/evaluated this confirmation, in UTC. ISO 8601 / RFC 3339 format: `YYYY-MM-DDThh:mm:ss.sssZ`",
+      "example": "2026-09-29T14:32:10.482Z"
+    },
+    "payment_status": {
+      "$id": "#/properties/payment_status",
+      "type": "string",
+      "title": "Payment status",
+      "description": "Status of the group payment at the moment this confirmation was observed. Context only - not part of the trigger condition for this event. Common values include PENDING and EXPIRED (reflecting whether the expiration job has run yet) and CONFIRMED (on a redelivered confirmation already fully processed by an earlier attempt), but the field is not restricted to a fixed set.",
+      "examples": [
+        "PENDING",
+        "EXPIRED",
+        "CONFIRMED"
+      ]
+    }
+  }
+}

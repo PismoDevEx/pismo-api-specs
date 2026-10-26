@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Account inactive_since status updated",
+  "description": "This event occurs when the inactive_since attribute of an account is updated. It is triggered by an account status change, a transaction on the account, when a new account is created under a division/program that has dormancy configured, or for each existing account when a dormancy configuration is created for their division/program.",
+  "required": [
+    "account_id",
+    "program_id",
+    "trigger_reason",
+    "inactive_since"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "minimum": 1,
+      "maximum": 4294967295,
+      "examples": [
+        325689269
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "ID used to identify the program in the Pismo platform APIs",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "examples": [
+        10768
+      ]
+    },
+    "trigger_reason": {
+      "type": "string",
+      "title": "Trigger Reason",
+      "description": "The reason that triggered the inactive_since update on the account.",
+      "minLength": 1,
+      "maxLength": 50,
+      "examples": [
+        "ACCOUNT_STATUS_CHANGE",
+        "BALANCE_MOVEMENT",
+        "ACCOUNT_DORMANCY_CONTROL_CREATED"
+      ]
+    },
+    "inactive_since": {
+      "type": "string",
+      "title": "Inactive Since",
+      "description": "The timestamp indicating when the account became inactive, in UTC format",
+      "maxLength": 30,
+      "examples": [
+        "2026-03-13T12:12:25.157Z"
+      ]
+    },
+    "division_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division ID",
+      "description": "ID used to identify the division in the Pismo platform APIs",
+      "maxLength": 36,
+      "examples": [
+        "8762ce47-5ecc-4b6b-b52c-e8f5aba20042"
+      ]
+    },
+    "division_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division Code",
+      "description": "Code string that uniquely identifies the division within your organization",
+      "maxLength": 36,
+      "examples": [
+        "my-division-code-1773174785777"
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External Account ID",
+      "description": "Custom account ID string that uniquely identifies the account within your organization. This field is a key that links a Pismo account to your account ID.",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "a36a5230-e0b5-4289-9319-e8b11e6379a0"
+      ]
+    }
+  }
+}

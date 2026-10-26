@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest Accrual Rollback",
+  "description": "When a migrated account has its interest accrual rolled back, the created interest accruals are removed from that account.",
+  "required": [
+    "imported_interest_accrual_ids",
+    "interest_accrual_ids"
+  ],
+  "properties": {
+    "imported_interest_accrual_ids": {
+      "type": "array",
+      "title": "Imported interest accrual IDs",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "interest_accrual_ids": {
+      "type": "array",
+      "title": "Interest accrual IDs",
+      "items": {
+        "type": "integer"
+      }
+    }
+  }
+}

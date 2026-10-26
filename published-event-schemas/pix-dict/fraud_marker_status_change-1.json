@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix fraud marker status change",
+  "description": "Pix fraud marker integrity status change. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-fraud-marker-cancel'>Create fraud marker</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events'>Pix payments data events</a> guide.",
+  "required": [
+    "id",
+    "fraud_type",
+    "document_number",
+    "key",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "ID",
+      "description": "Fraud marker ID.",
+      "maxLength": 36,
+      "examples": [
+        "1fe71b28-a5eb-4d3d-8781-823205c76aa3"
+      ]
+    },
+    "fraud_type": {
+      "type": "string",
+      "title": "Fraud type",
+      "description": "Verified fraud type",
+      "enum": [
+        "APPLICATION_FRAUD",
+        "MULE_ACCOUNT",
+        "SCAMMER_ACCOUNT",
+        "OTHER",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "APPLICATION_FRAUD"
+      ]
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Document Number",
+      "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+      "maxLength": 14,
+      "example": "123412341234"
+    },
+    "key": {
+      "type": "string",
+      "title": "Pix key",
+      "description": "Key to which the fraud marker will be associated. It must be reported, if known.",
+      "example": "string"
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "The fraud marker status.",
+      "enum": [
+        "REGISTERED",
+        "CANCELLED"
+      ],
+      "examples": [
+        "REGISTERED"
+      ]
+    },
+    "bacen_creation_datetime": {
+      "type": "string",
+      "title": "Bacen creation datetime",
+      "description": "Fraud marker creation datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'",
+      "format": "date-time",
+      "examples": [
+        "2023-10-29T11:00:00.000Z"
+      ]
+    },
+    "bacen_last_modified_datetime": {
+      "type": "string",
+      "title": "Bacen last modified datetime",
+      "description": "Fraud marker last modified datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'",
+      "format": "date-time",
+      "examples": [
+        "2023-10-29T11:00:00.000Z"
+      ]
+    }
+  }
+}

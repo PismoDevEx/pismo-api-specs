@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest redemption failed",
+  "description": "This event occurs when a quota is not redeemed with product interest management.",
+  "required": [
+    "external_account_id",
+    "message",
+    "external_redemption_id"
+  ],
+  "properties": {
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External account identifier",
+      "description": "A custom account ID string that uniquely identifies the account within your organization.",
+      "examples": [
+        999999999
+      ]
+    },
+    "external_redemption_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation.",
+      "examples": [
+        "6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of error that occurred when trying to register new asset or quota",
+      "examples": [
+        "This asset does not have any more available units."
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of asset on Pismo platform",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    }
+  }
+}

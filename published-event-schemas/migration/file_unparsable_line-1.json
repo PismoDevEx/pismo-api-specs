@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/file_unparsable_line-1.json",
+  "type": "object",
+  "title": "File unparsable line reported",
+  "description": "Event reporting the file line that failed during parsing. More than one event can be generated while processing a file.",
+  "examples": [
+    {
+      "cid": "c642ca23-4ea8-4218-a00d-8331a496253c",
+      "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "1",
+      "line_number": 10,
+      "layout_type": "CARDS"
+    }
+  ],
+  "required": [
+    "cid",
+    "org_id",
+    "origin",
+    "file_name",
+    "file_size",
+    "file_id",
+    "line_number"
+  ],
+  "properties": {
+    "cid": {
+      "$id": "#/properties/cid",
+      "type": "string",
+      "format": "uuid",
+      "description": "This field identifies a file processing or an API request.",
+      "examples": [
+        "9be0486e-073a-4f56-80bb-5c400337e721"
+      ]
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "description": "Internal identifier of the client organization registered into the platform.",
+      "examples": [
+        "TN_c642ca23-4ea8-4218-a00d-8331a496253c"
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "API",
+        "FILE"
+      ],
+      "examples": [
+        "API",
+        "FILE"
+      ]
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field identifies the name file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the size file.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "integer",
+      "default": 0,
+      "description": "This field identifies the line processed.",
+      "examples": [
+        0,
+        1
+      ]
+    },
+    "layout_type": {
+      "$id": "#/properties/layout_type",
+      "type": "string",
+      "description": "This field identifies the layout type of file.",
+      "examples": [
+        "CsvLayout.CARD",
+        "CsvLayout.PCI"
+      ]
+    },
+    "line_errors": {
+      "$id": "#/properties/data/properties/line_errors",
+      "type": "array",
+      "description": "List of each line error",
+      "examples": [
+        [
+          {
+            "column": "VERSION_DATE",
+            "error": "Version date out of pattern"
+          }
+        ]
+      ],
+      "additionalItems": true,
+      "items": {
+        "$id": "#/properties/data/properties/line_errors/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/data/properties/line_errors/items/anyOf/0",
+            "type": "object",
+            "description": "Line error",
+            "properties": {
+              "column": {
+                "$id": "#/properties/data/properties/line_errors/items/anyOf/0/properties/column",
+                "type": "string",
+                "description": "The column that contains error",
+                "examples": [
+                  "VERSION_DATE"
+                ]
+              },
+              "error": {
+                "$id": "#/properties/data/properties/line_errors/items/anyOf/0/properties/error",
+                "type": "string",
+                "description": "A message with the error cause",
+                "examples": [
+                  "Version date out of pattern"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}

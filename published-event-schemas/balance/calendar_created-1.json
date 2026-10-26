@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Calendar created",
+  "description": "This event is generated when a calendar is created.",
+  "required": [
+    "calendar_id",
+    "cycle_closing_date",
+    "due_date",
+    "best_transaction_day"
+  ],
+  "properties": {
+    "calendar_id": {
+      "type": "integer",
+      "description": "Created calendar ID",
+      "examples": [
+        919265
+      ]
+    },
+    "program_due_date_id": {
+      "type": "integer",
+      "description": "Program Due Date ID",
+      "examples": [
+        3840
+      ]
+    },
+    "program_calendar_strategy_id": {
+      "type": "integer",
+      "description": "Program calendar strategy ID",
+      "examples": [
+        3840
+      ]
+    },
+    "cycle_closing_date": {
+      "type": "string",
+      "description": "Cycle closing date from calendar created",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "due_date": {
+      "type": "string",
+      "description": "Due date from calendar created",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "real_due_date": {
+      "type": "string",
+      "description": "Real due date from calendar created",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "best_transaction_day": {
+      "type": "string",
+      "description": "Best transaction day from calendar created",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "External payout processed",
+  "description": "This event occurs when payout is successfully processed and an external payout account was configured during product attachment.",
+  "required": [
+    "account_id",
+    "product_id",
+    "amount",
+    "payout_account"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "product_id": {
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID",
+      "examples": [
+        "4aa5556f-8062-4705-9aca-7246c4d1f36d"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount to be credited",
+      "description": "Amount to credit to the external account",
+      "examples": [
+        10.14
+      ]
+    },
+    "payout_account": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "title": "Payout account label",
+          "description": "Payout account label",
+          "examples": [
+            "My Payout Account"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Informs whether the account is internal (Pismo) or external (client's account). Value is always `EXTERNAL` for external payouts",
+          "description": "Payout account type",
+          "examples": [
+            "EXTERNAL"
+          ]
+        },
+        "external_account": {
+          "type": "object",
+          "title": "External account",
+          "description": "Use this field to provide the external account information configured during product attachment as key-value pairs. Pismo does not evaluate this content",
+          "examples": [
+            {
+              "custom_info": "value"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "external_account"
+      ]
+    },
+    "external_account_id": {
+      "type": "string",
+      "title": "External account ID",
+      "description": "A client-provided account ID that identifies the account within your organization.",
+      "examples": [
+        "ext-acc-001"
+      ]
+    },
+    "retroactive_adjustment_amount": {
+      "type": "number",
+      "title": "Retroactive adjustment amount",
+      "description": "Represents a signed adjustment to previously capitalized interest resulting from a retroactive recalculation. This value is reported separately from amount and is never included in it. Positive values indicate additional interest due, while negative values indicate previously overstated interest. Returned only when the capitalization includes a backdated adjustment.",
+      "examples": [
+        -2.15
+      ]
+    }
+  }
+}

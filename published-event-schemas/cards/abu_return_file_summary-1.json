@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Abu return file summary",
+  "description": "Event that occurs after the ABU return file processing. Provides summary information about the process. Note: If the return file contains information for more than one ICA, a summary event will be generated for each ICA, thus keeping the same file name for the result_file_name field.",
+  "examples": [
+    {
+      "result_file_id": "70a12fc6-dbc1-47e1-808a-bc822b4ffcbc",
+      "result_file_name": "returnfilename.txt",
+      "ica": "888888",
+      "total_records_processed": 10,
+      "total_records_successfully_added": 10,
+      "total_records_successfully_changed": 10,
+      "total_records_returned_error": 10,
+      "reason_code": "I",
+      "processing_date": "2023-01-01T10:00:00Z"
+    }
+  ],
+  "required": [
+    "result_file_id",
+    "result_file_name",
+    "ica"
+  ],
+  "properties": {
+    "result_file_id": {
+      "type": "string",
+      "title": "Result File ID",
+      "description": "References the historical record of the file.",
+      "examples": [
+        "70a12fc6-dbc1-47e1-808a-bc822b4ffcbc"
+      ]
+    },
+    "result_file_name": {
+      "type": "string",
+      "title": "Return file name",
+      "description": "Mastercard generated filename.",
+      "examples": [
+        "returnfilename.txt"
+      ]
+    },
+    "ica": {
+      "type": "string",
+      "title": "Interbank Card Association (ICA) number",
+      "description": "Interbank Card Association (ICA) number. The issuer's sign-on ID. A four-digit number MasterCard assigns to a financial institution to identify the member.",
+      "examples": [
+        "888888"
+      ]
+    },
+    "total_records_processed": {
+      "type": "integer",
+      "title": "Total records processed",
+      "description": "Number of records received and processed from the input issuer files.",
+      "examples": [
+        10
+      ]
+    },
+    "total_records_successfully_added": {
+      "type": "integer",
+      "title": "Total records successfully added",
+      "description": "Number of records successfully edited and added to the ABU Database.",
+      "examples": [
+        10
+      ]
+    },
+    "total_records_successfully_changed": {
+      "type": "integer",
+      "title": "Total records successfully changed",
+      "description": "Number of records successfully changed in the ABU Database.",
+      "examples": [
+        10
+      ]
+    },
+    "total_records_returned_error": {
+      "type": "integer",
+      "title": "Total error records returned",
+      "description": "Number of records that had errors and are being returned to the issuer.",
+      "examples": [
+        10
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "title": "Reason Code",
+      "description": "Reason Code I indicates an initial load batch. Blank denotes all other ABU changes.",
+      "examples": [
+        "I",
+        " "
+      ]
+    },
+    "processing_date": {
+      "type": "string",
+      "title": "Processing date",
+      "description": "Time return file was processed.",
+      "format": "date-time",
+      "examples": [
+        "2023-01-01T10:00:00Z"
+      ]
+    }
+  },
+  "definitions": {}
+}

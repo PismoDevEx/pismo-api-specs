@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant settlement created",
+  "required": [
+    "id",
+    "merchant_id",
+    "settlement_date",
+    "net_amount",
+    "gross_amount",
+    "processing_code"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": [
+        "string"
+      ],
+      "title": "The merchant settlement identifier",
+      "description": "This field identifies the merchant transaction created.",
+      "examples": [
+        null,
+        "9d451fb5-8968-45bf-8cdd-37e05aaaf102"
+      ]
+    },
+    "merchant_id": {
+      "$id": "#/properties/merchant_id",
+      "type": "integer",
+      "title": "The merchant identifier",
+      "description": "This field identifies the merchant related to transaction.",
+      "examples": [
+        4
+      ]
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The authorization identifier",
+      "description": "This field identifies the authorization identifier related to the settlement.",
+      "examples": [
+        null,
+        2
+      ]
+    },
+    "settlement_date": {
+      "$id": "#/properties/settlement_date",
+      "type": "string",
+      "format": "date",
+      "title": "The date of settlement",
+      "description": "This field identifies the date when the settlement occurred.",
+      "examples": [
+        "2021-03-25"
+      ]
+    },
+    "net_amount": {
+      "$id": "#/properties/net_amount",
+      "type": "number",
+      "title": "The net amount of the settlement",
+      "description": "This field identifies the settlement net amount.",
+      "examples": [
+        100.0
+      ]
+    },
+    "gross_amount": {
+      "$id": "#/properties/gross_amount",
+      "type": "number",
+      "title": "The gross amount of the settlement",
+      "description": "This field identifies the settlement gross amount.",
+      "examples": [
+        100.0
+      ]
+    },
+    "mdr_amount": {
+      "$id": "#/properties/mdr_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The total MDR amount of the settlement",
+      "description": "This field identifies the amount of MDR payed in this settlement.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "transaction_fee": {
+      "$id": "#/properties/transaction_fee",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The total fee of the settlement",
+      "description": "This field identifies the fee payed in this settlement.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "mdr_tax": {
+      "$id": "#/properties/mdr_tax",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The total MDR tax of the settlement",
+      "description": "This field identifies the MDR tax payed in this settlement.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "processing_code": {
+      "$id": "#/properties/processing_code",
+      "type": "string",
+      "title": "The processing code of the settlement.",
+      "description": "This field identifies the processing code related to the settlement.",
+      "examples": [
+        "001234"
+      ]
+    },
+    "settlement_type": {
+      "$id": "#/properties/settlement_type",
+      "type": "string",
+      "title": "The settlement type.",
+      "description": "This field identifies the type related to the settlement.",
+      "examples": [
+        "INDIVIDUALIZED",
+        "CENTRALIZED"
+      ]
+    }
+  }
+}

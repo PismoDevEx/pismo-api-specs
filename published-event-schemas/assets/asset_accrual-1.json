@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset accrued",
+  "description": "This event occurs when an asset accrues. The accrual process increments the `unit_value`.",
+  "required": [
+    "asset",
+    "accrual_date",
+    "index_type",
+    "index_rate",
+    "daily_rate",
+    "accum_daily_rate",
+    "unit_value",
+    "updated_at"
+  ],
+  "properties": {
+    "asset": {
+      "type": "object",
+      "title": "Asset registered",
+      "description": "Object representing the asset that accrued.",
+      "required": [
+        "id",
+        "issuer_id",
+        "issued_units"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Asset ID",
+          "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions and cancellations.",
+          "examples": [
+            "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+          ]
+        },
+        "issuer_id": {
+          "type": "string",
+          "title": "Issuer ID",
+          "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+          "examples": [
+            "12345678"
+          ]
+        },
+        "issued_units": {
+          "type": "number",
+          "title": "Issued units",
+          "description": "Number of units asset can support. When `registration_mode` is `single`, this number should reflect the entire quota. When `registration_mode` is `many`, it should reflect the number of units available for purchase in the asset.",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        }
+      }
+    },
+    "accrual_date": {
+      "type": "string",
+      "title": "Accrual date",
+      "format": "date",
+      "description": "Date the asset accrues",
+      "examples": [
+        "2020-12-28"
+      ]
+    },
+    "index_type": {
+      "type": "string",
+      "title": "Index type",
+      "description": "Daily accrual calculations are based on the index type. For example, \"di\" for DI rate or \"pre\" for prefixed rate.",
+      "enum": [
+        "di",
+        "pre",
+        "vpc",
+        "ipca",
+        "monthdi"
+      ]
+    },
+    "index_rate": {
+      "type": "number",
+      "title": "Index rate",
+      "description": "How much the asset accrues per day",
+      "format": "double",
+      "examples": [
+        1.0
+      ]
+    },
+    "daily_rate": {
+      "type": "number",
+      "title": "Daily rate",
+      "description": "The daily rate should reflect the price value of the index type.",
+      "format": "double",
+      "examples": [
+        1.0000754
+      ]
+    },
+    "accum_daily_rate": {
+      "type": "number",
+      "title": "Accumulated daily rate",
+      "description": "Accumulated daily rate since asset was created",
+      "format": "double",
+      "examples": [
+        1.0
+      ]
+    },
+    "unit_value": {
+      "type": "number",
+      "title": "Unit value",
+      "description": "Current unit value of asset",
+      "format": "double",
+      "examples": [
+        3.12e-05
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Updated date",
+      "description": "Date asset was last updated",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    }
+  }
+}

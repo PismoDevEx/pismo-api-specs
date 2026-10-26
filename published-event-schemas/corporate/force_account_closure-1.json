@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Force account closure succeeded",
+  "description": "This event occurs when an account is forcefully closed. It contains the result of the force closure operation. When successful, includes account details; when failed, includes error information.",
+  "required": [
+    "status"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "FAILED"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "error_message",
+          "error_code"
+        ],
+        "properties": {
+          "error_message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "error_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "SUCCESS"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "account_id",
+          "account_status"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "title": "Operation status",
+      "description": "Status of the force account closure operation.",
+      "enum": [
+        "SUCCESS",
+        "FAILED"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAILED"
+      ]
+    },
+    "division_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division ID",
+      "description": "Division ID. This is Pismo-generated ID.",
+      "minLength": 1,
+      "maxLength": 36,
+      "examples": [
+        "d74ff008-c400-4697-b061-13334ba208bf"
+      ]
+    },
+    "division_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Division code",
+      "description": "Code that identifies the division within your organization.",
+      "maxLength": 36,
+      "examples": [
+        "division-code-123"
+      ]
+    },
+    "program_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Program ID",
+      "description": "Pismo program ID associated with the account.",
+      "examples": [
+        10768
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "minimum": 1,
+      "examples": [
+        327729187
+      ]
+    },
+    "external_account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "External account ID",
+      "description": "Client\u2011provided external account ID used for external system integration",
+      "maxLength": 60,
+      "examples": [
+        "c6aeb65b-7153-482c-9747-8c4b1bc13d76"
+      ]
+    },
+    "account_status": {
+      "type": "string",
+      "title": "Account status",
+      "description": "The resulting account status after the force closure operation.",
+      "examples": [
+        "CANCELLED"
+      ]
+    },
+    "error_message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error message",
+      "description": "Error message describing the failure reason. Present when status is `FAILED`.",
+      "maxLength": 100,
+      "examples": [
+        "account has uncleared checks"
+      ]
+    },
+    "error_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error code",
+      "description": "Error code identifying the failure type. Present when status is `FAILED`.",
+      "maxLength": 100,
+      "examples": [
+        "WCPFCL-0003",
+        "WCPFCL-0010"
+      ]
+    }
+  }
+}

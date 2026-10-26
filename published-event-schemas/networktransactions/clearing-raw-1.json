@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Network authorization clearing raw message received (DEPRECATED)",
+  "description": "A Clearing/Base II raw event.  This event has the same purpose as an iso8583 event, as it represents a raw message received from the card network. The Pismo platform issues a Clearing/Base II raw event regardless of message processing. You can use a Clearing/Base II event to verify all non-sensitive data received for Clearing/Base II messages. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/authorization-events'>Authorization events</a> guide.",
+  "additionalProperties": true,
+  "required": [
+    "network",
+    "raw_message"
+  ],
+  "properties": {
+    "network": {
+      "title": "Network Identifier",
+      "description": "Network that originated this clearing raw message.",
+      "type": [
+        "string"
+      ],
+      "examples": [
+        "MasterCard",
+        "Visa",
+        "Tecban",
+        "RuPay"
+      ]
+    },
+    "raw_message": {
+      "type": "object",
+      "description": "Contains the ISO8583 message in JSON format. This is different for every network."
+    }
+  }
+}

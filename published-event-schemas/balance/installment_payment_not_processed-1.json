@@ -1,0 +1,210 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Installment payment not processed",
+  "description": "Event generated when an installment payment fails to process",
+  "required": [
+    "account_id",
+    "event_date_time",
+    "payment_agreement_id",
+    "statement_agreement",
+    "compulsory",
+    "split_iof",
+    "created_at",
+    "version",
+    "tracking_id",
+    "error_message"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "event_date_time": {
+      "type": "string",
+      "description": "Date and time event was sent in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "payment_agreement_id": {
+      "type": "integer",
+      "description": "Payment agreement ID",
+      "examples": [
+        18991
+      ]
+    },
+    "statement_agreement": {
+      "type": "boolean",
+      "description": "Statement agreement flag",
+      "examples": [
+        true
+      ]
+    },
+    "compulsory": {
+      "type": "boolean",
+      "description": "Is agreement compulsory?",
+      "examples": [
+        true
+      ]
+    },
+    "split_iof": {
+      "type": "boolean",
+      "description": "Generate IOF (Brazilian tax) transactions separately?",
+      "examples": [
+        true
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Payment agreement creation date and time in ISO 8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "description": "Payment agreement processor service version",
+      "examples": [
+        4
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "description": "Tracking identifier for the failed operation",
+      "examples": [
+        "trk-abc123-def456-ghi789"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error description explaining why the payment was not processed",
+      "examples": [
+        "Could not complete the credit authorization."
+      ]
+    },
+    "installment_value": {
+      "type": "number",
+      "description": "Value of each installment",
+      "format": "double",
+      "examples": [
+        150.0
+      ]
+    },
+    "number_of_installments": {
+      "type": "integer",
+      "description": "Total number of installments",
+      "examples": [
+        12
+      ]
+    },
+    "total_due": {
+      "type": "number",
+      "description": "Total amount due",
+      "format": "double",
+      "examples": [
+        1800.0
+      ]
+    },
+    "installment_interest_rate": {
+      "type": "number",
+      "description": "Interest rate per installment",
+      "format": "double",
+      "examples": [
+        0.0199
+      ]
+    },
+    "overdue_days": {
+      "type": "integer",
+      "description": "Number of days overdue",
+      "examples": [
+        30
+      ]
+    },
+    "open_due_date": {
+      "type": "string",
+      "description": "Due date in ISO-8601 format",
+      "format": "date",
+      "examples": [
+        "2026-04-03"
+      ]
+    },
+    "settle_accrual": {
+      "type": "boolean",
+      "description": "Settle accrual flag",
+      "examples": [
+        true
+      ]
+    },
+    "installments": {
+      "type": "array",
+      "title": "Installments array",
+      "description": "Breakdown of each installment's financial details",
+      "items": {
+        "type": "object",
+        "properties": {
+          "installment_number": {
+            "type": "integer",
+            "description": "Installment sequence number",
+            "examples": [
+              1
+            ]
+          },
+          "total_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Total amount for the installment",
+            "examples": [
+              150.0
+            ]
+          },
+          "principal_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Principal amount",
+            "examples": [
+              140.0
+            ]
+          },
+          "interest_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Interest amount",
+            "examples": [
+              8.5
+            ]
+          },
+          "interest_rate": {
+            "type": "number",
+            "format": "double",
+            "description": "Interest rate percentage",
+            "examples": [
+              0.0199
+            ]
+          },
+          "iof_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "IOF tax amount",
+            "examples": [
+              1.2
+            ]
+          },
+          "daily_iof_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Daily IOF tax amount",
+            "examples": [
+              0.3
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,801 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/transaction_incoming-1.json",
+  "type": "object",
+  "title": "Transaction migration started",
+  "description": "Event generated when an transaction migration is started. Contains the payload with the data to be migrated.",
+  "examples": [
+    {
+      "line_number": 12,
+      "origin": "FILE",
+      "entity": {
+        "migration": {
+          "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+          "account_id": "account-migration-id",
+          "version_date": "2021-09-13T19:54:41Z",
+          "statement_id": "statement-migration-id",
+          "card_id": "card-migration-id"
+        },
+        "type": "INSTALLMENTS",
+        "processing_code": "00",
+        "processing_descriptor": "purchase",
+        "transaction_type": {
+          "id": 314,
+          "external_id": "client_id"
+        },
+        "network": "VISA",
+        "network_transaction_identifier": "tid",
+        "merchant_id": "CARD ACCEPTOR",
+        "merchant_city": "CITY NAME",
+        "merchant_name": "Merchant Brand",
+        "merchant_category_code": 742,
+        "merchant_state_or_country": "BR",
+        "retrieval_reference_number": "130720000148",
+        "clearing_date": "2019-12-11",
+        "number_of_installments": 5,
+        "installment": 2,
+        "accounting_date": "2019-12-11",
+        "soft_descriptor": "Wellmart NYC 2/4",
+        "settlement_currency_rate": 12.55,
+        "contract_amount": 2.55,
+        "cardholder_currency_rate": 12.6,
+        "cardholder_amount": 12.6,
+        "cardholder_currency_code": "840",
+        "interest_rate": 12.31,
+        "interest_amount": 12.42,
+        "iof_amount": 1.55,
+        "external_id": "1231231-123123-12312",
+        "authorization_code": "444",
+        "ledger_impact": [
+          "AvailableInstallmentLimit"
+        ],
+        "payment_agreement": true,
+        "payment_agreement_data": {
+          "statement_agreement": true,
+          "compulsory": false,
+          "settle_accrual": false,
+          "split_iof": false,
+          "use_original_rate": false
+        },
+        "amounts": [
+          {
+            "type": "PRINCIPAL",
+            "currency": "840",
+            "value": 2.55
+          },
+          {
+            "type": "LOCAL",
+            "currency": "840",
+            "value": 2.5
+          },
+          {
+            "type": "SETTLEMENT",
+            "currency": "840",
+            "value": 3.5
+          }
+        ],
+        "metadata": {
+          "key1": "value1",
+          "key2": "value2"
+        }
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Transaction's Entity",
+      "examples": [
+        {
+          "migration": {
+            "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+            "account_id": "account-migration-id",
+            "version_date": "2021-09-13T19:54:41Z",
+            "statement_id": "statement-migration-id",
+            "card_id": "card-migration-id"
+          },
+          "type": "INSTALLMENTS",
+          "processing_code": "00",
+          "processing_descriptor": "purchase",
+          "transaction_type": {
+            "id": 314,
+            "external_id": "client_id"
+          },
+          "network": "VISA",
+          "network_transaction_identifier": "tid",
+          "merchant_id": "CARD ACCEPTOR",
+          "merchant_city": "CITY NAME",
+          "merchant_name": "Merchant Brand",
+          "merchant_category_code": 742,
+          "merchant_state_or_country": "BR",
+          "retrieval_reference_number": "130720000148",
+          "clearing_date": "2019-12-11",
+          "number_of_installments": 5,
+          "installment": 2,
+          "accounting_date": "2019-12-11",
+          "soft_descriptor": "WELLMART NYC 2/4",
+          "settlement_currency_rate": 12.55,
+          "cardholder_currency_rate": 12.6,
+          "contract_amount": 2.55,
+          "cardholder_amount": 12.6,
+          "cardholder_currency_code": "840",
+          "interest_rate": 12.31,
+          "interest_amount": 12.42,
+          "iof_amount": 1.55,
+          "external_id": "1231231-123123-12312",
+          "authorization_code": "444",
+          "ledger_impact": [
+            "AvailableInstallmentLimit"
+          ],
+          "installments_type": "WITH_INTEREST",
+          "payment_agreement": true,
+          "payment_agreement_data": {
+            "statement_agreement": true,
+            "compulsory": false,
+            "settle_accrual": false,
+            "split_iof": false,
+            "use_original_rate": false
+          },
+          "amounts": [
+            {
+              "type": "PRINCIPAL",
+              "currency": "840",
+              "value": 2.55
+            },
+            {
+              "type": "LOCAL",
+              "currency": "840",
+              "value": 2.5
+            },
+            {
+              "type": "SETTLEMENT",
+              "currency": "840",
+              "value": 3.5
+            }
+          ],
+          "metadata": {
+            "key1": "value1",
+            "key2": "value2"
+          }
+        }
+      ],
+      "required": [
+        "migration",
+        "type",
+        "soft_descriptor"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "The Transaction's Migration Data",
+          "examples": [
+            {
+              "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+              "account_id": "account-migration-id",
+              "version_date": "2021-09-13T19:54:41Z",
+              "statement_id": "statement-migration-id",
+              "card_id": "card-migration-id"
+            }
+          ],
+          "required": [
+            "id",
+            "account_id",
+            "version_date"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "Transaction's Migration Identifier",
+              "examples": [
+                "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "Transaction's Account Migration Identifier",
+              "examples": [
+                "account-migration-id"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "Transaction's Migration's Version",
+              "examples": [
+                "2021-09-13T19:54:41Z"
+              ]
+            },
+            "statement_id": {
+              "$id": "#/properties/entity/properties/migration/properties/statement_id",
+              "type": "string",
+              "description": "Transaction's Statement Migration Identifier",
+              "examples": [
+                "statement-migration-id"
+              ]
+            },
+            "card_id": {
+              "$id": "#/properties/entity/properties/migration/properties/card_id",
+              "type": "string",
+              "description": "Transaction's Card Migration Identifier",
+              "examples": [
+                "card-migration-id"
+              ]
+            },
+            "authorization_id": {
+              "$id": "#/properties/entity/properties/migration/properties/authorization_id",
+              "type": "string",
+              "description": "Transaction's Authorization Migration Identifier",
+              "examples": [
+                "authorization-migration-id"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "type": {
+          "$id": "#/properties/entity/properties/type",
+          "type": "string",
+          "description": "The Transaction's type. One of (BILLED, TO_BE_BILLED, INSTALLMENTS, ADJUSTMENT, STORED)",
+          "enum": [
+            "BILLED",
+            "TO_BE_BILLED",
+            "INSTALLMENTS",
+            "ADJUSTMENT",
+            "STORED"
+          ],
+          "examples": [
+            "INSTALLMENTS"
+          ]
+        },
+        "due_date_hour": {
+          "$id": "#/properties/entity/properties/due_date_hour",
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time when the transaction is due",
+          "examples": [
+            "2021-09-13T19:54:41Z"
+          ]
+        },
+        "processing_code": {
+          "$id": "#/properties/entity/properties/processing_code",
+          "type": "string",
+          "description": "The Transaction's Processing Code schema",
+          "examples": [
+            "00"
+          ]
+        },
+        "processing_descriptor": {
+          "$id": "#/properties/entity/properties/processing_descriptor",
+          "type": "string",
+          "description": "The Transaction's Processing Descriptor schema",
+          "examples": [
+            "compra"
+          ]
+        },
+        "transaction_type": {
+          "$id": "#/properties/entity/properties/transaction_type",
+          "type": "object",
+          "description": "Transction's Type",
+          "examples": [
+            {
+              "id": 314,
+              "external_id": "client_id"
+            }
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/transaction_type/properties/id",
+              "type": "integer",
+              "description": "Transaction's Type PISMO Identifier",
+              "examples": [
+                314
+              ]
+            },
+            "external_id": {
+              "$id": "#/properties/entity/properties/transaction_type/properties/external_id",
+              "description": "Transaction's Type CLIENT Identifier",
+              "examples": [
+                "client_id"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "network": {
+          "$id": "#/properties/entity/properties/network",
+          "type": "string",
+          "description": "Transaction's NETWORK",
+          "examples": [
+            "VISA"
+          ]
+        },
+        "authorization_code": {
+          "$id": "#/properties/entity/properties/authorization_code",
+          "type": "string",
+          "description": "Transaction's Authorization Code. It is usually an alphanumeric code that's unique among transactions associated to the same card.",
+          "examples": [
+            "444"
+          ]
+        },
+        "ledger_impact": {
+          "$id": "#/properties/entity/properties/ledger_impact",
+          "description": "List of limits this transaction should impact, in case it affects a non-standard limit",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$id": "#/properties/entity/properties/items",
+            "type": "string",
+            "examples": [
+              "AvailableInstallmentLimit"
+            ]
+          }
+        },
+        "network_transaction_identifier": {
+          "$id": "#/properties/entity/properties/network_transaction_identifier",
+          "type": "string",
+          "description": "Represents the original transaction ID that was provided by the card network. This enables the platform to retrieve the corresponding network authorization during the migration process",
+          "examples": [
+            "tid"
+          ]
+        },
+        "merchant_id": {
+          "$id": "#/properties/entity/properties/merchant_id",
+          "type": "string",
+          "description": "Transaction's Merchant Identifier",
+          "examples": [
+            "CARD ACCEPTOR"
+          ]
+        },
+        "merchant_city": {
+          "$id": "#/properties/entity/properties/merchant_city",
+          "type": "string",
+          "description": "Transaction's Merchant City",
+          "examples": [
+            "CITY NAME"
+          ]
+        },
+        "merchant_name": {
+          "$id": "#/properties/entity/properties/merchant_name",
+          "type": "string",
+          "description": "Transaction's Merchant Name",
+          "examples": [
+            "Merchant Brand"
+          ]
+        },
+        "merchant_category_code": {
+          "$id": "#/properties/entity/properties/merchant_category_code",
+          "type": "integer",
+          "description": "Transaction's Merchant category code",
+          "examples": [
+            742
+          ]
+        },
+        "merchant_state_or_country": {
+          "$id": "#/properties/entity/properties/merchant_state_or_country",
+          "type": "string",
+          "description": "Transaction's Merchant State or Country",
+          "examples": [
+            "BR"
+          ]
+        },
+        "retrieval_reference_number": {
+          "$id": "#/properties/entity/properties/retrieval_reference_number",
+          "type": "string",
+          "description": "Transaction's Retrieval Reference Number",
+          "examples": [
+            "130720000148"
+          ]
+        },
+        "clearing_date": {
+          "$id": "#/properties/entity/properties/clearing_date",
+          "type": "string",
+          "description": "Transaction's Clearing Date",
+          "format": "date",
+          "examples": [
+            "2019-12-11"
+          ]
+        },
+        "number_of_installments": {
+          "$id": "#/properties/entity/properties/number_of_installments",
+          "type": "integer",
+          "description": "Transaction's Number of Installments",
+          "examples": [
+            5
+          ]
+        },
+        "installment": {
+          "$id": "#/properties/entity/properties/installment",
+          "type": "integer",
+          "description": "Transaction's current Installment number",
+          "examples": [
+            2
+          ]
+        },
+        "accounting_date": {
+          "$id": "#/properties/entity/properties/accounting_date",
+          "type": "string",
+          "description": "Transaction's Merchant Accounting Date",
+          "format": "date",
+          "examples": [
+            "2019-12-11"
+          ]
+        },
+        "soft_descriptor": {
+          "$id": "#/properties/entity/properties/soft_descriptor",
+          "type": "string",
+          "description": "Transaction's Soft Descriptor",
+          "examples": [
+            "COMPRA LOJA 1"
+          ]
+        },
+        "settlement_currency_rate": {
+          "$id": "#/properties/entity/properties/settlement_currency_rate",
+          "type": "number",
+          "description": "Transaction's Settlement Currency Rate",
+          "examples": [
+            12.55
+          ]
+        },
+        "cardholder_currency_rate": {
+          "$id": "#/properties/entity/properties/cardholder_currency_rate",
+          "type": "number",
+          "description": "Transaction's Cardholder Currency Rate",
+          "examples": [
+            12.6
+          ]
+        },
+        "contract_amount": {
+          "$id": "#/properties/entity/properties/contract_amount",
+          "type": "number",
+          "description": "Full contract amount of a multi-installment transaction, if applicable. In a `INSTALLMENTS` migration, it should match the `PRINCIPAL` `amounts` value",
+          "examples": [
+            12.6,
+            100
+          ]
+        },
+        "cardholder_amount": {
+          "$id": "#/properties/entity/properties/cardholder_amount",
+          "type": "number",
+          "description": "Transaction's Cardholder Amount",
+          "examples": [
+            12.6,
+            100
+          ]
+        },
+        "cardholder_currency_code": {
+          "$id": "#/properties/entity/properties/cardholder_currency_code",
+          "type": "string",
+          "description": "Transaction's Cardholder Currency Code",
+          "examples": [
+            "840",
+            "986"
+          ]
+        },
+        "interest_rate": {
+          "$id": "#/properties/entity/properties/interest_rate",
+          "type": "number",
+          "description": "Transaction's Interest Rate",
+          "examples": [
+            12.31
+          ]
+        },
+        "interest_amount": {
+          "$id": "#/properties/entity/properties/interest_amount",
+          "type": "number",
+          "description": "Transaction's Interest Amount",
+          "examples": [
+            12.42
+          ]
+        },
+        "iof_amount": {
+          "$id": "#/properties/entity/properties/iof_amount",
+          "type": "number",
+          "description": "Transaction's IOF Amount",
+          "examples": [
+            1.55
+          ]
+        },
+        "status": {
+          "$id": "#/properties/entity/properties/status",
+          "type": "string",
+          "description": "Installment Status. Valid values are:  0 - Future installment; 1 - Advancement request; 2 - Posted installment, either BILLED or TO_BE_BILLED; 4 - Advanced installment; 6 - Canceled installment",
+          "examples": [
+            "0",
+            "1",
+            "2",
+            "4",
+            "6"
+          ]
+        },
+        "installments_type": {
+          "$id": "#/properties/entity/properties/installments_type",
+          "type": "string",
+          "description": "Installment type",
+          "enum": [
+            "WITHOUT_INTEREST",
+            "WITH_INTEREST",
+            "STATEMENT"
+          ],
+          "examples": [
+            "WITHOUT_INTEREST"
+          ]
+        },
+        "installments": {
+          "$id": "#/properties/entity/properties/installments",
+          "type": "array",
+          "description": "Installments",
+          "items": {
+            "type": "object",
+            "required": [
+              "installment",
+              "release_date"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Installment Status"
+              },
+              "installment": {
+                "type": "integer",
+                "description": "Installment Number"
+              },
+              "amounts": {
+                "type": "number",
+                "description": "Installment Amount"
+              },
+              "interest_amount": {
+                "type": "number",
+                "description": "Interest Amount"
+              },
+              "interest_amount_pend_approp": {
+                "type": "number",
+                "description": "Pending Interest Amount"
+              },
+              "release_date": {
+                "type": "string",
+                "format": "date",
+                "description": "Release Date"
+              },
+              "event_date_hour": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Event Date and Hour"
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Metadata for the Installment",
+                "additionalProperties": true
+              },
+              "posted": {
+                "type": "boolean",
+                "description": "Posted Status"
+              }
+            }
+          }
+        },
+        "contract_id": {
+          "$id": "#/properties/entity/properties/contract_id",
+          "type": "string",
+          "description": "Transaction contract key",
+          "examples": [
+            "contract-id"
+          ]
+        },
+        "installment_amount": {
+          "$id": "#/properties/entity/properties/installment_amount",
+          "type": "number",
+          "description": "Authorization's installment amount",
+          "examples": [
+            12.6
+          ]
+        },
+        "interest_amount_pend_approp": {
+          "$id": "#/properties/entity/properties/interest_amount_pend_approp",
+          "type": "number",
+          "description": "Amount of pending interest of the installment. This value must be only used on `BILLED` and `TO_BE_BILLED` transactions when they are `WITH_INTEREST` otherwise the value must be zero or omitted",
+          "examples": [
+            12.6
+          ]
+        },
+        "external_id": {
+          "$id": "#/properties/entity/properties/external_id",
+          "type": "string",
+          "description": "Transaction's External Identifier",
+          "examples": [
+            "1231231-123123-12312"
+          ]
+        },
+        "payment_agreement": {
+          "$id": "#/properties/entity/properties/payment_agreement",
+          "type": "boolean",
+          "description": "Whether a transaction is an installment or a refinancing product. Valid only when the transaction type is 'INSTALLMENTS'. Defaults to false",
+          "examples": [
+            true,
+            false
+          ]
+        },
+        "payment_agreement_data": {
+          "$id": "#/properties/entity/properties/payment_agreement_data",
+          "type": "object",
+          "description": "Data for a payment agreement transaction. Valid only when the transaction type is 'INSTALLMENTS' and payment_agreement is 'true'",
+          "required": [
+            "statement_agreement",
+            "compulsory",
+            "settle_accrual",
+            "split_iof",
+            "use_original_rate"
+          ],
+          "properties": {
+            "statement_agreement": {
+              "$id": "#/properties/entity/properties/payment_agreement_data/properties/statement_agreement",
+              "type": "boolean",
+              "description": "Whether the transaction is a statement agreement. Valid only when payment_agreement is true. Must be false in case compulsory is true.",
+              "examples": [
+                true,
+                false
+              ]
+            },
+            "compulsory": {
+              "$id": "#/properties/entity/properties/payment_agreement_data/properties/compulsory",
+              "type": "boolean",
+              "description": "Whether the transaction is a compulsory agreement. Valid only when payment_agreement is true. Must be false in case statement_agreement is true.",
+              "examples": [
+                true,
+                false
+              ]
+            },
+            "settle_accrual": {
+              "$id": "#/properties/entity/properties/payment_agreement_data/properties/settle_accrual",
+              "type": "boolean",
+              "description": "Whether or not the pending interest accrual must be settled (forgiven) when the agreement occurs. Valid only when payment_agreement is true.",
+              "examples": [
+                true,
+                false
+              ]
+            },
+            "split_iof": {
+              "$id": "#/properties/entity/properties/payment_agreement_data/properties/split_iof",
+              "type": "boolean",
+              "description": "When set to true, a separate transaction for IOF is generated (417).",
+              "examples": [
+                true,
+                false
+              ]
+            },
+            "use_original_rate": {
+              "$id": "#/properties/entity/properties/payment_agreement_data/properties/use_original_rate",
+              "type": "boolean",
+              "description": "If set to true, the value from the interest_rate field is used accrued interests. Valid only when payment_agreement is true. Must be true in case compulsory is true.",
+              "examples": [
+                true,
+                false
+              ]
+            }
+          }
+        },
+        "amounts": {
+          "$id": "#/properties/entity/properties/amounts",
+          "type": "array",
+          "description": "Transaction's Amounts",
+          "examples": [
+            [
+              {
+                "type": "PRINCIPAL",
+                "currency": "840",
+                "value": 2.55
+              },
+              {
+                "type": "LOCAL",
+                "currency": "840",
+                "value": 2.5
+              }
+            ]
+          ],
+          "additionalItems": true,
+          "items": {
+            "type": "object",
+            "description": "Transaction's Amount Object",
+            "examples": [
+              {
+                "type": "PRINCIPAL",
+                "currency": 840,
+                "value": 2.55
+              }
+            ],
+            "required": [
+              "type",
+              "currency",
+              "value"
+            ],
+            "properties": {
+              "type": {
+                "$id": "#/properties/entity/properties/amount/items/anyOf/0/properties/type",
+                "type": "string",
+                "description": "Transaction's Amount Type",
+                "examples": [
+                  "PRINCIPAL"
+                ]
+              },
+              "currency": {
+                "$id": "#/properties/entity/properties/amount/items/anyOf/0/properties/currency",
+                "type": [
+                  "string",
+                  "integer",
+                  "null"
+                ],
+                "description": "Transaction's Amount Currency",
+                "examples": [
+                  "986",
+                  "840"
+                ]
+              },
+              "value": {
+                "$id": "#/properties/entity/properties/amount/items/anyOf/0/properties/value",
+                "type": [
+                  "string",
+                  "number"
+                ],
+                "description": "Transaction's Amount Value",
+                "examples": [
+                  "2.55",
+                  2.55
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "Transaction's metadata",
+          "examples": [
+            {
+              "key1": "value1",
+              "key2": "value2"
+            }
+          ],
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": "string",
+      "description": "The file identificator in case is using a batch file import",
+      "examples": [
+        "accounts-1234"
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "string",
+      "description": "The file line number in case is using a batch file import",
+      "examples": [
+        "2"
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "The migration origin (FILE or API)",
+      "enum": [
+        "FILE",
+        "API"
+      ],
+      "examples": [
+        "FILE"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Payment request created",
+  "description": "Event schema of a payment request creation",
+  "default": {},
+  "required": [
+    "payment_id",
+    "source_holder",
+    "destination_holder"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "The amount of payment request.",
+      "examples": [
+        10.0
+      ]
+    },
+    "payment_id": {
+      "type": "integer",
+      "title": "Payment ID",
+      "description": "Id generated for the payment request.",
+      "examples": [
+        997349
+      ]
+    },
+    "payment_description": {
+      "type": "string",
+      "title": "Payment description",
+      "description": "Description provided in the payment request",
+      "examples": [
+        "Dinner"
+      ]
+    },
+    "payment_status": {
+      "type": "string",
+      "title": "Payment status",
+      "description": "Payment request status. OPEN is the only expected status when creating a Payment Request",
+      "examples": [
+        "OPEN",
+        "REJECT",
+        "SETTLED"
+      ]
+    },
+    "payment_type": {
+      "type": "string",
+      "title": "Payment type",
+      "description": "Payment request type. The types are defined by the customer",
+      "examples": [
+        "SPLIT",
+        "PAYREQ"
+      ]
+    },
+    "creation_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Creation date",
+      "description": "creation date of the payment request",
+      "examples": [
+        "2020-05-11T13:00:44.452Z"
+      ]
+    },
+    "source_holder": {
+      "$ref": "#/definitions/account_holder"
+    },
+    "destination_holder": {
+      "$ref": "#/definitions/account_holder"
+    }
+  },
+  "definitions": {
+    "account_holder": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Account Holder",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Account holder name",
+          "examples": [
+            "Name Example"
+          ]
+        },
+        "legal_name": {
+          "type": "string",
+          "title": "Legal Name",
+          "description": "Account holder legal name",
+          "examples": [
+            "Name Example"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Account holder document number",
+          "examples": [
+            "58791699363"
+          ]
+        },
+        "entity_type": {
+          "type": "string",
+          "title": "Account holder entity type",
+          "examples": [
+            "F",
+            "J"
+          ]
+        },
+        "phone_country_code": {
+          "type": "string",
+          "title": "Account holder phone country code",
+          "examples": [
+            "55"
+          ]
+        },
+        "phone_area_code": {
+          "type": "string",
+          "title": "Account holder phone area code",
+          "examples": [
+            "11"
+          ]
+        },
+        "phone_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Account holder phone number",
+          "examples": [
+            "988887777"
+          ]
+        },
+        "external_id": {
+          "type": "string",
+          "title": "External ID defined by the customer. Can be any unique string value",
+          "examples": [
+            "b133facc-7db7-4ddb-8b68-946350bd4787",
+            "64178639641",
+            "eRkgbzeF"
+          ]
+        },
+        "company_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Company Name",
+          "description": "Account holder company name",
+          "examples": [
+            "Empresa S.A."
+          ]
+        },
+        "bankaccount": {
+          "$ref": "#/definitions/bankaccount"
+        }
+      }
+    },
+    "bankaccount": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Bank Account",
+      "required": [
+        "bank",
+        "branch",
+        "account_number",
+        "check_digit"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "maxLength": 3,
+          "title": "Bank Code",
+          "description": "Identifies the bank",
+          "examples": [
+            "341"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "maxLength": 5,
+          "title": "Branch Code",
+          "description": "Identifies the bank's branch",
+          "examples": [
+            "0500"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "maxLength": 12,
+          "title": "Account number",
+          "description": "identifier of a specific user's bank account",
+          "examples": [
+            "000000001"
+          ]
+        },
+        "check_digit": {
+          "type": "string",
+          "maxLength": 8,
+          "title": "Check digit",
+          "description": "The check digit of the account number",
+          "examples": [
+            "8"
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Program ID of the source holder",
+          "examples": [
+            540
+          ]
+        },
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Pismo's account identifier",
+          "examples": [
+            1
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "Status",
+          "description": "Flag that Identifies the status of the bank account",
+          "examples": [
+            "ACTIVE",
+            "BLOCKED",
+            "INACTIVE"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Collect a scheduled Pix-out signature notification",
+  "description": "Event generated when the <a href='https://developers.pismo.io/pismo-docs/reference/post-schedule-pix-payment' target='_blank'>Schedule transfer(s) V2</a> endpoint is called to create a scheduler and the execution of the pix-out scheduled occurs. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments' target='_blank'>Pix-instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events' target='_blank'>Pix payments data events</a> guide.",
+  "examples": [
+    {
+      "domain": "pix",
+      "event_type": "pix_out_signature",
+      "schema_version": 1,
+      "org_id": "4ea21a59-7f4f-4087-aab6-a9a96733084a",
+      "cid": "cid",
+      "timestamp": "2023-10-25T18:29:19Z",
+      "data": {
+        "account_id": 1234589,
+        "scheduler_id": "9c23477d-3f61-4697-b797-a9cf7fa60bc3",
+        "execution_id": 1,
+        "idempotency_key": "4ea21a59-7f4f-4087-aab6-a9a96733084a",
+        "end_to_end_id": "E0000000020210519134701363535166",
+        "amount": 150.85,
+        "payer": {
+          "bank": "30306294",
+          "document_number": "12345678900",
+          "document_type": "NATURAL_PERSON"
+        },
+        "payee": {
+          "bank": "20000120",
+          "document_number": "0011015000100",
+          "document_type": "LEGAL_PERSON"
+        },
+        "psp_transaction_created_at": "2022-01-01T15:00:00.000Z",
+        "transaction_identification": "none",
+        "recurrence_id": "c23477d-3f61-4697-b797-a9cf7fa60bc3",
+        "data_to_be_signed": "2025-07-28T19:07:03.023Z,E00038166201907261559y6j6mt9l0pi,150.85,04358798,11111111111,04358799,04358798000107"
+      }
+    }
+  ],
+  "required": [
+    "account_id",
+    "scheduler_id",
+    "execution_id",
+    "end_to_end_id",
+    "amount",
+    "psp_transaction_created_at",
+    "payer",
+    "payee",
+    "data_to_be_signed"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "scheduler_id": {
+      "type": "string",
+      "title": "Scheduler Identifier",
+      "description": "Scheduler ID created upon scheduling a collection of pix out transfers",
+      "examples": [
+        "5633e370-0916-4799-96f6-3ae15112fb85"
+      ]
+    },
+    "execution_id": {
+      "type": "number",
+      "title": "Scheduler Execution Identifier",
+      "description": "Execution ID of a specific scheduled pix out transfer",
+      "examples": [
+        1
+      ]
+    },
+    "psp_transaction_created_at": {
+      "type": "string",
+      "title": "Transaction datetime",
+      "description": "Date/time of the signature. A RFC 3339 Nano date-time value, i.e., '2023-04-12T23:20:50.52.000Z'.",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "idempotency_key": {
+      "type": "string",
+      "title": "Unique ID to ensure idempotency",
+      "description": "Client-generated unique transaction ID. This value cannot be repeated.",
+      "maxLength": 75,
+      "examples": [
+        "bc0bc832-ca05-425e-95d4-a1bf48ada1cc"
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Pix end to end ID",
+      "description": "Pix end to end transaction ID. This field is a Brazil Central Bank (BCB) requirement to track Pix transactions. Basically, there are two steps to a Pix transaction: 1. Initialize a transaction and 2. Confirm a transaction. This field is sent to the BCB in both steps in order to identify all transaction information.",
+      "examples": [
+        "E0000000020210519134701363533333"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Pix-out amount",
+      "description": "Pix-out amount",
+      "examples": [
+        125.5
+      ]
+    },
+    "payee": {
+      "type": "object",
+      "required": [
+        "bank",
+        "document_number",
+        "document_type"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Payee's bank code - ISPB (Identificador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier, an 8-digit value.",
+          "examples": [
+            "30306294"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Payee's document number",
+          "description": "Payee ID. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "document_type": {
+          "type": "string",
+          "title": "Payee document type",
+          "description": "Payee's document type: `NATURAL_PERSON` = individual; `LEGAL_PERSON` = company.",
+          "maxLength": 100,
+          "examples": [
+            "LEGAL_PERSON"
+          ]
+        }
+      }
+    },
+    "payer": {
+      "type": "object",
+      "required": [
+        "bank",
+        "document_number",
+        "document_type"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Payer's bank code - ISPB (Identificador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier, an 8-digit value.",
+          "examples": [
+            "30306294"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Payer's document number",
+          "description": "Payer ID. A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "document_type": {
+          "type": "string",
+          "title": "Payer document type",
+          "description": "Payer's document type: `NATURAL_PERSON` = individual; `LEGAL_PERSON` = company.",
+          "maxLength": 100,
+          "examples": [
+            "LEGAL_PERSON"
+          ]
+        }
+      }
+    },
+    "transaction_identification": {
+      "type": "string",
+      "title": "Transaction identification code",
+      "description": "Transaction Identifier of the pix out transfer.",
+      "maxLength": 100,
+      "examples": [
+        "16484851846841"
+      ]
+    },
+    "recurrence_id": {
+      "type": "string",
+      "title": "Recurrence Pix Identifier",
+      "description": "Recurrence Identifier of the Recurrence Pix",
+      "examples": [
+        "5633e370-0916-4799-96f6-3ae15112fb85"
+      ]
+    },
+    "data_to_be_signed": {
+      "type": "string",
+      "title": "Data to be signed",
+      "description": "The buffer with the data to be signed by the requester. The format depends on the Provider and this is a suggestion of input for the signature process",
+      "examples": [
+        "2025-07-28T19:07:03.023Z,E00038166201907261559y6j6mt9l0pi,150.85,04358798,11111111111,04358799,04358798000107"
+      ]
+    }
+  }
+}

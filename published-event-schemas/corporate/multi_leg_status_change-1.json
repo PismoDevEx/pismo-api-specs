@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Multi-leg payment lifecycle status changed",
+  "required": [
+    "tracking_id",
+    "status"
+  ],
+  "properties": {
+    "tracking_id": {
+      "title": "A unique 50 character long identification for the multi-leg payment",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "examples": [
+        "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0"
+      ]
+    },
+    "status": {
+      "title": "Current multi-leg status",
+      "description": "\n\nIt only accepts the following values:\n\n`FINISHED`: When all the legs has finished execution.\n\n`ROLLED_BACK`: When an error has occurred and the operations has been reverted.\n\n`ROLLBACK_FAILED`: When an error occurs during the rollback operation.\n\n`CREDITS_FAILED`: When an error occurs during the execution of the credit legs operations.\n\n`TIMED_OUT`: When the multi-leg payment processing times out.\n\n",
+      "type": "string",
+      "enum": [
+        "FINISHED",
+        "ROLLED_BACK",
+        "ROLLBACK_FAILED",
+        "CREDITS_FAILED",
+        "TIMED_OUT"
+      ],
+      "minLength": 1,
+      "maxLength": 20,
+      "examples": [
+        "FINISHED"
+      ]
+    }
+  }
+}

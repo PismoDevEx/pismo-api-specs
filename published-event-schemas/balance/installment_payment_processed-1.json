@@ -1,0 +1,283 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Installment payment processed",
+  "description": "Event generated when an installment payment is processed",
+  "required": [
+    "account_id",
+    "event_date_time",
+    "payment_agreement_id",
+    "statement_agreement",
+    "compulsory",
+    "split_iof",
+    "status",
+    "created_at",
+    "version",
+    "credit_transaction",
+    "installments"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "description": "Advanced installment account ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "event_date_time": {
+      "type": "string",
+      "description": "Date and time event was sent in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "payment_agreement_id": {
+      "type": "integer",
+      "description": "Payment agreement ID",
+      "examples": [
+        18991
+      ]
+    },
+    "statement_agreement": {
+      "type": "boolean",
+      "description": "Statement agreement flag",
+      "examples": [
+        true
+      ]
+    },
+    "compulsory": {
+      "type": "boolean",
+      "description": "Is agreement compulsory?",
+      "examples": [
+        true
+      ]
+    },
+    "split_iof": {
+      "type": "boolean",
+      "description": "Generate IOF (Brazilian tax) transactions separately?",
+      "examples": [
+        true
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Payment agreement status",
+      "examples": [
+        "PROCESSED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Payment agreement creation date and time in ISO 8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "description": "Payment agreement processor service version",
+      "examples": [
+        4
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Additional information relevant to the customer. No business rule validation is performed.",
+      "examples": [
+        {
+          "key1": "value1",
+          "key2": "value2"
+        }
+      ]
+    },
+    "custom_transactions": {
+      "type": "array",
+      "title": "custom transactions array",
+      "items": {
+        "type": "object",
+        "required": [
+          "installment",
+          "amount",
+          "principal_amount",
+          "transaction_id",
+          "transaction_type",
+          "statement_id",
+          "authorization_id"
+        ],
+        "properties": {
+          "installment": {
+            "type": "integer",
+            "description": "Custom transaction number",
+            "examples": [
+              1
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "description": "Custom transaction amount",
+            "format": "double",
+            "examples": [
+              10.6
+            ]
+          },
+          "principal_amount": {
+            "type": "number",
+            "description": "Custom transaction principal amount",
+            "format": "double",
+            "examples": [
+              12.3
+            ]
+          },
+          "transaction_id": {
+            "type": "integer",
+            "description": "Custom transaction transaction ID",
+            "examples": [
+              123123
+            ]
+          },
+          "transaction_type": {
+            "type": "integer",
+            "description": "Custom transaction transaction type ID",
+            "examples": [
+              2
+            ]
+          },
+          "statement_id": {
+            "type": "integer",
+            "description": "Custom transaction statement ID",
+            "examples": [
+              298741321
+            ]
+          },
+          "authorization_id": {
+            "type": "integer",
+            "description": "Custom transaction authorization ID",
+            "examples": [
+              85189123
+            ]
+          }
+        }
+      }
+    },
+    "credit_transaction": {
+      "type": "object",
+      "description": "Credit transaction",
+      "required": [
+        "amount",
+        "transaction_id",
+        "statement_id",
+        "authorization_id"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number",
+          "description": "Credit transaction amount",
+          "format": "double",
+          "examples": [
+            40.3
+          ]
+        },
+        "transaction_id": {
+          "type": "integer",
+          "description": "Credit transaction ID",
+          "examples": [
+            2306505
+          ]
+        },
+        "transaction_type_id": {
+          "type": "integer",
+          "description": "Credit transaction type ID",
+          "examples": [
+            122
+          ]
+        },
+        "statement_id": {
+          "type": "integer",
+          "description": "Credit transaction statement ID",
+          "examples": [
+            98132196
+          ]
+        },
+        "authorization_id": {
+          "type": "integer",
+          "description": "Credit transaction authorization ID",
+          "examples": [
+            9874151
+          ]
+        }
+      }
+    },
+    "installments": {
+      "type": "array",
+      "title": "Installments array",
+      "items": {
+        "type": "object",
+        "required": [
+          "installment",
+          "amount",
+          "principal_amount",
+          "transaction_id",
+          "transaction_type",
+          "statement_id",
+          "authorization_id"
+        ],
+        "properties": {
+          "installment": {
+            "type": "integer",
+            "description": "Installment number",
+            "examples": [
+              1
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "description": "Installment amount",
+            "format": "double",
+            "examples": [
+              10.6
+            ]
+          },
+          "principal_amount": {
+            "type": "number",
+            "description": "Installment principal amount",
+            "format": "double",
+            "examples": [
+              12.3
+            ]
+          },
+          "transaction_id": {
+            "type": "integer",
+            "description": "Installment transaction ID",
+            "examples": [
+              123123
+            ]
+          },
+          "transaction_type": {
+            "type": "integer",
+            "description": "Installment transaction type ID",
+            "examples": [
+              2
+            ]
+          },
+          "statement_id": {
+            "type": "integer",
+            "description": "Installment statement ID",
+            "examples": [
+              298741321
+            ]
+          },
+          "authorization_id": {
+            "type": "integer",
+            "description": "Installment authorization ID",
+            "examples": [
+              85189123
+            ]
+          }
+        }
+      }
+    }
+  }
+}

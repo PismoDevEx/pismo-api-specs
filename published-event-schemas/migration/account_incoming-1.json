@@ -1,0 +1,1365 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/account_incoming-1.json",
+  "type": "object",
+  "title": "Account migration started (v1)",
+  "description": "Event generated when an account migration is started. Contains the payload with the data to be migrated.\n\n**Note:** This is an outdated version of the event. In most cases, you should use Account migration started (v2) instead.",
+  "examples": [
+    {
+      "entity": {
+        "acquisition_channel": 101010,
+        "due_date": 101010,
+        "program_id": 112,
+        "applicant": {
+          "document_number": "111111111",
+          "birth_date": "1975-01-15",
+          "personal": {
+            "external_id": "3829df2a-e7e2-11eb-aafd-1bb0c073f513",
+            "name": "Jo\u00e3o Silva",
+            "email": "joao.silva@gmail.com",
+            "gender": "M",
+            "printed_name": "Joao Silva",
+            "nickname": "Jo\u00e3o",
+            "social_name": "Jo\u00e3o",
+            "country_of_birth": "Brazil",
+            "state_of_birth": "SP",
+            "city_of_birth": "Osasco",
+            "registration": {
+              "number": "111111111",
+              "issuer": "Any",
+              "issuing_state": "SP",
+              "issuing_date": "2021-07-01"
+            },
+            "education_degree": "Engineer",
+            "marital_status": "SINGLE",
+            "fathers_name": "Carlos",
+            "mothers_name": "F\u00e1tima",
+            "nationality": "Brazilian",
+            "other_id_number": "14564543-32",
+            "document_type": "RG",
+            "document_issued_by": "SSP",
+            "document_issued_at": "SP",
+            "document_issued_date": "2004-07-05",
+            "occupation": "Engineer",
+            "assets": 125000,
+            "income": 5000,
+            "net_worth": 200000,
+            "statutory": true,
+            "addresses": [
+              {
+                "zip_code": "111111111",
+                "address": "Avenida das Neves",
+                "number": "100",
+                "neighborhood": "Vila Nova",
+                "complementary_address": "Apartamento 500",
+                "city": "S\u00e3o Paulo",
+                "state": "SP",
+                "country": "Brazil",
+                "address_type": "RESIDENTIAL",
+                "mailing_address": true,
+                "date": "2013-05-15",
+                "phones": [
+                  {
+                    "phone_type": "RESIDENTIAL",
+                    "phone": "91234-5678",
+                    "extension": "11"
+                  }
+                ]
+              }
+            ]
+          },
+          "company": {
+            "external_id": "38bb9da4-e82b-11eb-9fb3-97772a55754b",
+            "name": "Pismo LTDA",
+            "email": "cadastro@pismo.io",
+            "registration_number": "123456789",
+            "company_name": "Pismo",
+            "activity": "Desenvolvimento de Software",
+            "company_type": "Ltda",
+            "company_format": "Ltda",
+            "company_constitution_date": "2017-11-21",
+            "occupation": "Engineering",
+            "annual_revenues": 20000000,
+            "type": "Fornecedora de Servi\u00e7os",
+            "number_of_partners": 2,
+            "fiscal_situation": "Normal",
+            "debt": 500000,
+            "income": 3000000,
+            "net_worth": 20000000
+          },
+          "account": {
+            "external_id": "980f2c12-e899-11eb-8639-c37913a46510",
+            "limit": 3500,
+            "granted_limit": 5000,
+            "available_credit_limit": 20000,
+            "exchange_mode": "SAME_DAY",
+            "is_overlimit": false,
+            "total_installment_credit_limit": 123.45,
+            "available_total_installment_credit": 123.44
+          },
+          "migration": {
+            "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+            "version_date": "2021-07-19T09:55:00.000Z",
+            "creation_date": "2021-08-10",
+            "create_statements": true,
+            "open_due_date": "2021-08-21",
+            "account_status": "Active",
+            "collection_status": "NORMAL",
+            "status": "MIGRATING",
+            "current_cycle": 1,
+            "go_live_account_status": "NORMAL"
+          }
+        },
+        "metadata": {
+          "key1": "value1",
+          "key2": "value2"
+        }
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents an account.",
+      "examples": [
+        {
+          "acquisition_channel": 101010,
+          "due_date": 101010,
+          "applicant": {
+            "document_number": "111111111",
+            "birth_date": "1975-01-15",
+            "personal": {
+              "external_id": "3829df2a-e7e2-11eb-aafd-1bb0c073f513",
+              "name": "Jo\u00e3o Silva",
+              "email": "joao.silva@gmail.com",
+              "gender": "M",
+              "printed_name": "Joao Silva",
+              "nickname": "Jo\u00e3o",
+              "social_name": "Jo\u00e3o",
+              "country_of_birth": "Brazil",
+              "state_of_birth": "SP",
+              "city_of_birth": "Osasco",
+              "registration": {
+                "number": "111111111",
+                "issuer": "Any",
+                "issuing_state": "SP",
+                "issuing_date": "2021-07-01"
+              },
+              "education_degree": "Engineer",
+              "marital_status": "SINGLE",
+              "fathers_name": "Carlos",
+              "mothers_name": "F\u00e1tima",
+              "nationality": "Brazilian",
+              "other_id_number": "14564543-32",
+              "document_type": "RG",
+              "document_issued_by": "SSP",
+              "document_issued_at": "SP",
+              "document_issued_date": "2004-07-05",
+              "occupation": "Engineer",
+              "assets": 125000,
+              "income": 5000,
+              "net_worth": 200000,
+              "statutory": true,
+              "addresses": [
+                {
+                  "zip_code": "111111111",
+                  "address": "Avenida das Neves",
+                  "number": "100",
+                  "neighborhood": "Vila Nova",
+                  "complementary_address": "Apartamento 500",
+                  "city": "S\u00e3o Paulo",
+                  "state": "SP",
+                  "country": "Brazil",
+                  "address_type": "RESIDENTIAL",
+                  "mailing_address": true,
+                  "date": "2013-05-15",
+                  "phones": [
+                    {
+                      "phone_type": "RESIDENTIAL",
+                      "phone": "91234-5678",
+                      "extension": "11"
+                    }
+                  ]
+                }
+              ]
+            },
+            "company": {
+              "external_id": "38bb9da4-e82b-11eb-9fb3-97772a55754b",
+              "name": "Pismo LTDA",
+              "email": "cadastro@pismo.io",
+              "registration_number": "123456789",
+              "company_name": "Pismo",
+              "activity": "Desenvolvimento de Software",
+              "company_type": "Ltda",
+              "company_format": "Ltda",
+              "company_constitution_date": "2017-11-21",
+              "occupation": "Engineering",
+              "annual_revenues": 20000000,
+              "type": "Fornecedora de Servi\u00e7os",
+              "number_of_partners": 2,
+              "fiscal_situation": "Normal",
+              "debt": 500000,
+              "income": 3000000,
+              "net_worth": 20000000
+            },
+            "account": {
+              "external_id": "980f2c12-e899-11eb-8639-c37913a46510",
+              "limit": 3500,
+              "granted_limit": 5000,
+              "available_credit_limit": 20000,
+              "exchange_mode": "SAME_DAY"
+            },
+            "migration": {
+              "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+              "version_date": "2021-07-19T09:55:00.000Z",
+              "creation_date": "2021-08-10T09:55:00Z",
+              "create_statements": true,
+              "open_due_date": "2021-08-21",
+              "account_status": "Active",
+              "collection_status": "NORMAL",
+              "status": "MIGRATING",
+              "current_cycle": 1,
+              "go_live_account_status": "NORMAL"
+            }
+          },
+          "metadata": {
+            "key1": "value1",
+            "key2": "value2"
+          }
+        }
+      ],
+      "required": [
+        "applicant"
+      ],
+      "properties": {
+        "acquisition_channel": {
+          "$id": "#/properties/entity/properties/acquisition_channel",
+          "type": "integer",
+          "description": "The id of the acquisition channel the form comes from.",
+          "default": 0,
+          "examples": [
+            101010
+          ]
+        },
+        "applicant": {
+          "$id": "#/properties/entity/properties/applicant",
+          "type": "object",
+          "description": "The applicant personal data",
+          "default": {},
+          "examples": [
+            {
+              "document_number": "111111111",
+              "birth_date": "1975-01-15",
+              "personal": {
+                "external_id": "3829df2a-e7e2-11eb-aafd-1bb0c073f513",
+                "name": "Jo\u00e3o Silva",
+                "email": "joao.silva@gmail.com",
+                "gender": "M",
+                "printed_name": "Joao Silva",
+                "nickname": "Jo\u00e3o",
+                "social_name": "Jo\u00e3o",
+                "country_of_birth": "Brazil",
+                "state_of_birth": "SP",
+                "city_of_birth": "Osasco",
+                "registration": {
+                  "number": "111111111",
+                  "issuer": "Any",
+                  "issuing_state": "SP",
+                  "issuing_date": "2021-07-01"
+                },
+                "education_degree": "Engineer",
+                "marital_status": "SINGLE",
+                "fathers_name": "Carlos",
+                "mothers_name": "F\u00e1tima",
+                "nationality": "Brazilian",
+                "other_id_number": "14564543-32",
+                "document_type": "RG",
+                "document_issued_by": "SSP",
+                "document_issued_at": "SP",
+                "document_issued_date": "2004-07-05",
+                "occupation": "Engineer",
+                "assets": 125000,
+                "income": 5000,
+                "net_worth": 200000,
+                "statutory": true,
+                "addresses": [
+                  {
+                    "zip_code": "111111111",
+                    "address": "Avenida das Neves",
+                    "number": "100",
+                    "neighborhood": "Vila Nova",
+                    "complementary_address": "Apartamento 500",
+                    "city": "S\u00e3o Paulo",
+                    "state": "SP",
+                    "country": "Brazil",
+                    "address_type": "RESIDENTIAL",
+                    "mailing_address": true,
+                    "date": "2013-05-15",
+                    "phones": [
+                      {
+                        "phone_type": "RESIDENTIAL",
+                        "phone": "91234-5678",
+                        "extension": "11"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "company": {
+                "external_id": "38bb9da4-e82b-11eb-9fb3-97772a55754b",
+                "name": "Pismo LTDA",
+                "email": "cadastro@pismo.io",
+                "registration_number": "123456789",
+                "company_name": "Pismo",
+                "activity": "Desenvolvimento de Software",
+                "company_type": "Ltda",
+                "company_format": "Ltda",
+                "company_constitution_date": "2017-11-21",
+                "occupation": "Engineering",
+                "annual_revenues": 20000000,
+                "type": "Fornecedora de Servi\u00e7os",
+                "number_of_partners": 2,
+                "fiscal_situation": "Normal",
+                "debt": 500000,
+                "income": 3000000,
+                "net_worth": 20000000
+              },
+              "account": {
+                "external_id": "980f2c12-e899-11eb-8639-c37913a46510",
+                "limit": 3500,
+                "granted_limit": 5000,
+                "available_credit_limit": 20000,
+                "exchange_mode": "SAME_DAY"
+              },
+              "migration": {
+                "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+                "version_date": "2021-07-19T09:55:00.000Z",
+                "creation_date": "2021-08-10T09:55:00Z",
+                "create_statements": true,
+                "open_due_date": "2021-08-21",
+                "account_status": "Active",
+                "collection_status": "NORMAL",
+                "status": "MIGRATING",
+                "current_cycle": 1,
+                "go_live_account_status": "NORMAL",
+                "phase_id": "rollout-2023-011"
+              }
+            }
+          ],
+          "required": [
+            "migration"
+          ],
+          "properties": {
+            "document_number": {
+              "$id": "#/properties/entity/properties/applicant/properties/document_number",
+              "type": "string",
+              "description": "Document number",
+              "examples": [
+                "111111111"
+              ]
+            },
+            "birth_date": {
+              "$id": "#/properties/entity/properties/applicant/properties/birth_date",
+              "type": "string",
+              "description": "Birth date",
+              "format": "date",
+              "examples": [
+                "1975-01-15"
+              ]
+            },
+            "personal": {
+              "$id": "#/properties/entity/properties/applicant/properties/personal",
+              "type": "object",
+              "description": "The applicant's personal information",
+              "examples": [
+                {
+                  "external_id": "3829df2a-e7e2-11eb-aafd-1bb0c073f513",
+                  "name": "Jo\u00e3o Silva",
+                  "email": "joao.silva@gmail.com",
+                  "gender": "M",
+                  "printed_name": "Joao Silva",
+                  "nickname": "Jo\u00e3o",
+                  "social_name": "Jo\u00e3o",
+                  "country_of_birth": "Brazil",
+                  "state_of_birth": "SP",
+                  "city_of_birth": "Osasco",
+                  "registration": {
+                    "number": "111111111",
+                    "issuer": "Any",
+                    "issuing_state": "SP",
+                    "issuing_date": "2021-07-01"
+                  },
+                  "education_degree": "Engineer",
+                  "marital_status": "SINGLE",
+                  "fathers_name": "Carlos",
+                  "mothers_name": "F\u00e1tima",
+                  "nationality": "Brazilian",
+                  "other_id_number": "14564543-32",
+                  "document_type": "RG",
+                  "document_issued_by": "SSP",
+                  "document_issued_at": "SP",
+                  "document_issued_date": "2004-07-05",
+                  "occupation": "Engineer",
+                  "assets": 125000,
+                  "income": 5000,
+                  "net_worth": 200000,
+                  "statutory": true,
+                  "addresses": [
+                    {
+                      "zip_code": "111111111",
+                      "address": "Avenida das Neves",
+                      "number": "100",
+                      "neighborhood": "Vila Nova",
+                      "complementary_address": "Apartamento 500",
+                      "city": "S\u00e3o Paulo",
+                      "state": "SP",
+                      "country": "Brazil",
+                      "address_type": "RESIDENTIAL",
+                      "mailing_address": true,
+                      "date": "2013-05-15",
+                      "phones": [
+                        {
+                          "phone_type": "RESIDENTIAL",
+                          "phone": "91234-5678",
+                          "extension": "11"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "external_id": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/external_id",
+                  "type": "string",
+                  "description": "A record identifier for external purposes",
+                  "examples": [
+                    "3829df2a-e7e2-11eb-aafd-1bb0c073f513"
+                  ]
+                },
+                "name": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/name",
+                  "type": "string",
+                  "description": "The applicant's name.",
+                  "examples": [
+                    "Jo\u00e3o Silva"
+                  ]
+                },
+                "email": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/email",
+                  "type": "string",
+                  "description": "The applicant's email.",
+                  "examples": [
+                    "joao.silva@gmail.com"
+                  ]
+                },
+                "gender": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/gender",
+                  "type": "string",
+                  "description": "The applicant's gender. Valid values (F,M)",
+                  "enum": [
+                    "M",
+                    "F"
+                  ],
+                  "examples": [
+                    "M"
+                  ]
+                },
+                "printed_name": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/printed_name",
+                  "type": "string",
+                  "description": "The applicant's name to be printed on the card (max. 25 characters)",
+                  "examples": [
+                    "Joao Silva"
+                  ]
+                },
+                "nickname": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/nickname",
+                  "type": "string",
+                  "description": "The applicant's nickname",
+                  "examples": [
+                    "Jo\u00e3o"
+                  ]
+                },
+                "social_name": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/social_name",
+                  "type": "string",
+                  "description": "The applicant social name used for descriptions and printed name",
+                  "examples": [
+                    "Jo\u00e3o"
+                  ]
+                },
+                "country_of_birth": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/country_of_birth",
+                  "type": "string",
+                  "description": "The applicant's country of birth",
+                  "examples": [
+                    "Brazil"
+                  ]
+                },
+                "state_of_birth": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/state_of_birth",
+                  "type": "string",
+                  "description": "The applicant's state of birth",
+                  "examples": [
+                    "SP"
+                  ]
+                },
+                "city_of_birth": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/city_of_birth",
+                  "type": "string",
+                  "description": "The applicant's city of birth",
+                  "examples": [
+                    "Osasco"
+                  ]
+                },
+                "registration": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/registration",
+                  "type": "object",
+                  "description": "The applicant's document information",
+                  "examples": [
+                    {
+                      "number": "111111111",
+                      "issuer": "Any",
+                      "issuing_state": "SP",
+                      "issuing_date": "2021-07-01"
+                    }
+                  ],
+                  "required": [
+                    "number"
+                  ],
+                  "properties": {
+                    "number": {
+                      "$id": "#/properties/entity/properties/applicant/properties/personal/properties/registration/properties/number",
+                      "type": "string",
+                      "description": "The document's number",
+                      "examples": [
+                        "111111111"
+                      ]
+                    },
+                    "issuer": {
+                      "$id": "#/properties/entity/properties/applicant/properties/personal/properties/registration/properties/issuer",
+                      "type": "string",
+                      "description": "The document's issuer",
+                      "examples": [
+                        "Any"
+                      ]
+                    },
+                    "issuing_state": {
+                      "$id": "#/properties/entity/properties/applicant/properties/personal/properties/registration/properties/issuing_state",
+                      "type": "string",
+                      "description": "The document's issuing state",
+                      "examples": [
+                        "SP"
+                      ]
+                    },
+                    "issuing_date": {
+                      "$id": "#/properties/entity/properties/applicant/properties/personal/properties/registration/properties/issuing_date",
+                      "type": "string",
+                      "description": "The document's issuing date.",
+                      "examples": [
+                        "2021-07-01"
+                      ]
+                    }
+                  },
+                  "additionalProperties": true
+                },
+                "education_degree": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/education_degree",
+                  "type": "string",
+                  "description": "The applicant's education degree.",
+                  "examples": [
+                    "Engineer"
+                  ]
+                },
+                "marital_status": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/marital_status",
+                  "type": "string",
+                  "description": "The applicant's marital status. Valid values (SINGLE, MARRIED, DIVORCED, WIDOWER).",
+                  "enum": [
+                    "SINGLE",
+                    "MARRIED",
+                    "DIVORCED",
+                    "WIDOWER"
+                  ],
+                  "examples": [
+                    "SINGLE"
+                  ]
+                },
+                "fathers_name": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/fathers_name",
+                  "type": "string",
+                  "descripton": "The applicant's name of father.",
+                  "examples": [
+                    "Carlos"
+                  ]
+                },
+                "mothers_name": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/mothers_name",
+                  "type": "string",
+                  "description": "The applicant's name of mother",
+                  "examples": [
+                    "F\u00e1tima"
+                  ]
+                },
+                "nationality": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/nationality",
+                  "type": "string",
+                  "description": "The applicant's nationality",
+                  "examples": [
+                    "Brazilian"
+                  ]
+                },
+                "other_id_number": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/other_id_number",
+                  "type": "string",
+                  "description": "Another document number. For example, RG in Brazil",
+                  "examples": [
+                    "14564543-32"
+                  ]
+                },
+                "document_type": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/document_type",
+                  "type": "string",
+                  "description": "The applicant document type",
+                  "examples": [
+                    "RG"
+                  ]
+                },
+                "document_issued_by": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/document_issued_by",
+                  "type": "string",
+                  "description": "The applicant document issuer",
+                  "default": "",
+                  "examples": [
+                    "SSP"
+                  ]
+                },
+                "document_issued_at": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/document_issued_at",
+                  "type": "string",
+                  "description": "Document organization issuer code",
+                  "examples": [
+                    "SP"
+                  ]
+                },
+                "document_issued_date": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/document_issued_date",
+                  "type": "string",
+                  "description": "The applicant document issuer locale.",
+                  "examples": [
+                    "2004-07-05"
+                  ]
+                },
+                "occupation": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/occupation",
+                  "type": "string",
+                  "description": "The applicant's profession",
+                  "examples": [
+                    "Engineer"
+                  ]
+                },
+                "assets": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/assets",
+                  "type": "integer",
+                  "description": "The applicant's assets",
+                  "examples": [
+                    125000
+                  ]
+                },
+                "income": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/income",
+                  "type": "number",
+                  "description": "The applicant's income",
+                  "examples": [
+                    5000
+                  ]
+                },
+                "net_worth": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/net_worth",
+                  "type": "integer",
+                  "description": "The applicant's net worth",
+                  "examples": [
+                    200000
+                  ]
+                },
+                "statutory": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/statutory",
+                  "type": "boolean",
+                  "description": "Statutory",
+                  "examples": [
+                    true
+                  ]
+                },
+                "addresses": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses",
+                  "type": "array",
+                  "description": "The applicant's addresses",
+                  "examples": [
+                    [
+                      {
+                        "zip_code": "111111111",
+                        "address": "Avenida das Neves",
+                        "number": "100",
+                        "neighborhood": "Vila Nova",
+                        "complementary_address": "Apartamento 500",
+                        "city": "S\u00e3o Paulo",
+                        "state": "SP",
+                        "country": "Brazil",
+                        "address_type": "RESIDENTIAL",
+                        "mailing_address": true,
+                        "date": "2013-05-15",
+                        "phones": [
+                          {
+                            "phone_type": "RESIDENTIAL",
+                            "phone": "91234-5678",
+                            "extension": "11"
+                          }
+                        ]
+                      }
+                    ]
+                  ],
+                  "additionalItems": true,
+                  "items": {
+                    "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items",
+                    "anyOf": [
+                      {
+                        "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0",
+                        "type": "object",
+                        "description": "The addresses of the account.",
+                        "default": {},
+                        "examples": [
+                          {
+                            "zip_code": "111111111",
+                            "address": "Avenida das Neves",
+                            "number": "100",
+                            "neighborhood": "Vila Nova",
+                            "complementary_address": "Apartamento 500",
+                            "city": "S\u00e3o Paulo",
+                            "state": "SP",
+                            "country": "Brazil",
+                            "address_type": "RESIDENTIAL",
+                            "mailing_address": true,
+                            "date": "2013-05-15",
+                            "phones": [
+                              {
+                                "phone_type": "RESIDENTIAL",
+                                "phone": "91234-5678",
+                                "extension": "11"
+                              }
+                            ]
+                          }
+                        ],
+                        "required": [
+                          "zip_code",
+                          "address",
+                          "number",
+                          "neighborhood",
+                          "city",
+                          "state"
+                        ],
+                        "properties": {
+                          "zip_code": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/zip_code",
+                            "type": "string",
+                            "description": "The address's zip code                                                ",
+                            "examples": [
+                              "111111111"
+                            ]
+                          },
+                          "address": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/address",
+                            "type": "string",
+                            "description": "The address's street",
+                            "examples": [
+                              "Avenida das Neves"
+                            ]
+                          },
+                          "number": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/number",
+                            "type": "string",
+                            "description": "The address's number",
+                            "examples": [
+                              "100"
+                            ]
+                          },
+                          "neighborhood": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/neighborhood",
+                            "type": "string",
+                            "description": "The address's neighborhood",
+                            "examples": [
+                              "Vila Nova"
+                            ]
+                          },
+                          "complementary_address": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/complementary_address",
+                            "type": "string",
+                            "description": "The address's complentary",
+                            "examples": [
+                              "Apartamento 500"
+                            ]
+                          },
+                          "city": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/city",
+                            "type": "string",
+                            "description": "The address's city",
+                            "examples": [
+                              "S\u00e3o Paulo"
+                            ]
+                          },
+                          "state": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/state",
+                            "type": "string",
+                            "description": "The address's state",
+                            "examples": [
+                              "SP"
+                            ]
+                          },
+                          "country": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/country",
+                            "type": "string",
+                            "description": "The address's country",
+                            "examples": [
+                              "Brazil"
+                            ]
+                          },
+                          "address_type": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/address_type",
+                            "type": "string",
+                            "description": "The address's type. Valid values (RESIDENTIAL, COMMERCIAL, OTHER)",
+                            "enum": [
+                              "RESIDENTIAL",
+                              "COMMERCIAL",
+                              "OTHER"
+                            ],
+                            "examples": [
+                              "RESIDENTIAL"
+                            ]
+                          },
+                          "mailing_address": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/mailing_address",
+                            "type": "boolean",
+                            "description": "Flag indicating if this address should be marked as a mailing address",
+                            "examples": [
+                              true
+                            ]
+                          },
+                          "date": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/date",
+                            "type": "string",
+                            "description": "The date since the address belongs to the applicant, formatted as yyyy-MM-dd",
+                            "format": "date",
+                            "examples": [
+                              "2013-05-15"
+                            ]
+                          },
+                          "phones": {
+                            "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/phones",
+                            "type": "array",
+                            "description": "The address's phones",
+                            "examples": [
+                              [
+                                {
+                                  "phone_type": "RESIDENTIAL",
+                                  "phone": "91234-5678",
+                                  "extension": "11"
+                                }
+                              ]
+                            ],
+                            "additionalItems": true,
+                            "items": {
+                              "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/phones/items",
+                              "anyOf": [
+                                {
+                                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/phones/items/anyOf/0",
+                                  "type": "object",
+                                  "description": "The Phone's informations",
+                                  "examples": [
+                                    {
+                                      "phone_type": "RESIDENTIAL",
+                                      "phone": "91234-5678",
+                                      "extension": "11"
+                                    }
+                                  ],
+                                  "required": [
+                                    "phone_type",
+                                    "phone"
+                                  ],
+                                  "properties": {
+                                    "phone_type": {
+                                      "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/phones/items/anyOf/0/properties/phone_type",
+                                      "type": "string",
+                                      "description": "The phone's type. Valid values (RESIDENTIAL, COMMERCIAL, MOBILE).",
+                                      "enum": [
+                                        "RESIDENTIAL",
+                                        "COMMERCIAL",
+                                        "MOBILE"
+                                      ],
+                                      "examples": [
+                                        "RESIDENTIAL"
+                                      ]
+                                    },
+                                    "phone": {
+                                      "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/phones/items/anyOf/0/properties/phone",
+                                      "type": "string",
+                                      "description": "The phone's number.",
+                                      "examples": [
+                                        "91234-5678"
+                                      ]
+                                    },
+                                    "extension": {
+                                      "$id": "#/properties/entity/properties/applicant/properties/personal/properties/addresses/items/anyOf/0/properties/phones/items/anyOf/0/properties/extension",
+                                      "type": "string",
+                                      "description": "An optional phone number extension",
+                                      "examples": [
+                                        "11"
+                                      ]
+                                    }
+                                  },
+                                  "additionalProperties": true
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    ]
+                  }
+                }
+              },
+              "additionalProperties": true
+            },
+            "company": {
+              "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company",
+              "type": "object",
+              "description": "The applicant's company information",
+              "examples": [
+                {
+                  "external_id": "38bb9da4-e82b-11eb-9fb3-97772a55754b",
+                  "name": "Pismo LTDA",
+                  "email": "cadastro@pismo.io",
+                  "registration_number": "123456789",
+                  "company_name": "Pismo",
+                  "activity": "Desenvolvimento de Software",
+                  "company_type": "Ltda",
+                  "company_format": "Ltda",
+                  "company_constitution_date": "2017-11-21",
+                  "occupation": "Engineering",
+                  "annual_revenues": 20000000,
+                  "type": "Fornecedora de Servi\u00e7os",
+                  "number_of_partners": 2,
+                  "fiscal_situation": "Normal",
+                  "debt": 500000,
+                  "income": 3000000,
+                  "net_worth": 20000000
+                }
+              ],
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "external_id": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/external_id",
+                  "type": "string",
+                  "description": "This will be your ID used to identify the account at the Pismo platform ",
+                  "examples": [
+                    "38bb9da4-e82b-11eb-9fb3-97772a55754b"
+                  ]
+                },
+                "name": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/name",
+                  "type": "string",
+                  "description": "The company's legal name",
+                  "examples": [
+                    "Pismo LTDA"
+                  ]
+                },
+                "email": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/email",
+                  "type": "string",
+                  "description": "The company's registered email",
+                  "examples": [
+                    "cadastro@pismo.io"
+                  ]
+                },
+                "registration_number": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/registration_number",
+                  "type": "string",
+                  "description": "The number under which the company is registered",
+                  "examples": [
+                    "123456789"
+                  ]
+                },
+                "company_name": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/company_name",
+                  "type": "string",
+                  "description": "The company's brand name",
+                  "examples": [
+                    "Pismo"
+                  ]
+                },
+                "activity": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/activity",
+                  "type": "string",
+                  "description": "The company's field of activity",
+                  "examples": [
+                    "Desenvolvimento de Software"
+                  ]
+                },
+                "company_type": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/company_type",
+                  "type": "string",
+                  "description": "The company's type",
+                  "examples": [
+                    "Ltda"
+                  ]
+                },
+                "company_format": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/company_format",
+                  "type": "string",
+                  "description": "The company social type",
+                  "examples": [
+                    "Ltda"
+                  ]
+                },
+                "company_constitution_date": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/company_constitution_date",
+                  "type": "string",
+                  "description": "The company's constitution date.",
+                  "examples": [
+                    "2017-11-21"
+                  ]
+                },
+                "occupation": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/occupation",
+                  "type": "string",
+                  "description": "The company's main occupation",
+                  "examples": [
+                    "Engineering"
+                  ]
+                },
+                "annual_revenues": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/annual_revenues",
+                  "type": "integer",
+                  "description": "The average monthly revenue for the last 12 months",
+                  "examples": [
+                    20000000
+                  ]
+                },
+                "type": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/type",
+                  "type": "string",
+                  "description": "The company's business relations type",
+                  "examples": [
+                    "Fornecedora de Servi\u00e7os"
+                  ]
+                },
+                "number_of_partners": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/number_of_partners",
+                  "type": "integer",
+                  "description": "The company's number of partner",
+                  "default": 0,
+                  "examples": [
+                    2
+                  ]
+                },
+                "fiscal_situation": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/fiscal_situation",
+                  "type": "string",
+                  "description": "The company's fiscal situation",
+                  "examples": [
+                    "Normal"
+                  ]
+                },
+                "debt": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/debt",
+                  "type": "integer",
+                  "description": "The company's debt's",
+                  "examples": [
+                    500000
+                  ]
+                },
+                "income": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/income",
+                  "type": "integer",
+                  "description": "The company's income",
+                  "examples": [
+                    3000000
+                  ]
+                },
+                "net_worth": {
+                  "$id": "#/properties/entity/properties/applicant/properties/personal/properties/company/properties/net_worth",
+                  "type": "integer",
+                  "description": "The company's net worth",
+                  "examples": [
+                    20000000
+                  ]
+                }
+              },
+              "additionalProperties": true
+            },
+            "account": {
+              "$id": "#/properties/entity/properties/applicant/properties/account",
+              "type": "object",
+              "description": "The applicant's account information",
+              "examples": [
+                {
+                  "external_id": "980f2c12-e899-11eb-8639-c37913a46510",
+                  "limit": 3500,
+                  "granted_limit": 5000,
+                  "available_credit_limit": 20000,
+                  "exchange_mode": "SAME_DAY"
+                }
+              ],
+              "properties": {
+                "external_id": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/external_id",
+                  "type": "string",
+                  "description": "A record identifier for external purposes.",
+                  "examples": [
+                    "980f2c12-e899-11eb-8639-c37913a46510"
+                  ]
+                },
+                "limit": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/limit",
+                  "type": "number",
+                  "description": "A user-defined account limit, between 0 and the granted limit",
+                  "examples": [
+                    3500
+                  ]
+                },
+                "granted_limit": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/granted_limit",
+                  "type": "number",
+                  "description": "The amount granted to the applicant's account.",
+                  "examples": [
+                    5000
+                  ]
+                },
+                "available_credit_limit": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/available_credit_limit",
+                  "type": "number",
+                  "description": "The amount available to the applicant's account",
+                  "examples": [
+                    20000
+                  ]
+                },
+                "exchange_mode": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/exchange_mode",
+                  "type": "string",
+                  "description": "Wether any foreign transaction should be charged by the exchange rate at the day it occurred or at the statement's closing date. Valid values (SAME_DAY, CLOSING)",
+                  "enum": [
+                    "SAME_DAY",
+                    "CLOSING"
+                  ],
+                  "examples": [
+                    "SAME_DAY"
+                  ]
+                },
+                "is_overlimit": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/is_overlimit",
+                  "type": "boolean",
+                  "description": "Whether the account has hit the granted limit during the current cycle at least once",
+                  "examples": [
+                    true,
+                    false
+                  ]
+                },
+                "total_installment_credit_limit": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/total_installment_credit_limit",
+                  "type": "number",
+                  "description": "Total amount granted for a separate account credit limit, e.g. a program-specific credit line.",
+                  "examples": [
+                    5000.12
+                  ]
+                },
+                "available_total_installment_credit": {
+                  "$id": "#/properties/entity/properties/applicant/properties/account/properties/available_total_installment_credit",
+                  "type": "number",
+                  "description": "Available amount for the separate credit limit defined by `total_installment_credit_limit`",
+                  "examples": [
+                    123.0
+                  ]
+                }
+              },
+              "additionalProperties": true
+            },
+            "migration": {
+              "$id": "#/properties/entity/properties/applicant/properties/migration",
+              "type": "object",
+              "description": "The applicant's migration extra information.",
+              "examples": [
+                {
+                  "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+                  "version_date": "2021-07-19T09:55:00.000Z",
+                  "creation_date": "2021-08-10",
+                  "create_statements": true,
+                  "open_due_date": "2021-08-21",
+                  "account_status": "Active",
+                  "collection_status": "NORMAL",
+                  "status": "MIGRATING",
+                  "current_cycle": 1,
+                  "go_live_account_status": "NORMAL"
+                }
+              ],
+              "required": [
+                "id",
+                "version_date"
+              ],
+              "properties": {
+                "id": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/id",
+                  "type": "string",
+                  "description": "A record identifier for migration purposes.",
+                  "examples": [
+                    "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21"
+                  ]
+                },
+                "version_date": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/version_date",
+                  "type": "string",
+                  "description": "A record identifier for update data. Valid format (yyyy-MM-ddTHH:mm:ss.sssZ).",
+                  "format": "date-time",
+                  "examples": [
+                    "2021-07-19T09:55:00.000Z"
+                  ]
+                },
+                "creation_date": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/creation_date",
+                  "type": "string",
+                  "description": "A record identifier for update data. Valid formats YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ",
+                  "examples": [
+                    "2021-08-10",
+                    "2021-08-10T09:55:00Z"
+                  ]
+                },
+                "create_statements": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/create_statements",
+                  "type": "boolean",
+                  "description": "Flag that indicates the statements creation.",
+                  "examples": [
+                    true
+                  ]
+                },
+                "open_due_date": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/open_due_date",
+                  "type": "string",
+                  "description": "Date filled with expiration date on the day of the customer' cycle closing. When the customer pays more than the minimum on the invoice, the date is removed, otherwise it is kept to demonstrate the base day of the customer's due date.",
+                  "format": "date",
+                  "examples": [
+                    "2021-08-21"
+                  ]
+                },
+                "account_status": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/account_status",
+                  "type": "string",
+                  "description": "Current account status.",
+                  "examples": [
+                    "Active"
+                  ]
+                },
+                "status": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/status",
+                  "type": "string",
+                  "description": "Current migration status.",
+                  "examples": [
+                    "TO_MIGRATE",
+                    "MIGRATING",
+                    "NOT_MIGRATE"
+                  ]
+                },
+                "collection_status": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/collection_status",
+                  "type": "string",
+                  "description": "Current financial status.",
+                  "enum": [
+                    "NORMAL",
+                    "OVERDUE",
+                    "REFINANCING"
+                  ],
+                  "examples": [
+                    "NORMAL"
+                  ]
+                },
+                "current_cycle": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/current_cycle",
+                  "type": "integer",
+                  "description": "Current billing cycle.",
+                  "examples": [
+                    1
+                  ]
+                },
+                "go_live_account_status": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/go_live_account_status",
+                  "type": "string",
+                  "description": "Go live Account Status.",
+                  "enum": [
+                    "BLOCKED",
+                    "CANCELLED",
+                    "DEFINITIVE_CANCELLATION",
+                    "FULL_CANCELLATION",
+                    "NORMAL",
+                    "OVERDUE"
+                  ],
+                  "examples": [
+                    "NORMAL"
+                  ]
+                },
+                "phase_id": {
+                  "$id": "#/properties/entity/properties/applicant/properties/migration/properties/phase_id",
+                  "type": "string",
+                  "description": "Migration Phase ID",
+                  "examples": [
+                    "rollout-2023-011"
+                  ]
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        },
+        "due_date": {
+          "$id": "#/properties/entity/properties/due_date",
+          "type": "integer",
+          "description": "The id of the account due date chosen from the possible values allowed for this program.",
+          "default": 0,
+          "examples": [
+            101010
+          ]
+        },
+        "program_id": {
+          "$id": "#/properties/entity/properties/program_id",
+          "type": "integer",
+          "description": "ID of the program the account is associated with.",
+          "default": 0,
+          "examples": [
+            101010
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "Account metadata",
+          "examples": [
+            {
+              "key1": "value1",
+              "key2": "value2"
+            }
+          ],
+          "additionalProperties": true
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

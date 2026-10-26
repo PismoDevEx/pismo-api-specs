@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Clearing processing summary received",
+  "description": "Clearing Processing Summary Event",
+  "required": [
+    "source_filename",
+    "backup_file",
+    "processing_date_time",
+    "registry_amount",
+    "file_processing_status",
+    "error_message"
+  ],
+  "properties": {
+    "source_filename": {
+      "title": "Clearing file name",
+      "description": "File name of the clearing file to be processed.",
+      "type": "string",
+      "examples": [
+        "T1123410329290040078913.ipm"
+      ]
+    },
+    "backup_file": {
+      "title": "Backup s3 clearing file path",
+      "description": "The clearing file path in s3.",
+      "type": "string",
+      "examples": [
+        "TN-99999999-1234-4321-5678-123456789012/fromMaster/T112/2022/341/T1123410329290040078913.ipm"
+      ]
+    },
+    "processing_date_time": {
+      "title": "Processing Date Time in UTC",
+      "description": "Date and time of clearing stage in UTC. This field considers the time when the clearing process takes place.",
+      "type": "string",
+      "format": "date-time",
+      "examples": [
+        "2022-01-01T10:10:00Z"
+      ]
+    },
+    "registry_amount": {
+      "title": "Registry amount",
+      "description": "Total records processed in the clearing system.",
+      "type": "string",
+      "examples": [
+        "114"
+      ]
+    },
+    "file_processing_status": {
+      "title": "File processing status",
+      "description": "The clearing file processing status.",
+      "type": "string",
+      "enum": [
+        "SUCCESSFUL",
+        "UNSUCCESSFUL"
+      ]
+    },
+    "error_message": {
+      "title": "Error message",
+      "description": "Error message will be present in case of exception",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "exception"
+      ]
+    },
+    "tcfc_breakdown": {
+      "title": "Transaction/Function code breakdown",
+      "description": "Per-transaction-code and per-function-code counts processed in the clearing file, keyed by `TC/{id}` or `FC/{id}`",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "examples": [
+        {
+          "TC/05": 42,
+          "TC/25": 18,
+          "FC/01": 7
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,457 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Funds received by customer",
+  "required": [
+    "transaction_type",
+    "outcome",
+    "current_balance",
+    "source_holder",
+    "destination_holder"
+  ],
+  "properties": {
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction type",
+      "description": "Identifies the type of bankaccounts cash in",
+      "examples": [
+        "TED_CASHIN",
+        "TEF_CASHIN"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "title": "Outcome",
+      "description": "Outcome of the authorization",
+      "examples": [
+        "SUCCESS",
+        "FAILED"
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Identifies the process of a authorization",
+      "examples": [
+        "004000",
+        "004001",
+        "004005",
+        "007000",
+        "007100",
+        "007101",
+        "007300",
+        "007301",
+        "007400",
+        "007500",
+        "007600",
+        "007601",
+        "007700"
+      ]
+    },
+    "source_holder": {
+      "$ref": "#/definitions/source_holder"
+    },
+    "destination_holder": {
+      "$ref": "#/definitions/destination_holder"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Amount of the authorization",
+      "examples": [
+        10.4,
+        17.5
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization id",
+      "description": "The identifier of the authorization",
+      "examples": [
+        45672
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Event Date",
+      "description": "Date of the authorization",
+      "examples": [
+        "2019-07-05T12:29:12.300Z"
+      ]
+    },
+    "current_balance": {
+      "type": "number",
+      "title": "Current balance",
+      "description": "Account balance after authorization",
+      "examples": [
+        100.84,
+        0
+      ]
+    },
+    "anti_fraud": {
+      "$ref": "#/definitions/anti_fraud"
+    }
+  },
+  "definitions": {
+    "source_holder": {
+      "type": [
+        "object"
+      ],
+      "title": "Source account Holder",
+      "description": "Source account Holder information",
+      "required": [
+        "name",
+        "document_number",
+        "entity_type",
+        "bank_account"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Account holder name",
+          "examples": [
+            "Destinat\u00e1rio da Silva"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "Account holder document number",
+          "examples": [
+            "01969270306"
+          ]
+        },
+        "entity_type": {
+          "type": "string",
+          "title": "entity type",
+          "description": "Identifies if the account holder is a person or a company",
+          "examples": [
+            "F"
+          ]
+        },
+        "bank_account": {
+          "$ref": "#/definitions/source_bank_account"
+        }
+      }
+    },
+    "destination_holder": {
+      "type": [
+        "object"
+      ],
+      "title": "Destination account Holder",
+      "description": "Destination account Holder information",
+      "required": [
+        "name",
+        "document_number",
+        "entity_type",
+        "bank_account"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Account holder name",
+          "examples": [
+            "Destinat\u00e1rio da Silva"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "Account holder document number",
+          "examples": [
+            "01969270306"
+          ]
+        },
+        "entity_type": {
+          "type": "string",
+          "title": "entity type",
+          "description": "Identifies if the account holder is a person or a company",
+          "examples": [
+            "F"
+          ]
+        },
+        "phone_country_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Phone country code",
+          "description": "Account holder phone country code",
+          "examples": [
+            "55"
+          ]
+        },
+        "phone_area_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Phone area code",
+          "description": "Account holder phone code of the area (state/uf/province)",
+          "examples": [
+            "11"
+          ]
+        },
+        "phone_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Phone number",
+          "description": "Account holder phone number",
+          "examples": [
+            "988887777"
+          ]
+        },
+        "alias": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Alias",
+          "description": "Account holder alias",
+          "examples": [
+            "Destinat\u00e1rio"
+          ]
+        },
+        "external_id": {
+          "type": "string",
+          "title": "External ID",
+          "description": "External correlation identifier",
+          "examples": [
+            "b133facc-7db7-4ddb-8b68-946350bd4787"
+          ]
+        },
+        "bank_account": {
+          "$ref": "#/definitions/destination_bank_account"
+        }
+      }
+    },
+    "source_bank_account": {
+      "type": [
+        "object"
+      ],
+      "title": "Bank Account",
+      "description": "Bank account information",
+      "required": [
+        "bank",
+        "agency",
+        "account_number",
+        "account_digit",
+        "account_type"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "title": "Bank Code",
+          "description": "Identifies the bank",
+          "examples": [
+            "341"
+          ]
+        },
+        "agency": {
+          "type": "string",
+          "title": "Agency Code",
+          "description": "Identifies the bank's agency",
+          "examples": [
+            "0500"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "title": "Account number",
+          "description": "Identifier of a specific user's bank account",
+          "examples": [
+            "000000001"
+          ]
+        },
+        "account_digit": {
+          "type": "string",
+          "title": "Account digit",
+          "description": "The digit of the account number",
+          "examples": [
+            "8"
+          ]
+        },
+        "account_type": {
+          "type": "string",
+          "title": "Account Type",
+          "description": "Bank account type",
+          "examples": [
+            "Conta Pagamento"
+          ]
+        }
+      }
+    },
+    "destination_bank_account": {
+      "type": [
+        "object"
+      ],
+      "title": "Bank Account",
+      "description": "Bank account information",
+      "required": [
+        "bank",
+        "agency",
+        "account_number",
+        "account_digit",
+        "id",
+        "interoperability",
+        "status",
+        "program_id",
+        "account_id"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "maxLength": 3,
+          "title": "Bank Code",
+          "description": "Identifies the bank",
+          "examples": [
+            "341"
+          ]
+        },
+        "agency": {
+          "type": "string",
+          "maxLength": 5,
+          "title": "Agency Code",
+          "description": "Identifies the bank's agency",
+          "examples": [
+            "0500"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "maxLength": 12,
+          "title": "Account number",
+          "description": "Identifier of a specific user's bank account",
+          "examples": [
+            "000000001"
+          ]
+        },
+        "account_digit": {
+          "type": "string",
+          "title": "Account digit",
+          "description": "The digit of the account number",
+          "examples": [
+            "8"
+          ]
+        },
+        "id": {
+          "type": "integer",
+          "title": "ID",
+          "description": "Bank account id",
+          "examples": [
+            123456
+          ]
+        },
+        "account_type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Account Type",
+          "description": "Bank account type",
+          "examples": [
+            "Conta Pagamento"
+          ]
+        },
+        "interoperability": {
+          "type": "string",
+          "title": "Interoperability",
+          "description": "Unique ID composed by branch and account number",
+          "examples": [
+            "00005000000000000123"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "Status",
+          "description": "Flag that Identifies the status of the bank account",
+          "examples": [
+            "ACTIVE"
+          ]
+        },
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Pismo's account identifier",
+          "examples": [
+            1
+          ]
+        },
+        "creation_date": {
+          "type": "string",
+          "title": "Creation Date",
+          "description": "Creation date and time of the bank account",
+          "examples": [
+            "2018-08-16T18:55:50Z"
+          ]
+        },
+        "last_update": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Last Update",
+          "description": "Last update date and time of the bank account",
+          "examples": [
+            "2018-08-16T18:55:50Z"
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Pismo's program identifier of the account holder",
+          "examples": [
+            540
+          ]
+        }
+      }
+    },
+    "anti_fraud": {
+      "type": [
+        "object"
+      ],
+      "title": "Antifraud",
+      "description": "Antifraude information",
+      "required": [
+        "name",
+        "external_id",
+        "outcome",
+        "engine_response"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Descriptor of the antifraud origin",
+          "examples": [
+            "simility"
+          ]
+        },
+        "external_id": {
+          "type": "string",
+          "title": "External ID",
+          "description": "Value of the e_id sent by the antifraud engine"
+        },
+        "outcome": {
+          "type": "string",
+          "title": "Outcome",
+          "description": "Engine check result",
+          "examples": [
+            "SUCCESS",
+            "FAILED"
+          ]
+        },
+        "engine_response": {
+          "type": "string",
+          "title": "Engine response",
+          "description": "Antifraude engine response json as string"
+        }
+      }
+    }
+  }
+}

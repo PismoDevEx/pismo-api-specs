@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Deposit renewed",
+  "description": "Deposit renewal event. This event is generated when a deposit is renewed at maturity, starting a new term for the account.",
+  "required": [
+    "account_id",
+    "product_id",
+    "term_start_date",
+    "maturity_date",
+    "renewal_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123456
+      ]
+    },
+    "product_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Product ID",
+      "description": "Product ID. Format is UUID v4.",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "term_start_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Term start date",
+      "description": "Start date of the renewed deposit term (reached maturity date plus one day). Displayed in RFC3339 format.",
+      "examples": [
+        "2030-10-16"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Maturity date",
+      "description": "Maturity date of the renewed deposit term. Displayed in RFC3339 format.",
+      "examples": [
+        "2031-10-16"
+      ]
+    },
+    "renewal_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Renewal date time",
+      "description": "Timestamp indicating when the deposit renewal was processed. Displayed in RFC3339 format.",
+      "examples": [
+        "2030-10-16T13:26:25Z"
+      ]
+    },
+    "external_account_id": {
+      "title": "External account ID",
+      "description": "A custom account ID string that uniquely identifies the account within your organization",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": [
+        "5acb5**************************a945b"
+      ]
+    }
+  }
+}

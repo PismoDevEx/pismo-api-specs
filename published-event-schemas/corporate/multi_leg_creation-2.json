@@ -1,0 +1,338 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Multi-leg payment lifecycle created",
+  "required": [
+    "multileg_id"
+  ],
+  "properties": {
+    "multileg_id": {
+      "title": "A unique 50 character long identification for the multi-leg payment",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 75,
+      "examples": [
+        "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0"
+      ]
+    },
+    "debits": {
+      "title": "List of debit legs",
+      "type": [
+        "array"
+      ],
+      "items": {
+        "type": "object",
+        "required": [
+          "external_account_id",
+          "currency",
+          "amount",
+          "tracking_id"
+        ],
+        "properties": {
+          "external_account_id": {
+            "type": "string",
+            "title": "External account ID",
+            "description": "The external account ID to which the transaction is posted.",
+            "minLength": 1,
+            "maxLength": 60,
+            "examples": [
+              "f8eccb3c-bce1-47b5-a122-f08c9c41b036"
+            ]
+          },
+          "tracking_id": {
+            "title": "A unique 50 character long identification for the payment",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "examples": [
+              "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0-db00"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount",
+            "description": "The amount that will be transacted.",
+            "minimum": 0.01,
+            "maximum": 100000000000000000,
+            "examples": [
+              10.1,
+              100.2,
+              30
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency alphabetic code",
+            "description": "A 3-letter code in the ISO 4217-compliant format that represents the currency used in the transaction.",
+            "minLength": 1,
+            "maxLength": 3,
+            "examples": [
+              "USD",
+              "BRL"
+            ]
+          },
+          "processing_code": {
+            "type": "string",
+            "title": "Processing code",
+            "description": "Processing code used for posting the transaction.",
+            "minLength": 0,
+            "maxLength": 6,
+            "examples": [
+              "007700",
+              "009900",
+              "007200"
+            ]
+          },
+          "soft_descriptor": {
+            "type": "string",
+            "title": "Soft descriptor",
+            "description": "A brief description in the bank statement that helps identify a particular transaction.",
+            "minLength": 0,
+            "maxLength": 100,
+            "examples": [
+              "debit operation"
+            ]
+          },
+          "earmark_id": {
+            "type": "string",
+            "title": "Earmark ID",
+            "description": "The ID of the earmarked balance from which the amount is withdrawn.",
+            "minLength": 0,
+            "maxLength": 60,
+            "examples": [
+              "9244390a-031f-4140-8cc2-7bd3fcbd35b7"
+            ]
+          },
+          "force_post": {
+            "title": "Force post",
+            "description": "Defines whether it is a force debit operation.",
+            "type": "boolean",
+            "examples": [
+              true
+            ]
+          },
+          "validation_rules": {
+            "title": "Validation rules",
+            "description": "Allows you to choose which validations are executed during the payment process.",
+            "type": "object",
+            "additionalProperties": {
+              "title": "Validation rule",
+              "type": "object",
+              "properties": {
+                "override": {
+                  "type": "boolean",
+                  "description": "Overrides the validation rule in the payment process.",
+                  "examples": [
+                    false
+                  ]
+                },
+                "force": {
+                  "type": "boolean",
+                  "description": "Forces a payment validation rule to be executed in a forced state.",
+                  "examples": [
+                    false
+                  ]
+                }
+              }
+            },
+            "examples": [
+              {
+                "ACCOUNT_STATUS": {
+                  "override": true
+                },
+                "LEDGER": {
+                  "force": true
+                }
+              }
+            ]
+          },
+          "skip_account_date_validation": {
+            "type": "boolean",
+            "title": "Skip account date validation",
+            "description": "Determines whether or not to validate the transaction date time against the account creation date time.",
+            "examples": [
+              true
+            ]
+          },
+          "instant_clearing": {
+            "type": "boolean",
+            "title": "Instant clearing",
+            "description": "Whether funds are available when payment is posted.",
+            "examples": [
+              true
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "This is the field that contains the payment-related data in key-value pair format that Pismo stores for your organization.",
+            "examples": [
+              {
+                "custom_info": "value"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "credits": {
+      "title": "List of credit legs",
+      "type": [
+        "array"
+      ],
+      "items": {
+        "type": "object",
+        "required": [
+          "external_account_id",
+          "processing_code",
+          "amount",
+          "tracking_id"
+        ],
+        "properties": {
+          "external_account_id": {
+            "type": "string",
+            "title": "External account ID",
+            "description": "The external account ID to which the transaction is posted.",
+            "minLength": 1,
+            "maxLength": 60,
+            "examples": [
+              "7d0593c4-e63b-4d45-a041-236c97a8fd17"
+            ]
+          },
+          "tracking_id": {
+            "title": "A unique 50 character long identification for the payment",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "examples": [
+              "UK1-eb75c472-a213-41a7-a96e-ac0156b832f0-cr00"
+            ]
+          },
+          "processing_code": {
+            "type": "string",
+            "title": "Processing code",
+            "description": "Processing code used for posting the transaction.",
+            "minLength": 0,
+            "maxLength": 6,
+            "examples": [
+              "007700",
+              "009900",
+              "007200"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount",
+            "description": "The amount that will be transacted.",
+            "minimum": 0.01,
+            "maximum": 100000000000000000,
+            "examples": [
+              10.1,
+              100.2,
+              30
+            ]
+          },
+          "soft_descriptor": {
+            "type": "string",
+            "title": "Soft descriptor",
+            "description": "A brief description in the bank statement that helps identify a particular transaction.",
+            "minLength": 0,
+            "maxLength": 100,
+            "examples": [
+              "credit operation"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency alphabetic code",
+            "description": "A 3-letter code in the ISO 4217-compliant format that represents the currency used in the transaction.",
+            "minLength": 1,
+            "maxLength": 3,
+            "examples": [
+              "USD",
+              "BRL"
+            ]
+          },
+          "force_post": {
+            "title": "Defines whether it is a force credit operation.",
+            "type": "boolean",
+            "examples": [
+              true
+            ]
+          },
+          "validation_rules": {
+            "title": "Validation rules",
+            "description": "Allows you to choose which validations are executed during the payment process.",
+            "type": "object",
+            "additionalProperties": {
+              "title": "Validation rule",
+              "type": "object",
+              "properties": {
+                "override": {
+                  "type": "boolean",
+                  "description": "Overrides the validation rule in the payment process.",
+                  "examples": [
+                    false
+                  ]
+                },
+                "force": {
+                  "type": "boolean",
+                  "description": "Forces a payment validation rule to be executed in a forced state.",
+                  "examples": [
+                    false
+                  ]
+                }
+              }
+            },
+            "examples": [
+              {
+                "ACCOUNT_STATUS": {
+                  "override": true
+                },
+                "LEDGER": {
+                  "force": true
+                }
+              }
+            ]
+          },
+          "skip_account_date_validation": {
+            "type": "boolean",
+            "title": "Skip account date validation",
+            "description": "Determines whether or not to validate the transaction date time against the account creation date time.",
+            "examples": [
+              true
+            ]
+          },
+          "instant_clearing": {
+            "type": "boolean",
+            "title": "Instant clearing",
+            "description": "Whether funds are available when payment is posted.",
+            "examples": [
+              true
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "This is the field that contains the payment-related data in key-value pair format that Pismo stores for your organization.",
+            "examples": [
+              {
+                "custom_info": "value"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "This is the field that contains the payment-related data in key-value pair format that Pismo stores for your organization.",
+      "examples": [
+        {
+          "custom_info": "value"
+        }
+      ]
+    }
+  }
+}

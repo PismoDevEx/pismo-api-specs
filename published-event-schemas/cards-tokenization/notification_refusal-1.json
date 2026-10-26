@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Token provisioning rejected",
+  "description": "All network calls to Pismo for tokenization (usually originating from a payment app such as Apple Pay), generate an event, allowing you to track token provisioning through creation to deletion. See the <a href='https://developers.pismo.io/pismo-docs/docs/card-tokenization-flow-and-events' target='_blank'>Cards tokenization flow and events</a> guide for more information.",
+  "properties": {
+    "account_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Account ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        24146066
+      ]
+    },
+    "program_id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Program ID",
+      "description": "Pismo program ID.",
+      "examples": [
+        12
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        42488842
+      ]
+    },
+    "custom_codes": {
+      "title": "Internal Pismo custom codes",
+      "description": "Custom codes generated during card on file processing, indicating reasons for declining tokenization. Must contain at least one custom code inside array. See <a href='https://developers.pismo.io/pismo-docs/docs/third-party-wallets' target='_blank'>Third-party wallets (such as Apple Pay)</a> article for list of codes.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        "BNB",
+        "FLE"
+      ]
+    },
+    "network_call_method": {
+      "title": "Network outbound method ID.",
+      "description": "Serves to parse raw message from field network_data",
+      "type": "string",
+      "examples": [
+        "ISO_MDES_TA",
+        "ISO_MDES_TE",
+        "VTS_TOKEN_CREATE_NOTIFICATION"
+      ]
+    },
+    "network_data": {
+      "title": "Network data.",
+      "description": "Raw data from network during tokenization process. Varies according to network and processing. Refer to the <a href='https://developer.visa.com capabilities/token-service-provisioning' target='_blank'>VISA Token Service (VTS) Issuer API Specifications (JSON) manual</a> or the <a href='https://www.mastercard.us/content/dam/mccom/global/documents/mastercard-rules.pdf' target='_blank'>Mastercard Customer Interface Specification manual</a> for more information on the contents of this field.",
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "network_event_out_of_order": {
+      "title": "Out-of-Order Network Event",
+      "description": "Set to true if the event, as received from the Network, is out of the expected sequence; this condition may impact the token provisioning flow.",
+      "type": "boolean",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "token_id": {
+      "title": "Pismo-created token ID.",
+      "description": "This value can be null in case of some mapped custom code.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "examples": [
+        42488842
+      ]
+    },
+    "pismo_response": {
+      "title": "Pismo response to payment network",
+      "description": "Response depends on network payment and network call method. Logs the final response from Pismo to network payment. Should be null in async network calls that expect null values.",
+      "additionalProperties": true,
+      "type": [
+        "object",
+        "null"
+      ],
+      "examples": [
+        {
+          "actionCode": "85",
+          "cvv2ResultsCode": "M"
+        }
+      ]
+    }
+  },
+  "required": [
+    "card_id",
+    "token_id",
+    "account_id",
+    "network_call_method",
+    "network_data",
+    "custom_codes"
+  ]
+}

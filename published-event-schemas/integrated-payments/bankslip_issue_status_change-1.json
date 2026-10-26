@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bank slip issuance status changed",
+  "description": "This event occurs when a financial bank slip status changes on the Pismo platform. The [bank slip issue](https://developers.pismo.io/pismo-docs/reference/post-integrated-payments-api-v1-bankslips-issue) endpoint generates this event.",
+  "required": [
+    "account_id",
+    "new_status",
+    "old_status",
+    "update_datetime"
+  ],
+  "optional": [
+    "due_date",
+    "over_due_date"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        8675309
+      ]
+    },
+    "new_status": {
+      "type": "string",
+      "title": "New bank slip status",
+      "description": "Bank slip's new status",
+      "enum": [
+        "CREATED",
+        "REGISTERED",
+        "CANCELLED",
+        "ERROR"
+      ],
+      "example": "REGISTERED"
+    },
+    "old_status": {
+      "type": "string",
+      "title": "Old bank slip status",
+      "description": "Bank slip's old status",
+      "enum": [
+        "CREATED",
+        "REGISTERED",
+        "CANCELLED",
+        "ERROR"
+      ],
+      "example": "CREATED"
+    },
+    "due_date": {
+      "title": "Due date",
+      "type": "string",
+      "format": "date-time",
+      "description": "Bank slip due date",
+      "examples": [
+        "2023-01-01T10:10:00Z"
+      ]
+    },
+    "over_due_date": {
+      "title": "Over due date",
+      "type": "string",
+      "format": "date-time",
+      "description": "Bank slip over due date",
+      "examples": [
+        "2023-01-01T10:10:00Z"
+      ]
+    },
+    "update_datetime": {
+      "type": "string",
+      "title": "Update datetime",
+      "description": "Bank slip update payment date time",
+      "format": "date-time",
+      "examples": [
+        "2022-09-26T00:00:00Z"
+      ]
+    }
+  }
+}

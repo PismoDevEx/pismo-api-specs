@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix fraud marker registration failure",
+  "description": "Pix fraud marker integrity registration failure. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-fraud-marker-create'>Create fraud marker</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events'>Pix payments data events</a> guide.",
+  "required": [
+    "id",
+    "idempotency_key",
+    "fraud_type",
+    "document_number"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "ID",
+      "description": "Fraud marker ID.",
+      "maxLength": 36,
+      "examples": [
+        "1fe71b28-a5eb-4d3d-8781-823205c76aa3"
+      ]
+    },
+    "idempotency_key": {
+      "type": "string",
+      "title": "Idempotency key",
+      "description": "Key used to guarantee data Idempotency.",
+      "maxLength": 36,
+      "examples": [
+        "4140f714-04da-42f4-831e-f46b452f36f2"
+      ]
+    },
+    "fraud_type": {
+      "type": "string",
+      "title": "Fraud type",
+      "description": "Verified fraud type",
+      "enum": [
+        "APPLICATION_FRAUD",
+        "MULE_ACCOUNT",
+        "SCAMMER_ACCOUNT",
+        "OTHER",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "APPLICATION_FRAUD"
+      ]
+    },
+    "document_number": {
+      "type": "string",
+      "title": "Document Number",
+      "description": "A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+      "maxLength": 14,
+      "example": "123412341234"
+    },
+    "key": {
+      "type": "string",
+      "title": "Pix key",
+      "description": "Key to which the fraud marker will be associated. It must be reported, if known.",
+      "example": "string"
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error message.",
+      "description": "Error message that occurred during processing in the integrity stream.",
+      "examples": [
+        "Error on provider"
+      ]
+    }
+  }
+}

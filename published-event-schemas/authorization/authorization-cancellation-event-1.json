@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Authorization cancelled",
+  "description": "This event occurs asynchronously when the Pismo platform calls the following endpoints and cancels an authorization. <br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v2-cancel' target='_blank'>Cancel transfer</a><br><a href='https://developers.pismo.io/pismo-docs/reference/post-payments-v1-force-cancel' target='_blank'>Cancel forced operation</a>",
+  "required": [
+    "amount",
+    "remaining_amount",
+    "authorization",
+    "tracking_id",
+    "type"
+  ],
+  "properties": {
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Authorized amount",
+      "examples": [
+        20.1,
+        100.0,
+        50
+      ]
+    },
+    "authorization": {
+      "$ref": "#/definitions/authorization"
+    },
+    "original_tracking_id": {
+      "type": "string",
+      "title": "Original tracking ID",
+      "description": "GUID of original authorization",
+      "examples": [
+        "4d301a79-3f00-492e-aaa2-907a8ee0d717"
+      ]
+    },
+    "remaining_amount": {
+      "type": "number",
+      "title": "Amount canceled",
+      "description": "Amount canceled. If the full amount of the transaction is not authorized, the remaining amount should be canceled.",
+      "minimum": 0,
+      "examples": [
+        20.1,
+        100.0,
+        50
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "description": "GUID of the transaction",
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Cancellation type",
+      "description": "Total or partial cancellation",
+      "enum": [
+        "TOTAL",
+        "PARTIAL"
+      ],
+      "examples": [
+        "TOTAL",
+        "PARTIAL"
+      ]
+    },
+    "cancel_fees": {
+      "type": "boolean",
+      "description": "Indicates whether cancellation of fees associated with the original authorization has been requested.",
+      "examples": [
+        false,
+        true
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "GUID used to correlate operations related to the same transaction",
+      "examples": [
+        "2b190358-d339-4a69-b313-944e189c0a85"
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "title": "Event timestamp (ISO 8601)",
+      "description": "Event timestamp in the UTC (zero-hour offset) ISO 8601 format (yyyy-MM-ddThh:mm:ssZ).",
+      "format": "date-time",
+      "examples": [
+        "2021-06-04T10:37:37Z"
+      ]
+    },
+    "event_datetime": {
+      "type": "string",
+      "title": "Event timestamp (RFC 3339)",
+      "description": "Event timestamp in the UTC (zero-hour offset) RFC 3339 format, which includes milliseconds (yyyy-MM-ddThh:mm:ss.SSSZ).",
+      "format": "date-time",
+      "examples": [
+        "2021-06-04T10:37:37.830Z"
+      ]
+    },
+    "fees": {
+      "type": "number",
+      "description": "Fees amount to be cancelled.",
+      "minimum": 0,
+      "examples": [
+        20.1,
+        100.0,
+        50
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Additional information relevant to the customer.",
+      "title": "Additional information relevant to the customer. No business rule validation is performed on metadata.",
+      "examples": [
+        {
+          "metadata": {
+            "customer-data": {
+              "any": "fields"
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    }
+  },
+  "definitions": {
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "parent_authorization_id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Authorization ID",
+          "description": "Authorization unique identifier.",
+          "examples": [
+            123,
+            456,
+            789
+          ]
+        },
+        "parent_authorization_id": {
+          "type": "integer",
+          "title": "Parent authorization ID",
+          "description": "Unique identifier of parent authorization. An authorization has a `parent_authorization_id` when it's a cancellation of another operation. For example, if you make a cash-out and received authorization_id = 100, and then you cancel the cash-out, a new authorization is generated with `parent_authorization_id` = 100.",
+          "examples": [
+            123,
+            456,
+            789
+          ]
+        },
+        "code": {
+          "type": "string",
+          "title": "Authorization code",
+          "description": "Authorization code identifier.",
+          "examples": [
+            "143726",
+            "113526"
+          ]
+        },
+        "operation_description": {
+          "type": "string",
+          "title": "Operation description",
+          "description": "Description of operation",
+          "examples": [
+            "ONE INSTALLMENT",
+            "INTEREST-FREE INSTALLMENTS",
+            "TRANSFER",
+            "WITHDRAWAL",
+            "PAYMENT"
+          ]
+        },
+        "processing_code": {
+          "type": "string",
+          "title": "Processing code",
+          "description": "Processing code for authorization. See <a href='https://developers.pismo.io/pismo-docs/docs/processing-codes-and-transaction-types' target='_blank'>Processing codes and transaction types</a> for more information.",
+          "examples": [
+            "007700",
+            "009900",
+            "007200"
+          ]
+        },
+        "balance_impact": {
+          "type": "integer",
+          "title": "Balance impact",
+          "description": "Type of operation impact on the account balance: `-1` debit, `1` credit, and `0` no impact.",
+          "enum": [
+            -1,
+            1,
+            0
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Authorization type",
+          "description": "Type of authorization",
+          "examples": [
+            "FORCE"
+          ]
+        },
+        "available_change": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Balance impact ID",
+              "description": "GUID of balance impact",
+              "examples": [
+                "4b636e57-3a53-4825-85ff-09a436f06cb4",
+                "9bb78991-9597-4766-a631-b299bec6358b"
+              ]
+            },
+            "update_datetime": {
+              "type": "string",
+              "title": "Update timestamp",
+              "description": "Timestamp of balance impact in the UTC (zero-hour offset) ISO 8601 format (yyyy-MM-ddThh:mm:ssZ).",
+              "examples": [
+                "2022-05-24T14:53:57Z",
+                "2022-05-24T14:53:57Z"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

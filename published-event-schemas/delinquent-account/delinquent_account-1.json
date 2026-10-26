@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Delinquent account closed",
+  "description": "Event generated when a delinquent account has been closed and all its accounts blocked.\n\n<b>Note:</b> The account closure process occurs in stages, such as posting accruals, installment prepayment, account status change, card blocking, among others. The platform generates this event only once at the end of the process. However, the `updated_at` field is updated each time one of the stages is completed. Typically, the final value of `updated_at` is very close to the value of `created_at` because all the stages are executed within a few seconds.",
+  "required": [
+    "id",
+    "account_id",
+    "org_id",
+    "created_at",
+    "tracking_id",
+    "status",
+    "processing_code"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Delinquent Account Closure ID",
+      "examples": [
+        8832190143
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "description": "Account ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "open_due_date": {
+      "type": "string",
+      "description": "Open due date, format = yyyy-mm-dd",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "due_days": {
+      "type": "integer",
+      "description": "Due Days",
+      "examples": [
+        9832195123
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Created at generated in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "description": "Updated at generated in ISO-8601 format",
+      "format": "date-time",
+      "examples": [
+        "2021-10-18T15:23:17Z"
+      ]
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Organization ID",
+      "examples": [
+        "TN-cc8f8b89-233a-4582-9f36-63ee85278d6d"
+      ]
+    },
+    "tracking_id": {
+      "type": "string",
+      "description": "Tracking ID",
+      "examples": [
+        "85bead50-f998-11ed-be56-0242ac120002"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Delinquent Account Status",
+      "examples": [
+        "SUCCESS_EVENT_SENT"
+      ]
+    },
+    "installment_advance_id": {
+      "type": "integer",
+      "description": "Installment Advance ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "description": "Authorization ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "description": "Processing Code",
+      "examples": [
+        "000800"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason",
+      "examples": [
+        "Overdue"
+      ]
+    },
+    "final_account_status": {
+      "type": "string",
+      "description": "Final Account Status",
+      "examples": [
+        "CANCELLED"
+      ]
+    },
+    "excluded_steps": {
+      "type": "array",
+      "description": "Excluded Steps",
+      "items": {
+        "type": "string",
+        "title": "Excluded Steps Description",
+        "description": "Excluded Steps Description",
+        "examples": [
+          "POST_INTEREST_ACCRUAL",
+          "POST_INSTALLMENT_ADVANCE",
+          "POST_CREDIT_TRANSACTION",
+          "SET_CARD_AS_BLOCKED"
+        ]
+      }
+    },
+    "cards": {
+      "type": "array",
+      "description": "Cards",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Card ID",
+            "examples": [
+              120383
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Card Type",
+            "examples": [
+              "CARD_TYPE"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Card Status",
+            "examples": [
+              "NORMAL",
+              "CANCELED"
+            ]
+          }
+        }
+      }
+    },
+    "transactions_canceled_separately": {
+      "type": "array",
+      "description": "Transactions which was canceled separately",
+      "items": {
+        "type": "object",
+        "properties": {
+          "transaction_id": {
+            "type": "integer",
+            "description": "Transaction ID which was canceled separately",
+            "examples": [
+              756985
+            ]
+          },
+          "undo_authorization_id": {
+            "type": "integer",
+            "description": "Authorization ID that was generated for the undo transaction ",
+            "examples": [
+              25695
+            ]
+          },
+          "undo_processing_code": {
+            "type": "string",
+            "description": "Processing code used to generate the undo transaction",
+            "examples": [
+              "0P001"
+            ]
+          },
+          "undo_transaction_id": {
+            "type": "integer",
+            "description": "Transaction ID that was created",
+            "examples": [
+              756990
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BACS mandate status change.",
+  "type": "object",
+  "description": "Bankers' Automated Clearing System (BACS) mandate event data. <a href='https://www.moderntreasury.com/learn/what-is-bacs' target = '_blank'>BACS</a> is a UK service that facilitates electronic money transfers between banks within a 3-day settlement cycle \u2014 day 1 (submission), day 2 (processing), and day 3 (clearing). This event represents a BACS Direct Debit mandate request received from the scheme. It is emitted when a mandate transitions between lifecycle states such as `CREATED`, `CONFIRMED`, `CANCELLED`, or `FAILED`.",
+  "required": [
+    "id",
+    "org_id",
+    "account_id",
+    "role",
+    "status",
+    "creation_date_time"
+  ],
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string",
+      "description": "Pismo mandate ID. Use this ID to fetch or reference the mandate in Pismo BACS mandate APIs. To cross-reference the mandate at the provider, use `external_id`.",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "external_id": {
+      "title": "External ID",
+      "type": "string",
+      "description": "Provider (Form3) mandate ID. You can use this to link the mandate in our system to the provider's mandate. Might be absent in case of provider timeout",
+      "examples": [
+        "f3a1c2d4-5678-90ab-cdef-1234567890ab"
+      ]
+    },
+    "org_id": {
+      "title": "Org ID",
+      "type": "string",
+      "description": "Organization ID that owns the mandate",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "type": "integer",
+      "description": "Mandate account ID",
+      "examples": [
+        8675309
+      ]
+    },
+    "role": {
+      "title": "Role",
+      "type": "string",
+      "description": "Account role in the mandate. Always `PAYER` \u2014 the account is the debtor being debited under the mandate.",
+      "enum": [
+        "PAYER"
+      ],
+      "examples": [
+        "PAYER"
+      ]
+    },
+    "reference": {
+      "title": "Reference",
+      "type": "string",
+      "description": "Client reference for the mandate that you can use for reconciliation or debugging purposes",
+      "examples": [
+        "MANDATE-REF-001"
+      ]
+    },
+    "status": {
+      "title": "Status",
+      "type": "string",
+      "description": "Mandate status.",
+      "enum": [
+        "CREATED",
+        "SUBMITTED",
+        "CONFIRMED",
+        "AMEND_PENDING",
+        "AMENDED",
+        "CANCEL_PENDING",
+        "CANCELLED",
+        "FAILED"
+      ],
+      "examples": [
+        "CONFIRMED"
+      ]
+    },
+    "status_reason": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/StatusReason"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Reason associated with the mandate status, typically populated when a mandate is `FAILED` or `CANCELLED`."
+    },
+    "creation_date_time": {
+      "title": "Creation date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Mandate creation datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    },
+    "update_date_time": {
+      "title": "Update date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Mandate updated datetime",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    }
+  },
+  "definitions": {
+    "StatusReason": {
+      "title": "Status reason",
+      "type": "object",
+      "description": "Mandate status reason information",
+      "required": [
+        "description",
+        "code"
+      ],
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string",
+          "description": "Human-readable reason for the mandate status",
+          "examples": [
+            "invalid sort code [EBACS0011]",
+            "Mandate not found [EBACS0017]",
+            "Mandate rejected by scheme [ADDACS]"
+          ]
+        },
+        "code": {
+          "title": "Code",
+          "type": "string",
+          "description": "Reason code. Form3 error codes (`EBACSxxxx`) or BACS mandate return reason codes (`ADDACS`, `AUDDIS`, `DUPL`).",
+          "examples": [
+            "EBACS0011",
+            "EBACS0013",
+            "EBACS0015",
+            "EBACS0017",
+            "ADDACS",
+            "AUDDIS",
+            "DUPL"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "description": "invalid sort code [EBACS0011]",
+          "code": "EBACS0011"
+        }
+      ]
+    }
+  }
+}

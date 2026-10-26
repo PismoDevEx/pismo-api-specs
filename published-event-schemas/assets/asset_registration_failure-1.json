@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset registration failed",
+  "description": "This event occurs when an asset registration fails.",
+  "required": [
+    "asset_id",
+    "issuer_id",
+    "customer_document_number",
+    "message"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions and cancellations.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer id",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "customer_document_number": {
+      "type": "string",
+      "title": "Customer document number",
+      "description": "Number of asset quota owner's legal document",
+      "examples": [
+        "00000000012"
+      ]
+    },
+    "deposit_number": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Deposit number of the asset quota",
+      "description": "Optional attribute provided by client when registering asset quota on Pismo platform",
+      "format": "int",
+      "examples": [
+        999999999
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of error that occurred when trying to register new asset or quota",
+      "examples": [
+        "This asset does not have any more available units."
+      ]
+    },
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation. Optional field provided by client in asset registration failure.",
+      "examples": [
+        "deposit:6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    }
+  }
+}

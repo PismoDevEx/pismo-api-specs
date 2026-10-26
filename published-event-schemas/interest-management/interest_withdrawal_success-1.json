@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest withdrawal succeeded",
+  "description": "This event occurs when withdrawal occurs with product interest management.",
+  "required": [
+    "tracking_id",
+    "account_id",
+    "created_at",
+    "withdrawal_date",
+    "currency_code",
+    "net_withdrawn_amount",
+    "gross_withdrawn_amount",
+    "taxes",
+    "scheduled_operation"
+  ],
+  "properties": {
+    "tracking_id": {
+      "type": "string",
+      "title": "Tracking ID.",
+      "description": "Unique withdrawal identifier defined by Customer.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        "999999999"
+      ]
+    },
+    "customer_document_number": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Customer document number",
+      "description": "Number of withdrawal owner's legal document",
+      "examples": [
+        "00000000012"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of withdrawal on Pismo platform",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    },
+    "withdrawal_date": {
+      "type": "string",
+      "title": "Value date",
+      "description": "Date that withdrawal was effectively issued by client",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "currency_code": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "ISO 4217 currency code",
+      "examples": [
+        "986"
+      ]
+    },
+    "net_withdrawn_amount": {
+      "type": "number",
+      "title": "Net Amount withdrawn",
+      "description": "Net Value to be withdrawn from account deposit",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "gross_withdrawn_amount": {
+      "type": "number",
+      "title": "Gross Amount withdrawn",
+      "description": "Gross Value to be withdrawn from account deposit",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "taxes": {
+      "type": "array",
+      "title": "List of taxes",
+      "items": {
+        "$ref": "#/definitions/taxes"
+      }
+    },
+    "scheduled_operation": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Indicates if redemption operation is scheduled",
+      "description": "Indicates if redemption operation is scheduled",
+      "examples": [
+        true,
+        false
+      ]
+    }
+  },
+  "definitions": {
+    "taxes": {
+      "type": "object",
+      "title": "Taxes attributes",
+      "required": [
+        "name",
+        "amount"
+      ],
+      "description": "Taxes to be applied to withdrawal",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Tax Name",
+          "description": "Tax Name.",
+          "examples": [
+            "IR",
+            "IOF"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tax Amount",
+          "description": "Tax Amount.",
+          "format": "double",
+          "examples": [
+            0.15
+          ]
+        }
+      }
+    }
+  }
+}

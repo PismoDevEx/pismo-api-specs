@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Authorization fraud report status changed",
+  "description": "This event occurs when an ELO card netwpork authorization fraud report status changes.",
+  "examples": [
+    {
+      "correlationId": "6da25b89-2c15-41c5-949c-a974b2cc9cf2",
+      "accountId": 76,
+      "authorizationFraudReportId": 71,
+      "networkAuthorizationId": 8,
+      "authorizationCode": "XYZ",
+      "cardId": 64,
+      "merchantId": "1234",
+      "transactionAmount": 97.05,
+      "status": "CREATED",
+      "networkBrandType": "Elo",
+      "orgId": "TN-6da25b89-2c15-41c5-949c-a974b2cc9cf2",
+      "fraudReport": {
+        "primary_reason": "AA",
+        "secondary_reason": "BB"
+      },
+      "createdAt": "2023-09-26",
+      "updatedAt": "2023-09-27",
+      "state": "Sao Paulo",
+      "zipCode": "09000000",
+      "country": "Brazil"
+    }
+  ],
+  "required": [
+    "correlationId",
+    "accountId",
+    "authorizationFraudReportId",
+    "networkAuthorizationId",
+    "authorizationCode",
+    "cardId",
+    "merchantId",
+    "transactionAmount",
+    "status",
+    "networkBrandType",
+    "orgId",
+    "fraudReport",
+    "createdAt",
+    "updatedAt",
+    "state",
+    "zipCode",
+    "country"
+  ],
+  "properties": {
+    "correlationId": {
+      "$id": "#/properties/correlationId",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Correlation ID",
+      "description": "Correlation ID. This field links related API requests and events. The CID can help the Pismo engineering team track everything related to a call. If not passed, this field is automatically generated.",
+      "example": "6da25b89-2c15-41c5-949c-a974b2cc9cf2"
+    },
+    "accountId": {
+      "$id": "#/properties/accountId",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "example": "76989"
+    },
+    "authorizationFraudReportId": {
+      "$id": "#/properties/authorizationFraudReportId",
+      "type": "integer",
+      "title": "Authorization fraud report ID",
+      "description": "Authorization fraud report ID",
+      "example": 788837
+    },
+    "networkAuthorizationId": {
+      "$id": "#/properties/networkAuthorizationId",
+      "type": "integer",
+      "title": "Network authorization ID",
+      "description": "Network authorization ID",
+      "example": 28890
+    },
+    "authorizationCode": {
+      "$id": "#/properties/authorizationCode",
+      "type": "string",
+      "title": "Authorization code",
+      "description": "Authorization code",
+      "example": "XYZ"
+    },
+    "cardId": {
+      "$id": "#/properties/cardId",
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "example": 67478
+    },
+    "merchantId": {
+      "$id": "#/properties/merchantId",
+      "type": "string",
+      "title": "Merchant ID",
+      "description": "Merchant ID",
+      "example": "3859"
+    },
+    "transactionAmount": {
+      "$id": "#/properties/transactionAmount",
+      "type": "number",
+      "title": "Transaction amount",
+      "description": "Transaction amount",
+      "example": 1234.56
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Status",
+      "description": "Status",
+      "enum": [
+        "CREATED",
+        "PENDING_CREATION",
+        "PENDING_UPDATE",
+        "UPDATED",
+        "PENDING_DELETE",
+        "DELETED"
+      ],
+      "example": "CREATED"
+    },
+    "networkBrandType": {
+      "$id": "#/properties/networkBrandType",
+      "title": "Network brand type",
+      "description": "Network brand type",
+      "type": "string",
+      "example": "Elo",
+      "enum": [
+        "Mastercard",
+        "Visa",
+        "Elo"
+      ]
+    },
+    "orgId": {
+      "$id": "#/properties/orgId",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID",
+      "example": "TN-6da25b89-2c15-41c5-949c-a974b2cc9cf2"
+    },
+    "fraudReport": {
+      "$id": "#/properties/fraudReport",
+      "title": "Fraud report",
+      "description": "Fraud report reasons",
+      "type": "object",
+      "required": [
+        "primary_reason",
+        "secondary_reason"
+      ],
+      "properties": {
+        "primary_reason": {
+          "title": "Primary reason",
+          "description": "Primary reason. See the <a href='https://developers.pismo.io/pismo-docs/reference/post-create-authorization-fraud-report' target='_blank'>Create authorization fraud report</a> endpoint for details on this enum.",
+          "type": "string",
+          "enum": [
+            "AT",
+            "CA",
+            "ED",
+            "FA",
+            "LS",
+            "MS",
+            "ND",
+            "NR",
+            "OT"
+          ],
+          "example": "AT"
+        },
+        "secondary_reason": {
+          "title": "Secondary reason",
+          "description": "Secondary reason. See the <a href='https://developers.pismo.io/pismo-docs/reference/post-create-authorization-fraud-report' target='_blank'>Create authorization fraud report</a> endpoint for details on this enum.",
+          "type": "string",
+          "enum": [
+            "BT",
+            "CD",
+            "CK",
+            "FF",
+            "FP",
+            "IT",
+            "MI",
+            "NA",
+            "PI",
+            "PN",
+            "RI",
+            "RT",
+            "ST",
+            "TM",
+            "TO",
+            "TP",
+            "TR"
+          ],
+          "example": "RT"
+        }
+      }
+    },
+    "createdAt": {
+      "$id": "#/properties/createdAt",
+      "type": "string",
+      "title": "Report creation time.",
+      "description": "Report creation time. A RFC 3339 value",
+      "example": "2023-04-12T23:20:50.52Z"
+    },
+    "updatedAt": {
+      "$id": "#/properties/updatedAt",
+      "type": "string",
+      "title": "Report last updated time.",
+      "description": "Report last updated time. A RFC 3339 value",
+      "example": "2023-04-12T23:20:50.52Z"
+    },
+    "state": {
+      "$id": "#/properties/state",
+      "type": "string",
+      "title": "State",
+      "description": "State",
+      "example": "Sao Paulo"
+    },
+    "zipCode": {
+      "$id": "#/properties/zipCode",
+      "type": "string",
+      "title": "Zipcode.",
+      "description": "Zipcode or other type of postal code",
+      "example": "004849"
+    },
+    "country": {
+      "$id": "#/properties/country",
+      "type": "string",
+      "title": "Country.",
+      "description": "Country",
+      "example": "Brazil"
+    }
+  }
+}

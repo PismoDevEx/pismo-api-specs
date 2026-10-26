@@ -1,0 +1,303 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Dispute resolution reconcilied",
+  "description": "Dispute resolution reconciliation event",
+  "required": [
+    "acquirer_reference_number",
+    "amount_cardholder_billing",
+    "amount_reconciliation",
+    "amount_transaction",
+    "card_acceptor_business_code",
+    "card_acceptor_id",
+    "card_acceptor_name",
+    "card_id",
+    "claim_id",
+    "cycle_id",
+    "file_id",
+    "function_code",
+    "message_number",
+    "message_reason_code",
+    "mti",
+    "processing_code",
+    "reversal_flag",
+    "transaction_destination_institution_id_code",
+    "transaction_originator_institution_id_code",
+    "transaction_status"
+  ],
+  "properties": {
+    "acquirer_reference_number": {
+      "$id": "#/properties/acquirer_reference_number",
+      "type": "string",
+      "title": "Acquirer reference number (ARN)",
+      "description": "An ARN is data an acquirer supplies in an acquirer originated message that an issuer may need to return to the acquirer in a subsequent message.",
+      "examples": [
+        "6666115166626"
+      ]
+    },
+    "amount_cardholder_billing": {
+      "$id": "#/properties/amount_cardholder_billing",
+      "type": "string",
+      "title": "Amount cardholder billing",
+      "description": "Transaction amount converted to the issuer\u2019s designated cardholder billing currency.",
+      "examples": [
+        "000000000667"
+      ]
+    },
+    "amount_reconciliation": {
+      "$id": "#/properties/amount_reconciliation",
+      "type": "string",
+      "title": "Reconciliation amount",
+      "description": "Reconciliation amount in sender's currency, exclusive of any fees.",
+      "examples": [
+        "000000000667"
+      ]
+    },
+    "amount_transaction": {
+      "$id": "#/properties/amount_transaction",
+      "type": "string",
+      "title": "Transaction amount",
+      "description": "Amount of funds the cardholder requested in the currency appearing on the transaction information document (TID), which may be in the acquirer\u2019s local currency.",
+      "examples": [
+        "000000000667"
+      ]
+    },
+    "card_acceptor_business_code": {
+      "$id": "#/properties/card_acceptor_business_code",
+      "type": "string",
+      "title": "Card acceptor business code",
+      "description": "Card acceptor business code [MCC] classifies the card acceptor's business type.",
+      "examples": [
+        "2612"
+      ]
+    },
+    "card_acceptor_id": {
+      "$id": "#/properties/card_acceptor_id",
+      "type": "string",
+      "title": "Card acceptor ID",
+      "description": "Acquirer assigned card ID",
+      "examples": [
+        "POtr8mvdQa0322"
+      ]
+    },
+    "card_acceptor_name": {
+      "$id": "#/properties/card_acceptor_name",
+      "type": "string",
+      "title": "Card acceptor name",
+      "description": "Card acceptor name or ATM owning institution name.",
+      "examples": [
+        "INSTITUTION ATM NAME"
+      ]
+    },
+    "card_id": {
+      "$id": "#/properties/card_id",
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        511351
+      ]
+    },
+    "claim_id": {
+      "$id": "#/properties/claim_id",
+      "type": "integer",
+      "title": "Claim ID",
+      "description": "Dispute claim ID.",
+      "examples": [
+        15161151
+      ]
+    },
+    "cycle_id": {
+      "$id": "#/properties/cycle_id",
+      "type": "integer",
+      "title": "Cycle ID",
+      "description": "The issuer provides card issuer reference data when processing retrieval or chargeback messages.",
+      "examples": [
+        151611516
+      ]
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": "string",
+      "title": "File ID",
+      "description": "File ID uniquely identifies a logical data file to be exchanged between a customer or processor and the clearing system.",
+      "examples": [
+        "IDNtrxmvdQa0123"
+      ]
+    },
+    "function_code": {
+      "$id": "#/properties/function_code",
+      "type": "string",
+      "title": "Function code",
+      "description": "Indicates a message\u2019s specific purpose.",
+      "examples": [
+        "213"
+      ]
+    },
+    "message_number": {
+      "$id": "#/properties/message_number",
+      "type": "integer",
+      "title": "Message number",
+      "description": "The transaction originator assigns the DE Message Number to data messages in a file. Message number monitors the integrity and continuity of the files being exchanged.",
+      "examples": [
+        28484845
+      ]
+    },
+    "message_reason_code": {
+      "$id": "#/properties/message_reason_code",
+      "type": "string",
+      "title": "Message reason code",
+      "description": "Message reason code",
+      "examples": [
+        "4526"
+      ]
+    },
+    "mti": {
+      "$id": "#/properties/mti",
+      "type": "string",
+      "title": "Message type interchange",
+      "description": "Four-digit numeric field describing the message type being interchanged",
+      "examples": [
+        "0100"
+      ]
+    },
+    "processing_code": {
+      "$id": "#/properties/processing_code",
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code indicates a transaction's effect on a customer account and the accounts affected.",
+      "examples": [
+        "010000"
+      ]
+    },
+    "reversal_flag": {
+      "$id": "#/properties/reversal_flag",
+      "type": "string",
+      "title": "Reversal Flag",
+      "description": "Indicates if the dispute is reversed. This can be `R` or space.",
+      "examples": [
+        "R"
+      ]
+    },
+    "transaction_destination_institution_id_code": {
+      "$id": "#/properties/transaction_destination_institution_id_code",
+      "type": "integer",
+      "title": "Transaction destination institution ID code",
+      "description": "Transaction destination institution ID code identifies the transaction destination institution.",
+      "examples": [
+        65161151161
+      ]
+    },
+    "transaction_originator_institution_id_code": {
+      "$id": "#/properties/transaction_originator_institution_id_code",
+      "type": "integer",
+      "title": "Transaction originator institution ID code",
+      "description": "Identifies the transaction originator institution.",
+      "examples": [
+        15161151161
+      ]
+    },
+    "transaction_status": {
+      "$id": "#/properties/transaction_status",
+      "type": "string",
+      "title": "Transaction Status",
+      "description": "Success/failure [logged as either SUCCESS or FAILURE]",
+      "enum": [
+        "SUCCESS",
+        "FAILURE"
+      ]
+    },
+    "cardholder_billing_currency_code": {
+      "$id": "#/properties/cardholder_billing_currency_code",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Cardholder billing currency code",
+      "description": "Cardholder billing amount currency code.",
+      "examples": [
+        "986",
+        null
+      ]
+    },
+    "currency_exponent": {
+      "$id": "#/properties/currency_exponent",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Currency exponent",
+      "description": "Transaction currency code and exponent; reconciliation currency code and exponent; cardholder billing currency code and exponent",
+      "examples": [
+        "986298620000",
+        null
+      ]
+    },
+    "event_id": {
+      "$id": "#/properties/event_id",
+      "type": "integer",
+      "title": "Event ID",
+      "description": "The issuer provides card issuer reference data when processing retrieval or chargeback messages.",
+      "examples": [
+        1516115166626
+      ]
+    },
+    "reason_rejection": {
+      "$id": "#/properties/reason_rejection",
+      "type": "string",
+      "title": "Rejection reason",
+      "description": "Failure description - shown only when there is a failure.",
+      "examples": [
+        "Code1=5000(00):D0025/000;DE072=D0025\\0000\\.\\"
+      ]
+    },
+    "reconciliation_currency_code": {
+      "$id": "#/properties/reconciliation_currency_code",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Reconciliation currency code",
+      "description": "Sender reconciliation currency code associated with the sender reconciliation amount",
+      "examples": [
+        "986",
+        null
+      ]
+    },
+    "retrieval_reference_number": {
+      "$id": "#/properties/retrieval_reference_number",
+      "type": "string",
+      "title": "Retrieval reference number",
+      "description": "Retrieval reference number is a transaction information document reference number the card acceptor or designated agent supplies.",
+      "examples": [
+        "QQNtrxmvdQa0"
+      ]
+    },
+    "transaction_currency_code": {
+      "$id": "#/properties/transaction_currency_code",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Transaction currency code",
+      "description": "Transaction amount currency code.",
+      "examples": [
+        "986",
+        null
+      ]
+    },
+    "transaction_date_time": {
+      "$id": "#/properties/transaction_date_time",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Transaction date/time",
+      "description": "Transaction date/time at card acceptor.",
+      "examples": [
+        "210429104212",
+        null
+      ]
+    }
+  }
+}

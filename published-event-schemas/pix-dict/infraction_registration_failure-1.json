@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix infraction registration failure",
+  "description": "Pix infraction integrity registration failure. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-infraction-create'>Create infraction report</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events'>Pix payments data events</a> guide.",
+  "required": [
+    "idempotency_key",
+    "transaction_id",
+    "reason",
+    "situation_type"
+  ],
+  "properties": {
+    "idempotency_key": {
+      "type": "string",
+      "title": "Idempotency key",
+      "description": "Key used to guarantee data Idempotency.",
+      "maxLength": 36,
+      "examples": [
+        "4140f714-04da-42f4-831e-f46b452f36f2"
+      ]
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction ID",
+      "description": "Pix transaction ID",
+      "examples": [
+        "E9999901012341234123412345678900"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "title": "Reason",
+      "description": "Reason for opening an infraction report.",
+      "maxLength": 16,
+      "enum": [
+        "REFUND_REQUEST",
+        "REFUND_CANCELLED"
+      ],
+      "example": "REFUND_REQUEST"
+    },
+    "situation_type": {
+      "type": "string",
+      "title": "Situation type",
+      "description": "Situation that gave rise to the infraction notification. For notifications created in api v1, the value `UNKNOWN` appears.",
+      "maxLength": 16,
+      "enum": [
+        "SCAM",
+        "ACCOUNT_TAKEOVER",
+        "COERCION",
+        "FRAUDULENT_ACCESS",
+        "OTHER",
+        "UNKNOWN"
+      ],
+      "example": "SCAM"
+    },
+    "details": {
+      "type": "string",
+      "title": "Report Details",
+      "description": "Details that may help the counterparty payment service provider (PSP) to analysis the infraction.",
+      "maxLength": 2000,
+      "examples": []
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error message.",
+      "description": "Error message that occurred during processing in the integrity stream.",
+      "examples": [
+        "Error on provider"
+      ]
+    }
+  }
+}

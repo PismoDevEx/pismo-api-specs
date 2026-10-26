@@ -1,0 +1,183 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Dispute status updated",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of dispute status change operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of dispute status change operation",
+      "examples": [
+        "/v1/disputes/{disputeId}/event"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The operator email of dispute status change operation",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "title": "The operator roles of dispute status change operation",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of dispute status change operation",
+      "examples": [
+        "APP",
+        "CRM"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The object that represents the dispute status change operation",
+      "required": [
+        "authorizationId",
+        "accountId",
+        "modality",
+        "disputedAmount",
+        "comment",
+        "protocol",
+        "disputeId",
+        "disputeReason",
+        "disputeModality",
+        "disputedCreatedAt",
+        "status",
+        "isNetwork",
+        "timeline"
+      ],
+      "properties": {
+        "authorizationId": {
+          "type": "integer",
+          "title": "The authorization identifier",
+          "examples": [
+            4321613
+          ]
+        },
+        "accountId": {
+          "type": "integer",
+          "title": "The account identifier",
+          "examples": [
+            12314
+          ]
+        },
+        "modality": {
+          "type": "string",
+          "title": "The disputes modality",
+          "examples": [
+            "1"
+          ]
+        },
+        "disputedAmount": {
+          "type": "number",
+          "title": "The dispute amount",
+          "examples": [
+            9.8
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "title": "The operator comment in dispute operation",
+          "examples": [
+            "Some comment"
+          ]
+        },
+        "protocol": {
+          "type": "string",
+          "title": "The protocol given from CRM platform",
+          "examples": [
+            "123456"
+          ]
+        },
+        "disputeId": {
+          "type": "integer",
+          "title": "The dispute identifier",
+          "examples": [
+            395
+          ]
+        },
+        "disputeReason": {
+          "type": "string",
+          "title": "The dispute reason",
+          "examples": [
+            "altera\u00e7\u00e3o/invas\u00e3o fraudulenta de device (app)"
+          ]
+        },
+        "disputeModality": {
+          "type": "string",
+          "title": "The dispute modality",
+          "examples": [
+            "altera\u00e7\u00e3o/invas\u00e3o fraudulenta de device (app)"
+          ]
+        },
+        "disputedCreatedAt": {
+          "type": "integer",
+          "title": "The dispute creation date (in unix timestamp format)",
+          "examples": [
+            1568656050578
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "The dispute status",
+          "examples": [
+            "CLOSED_DENIED",
+            "CLOSED_REVERSED",
+            "TEMPORARY_ISSUER_LOSS",
+            "DENIED_TEMPORARY_ISSUER_LOSS",
+            "CLOSED_APPROVED_TEMPORARY_ISSUER_LOSS",
+            "CLOSED_REVERSED_TEMPORARY_ISSUER_LOSS",
+            "CLOSED_ISSUER_LOSS",
+            "ANALYSING",
+            "OPEN"
+          ]
+        },
+        "isNetwork": {
+          "type": "boolean",
+          "title": "Attribute that identifies if dispute is network",
+          "examples": [
+            true
+          ]
+        },
+        "timeline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Contains the last dispute timeline posted, which has the last dispute status and its content",
+          "examples": [
+            "{\"tenant_account_timestamp\":\"ac4187f0-b318-9db0-b563-3faed15b5364::DISPUTE_OPEN\",\"type\":\"DISPUTE\",\"category\":\"OPEN\",\"timestamp\":\"2021-01-04T19:33:19.000000248Z\",\"data\":{\"item\":{\"amount\":3,\"authentication\":\"a68edf9e1370040db82c3d38d63db2615b983bb1\",\"cash_back\":0,\"description\":\"Cacha\\u00e7a\",\"entry_mode\":\"QRCODE\",\"from_account_number\":\"015001150\",\"from_bank\":\"341\",\"from_branch\":\"0500\",\"from_check_digit\":\"9\",\"from_document_number\":\"64178449641\",\"from_entity_type\":\"F\",\"from_name\":\"Jose da Silva\",\"from_phone\":\"00654645666\",\"id\":15699735,\"is_disputable\":true,\"iti_discount\":0,\"iti_discount_rate\":0,\"latitude\":-23.581528,\"longitude\":-46.67156,\"net_amount\":3,\"payment_request_generation_date\":\"2020-12-30 19:31:54.000Z\",\"simility_id\":\"dc80cca7-59f9-407b-999d-8a5afa7bb4d5\",\"to_account_number\":\"024131930\",\"to_bank\":\"341\",\"to_branch\":\"0500\",\"to_check_digit\":\"0\",\"to_document_number\":\"92776429711\",\"to_entity_type\":\"F\",\"to_name\":\"SQT/HOM RExwavd\",\"to_phone\":\"11969211766\",\"original_transaction_date\":\"2020-12-30T19:31:58.504298121Z\"}},\"account_id\":15136654}",
+            "{\"tenant_account_timestamp\":\"dc1833c7-4f47-9df8-9f54-c03394d45bcd::DISPUTE_CLOSED_DENIED\",\"type\":\"DISPUTE\",\"category\":\"CLOSED_DENIED\",\"timestamp\":\"2020-12-28T20:11:17.000000114Z\",\"data\":{\"item\":{\"airport_tax\":0,\"authorization_code\":\"0Q6TFH\",\"card_id\":5229900,\"card_name\":\"PREPAID_RECURRING\",\"card_type\":\"RECURRING\",\"cardholder_currency_rate\":0,\"cardholderbilling_amount\":12,\"contract_amount\":12,\"currency_code\":\"986\",\"currency_literal\":\"BRL\",\"entry_mode\":\"810\",\"entry_mode_literal\":\"ECOMMERCE\",\"id\":3104056,\"installment_amount\":12,\"installments\":null,\"interest_rate\":0,\"ledger_update_id\":\"304130d4-585f-493d-b521-b23d7e550ae6\",\"local_amount\":12,\"merchant_category_code\":\"0780\",\"merchant_category_group\":\"SERVICES\",\"merchant_city\":\"SAO PAULO\",\"merchant_state_or_country\":\"Brazil\",\"network\":\"MASTERCARD\",\"nsu\":\"184558\",\"number_of_installments\":1,\"org_operation\":{\"processing_code\":\"00\"},\"pre_authorization\":false,\"principal_amount\":12,\"response_code\":\"00\",\"retrieval_reference_number\":\"551000118971558\",\"settlement_currency_amount\":0,\"settlement_currency_rate\":0,\"soft_descriptor\":\"TEST TIMELINE\",\"to_name\":\"TEST TIMELINE\",\"from_name\":\"Massa iti PF eGXCMMz\",\"from_document_number\":\"23306990768\",\"original_transaction_date\":\"2020-12-28T20:07:43Z\",\"dispute_start_date\":\"2020-12-28T20:08:27.000000935Z\",\"previous_dispute_status\":\"OPEN\"}},\"account_id\":100068604}",
+            "{\"tenant_account_timestamp\":\"aba31a6f-a889-9b69-884f-65fcd7bd8a0d::DISPUTE_EXCEPTION_POLICY\",\"type\":\"DISPUTE\",\"category\":\"EXCEPTION_POLICY\",\"timestamp\":\"2020-12-28T20:11:01.000000618Z\",\"data\":{\"item\":{\"airport_tax\":0,\"authorization_code\":\"LHGJ7J\",\"card_id\":5229900,\"card_name\":\"PREPAID_RECURRING\",\"card_type\":\"RECURRING\",\"cardholder_currency_rate\":0,\"cardholderbilling_amount\":15,\"contract_amount\":15,\"currency_code\":\"986\",\"currency_literal\":\"BRL\",\"entry_mode\":\"810\",\"entry_mode_literal\":\"ECOMMERCE\",\"id\":3104057,\"installment_amount\":15,\"installments\":null,\"interest_rate\":0,\"ledger_update_id\":\"602f65c1-40bb-4f95-9bd1-76d4784d1cc8\",\"local_amount\":15,\"merchant_category_code\":\"0780\",\"merchant_category_group\":\"SERVICES\",\"merchant_city\":\"SAO PAULO\",\"merchant_state_or_country\":\"Brazil\",\"network\":\"MASTERCARD\",\"nsu\":\"184558\",\"number_of_installments\":1,\"org_operation\":{\"processing_code\":\"00\"},\"pre_authorization\":false,\"principal_amount\":15,\"response_code\":\"00\",\"retrieval_reference_number\":\"551000118971558\",\"settlement_currency_amount\":0,\"settlement_currency_rate\":0,\"soft_descriptor\":\"TEST TIMELINE\",\"to_name\":\"TEST TIMELINE\",\"from_name\":\"Massa iti PF eGXCMMz\",\"from_document_number\":\"23996270768\",\"original_transaction_date\":\"2020-12-28T20:07:48Z\",\"dispute_start_date\":\"2020-12-28T20:08:55.000000597Z\",\"previous_dispute_status\":\"OPEN\"}},\"account_id\":100068604}"
+          ]
+        }
+      }
+    }
+  }
+}

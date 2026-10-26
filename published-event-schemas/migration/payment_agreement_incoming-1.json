@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://pismo.io/events/migration/payment_agreement_incoming-1.json",
+  "type": "object",
+  "default": {},
+  "title": "Payment agreement migration started",
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "required": [
+        "use_original_rate",
+        "transaction_type_id",
+        "authorization_id",
+        "split_iof",
+        "migration",
+        "settle_accrual",
+        "interest_rate",
+        "created_at"
+      ],
+      "properties": {
+        "use_original_rate": {
+          "$id": "#/properties/entity/use_original_rate",
+          "type": "boolean",
+          "description": "If TRUE, the interest_rate will be used in case of accrual interest.",
+          "examples": [
+            false
+          ]
+        },
+        "transaction_type_id": {
+          "$id": "#/properties/entity/transaction_type_id",
+          "type": "integer",
+          "description": "Transaction_type_id of previous migrated platform transaction",
+          "examples": [
+            702
+          ]
+        },
+        "authorization_id": {
+          "$id": "#/properties/entity/authorization_id",
+          "type": "integer",
+          "description": "Id from the previous authorization migrated to Pismo",
+          "examples": [
+            2169722971
+          ]
+        },
+        "split_iof": {
+          "$id": "#/properties/entity/split_iof",
+          "type": "boolean",
+          "description": "If TRUE must generate an separate transaction for IOF (417) - it\u2019s used by Brazilian clients only.",
+          "examples": [
+            false
+          ]
+        },
+        "migration": {
+          "$id": "#/properties/entity/migration",
+          "type": "object",
+          "description": "The applicant's migration extra information",
+          "required": [
+            "id",
+            "account_id",
+            "version_date"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/migration/id",
+              "type": "string",
+              "description": "A record identifier for migration purposes",
+              "examples": [
+                "813e4-2"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/migration/account_id",
+              "type": "string",
+              "description": "A record identifier for account migration",
+              "examples": [
+                "90fe9"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/migration/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "A record identifier for update data. Valid format (yyyy-MM-ddTHH:mm:ss.sssZ).",
+              "examples": [
+                "2022-02-08T19:55:41Z"
+              ]
+            }
+          }
+        },
+        "settle_accrual": {
+          "$id": "#/properties/entity/settle_accrual",
+          "type": "boolean",
+          "description": "Indicate if the pending interest accrual must be settled (forgiven) when the agreement occurs.",
+          "examples": [
+            false
+          ]
+        },
+        "interest_rate": {
+          "$id": "#/properties/entity/interest_rate",
+          "type": "integer",
+          "description": "\t\nInterest rate used on the payment agreement.",
+          "examples": [
+            10
+          ]
+        },
+        "created_at": {
+          "$id": "#/properties/entity/created_at",
+          "type": "string",
+          "description": "It will be used specially to prevent the payment agreement cancellation older than 30 days.",
+          "examples": [
+            "2022-02-02T11:29:00-03:00"
+          ]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "entity": {
+        "use_original_rate": false,
+        "transaction_type_id": 702,
+        "authorization_id": 2169722971,
+        "split_iof": false,
+        "migration": {
+          "id": "813e4-2",
+          "account_id": "90fe9",
+          "version_date": "2022-02-08T19:55:41Z"
+        },
+        "settle_accrual": false,
+        "interest_rate": 10,
+        "created_at": "2022-02-02T11:29:00-03:00"
+      }
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Instant pay execution status changed",
+  "description": "Scheduled execution actions trigger this Pix instant pay event. For example, when the transfer is executed and complete.",
+  "required": [
+    "id",
+    "domain",
+    "scheduler_id",
+    "execution_datetime",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "title": "Execution ID",
+      "description": "Execution incremental ID.",
+      "examples": [
+        1
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "title": "Domain",
+      "description": "Scheduler domain ID.",
+      "enums": [
+        "pix",
+        "pix-out-scheduled"
+      ]
+    },
+    "execution_datetime": {
+      "type": "string",
+      "title": "Start date",
+      "description": "Date of execution. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "retry_datetime": {
+      "type": "string",
+      "title": "Retry datetime",
+      "description": "Retry at datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "check_datetime": {
+      "type": "string",
+      "title": "Check datetime",
+      "description": "Check at datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "executed_at": {
+      "type": "string",
+      "title": "Executed datetime",
+      "description": "Executed at datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "cid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Correlational ID of event",
+      "description": "This is not a unique value, so different events (from same domain+event_type or not) can share same cid. This is usefull to identify all events produced from same request or processing.",
+      "pattern": "^(?!\\s*$).+",
+      "examples": [
+        "12766d76-6e0d-99fa-8209-d236f4fbb4a2"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Execution status",
+      "enum": [
+        "PENDING",
+        "DELIVERED",
+        "PROCESSING",
+        "SUCCESS",
+        "FAIL",
+        "CANCELLED"
+      ],
+      "examples": [
+        "SUCCESS"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "title": "Type",
+      "description": "Execution type",
+      "enum": [
+        "EXECUTION",
+        "RETRY",
+        "ADVANCE"
+      ],
+      "examples": [
+        "EXECUTION"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created at",
+      "description": "Execution created at datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Updated at",
+      "description": "Last exection update datetime. RFC 3339 format.",
+      "format": "date-time",
+      "examples": [
+        "2024-12-12T11:00:00.000Z"
+      ]
+    },
+    "scheduler_id": {
+      "type": "string",
+      "title": "Scheduler ID",
+      "description": "Scheduler ID.",
+      "examples": [
+        "BBA99AF1-0843-451E-A8C9-2EF5D20C5276"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID."
+    },
+    "error": {
+      "title": "Error",
+      "type": "object",
+      "description": "If a scheduling processing failure generates this event, details why will appear here.",
+      "properties": {
+        "message": {
+          "type": "string",
+          "title": "Message",
+          "description": "Error message"
+        },
+        "code": {
+          "type": "string",
+          "title": "Code",
+          "description": "Error code"
+        }
+      },
+      "required": [
+        "message",
+        "code"
+      ]
+    },
+    "status_history": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "title": "Status History",
+          "description": "Execution status history",
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "description": "Execution type",
+              "enum": [
+                "EXECUTION",
+                "RETRY",
+                "ADVANCE"
+              ],
+              "examples": [
+                "EXECUTION"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "title": "Status",
+              "description": "Execution status",
+              "enum": [
+                "PENDING",
+                "DELIVERED",
+                "PROCESSING",
+                "SUCCESS",
+                "FAIL",
+                "CANCELLED"
+              ],
+              "examples": [
+                "SUCCESS"
+              ]
+            },
+            "created_at": {
+              "type": "string",
+              "title": "Created at",
+              "description": "Execution created at datetime. RFC 3339 format.",
+              "format": "date-time",
+              "examples": [
+                "2024-12-12T11:00:00.000Z"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "domain": "instantpay-scheduler",
+      "event_type": "execution_status_change",
+      "schema_version": 1,
+      "org_id": "4ea21a59-7f4f-4087-aab6-a9a96733084a",
+      "cid": "cid",
+      "timestamp": "2023-10-25T18:29:19Z",
+      "data": {
+        "id": 1,
+        "domain": "pix-out-scheduled",
+        "account_id": 123456,
+        "scheduler_id": "51a7e875-35a5-4c81-aa77-51bdf3090835",
+        "execution_datetime": "2024-10-13T00:00:00Z",
+        "status": "PENDING",
+        "type": "EXECUTION",
+        "created_at": "2024-10-17T12:49:50Z",
+        "updated_at": "2024-10-17T12:49:50Z",
+        "status_history": [
+          {
+            "type": "EXECUTION",
+            "status": "PENDING",
+            "created_at": "2024-10-17T12:49:50Z"
+          }
+        ],
+        "error": {
+          "message": "",
+          "code": ""
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,668 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Transaction banking account migration output",
+  "description": "This event occurs during account migration processing. It is emitted by corporate-migration-api (on validation errors with status ERROR) and by bank-statements-migration-worker (on successful balance processing with status SUCCESS).",
+  "required": [
+    "migration_data",
+    "status"
+  ],
+  "properties": {
+    "migration_data": {
+      "$ref": "#/definitions/migration_data"
+    },
+    "operation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Operation",
+      "description": "The operation performed during migration (e.g., CREATE).",
+      "minLength": 0,
+      "maxLength": 50,
+      "examples": [
+        "CREATE"
+      ]
+    },
+    "code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Code",
+      "description": "Response code for the migration operation. Populated on ERROR status with error codes: ECPMIG-0001 (Unknown), ECPMIG-0002 (Program Not Found), ECPMIG-0003 (Division Not Found), ECPMIG-0004 (Program Not Bounded Division).",
+      "minLength": 0,
+      "maxLength": 100,
+      "examples": [
+        "ECPMIG-0002",
+        "ECPMIG-0003",
+        "ECPMIG-0004",
+        "ECPMIG-0001",
+        ""
+      ]
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Message",
+      "description": "Response message for the migration operation. Populated on ERROR status with detailed error description.",
+      "minLength": 0,
+      "maxLength": 500,
+      "examples": [
+        "Program not found",
+        "Division not found",
+        ""
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Status of the migration operation. SUCCESS indicates balances were processed successfully (from bank-statements-migration-worker). ERROR indicates validation failure (from corporate-migration-api).",
+      "enum": [
+        "SUCCESS",
+        "ERROR"
+      ],
+      "minLength": 1,
+      "maxLength": 20,
+      "examples": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    }
+  },
+  "definitions": {
+    "migration_data": {
+      "type": "object",
+      "title": "Migration data",
+      "description": "Contains all migration-related data including account, applicant, corporate account, and migration details.",
+      "required": [
+        "account",
+        "corporate_account",
+        "migration",
+        "program_id"
+      ],
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/account"
+        },
+        "applicant": {
+          "$ref": "#/definitions/applicant"
+        },
+        "corporate_account": {
+          "$ref": "#/definitions/corporate_account"
+        },
+        "migration": {
+          "$ref": "#/definitions/migration"
+        },
+        "pismo_metadata": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "title": "Pismo metadata",
+          "description": "Metadata field with any key-value pairs for internal Pismo use.",
+          "additionalProperties": true,
+          "examples": [
+            {}
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Unique ID used to identify the program in the Pismo platform APIs.",
+          "minimum": 1,
+          "maximum": 99999999999,
+          "examples": [
+            10768
+          ]
+        }
+      }
+    },
+    "account": {
+      "type": "object",
+      "title": "Account",
+      "description": "Pismo account information.",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Unique ID associated with the Pismo account.",
+          "minimum": 1,
+          "maximum": 99999999999,
+          "examples": [
+            100602614
+          ]
+        },
+        "parent_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "title": "Parent account ID",
+          "description": "Unique ID of the associated parent account.",
+          "minimum": 0,
+          "maximum": 99999999999,
+          "examples": [
+            100602610
+          ]
+        },
+        "overdraft_limit": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Overdraft limit",
+          "description": "Overdraft limit for the account.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            1000.0
+          ]
+        }
+      }
+    },
+    "applicant": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Applicant",
+      "description": "Account holder information.",
+      "properties": {
+        "document_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Document number",
+          "description": "Document number to identify the account holder (e.g., tax ID).",
+          "minLength": 0,
+          "maxLength": 50,
+          "examples": [
+            "12345678901"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Name",
+          "description": "Person's or company's name.",
+          "minLength": 0,
+          "maxLength": 60,
+          "examples": [
+            "Account Client Name"
+          ]
+        },
+        "custom_fields": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "title": "Custom fields",
+          "description": "Metadata field with any key-value pairs.",
+          "additionalProperties": true,
+          "examples": [
+            {
+              "key1": "value1"
+            }
+          ]
+        }
+      }
+    },
+    "corporate_account": {
+      "type": "object",
+      "title": "Corporate account",
+      "description": "Corporate account details including external identifiers and bank statements.",
+      "required": [
+        "external_id"
+      ],
+      "properties": {
+        "external_id": {
+          "type": "string",
+          "title": "External account ID",
+          "description": "Custom account ID that uniquely identifies the account within your organization.",
+          "minLength": 1,
+          "maxLength": 60,
+          "examples": [
+            "ext-22222"
+          ]
+        },
+        "account_status_reason_ext_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Account status reason external ID",
+          "description": "External ID for the account status reason.",
+          "minLength": 0,
+          "maxLength": 120,
+          "examples": [
+            "ALL",
+            "ACTIVE"
+          ]
+        },
+        "inactive_since": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Inactive since",
+          "description": "Datetime when the account became inactive.",
+          "format": "date-time",
+          "minLength": 0,
+          "maxLength": 30,
+          "examples": [
+            "2023-08-04T15:00:44.704Z"
+          ]
+        },
+        "division_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Division ID",
+          "description": "Unique ID used to identify the division (UUID format).",
+          "format": "uuid",
+          "minLength": 0,
+          "maxLength": 36,
+          "examples": [
+            "1d22e668-a857-4455-aee7-dbe888f4bf2b"
+          ]
+        },
+        "division_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Division code",
+          "description": "Code string that uniquely identifies the division.",
+          "minLength": 0,
+          "maxLength": 36,
+          "examples": [
+            "DIV-CODE-123"
+          ]
+        },
+        "account_creation_datetime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Account creation datetime",
+          "description": "The account creation datetime.",
+          "format": "date-time",
+          "minLength": 0,
+          "maxLength": 35,
+          "examples": [
+            "2023-10-17T13:44:35.849280476Z"
+          ]
+        },
+        "currency_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Currency code",
+          "description": "ISO 4217 currency code (numeric or alphabetic).",
+          "minLength": 0,
+          "maxLength": 3,
+          "examples": [
+            "840",
+            "USD",
+            "BRL"
+          ]
+        },
+        "bank_statements": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "title": "Bank statements",
+          "description": "List of bank statements with balance information.",
+          "items": {
+            "$ref": "#/definitions/bank_statement"
+          }
+        }
+      }
+    },
+    "migration": {
+      "type": "object",
+      "title": "Migration",
+      "description": "Migration metadata and identifiers.",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Migration ID",
+          "description": "Unique ID of the migration.",
+          "minLength": 1,
+          "maxLength": 100,
+          "examples": [
+            "222222",
+            "df8d5b61-3cc0-4ec1-a72d-61860bff8fed"
+          ]
+        },
+        "version_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Version date",
+          "description": "Version datetime of the migration (ISO 8601 format).",
+          "format": "date-time",
+          "minLength": 0,
+          "maxLength": 30,
+          "examples": [
+            "2024-09-23T13:44:35.849Z"
+          ]
+        },
+        "creation_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Creation date",
+          "description": "Creation date of the migration (date only format YYYY-MM-DD).",
+          "format": "date",
+          "minLength": 0,
+          "maxLength": 10,
+          "examples": [
+            "2023-10-17"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Migration status",
+          "description": "Status of the migration record.",
+          "minLength": 0,
+          "maxLength": 20,
+          "examples": [
+            "MIGRATING"
+          ]
+        },
+        "phase_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Phase ID",
+          "description": "Identifier for the migration phase.",
+          "minLength": 0,
+          "maxLength": 60,
+          "examples": [
+            "ROLLOUT_Dec25"
+          ]
+        },
+        "metadata": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "title": "Metadata",
+          "description": "Metadata field with any key-value pairs.",
+          "additionalProperties": true,
+          "examples": [
+            {
+              "key": "value"
+            }
+          ]
+        }
+      }
+    },
+    "bank_statement": {
+      "type": "object",
+      "title": "Bank statement",
+      "description": "Bank statement with balance information for a specific business date.",
+      "properties": {
+        "ledger_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Ledger balance",
+          "description": "Ledger balance amount.",
+          "minimum": -1e+17,
+          "maximum": 1e+17,
+          "examples": [
+            10.0
+          ]
+        },
+        "book_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Book balance",
+          "description": "Book balance amount.",
+          "minimum": -1e+17,
+          "maximum": 1e+17,
+          "examples": [
+            20.0
+          ]
+        },
+        "available_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Available balance",
+          "description": "Available balance amount.",
+          "minimum": -1e+17,
+          "maximum": 1e+17,
+          "examples": [
+            30.0
+          ]
+        },
+        "credit_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Credit balance",
+          "description": "Credit balance amount.",
+          "minimum": -1e+17,
+          "maximum": 1e+17,
+          "examples": [
+            40.0
+          ]
+        },
+        "debit_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Debit balance",
+          "description": "Debit balance amount.",
+          "minimum": -1e+17,
+          "maximum": 1e+17,
+          "examples": [
+            50.0
+          ]
+        },
+        "uncleared_funds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Uncleared funds",
+          "description": "Uncleared funds amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            60.0
+          ]
+        },
+        "future_dated_credits_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Future dated credits balance",
+          "description": "Future dated credits balance amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            70.0
+          ]
+        },
+        "future_dated_debits_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Future dated debits balance",
+          "description": "Future dated debits balance amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            80.0
+          ]
+        },
+        "earmarked_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Earmarked balance",
+          "description": "Earmarked balance amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            90.0
+          ]
+        },
+        "overdraft_limit": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Overdraft limit",
+          "description": "Overdraft limit amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            100.0
+          ]
+        },
+        "value_dated_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Value dated balance",
+          "description": "Value dated balance amount.",
+          "minimum": -1e+17,
+          "maximum": 1e+17,
+          "examples": [
+            110.0
+          ]
+        },
+        "uncleared_checks_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Uncleared checks balance",
+          "description": "Uncleared checks balance amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            120.0
+          ]
+        },
+        "restricted_funds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Restricted funds",
+          "description": "Restricted funds amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            130.0
+          ]
+        },
+        "held_checks_balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Held checks balance",
+          "description": "Held checks balance amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            0.0
+          ]
+        },
+        "held_funds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Held funds",
+          "description": "Held funds amount.",
+          "minimum": 0,
+          "maximum": 1e+17,
+          "examples": [
+            0.0
+          ]
+        },
+        "business_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Business date",
+          "description": "The business date for this statement (YYYY-MM-DD format).",
+          "format": "date",
+          "minLength": 0,
+          "maxLength": 10,
+          "examples": [
+            "2025-02-01"
+          ]
+        },
+        "cycle_closing_datetime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Cycle closing datetime",
+          "description": "The cycle closing datetime for this statement. Used by bank-statements-migration-worker.",
+          "format": "date-time",
+          "minLength": 0,
+          "maxLength": 30,
+          "examples": [
+            "2023-06-22T19:59:59.999Z"
+          ]
+        },
+        "cycle_closing_date_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Cycle closing date time",
+          "description": "The cycle closing datetime for this statement. Used by corporate-migration-api.",
+          "format": "date-time",
+          "minLength": 0,
+          "maxLength": 30,
+          "examples": [
+            "2023-06-22T19:59:59.999Z"
+          ]
+        }
+      }
+    }
+  }
+}

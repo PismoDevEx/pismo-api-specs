@@ -1,0 +1,124 @@
+{
+  "type": "object",
+  "title": "Account status updated",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method operation",
+      "default": "",
+      "examples": [
+        "PATCH"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of operation",
+      "default": "",
+      "examples": [
+        "/v2/accounts/:accountId/status"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The email of operator",
+      "default": "",
+      "examples": [
+        "pismo@pismo.com.br"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "title": "The operator roles",
+      "items": {
+        "type": "string",
+        "title": "The Roles",
+        "default": "",
+        "examples": [
+          "backoffice-operator",
+          "crm-operator",
+          "geroficios-operator",
+          "inspetoria-master",
+          "inspetoria-operator",
+          "itibackoffice-master",
+          "itibackoffice-operator",
+          "itinivel1-operator",
+          "treasury-operator"
+        ]
+      }
+    },
+    "origin": {
+      "type": "string",
+      "title": "The event come from",
+      "default": "",
+      "examples": [
+        "CRM"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The audit data message",
+      "required": [
+        "account_id",
+        "program_id",
+        "status"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Pismo account ID",
+          "examples": [
+            171238
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "title": "Program ID the account belongs",
+          "examples": [
+            171238
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "The account status",
+          "default": "",
+          "examples": [
+            "BLOCKED",
+            "NORMAL"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "title": "The description",
+          "default": "",
+          "examples": [
+            "Change by judicial determination"
+          ]
+        },
+        "reason_id": {
+          "type": "integer",
+          "title": "The Reason identifier",
+          "default": 0,
+          "examples": [
+            12
+          ]
+        },
+        "reason_description": {
+          "type": "string",
+          "title": "Reason description",
+          "examples": [
+            "DETERMINACAO LEGAL / JUDICIAL"
+          ]
+        }
+      }
+    }
+  }
+}

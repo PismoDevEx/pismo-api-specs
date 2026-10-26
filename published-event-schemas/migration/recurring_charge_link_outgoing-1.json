@@ -1,0 +1,206 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/recurring_charge_link_outgoing-1.json",
+  "type": "object",
+  "title": "Recurring charge link migration completed",
+  "description": "Event generated when a recurring charge link migration finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`. At least one event will be generated for each item in the `links` array of a `recurring_charge_link_outgoing-1` message",
+  "examples": [
+    {
+      "operation": "UNKNOWN",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Recurring charge link has been migrated successfully",
+      "migration": {
+        "id": "9b8c1829-4e12-486a-9a28-e4f87a25b5d2"
+      },
+      "entity": {
+        "account_id": 143276573,
+        "recurring_charge_link_id": 49270,
+        "recurring_charge_plan_id": 1573,
+        "description": "Credit card annuity",
+        "start_installment_charge_in": 3,
+        "post_installment_charge_on_current_cycle": false,
+        "renew": true,
+        "tracking_id": "9b8c1829-4e12-486a-9a28-e4f87a25b5d2"
+      }
+    },
+    {
+      "operation": "UNKNOWN",
+      "status": "FAIL",
+      "code": "LINK_ALREADY_EXISTS",
+      "migration": {
+        "id": "9b8c1829-4e12-486a-9a28-e4f87a25b5d2"
+      },
+      "entity": {
+        "account_id": 143276573,
+        "tracking_id": "9b8c1829-4e12-486a-9a28-e4f87a25b5d2"
+      }
+    }
+  ],
+  "required": [
+    "status",
+    "code",
+    "message",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "Whether the migration was a creation or update, if identifiable",
+      "enum": [
+        "CREATION",
+        "UPDATE",
+        "UNKNOWN"
+      ],
+      "examples": [
+        "UPDATE"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the result of account migration was a success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "The code of message for systems",
+      "default": "",
+      "examples": [
+        "MIGR-0001"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Message describing the migration result",
+      "default": "",
+      "examples": [
+        "Recurring charge link has been migrated successfully"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Identifier Object",
+      "description": "Identifier sent at the start of the migration process. Corresponds to the `migration_id` field inside a `links` item",
+      "examples": [
+        {
+          "id": "migration-id"
+        }
+      ],
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Recurring charge link information",
+      "examples": [
+        {
+          "account_id": 143276573,
+          "recurring_charge_link_id": 49270,
+          "recurring_charge_plan_id": 1573,
+          "description": "Credit card annuity",
+          "start_installment_charge_in": 3,
+          "post_installment_charge_on_current_cycle": false,
+          "renew": true,
+          "tracking_id": "9b8c1829-4e12-486a-9a28-e4f87a25b5d2"
+        }
+      ],
+      "required": [],
+      "properties": {
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "integer",
+          "description": "Platform id of the account associated to the link",
+          "examples": [
+            143276573
+          ]
+        },
+        "recurring_charge_link_id": {
+          "$id": "#/properties/entity/properties/recurring_charge_link_id",
+          "type": "integer",
+          "description": "Platform id of the migrated link",
+          "examples": [
+            143276573
+          ]
+        },
+        "recurring_charge_plan_id": {
+          "$id": "#/properties/entity/properties/recurring_charge_plan_id",
+          "type": "integer",
+          "description": "Platform id of the Recurring Charge Plan associated to the link",
+          "examples": [
+            143276573
+          ]
+        },
+        "description": {
+          "$id": "#/properties/entity/properties/description",
+          "type": "string",
+          "description": "A description for the recurring charge transactions created due to this link. When provided, this overrides the description set in the Recurring Charge Plan.",
+          "examples": [
+            "Link-specific recurring charge description"
+          ]
+        },
+        "post_installment_charge_on_current_cycle": {
+          "$id": "#/properties/entity/properties/post_installment_charge_on_current_cycle",
+          "type": "boolean",
+          "description": "Whether to apply the recurring charge from the current account cycle onwards. In case this is `true`, the value in `start_installment_charge_in` is ignored.",
+          "examples": [
+            true
+          ]
+        },
+        "start_installment_charge_in": {
+          "$id": "#/properties/entity/properties/start_installment_charge_in",
+          "type": "integer",
+          "description": "Indicates in which installment to start applying the recurring charge. Required when `post_installment_charge_on_current_cycle` is `false`. Must be between 1 and the `number of cycles defined in the Recurring Charge Plan`",
+          "examples": [
+            3
+          ]
+        },
+        "renew": {
+          "$id": "#/properties/entity/properties/renew",
+          "type": "boolean",
+          "description": "Whether the Recurring Charge Link is a renewal",
+          "examples": [
+            false
+          ]
+        },
+        "tracking_id": {
+          "$id": "#/properties/entity/properties/tracking_id",
+          "type": "string",
+          "description": "A unique id used to track the migration request",
+          "examples": [
+            "8bd2fa6c-0aaa-413a-b2d9-0bc3f00b9e15"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

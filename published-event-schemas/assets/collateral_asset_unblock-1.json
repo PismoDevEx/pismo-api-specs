@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unlink asset request event",
+  "description": "This event occurs when a client request a unlink of asset from a collateral contract",
+  "required": [
+    "systemId",
+    "contractCode",
+    "financialInstrumentType",
+    "financialInstrumentCode",
+    "financialInstrumentQuantity",
+    "requesterId",
+    "externalId",
+    "correlationId"
+  ],
+  "properties": {
+    "systemId": {
+      "type": "string",
+      "title": "System ID",
+      "description": "Identifier of Pismo on Partner. Composition is prefix pismo + domain",
+      "examples": [
+        "pismo_assets_collateral"
+      ]
+    },
+    "contractCode": {
+      "type": "string",
+      "title": "Collateral Contract Code",
+      "description": "Is a collateral contract code where assets will be unlinked.",
+      "examples": [
+        "23PB3L00000011"
+      ]
+    },
+    "financialInstrumentType": {
+      "type": "string",
+      "title": "Asset Type",
+      "description": "Financial Instrument Type",
+      "enums": [
+        "cdb",
+        "rdb"
+      ]
+    },
+    "financialInstrumentCode": {
+      "type": "string",
+      "title": "Asset Code",
+      "description": "Financial Instrument Code",
+      "example": [
+        "CDBCODE34"
+      ]
+    },
+    "financialInstrumentQuantity": {
+      "type": "number",
+      "title": "Financial Instrument Quantity",
+      "description": "Number of units that will be unlinked to a collateral contract",
+      "format": "double",
+      "examples": [
+        100.0
+      ]
+    },
+    "requesterId": {
+      "type": "string",
+      "title": "Requester ID",
+      "description": "Is a identifier from who is requesting the register of a default contract as according with partner this requesterId is our issuerId",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "externalId": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation provided by client.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    },
+    "correlationId": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "External identifier for a request provided by client or by us. This ID will be used handle response events from Partner.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    }
+  }
+}

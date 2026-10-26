@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/pre_go_live_outgoing-1.json",
+  "type": "object",
+  "title": "Migration pre-go-live error",
+  "description": "Event generated when a pre-go-live process is triggered but errors occur before dispatching the pre-go-live for each desired account.",
+  "examples": [
+    {
+      "status": "FAIL",
+      "code": "MIGR-0400",
+      "message": "Field migration.go_live_date is required for the pre-go-live process",
+      "migration": {
+        "id": "migration-id",
+        "phase_id": "phase-id",
+        "version_date": "2021-08-11T11:25:00.000Z"
+      }
+    }
+  ],
+  "required": [
+    "code",
+    "message",
+    "migration",
+    "status"
+  ],
+  "properties": {
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration error code",
+      "description": "The code of message for systems",
+      "default": "",
+      "examples": [
+        "MIGR-0400"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "The message schema",
+      "description": "Freeform description of the error",
+      "default": "",
+      "examples": [
+        "Field migration.go_live_date is required for the pre-go-live process",
+        "Error retrieving accounts for pre-go-live"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Identifiers Object",
+      "description": "Identifier sent on start of migration process",
+      "default": {},
+      "examples": [
+        {
+          "id": "migration-id",
+          "phase_id": "phase-id",
+          "version_date": "2021-08-11T11:25:00.000Z"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "migration-id"
+          ]
+        },
+        "phase_id": {
+          "$id": "#/properties/migration/properties/phase_id",
+          "type": "string",
+          "title": "Phase Id",
+          "description": "Migration phase ID",
+          "examples": [
+            "phase-id"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "title": "Version Date of Migration Identifier",
+          "examples": [
+            "2021-08-11T11:25:00.000Z"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "If the migration result was a success or not",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

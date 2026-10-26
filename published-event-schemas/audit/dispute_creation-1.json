@@ -1,0 +1,185 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Dispute created",
+  "required": [
+    "method",
+    "uri",
+    "email",
+    "roles",
+    "origin",
+    "object"
+  ],
+  "properties": {
+    "method": {
+      "type": "string",
+      "title": "The HTTP Method of dispute creation operation",
+      "examples": [
+        "POST"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "title": "The URI of dispute creation operation",
+      "examples": [
+        "/v1/authorization-disputes"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "title": "The operator email of dispute creation operation",
+      "examples": [
+        "pismo@pismo.io"
+      ]
+    },
+    "roles": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "title": "The operator roles of dispute creation operation",
+      "examples": [
+        "test1",
+        "test2"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "The request origin of dispute creation operation",
+      "examples": [
+        "APP",
+        "CRM"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "title": "The object that represents the dispute creation operation",
+      "required": [
+        "authorizationId",
+        "accountId",
+        "modality",
+        "disputedAmount",
+        "comment",
+        "protocol",
+        "disputeId",
+        "disputeReason",
+        "disputeModality",
+        "disputedCreatedAt",
+        "status",
+        "isNetwork",
+        "timeline"
+      ],
+      "properties": {
+        "authorizationId": {
+          "type": "integer",
+          "title": "The authorization identifier",
+          "examples": [
+            4321613
+          ]
+        },
+        "accountId": {
+          "type": "integer",
+          "title": "The account identifier",
+          "examples": [
+            12314
+          ]
+        },
+        "modality": {
+          "type": "string",
+          "title": "The disputes modality",
+          "examples": [
+            "1"
+          ]
+        },
+        "disputedAmount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "The disputed amount, currently can be null (investigation in progress)",
+          "examples": [
+            9.8
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "title": "The operator comment in dispute operation",
+          "examples": [
+            "Some comment"
+          ]
+        },
+        "protocol": {
+          "type": "string",
+          "title": "The protocol given from CRM platform",
+          "examples": [
+            "123456"
+          ]
+        },
+        "disputeId": {
+          "type": "integer",
+          "title": "The dispute identifier",
+          "examples": [
+            395
+          ]
+        },
+        "disputeReason": {
+          "type": "string",
+          "title": "The dispute reason",
+          "examples": [
+            "altera\u00e7\u00e3o/invas\u00e3o fraudulenta de device (app)"
+          ]
+        },
+        "disputeModality": {
+          "type": "string",
+          "title": "The dispute modality",
+          "examples": [
+            "altera\u00e7\u00e3o/invas\u00e3o fraudulenta de device (app)"
+          ]
+        },
+        "disputedCreatedAt": {
+          "type": "integer",
+          "title": "The dispute creation date (in unix timestamp format)",
+          "examples": [
+            1568656050578
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "The dispute status",
+          "examples": [
+            "CLOSED_DENIED",
+            "CLOSED_REVERSED",
+            "TEMPORARY_ISSUER_LOSS",
+            "DENIED_TEMPORARY_ISSUER_LOSS",
+            "CLOSED_APPROVED_TEMPORARY_ISSUER_LOSS",
+            "CLOSED_REVERSED_TEMPORARY_ISSUER_LOSS",
+            "CLOSED_ISSUER_LOSS",
+            "ANALYSING",
+            "OPEN"
+          ]
+        },
+        "isNetwork": {
+          "type": "boolean",
+          "title": "Attribute that identifies if dispute is network",
+          "examples": [
+            true
+          ]
+        },
+        "timeline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Contains the timeline posted by the user, usually, it has the original authorization timeline",
+          "examples": [
+            "{\"tenant_account_timestamp\":\"9558e024-c687-4fde-af15-33a0b204d49b::PURCHASE_DEBIT\",\"type\":\"PURCHASE\",\"category\":\"DEBIT\",\"timestamp\":\"2020-03-04T13:39:24.272409473Z\",\"data\":{\"item\":{\"amount\":3,\"authentication\":\"424a542b2c08dc9b1c44d19185a283090f0d2863\",\"cash_back\":0,\"discount\":0,\"discount_rate\":0,\"entry_mode\":\"QRCODE\",\"from_account_number\":\"014943421\",\"from_bank\":\"399\",\"from_branch\":\"0500\",\"from_check_digit\":\"6\",\"from_document_number\":\"89599901050\",\"from_entity_type\":\"F\",\"from_name\":\"Nice guy\",\"from_phone\":\"99999999999\",\"id\":12861418,\"is_disputable\":true,\"iti_discount\":0,\"iti_discount_rate\":0,\"latitude\":37.4224764,\"longitude\":-122.0842499,\"net_amount\":3,\"simility_id\":\"8f2a4f66-591b-4e48-a848-b8691a21af3d\",\"to_account_number\":\"016710910\",\"to_bank\":\"341\",\"to_branch\":\"0500\",\"to_check_digit\":\"7\",\"to_company_name\":\"EMPRESA COG\",\"to_document_number\":\"27932663000109\",\"to_entity_type\":\"J\",\"to_name\":\"EMPRESA COG\",\"to_phone\":\"00000000000\",\"total_amount\":3,\"total_discount\":0,\"total_discount_rate\":0}}}"
+          ]
+        }
+      }
+    }
+  }
+}

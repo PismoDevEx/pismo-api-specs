@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card can be added to next scheduled embossing",
+  "description": "This event indicates that a physical card is ready to be added to the next scheduled embossing according to the issuer's embossing settings. For nominal cards, you must either <a href='https://developers.pismo.io/pismo-docs/reference/put-v2-card-password'>change the password</a> or <a href='https://developers.pismo.io/pismo-docs/reference/put-v1-update-pin-from-pinblock'>change the password from PINblock</a> or <a href='https://developers.pismo.io/pismo-docs/reference/put-cards-embossing'>add the card to the next scheduled embossing</a>.<br> See the <a href='https://developers.pismo.io/pismo-docs/docs/physical-card-embossing'>Physical card embossing</a> guide for more information.",
+  "examples": [
+    {
+      "account_id": 8675309,
+      "card_id": 17178724,
+      "customer_id": 112131683,
+      "error_message": "",
+      "error_type": "",
+      "program_id": 1226,
+      "operation_type": "CARD_CREATION"
+    }
+  ],
+  "required": [
+    "card_id"
+  ],
+  "properties": {
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        12345
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "User's Pismo account ID.",
+      "examples": [
+        112945011
+      ]
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Customer ID",
+      "description": "User's Pismo customer ID.",
+      "examples": [
+        11167891
+      ]
+    },
+    "error_message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error message.",
+      "description": "Error message when a card fails to go to embossing service",
+      "examples": [
+        "Card 12345 doesn't have any elected config on embossing service"
+      ]
+    },
+    "error_type": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Error type",
+      "description": "Error type when a card is removed from embossing. This field exists only in case of failure.",
+      "examples": [
+        "account_not_found",
+        "account_address_not_found",
+        "account_address_inactive",
+        "account_phone_not_found",
+        "customer_not_found",
+        "card_pci_not_found",
+        "card_pci_password_unchanged",
+        "card_not_found",
+        "card_status_invalid",
+        "card_type_invalid",
+        "internal_error",
+        "embossing_line_not_formatted",
+        "embossing_line_not_encrypted",
+        "embossing_line_invalid_format",
+        "embossing_undelivered"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo program ID",
+      "examples": [
+        8765
+      ]
+    },
+    "operation_type": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Pismo type of operation that triggered the event.",
+      "enum": [
+        "CARD_CREATION",
+        "CARD_PROGRAM_MIGRATION",
+        "EXPIRATION_DATE_RENEW"
+      ]
+    }
+  },
+  "definitions": {}
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Accrual status changed",
+  "description": "This event is generated when an account's accrual status changes. For more information, refer to <a href='https://developers.pismo.io/pismo-docs/docs/accrual-status-changed-event-flows'>Accrual status changed event flows</a>.",
+  "required": [
+    "accrual_status",
+    "balance_due"
+  ],
+  "properties": {
+    "accrual_status": {
+      "title": "Accrual status",
+      "type": "string",
+      "description": "Account accrual status",
+      "enum": [
+        "OVERDUE_START",
+        "OVERDUE_CHANGE",
+        "OVERDUE_STOP",
+        "OVERDUE_UNDERPAID",
+        "REFINANCING_START",
+        "REFINANCING_CHANGE",
+        "REFINANCING_STOP",
+        "STOP_ACCRUAL"
+      ],
+      "example": "OVERDUE_START"
+    },
+    "balance_due": {
+      "title": "Balance due",
+      "type": "number",
+      "description": "`current_balance` of the first statement where the account became overdue or entered refinancing. (That is, when `account_status` changed to `OVERDUE_STARTED` or `REFINANCING_STARTED`.)",
+      "examples": [
+        120.0
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "type": "integer",
+      "description": "Account ID"
+    },
+    "program_id": {
+      "title": "Program ID",
+      "type": "integer",
+      "description": "Program ID"
+    },
+    "statement_id": {
+      "title": "Current statement ID",
+      "type": "integer",
+      "description": "Current statement ID"
+    },
+    "open_due_date": {
+      "title": "Open due date",
+      "type": "string",
+      "description": "Real due date for the first statement where the account became overdue",
+      "format": "date",
+      "examples": [
+        "2021-06-21"
+      ]
+    },
+    "amount_paid": {
+      "title": "Amount paid",
+      "type": "number",
+      "description": "Amount paid. This field only appears if a payment triggered the event. This is the case when `account_status` equals `REFINANCING_CHANGE`, `OVERDUE_STOP`, `REFINANCING_STOP`, or `OVERDUE_UNDERPAID`."
+    },
+    "credit_transaction_id": {
+      "title": "Credit transaction ID",
+      "type": "integer",
+      "description": "Credit transaction ID. This field only appears if a payment triggered the event. This is the case when `account_status` equals `REFINANCING_CHANGE`, `OVERDUE_STOP`, `REFINANCING_STOP`, or `OVERDUE_UNDERPAID`."
+    }
+  }
+}

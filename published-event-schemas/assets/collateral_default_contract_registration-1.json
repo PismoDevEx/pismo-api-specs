@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Collateral default contract registration request event",
+  "description": "This event occurs when a client request a register of collateral default contract.",
+  "required": [
+    "systemId",
+    "bucketName",
+    "objectName",
+    "requesterDocumentNumber",
+    "typeCollateralEncumbranceCode",
+    "requesterId",
+    "externalId",
+    "correlationId"
+  ],
+  "properties": {
+    "systemId": {
+      "type": "string",
+      "title": "System ID",
+      "description": "Identifier of Pismo on Partner. Composition is prefix pismo + domain",
+      "examples": [
+        "pismo_assets_collateral"
+      ]
+    },
+    "bucketName": {
+      "type": "string",
+      "title": "Bucket Name",
+      "description": "Is a name of storage where Partner will access to download files",
+      "examples": [
+        "tn-{{partner_uuid}}"
+      ]
+    },
+    "objectName": {
+      "type": "string",
+      "title": "Object Name",
+      "description": "File name with extension .pdf",
+      "examples": [
+        "sample_default_contract.pdf"
+      ]
+    },
+    "requesterDocumentNumber": {
+      "type": "string",
+      "title": "Requester Document Number",
+      "description": "Is a client's document number",
+      "examples": [
+        "00.000.000/0000-00"
+      ]
+    },
+    "typeCollateralEncumbranceCode": {
+      "type": "number",
+      "format": "int",
+      "title": "Type collateral encumbrance code",
+      "description": "Is a number that defines the type of default contract. 1-Assignment Fiduciary Alienation 3\u2013Pledge",
+      "examples": [
+        1,
+        3
+      ]
+    },
+    "requesterId": {
+      "type": "string",
+      "title": "Requester ID",
+      "description": "Is a identifier from who is requesting the register of a default contract as according with partner this requesterId is our issuerId",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "externalId": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation provided by client.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    },
+    "correlationId": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "External identifier for a request provided by client or by us. This ID will be used handle response events from Partner.",
+      "examples": [
+        "47c3cca0-3553-11ee-be56-0242ac120002"
+      ]
+    }
+  }
+}

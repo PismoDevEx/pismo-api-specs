@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Financial bank slip status changed",
+  "description": "This event occurs when a financial bank slip status changes on the Pismo platform. The [Pay bank slip](https://developers.pismo.io/pismo-docs/reference/post-integrated-payments-api-v1-bankslips-pay) endpoint generates this event.",
+  "required": [
+    "account_id",
+    "authorization_id",
+    "new_status",
+    "old_status",
+    "amount",
+    "due_datetime",
+    "payment_datetime",
+    "update_datetime"
+  ],
+  "optional": [
+    "settlement_partner"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        8675309
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID",
+      "examples": [
+        765833
+      ]
+    },
+    "new_status": {
+      "type": "string",
+      "title": "New bank slip status",
+      "description": "Bank slip's new status",
+      "enum": [
+        "PROCESSING",
+        "SETTLED",
+        "PAID",
+        "CANCELLED",
+        "ERROR"
+      ],
+      "example": "PAID"
+    },
+    "old_status": {
+      "type": "string",
+      "title": "Old bank slip status",
+      "description": "Bank slip's old status",
+      "enum": [
+        "CREATED",
+        "PROCESSING",
+        "SETTLED",
+        "PAID",
+        "CANCELLED",
+        "ERROR"
+      ],
+      "example": "SETTLED"
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Bank slip amount",
+      "description": "Bank slip amount",
+      "examples": [
+        86753.09
+      ]
+    },
+    "due_datetime": {
+      "type": "string",
+      "title": "due date",
+      "description": "Bank slip due date",
+      "format": "date-time",
+      "examples": [
+        "2022-09-26T00:00:00Z"
+      ]
+    },
+    "payment_datetime": {
+      "type": "string",
+      "title": "due date",
+      "description": "Bank slip payment datetime",
+      "format": "date-time",
+      "examples": [
+        "2022-09-26T00:00:00Z"
+      ]
+    },
+    "update_datetime": {
+      "type": "string",
+      "title": "Update datetime",
+      "description": "Bank slip update payment date time",
+      "format": "date-time",
+      "examples": [
+        "2022-09-26T00:00:00Z"
+      ]
+    },
+    "provider_id": {
+      "type": "string",
+      "title": "Provider bank slip ID",
+      "description": "Provider bank slip ID",
+      "examples": [
+        "78ebb**************************d1099"
+      ]
+    },
+    "currency_code": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "Currency code of the transaction",
+      "examples": [
+        "BRL",
+        "USD",
+        "EUR"
+      ]
+    },
+    "digitable_line": {
+      "type": "string",
+      "title": "Digitable line number",
+      "description": "Bank slip digitable line number without the formatting",
+      "examples": [
+        "20890001091000001090980008176705191030000002000"
+      ]
+    },
+    "bar_code": {
+      "type": "string",
+      "title": "Bar code",
+      "description": "Bank slip bar code",
+      "examples": [
+        "20890001091000001090980008176705191030000002000"
+      ]
+    },
+    "settlement_partner": {
+      "type": "string",
+      "title": "Settlement Partner",
+      "description": "the institution used to settle the Bank slip",
+      "examples": [
+        "509 | CELCOIN INST. PAGAMENTO SA / AGENCIA 0001"
+      ]
+    }
+  }
+}

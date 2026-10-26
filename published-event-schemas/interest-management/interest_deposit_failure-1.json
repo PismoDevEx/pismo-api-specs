@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest deposit failed",
+  "description": "This event occurs when there is a failure in interest deposit registration with product interest management.",
+  "required": [
+    "tracking_id",
+    "account_id",
+    "interest_plan_id",
+    "message"
+  ],
+  "properties": {
+    "tracking_id": {
+      "type": "string",
+      "title": "Tracking ID.",
+      "description": "Unique deposit identifier defined by Customer.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        999999999
+      ]
+    },
+    "interest_plan_id": {
+      "type": "string",
+      "title": "Interest Plan ID identifier",
+      "description": "A custom identifier string that indicates the interest plan to be used in the rate calculations.",
+      "examples": [
+        999999999
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Deposit Amount",
+      "description": "Deposit Amount, monetary value.",
+      "format": "double",
+      "examples": [
+        0.15
+      ]
+    },
+    "value_date": {
+      "type": "string",
+      "title": "Value date",
+      "description": "Date that deposit was effectively issued by client",
+      "format": "date",
+      "examples": [
+        "2020-12-01"
+      ]
+    },
+    "maturity_date": {
+      "type": "string",
+      "title": "Issuing date",
+      "description": "Date that deposit expires, finishing rentability cycle",
+      "format": "date",
+      "examples": [
+        "2022-12-01"
+      ]
+    },
+    "has_asset_registration": {
+      "type": "object",
+      "title": "Has Asset Registration",
+      "description": "Indicates if the interest deposit must be registered as a asset",
+      "required": [
+        "document_number",
+        "customer_name",
+        "customer_type"
+      ],
+      "properties": {
+        "customer_name": {
+          "type": "string",
+          "title": "Customer name",
+          "description": "Name of interest deposit owner. Can be a company or an individual.",
+          "examples": [
+            "Lorem ipsum"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Customer document number",
+          "description": "Number of interest deposit owner's legal document",
+          "examples": [
+            "00000000012"
+          ]
+        },
+        "customer_type": {
+          "type": "string",
+          "title": "Entity type",
+          "description": "Legal nature of interest deposit owner",
+          "enum": [
+            "natural",
+            "legal"
+          ]
+        }
+      }
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of error that occurred when trying to register new deposit",
+      "examples": [
+        "The informed interest_plan_id does not exist."
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of interest deposit on Pismo platform",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    }
+  }
+}

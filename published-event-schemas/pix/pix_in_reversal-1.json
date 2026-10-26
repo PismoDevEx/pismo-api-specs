@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix-in reversed",
+  "description": "Pix-in transaction refund reversal event. Generated when the <a href='https://developers.pismo.io/pismo-docs/reference/post-pix-reversal' target='_blank'>Pix reversal</a> endpoint is called. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments' target='_blank'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events' target='_blank'>Pix payments data events</a> guide.",
+  "examples": [
+    {
+      "domain": "pix",
+      "event_type": "pix_in_reversal",
+      "schema_version": 1,
+      "org_id": "TN-34778262-f4f0-464d-b4c6-a14e2dc6xxx",
+      "cid": "468fa881-fee5-4d6e-aa17-bbac0a1df0a5",
+      "timestamp": "2023-10-26T17:35:22Z",
+      "data": {
+        "account_id": 9837,
+        "authorization_id": 9837,
+        "end_to_end_id": "E2198371298371",
+        "amount": 15.34,
+        "transaction_type": "",
+        "authorization_datetime": "2022-07-19T12:00:00Z",
+        "status": "SETTLED",
+        "original_transaction": {
+          "end_to_end_id": "E2198371298371",
+          "amount": 15.34,
+          "authorization_datetime": "2022-07-20T12:00:00Z"
+        },
+        "payee": {
+          "name": "Lynn Gweene",
+          "document_number": "12334567890",
+          "bank": "123345678"
+        },
+        "additional_information": "additional information",
+        "description": "description",
+        "client_request_id": "22ddbf03-465e-4b9b-ae84-10ac79b0e592",
+        "internal": false
+      }
+    }
+  ],
+  "required": [
+    "account_id",
+    "amount",
+    "authorization_datetime",
+    "authorization_id",
+    "client_request_id",
+    "end_to_end_id",
+    "original_transaction",
+    "payee",
+    "status",
+    "transaction_type",
+    "internal"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Pix-in reversal amount",
+      "description": "Pix-in reversal amount",
+      "examples": [
+        125.5
+      ]
+    },
+    "authorization_datetime": {
+      "type": "string",
+      "title": "Reversal authorization datetime",
+      "description": "Pismo reversal authorization datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "format": "date-time",
+      "examples": [
+        "2022-07-19T19:03:04Z",
+        "2022-07-19T16:03:46-03:00"
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization ID",
+      "description": "Pismo authorization ID",
+      "examples": [
+        123
+      ]
+    },
+    "client_request_id": {
+      "type": "string",
+      "title": "Unique transaction ID",
+      "description": "Client-generated unique transaction ID. This value cannot be repeated.",
+      "maxLength": 36,
+      "examples": [
+        "bc0bc832-ca05-425e-95d4-a1bf48ada1cc"
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Pix end to end ID",
+      "description": "Pix end to end transaction ID. This field is a Brazil Central Bank (BCB) requirement to track Pix transactions. Basically, there are two steps to a Pix transaction: 1. Initialize a transaction and 2. Confirm a transaction. This field is sent to the BCB in both steps in order to identify all transaction information.",
+      "examples": [
+        "E0000000020210519134701363533333"
+      ]
+    },
+    "original_transaction": {
+      "type": "object",
+      "required": [
+        "amount",
+        "authorization_datetime",
+        "end_to_end_id"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "title": "Pix-in amount",
+          "description": "Original transaction amount",
+          "examples": [
+            125.5
+          ]
+        },
+        "authorization_datetime": {
+          "type": "string",
+          "title": "Original authorization datetime",
+          "description": "Pismo authorization datetime of the original transaction.  A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+          "format": "date-time",
+          "examples": [
+            "2022-07-19T19:03:04Z",
+            "2022-07-19T16:03:46-03:00"
+          ]
+        },
+        "end_to_end_id": {
+          "type": "string",
+          "title": "Pix end to end  ID",
+          "description": "Pix end-to-end ID of the original transaction",
+          "examples": [
+            "E0000000020210519134701363533333"
+          ]
+        }
+      }
+    },
+    "payee": {
+      "type": "object",
+      "required": [
+        "bank",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Payee's bank code ISPB - Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier for the bank, an 8-digit value.",
+          "maxLength": 8,
+          "examples": [
+            "30306294"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Payee document number",
+          "description": "Payee's government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Payee's account name",
+          "description": "Account's payee name",
+          "maxLength": 100,
+          "examples": [
+            "Ivy Lege"
+          ]
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "title": "Pix-in reversal status",
+      "description": "Final status of reversal operation",
+      "enum": [
+        "SETTLED",
+        "CANCELLED"
+      ],
+      "example": "SETTLED"
+    },
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction type",
+      "description": "Type of transaction: `TRANSFER` = simple transfer (purchases or cash only); `CHANGE` = transfer of cash in addition to purchase amount (only when initiated by a `CHANGE` type QR code); `WITHDRAWAL` = cash-only transaction (only when initiated by a `WITHDRAWAL` type QR code); `REFUND_AUTOMATIC_PIX` = refund a pix to the PSP payer  (only when initiated by a `MANUAL`); `REFUND` = total or partial refund to the paying user within the scope of MED 2.0, when this refund occurs from the PI Account of the user's PSP who participated in the distribution chain of the resources of the original transaction (only when initiated by a `MANUAL`); `INSTALLMENT_PIX` = For INSTALLMENT PIX transactions",
+      "enum": [
+        "TRANSFER",
+        "CHANGE",
+        "WITHDRAWAL",
+        "REFUND_AUTOMATIC_PIX",
+        "REFUND",
+        "INSTALLMENT_PIX",
+        ""
+      ],
+      "examples": [
+        "TRANSFER"
+      ]
+    },
+    "initiation_type": {
+      "type": "string",
+      "title": "Initiation type",
+      "description": "Initiated payment type:  `MANUAL` - Manually initiated. Key is not used - bank account, bank code, document number, and branch is used for identification. `DICT` - Diretorio de Identificadores de Contas de Transacapo (Transaction accounts identifier directory). Pix/DICT key is used for identification. `STATIC_QRCODE` - Reusable code that contains only the data necessary to complete a transaction. When using static QR code, the transaction amount must be provided manually. `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically. `PAYMENT_INITIATOR` - Payment provider initiated. A payment initiator is a 3rd party that has obtained authorization from the Central Bank and has an Open Finance certification. `AUTOMATIC_PIX` - Payment order initiated via automatic PIX. `DYNAMIC_PROXIMITY_PIX` - Dynamic NFC-based initiation. `STATIC_PROXIMITY_PIX` - Static NFC-based initiation",
+      "maxLength": 50,
+      "enum": [
+        "MANUAL",
+        "DICT",
+        "STATIC_QRCODE",
+        "DYNAMIC_QRCODE",
+        "PAYMENT_INITIATOR",
+        "AUTOMATIC_PIX",
+        "DYNAMIC_PROXIMITY_PIX",
+        "STATIC_PROXIMITY_PIX"
+      ],
+      "examples": [
+        "DICT"
+      ]
+    },
+    "additional_information": {
+      "type": "string",
+      "title": "Additional information",
+      "description": "Additional information (free text) describing the transaction",
+      "examples": [
+        "['code':'value']"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Operation description",
+      "examples": [
+        "Invalid value"
+      ]
+    },
+    "external_movement_id": {
+      "type": "string",
+      "title": "External movement ID",
+      "description": "Participant movement ID",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "internal": {
+      "type": "boolean",
+      "title": "Internal transaction",
+      "description": "Internal transaction informs if the transaction was made inside Pismo (between accounts at the same Org), in this case, the SPI was not called",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "title": "Pix-In reversal (refund) cancellation reason",
+      "description": "Reason provided for a Pix-in reversal (refund) with status `CANCELLED`",
+      "examples": [
+        "Specific transaction/message amount is greater than allowed maximum.",
+        "Amount received is not the amount agreed or expected.",
+        "Reversal amount is above the original transaction amount.",
+        "Amount of funds available to cover specified message amount is insufficient.",
+        "Content is incorrect.",
+        "The order was rejected by the bank side (for reasons concerning content).",
+        "Waiting time expired due to incomplete order.",
+        "Associated message, payment information block or transaction was received after agreed processing cut-off date, i.e., date in the past.",
+        "Settlement of the transaction has failed.",
+        "Settlement aborted due to timeout.",
+        "Regulatory Reason.",
+        "Reversal Pix Payment period has expired.",
+        "Transaction settlement denied due to counterparty response timeout.",
+        "Transaction denied because one of the accounts involved in the process is being closed.",
+        "Invalid reversal nature.",
+        "Receiving participant terminated in the SPI."
+      ]
+    }
+  }
+}

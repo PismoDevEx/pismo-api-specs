@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bank account registered (deprecated)",
+  "required": [
+    "account_id",
+    "region",
+    "bank_code",
+    "creation_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account Identifier",
+      "description": "Account Identifier on Pismo platform",
+      "examples": [
+        123
+      ]
+    },
+    "region": {
+      "type": "string",
+      "title": "Region",
+      "description": "Bank account country abbreviation. Will be used to convert to international formats",
+      "examples": [
+        "BR"
+      ]
+    },
+    "bank_code": {
+      "type": "string",
+      "title": "Bank Code",
+      "description": "Bank code",
+      "examples": [
+        "0010"
+      ]
+    },
+    "branch": {
+      "type": "string",
+      "title": "Bank Branch",
+      "description": "Bank branch",
+      "examples": [
+        "0440"
+      ]
+    },
+    "account_number": {
+      "type": "string",
+      "title": "Bank Account number",
+      "description": "Bank account number",
+      "examples": [
+        "007283684"
+      ]
+    },
+    "account_type": {
+      "type": "string",
+      "title": "Bank Account Type",
+      "description": "Bank account type",
+      "examples": [
+        "CACC"
+      ]
+    },
+    "clearing_code": {
+      "type": "string",
+      "title": "Clearing system code",
+      "description": "Code used to identify the bank in it's clearing system. (COMPE in Brazil, for instance)",
+      "examples": [
+        "999"
+      ]
+    },
+    "creation_datetime": {
+      "type": "string",
+      "title": "Bank Account Creation Datetime",
+      "description": "Bank Account Creation Datetime",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    }
+  }
+}

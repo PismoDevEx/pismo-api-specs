@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Program due date created",
+  "description": "Event generated when a program due date has been created",
+  "required": [
+    "program_due_date_id",
+    "day",
+    "active"
+  ],
+  "properties": {
+    "program_due_date_id": {
+      "type": "integer",
+      "description": "Program due date ID",
+      "examples": [
+        9832195123
+      ]
+    },
+    "day": {
+      "type": "integer",
+      "description": "Day used as a base to generate calendars",
+      "examples": [
+        13
+      ]
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Is the program due date enabled?",
+      "examples": [
+        true
+      ]
+    },
+    "grace_period_days": {
+      "type": "integer",
+      "description": "Custom number of days between cutting and due date",
+      "examples": []
+    }
+  }
+}

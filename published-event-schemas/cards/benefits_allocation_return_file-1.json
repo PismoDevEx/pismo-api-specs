@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Card benefits allocation return file",
+  "description": "Card benefits allocation return file event received.",
+  "examples": [
+    {
+      "card_id": 6767937,
+      "account_id": 8675309,
+      "customer_id": 102440864
+    }
+  ],
+  "required": [
+    "card_id",
+    "account_id",
+    "customer_id"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "card_id": {
+      "type": "integer",
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "customer_id": {
+      "type": "integer",
+      "title": "Customer ID",
+      "description": "Pismo customer ID",
+      "examples": [
+        12345678
+      ]
+    },
+    "card_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Hashed PAN",
+      "description": "Hashed PAN. Null if PCI card data creation fails",
+      "examples": [
+        "0fsdf0sdf9sdf0sdf0sd0fsdn09vsdj0c9sjdcsdcs0d9c=="
+      ]
+    },
+    "ica": {
+      "type": "string",
+      "title": "Interbank Card Association (ICA) number",
+      "description": "Interbank Card Association (ICA) number. The issuer's sign-on ID. A four-digit number MasterCard assigns to a financial institution to identify the member.",
+      "examples": [
+        "888888"
+      ]
+    },
+    "file_name": {
+      "type": "string",
+      "title": "Result Filename",
+      "description": "References record's filename.",
+      "examples": [
+        "TN7Lfilename.csv"
+      ]
+    },
+    "has_benefits": {
+      "type": "boolean",
+      "title": "Card has benefits",
+      "description": "Informs if card has benefits.",
+      "examples": [
+        false,
+        true
+      ]
+    },
+    "received_date": {
+      "type": "string",
+      "title": "Received date",
+      "description": "Informs when card was processed.",
+      "examples": [
+        "2025-07-01T16:00:01Z"
+      ]
+    },
+    "validation_results": {
+      "type": "object",
+      "title": "Validation results",
+      "description": "Information about errors encountered in card validation",
+      "properties": {
+        "Type": {
+          "examples": [
+            "account_address_zipcode_invalid"
+          ],
+          "title": "Error Type",
+          "description": "Error Type",
+          "type": "string"
+        },
+        "Error": {
+          "examples": [
+            "some-error"
+          ],
+          "title": "Error description",
+          "description": "Error description",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "definitions": {}
+}

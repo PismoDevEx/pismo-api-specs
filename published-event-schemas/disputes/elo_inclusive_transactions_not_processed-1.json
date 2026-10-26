@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Elo inclusive transactions not processed",
+  "description": "This event is generated when the disputes platform receives inclusive transactions from network Elo that were not processed at Pismo. Elo's inclusive transactions are: chargeback second presentment and rejection, fee from issuer, fraud, pre-arbitration and reversal rejections",
+  "examples": [
+    {
+      "org_id": "TN-5aea4104-7994-46d5-83d6-a55c8439a00c",
+      "cid": "d6b39fae-d35e-4148-a64a-573c0cc03515",
+      "clearing_path": "TN-5aea4104-7994-46d5-83d6-a55c8439a00c/fromElo/123456/TE05/1234/10000/file.txt",
+      "network_identifier": "123456",
+      "dispute_reference_number": "99999",
+      "operation_type": "CHARGEBACK_REJECTED",
+      "reason": "Dispute Not Found"
+    }
+  ],
+  "required": [
+    "org_id",
+    "cid"
+  ],
+  "properties": {
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Organization/tenant ID",
+      "description": "Organization/tenant ID on the Pismo platform",
+      "examples": [
+        "TN-5aea4104-7994-46d5-83d6-a55c8439a00c"
+      ]
+    },
+    "cid": {
+      "$id": "#/properties/cid",
+      "type": "string",
+      "title": "Correlational ID",
+      "description": "The correlation identifier is used to link related API requests and events",
+      "examples": [
+        "d6b39fae-d35e-4148-a64a-573c0cc03515"
+      ]
+    },
+    "clearing_path": {
+      "$id": "#/properties/clearing_path",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Clearing file path",
+      "description": "Path where clearing file was saved",
+      "examples": [
+        "TN-5aea4104-7994-46d5-83d6-a55c8439a00c/fromElo/123456/TE05/1234/10000/file.txt",
+        null
+      ]
+    },
+    "network_identifier": {
+      "$id": "#/properties/network_identifier",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Network identifier",
+      "description": "\n\nThis field has a value according to each operation_type, following Elo's guide:\n\n`CHARGEBACK_REJECTED`, `NETWORK_REVERSAL_REJECTED`, `PRE_ARBITRATION_REJECTED` and `SECOND_PRESENTMENT`: Field 22 (Transaction Authorization Code - C\u00f3digo de Autoriza\u00e7\u00e3o da Transa\u00e7\u00e3o)\n\n`FEE_REJECTED`: Field 15 (Original Transaction Identifier - Identificador da Transa\u00e7\u00e3o Original)\n\n`FRAUD_REJECTED`: Field 31 (Transaction Authorization Code - C\u00f3digo de Autoriza\u00e7\u00e3o da Transa\u00e7\u00e3o)\n\n",
+      "examples": [
+        "123456",
+        null
+      ]
+    },
+    "dispute_reference_number": {
+      "$id": "#/properties/dispute_reference_number",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Dispute reference number",
+      "description": "\n\nThis field has the value of field 30 (Dispute Reference Number - N\u00famero de Refer\u00eancia da Disputa) - of ELO's guide and will be sent when the operation_type is:\n\n`CHARGEBACK_REJECTED`, `NETWORK_REVERSAL_REJECTED`, `PRE_ARBITRATION_REJECTED` or `SECOND_PRESENTMENT`\n\n",
+      "examples": [
+        "99999",
+        null
+      ]
+    },
+    "operation_type": {
+      "$id": "#/properties/operation_type",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Operation type",
+      "description": "Operation type. For example:\n\n`SECOND_PRESENTMENT`, `CHARGEBACK_REJECTED`, `FEE_REJECTED`, `FRAUD_REJECTED`, `NETWORK_REVERSAL_REJECTED`, `PRE_ARBITRATION_REJECTED`\n\n",
+      "enum": [
+        "SECOND_PRESENTMENT",
+        "CHARGEBACK_REJECTED",
+        "FEE_REJECTED",
+        "FRAUD_REJECTED",
+        "NETWORK_REVERSAL_REJECTED",
+        "PRE_ARBITRATION_REJECTED"
+      ],
+      "examples": [
+        "SECOND_PRESENTMENT",
+        null
+      ]
+    },
+    "reason": {
+      "$id": "#/properties/reason",
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Processing reason",
+      "description": "Reason for processing inclusive transactions",
+      "examples": [
+        "Dispute Not Found",
+        null
+      ]
+    }
+  }
+}

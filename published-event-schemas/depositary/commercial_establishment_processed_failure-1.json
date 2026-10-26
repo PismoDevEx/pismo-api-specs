@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Commercial establishment processed with failure",
+  "description": "Per-item failure outcome of a Tangara commercial establishment batch registration/update. One event is emitted per failed item to the commercial_establishment_processed_failure event type.",
+  "required": [
+    "key",
+    "errors"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "Client-provided identifier of the commercial establishment item within the batch",
+      "examples": [
+        "EC-8860"
+      ]
+    },
+    "errors": {
+      "type": "array",
+      "title": "Errors",
+      "description": "List of processing errors for the item",
+      "items": {
+        "type": "object",
+        "title": "Error detail",
+        "required": [
+          "code",
+          "details"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Error code",
+            "description": "Business error code. [090001=EC already exists] [090002=EC not found] [090003=invalid request]",
+            "examples": [
+              "090001",
+              "090002",
+              "090003"
+            ]
+          },
+          "details": {
+            "type": "string",
+            "title": "Error details",
+            "description": "Human-readable detail of the error",
+            "examples": [
+              "invalid request parameter [key=EC-8860]"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

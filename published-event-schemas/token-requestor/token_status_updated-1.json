@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Token Status Updated event",
+  "description": "Event emitted when a token's lifecycle status changes.",
+  "properties": {
+    "date": {
+      "type": "integer",
+      "description": "Event creation timestamp in UTC format."
+    },
+    "v_provisioned_token_id": {
+      "type": "string"
+    },
+    "v_pan_enrollment_id": {
+      "type": "string"
+    },
+    "token_type": {
+      "type": "string",
+      "enum": [
+        "ECOMMERCE_COF",
+        "DEVICE",
+        "SCAN"
+      ]
+    },
+    "old_status": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "APPROVED",
+        "SUSPENDED",
+        "DECLINED",
+        "CHALLENGED",
+        "DELETED"
+      ]
+    },
+    "new_status": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "APPROVED",
+        "SUSPENDED",
+        "DECLINED",
+        "CHALLENGED",
+        "DELETED"
+      ]
+    },
+    "v_notification_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "date",
+    "v_provisioned_token_id",
+    "v_pan_enrollment_id",
+    "token_type",
+    "old_status",
+    "new_status"
+  ],
+  "additionalProperties": false
+}

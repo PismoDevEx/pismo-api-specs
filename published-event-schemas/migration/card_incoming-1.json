@@ -1,0 +1,505 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/card_incoming-1.json",
+  "type": "object",
+  "title": "Card migration started",
+  "description": "Event generated when a card migration is started. Contains the payload with the data to be migrated.",
+  "examples": [
+    {
+      "origin": "FILE",
+      "file_name": "pismo.csv",
+      "file_size": 999,
+      "file_id": "5832868-ca4d-475f-888b-02bb44f84d19",
+      "line_number": 11,
+      "entity": {
+        "migration": {
+          "id": "card-external-10",
+          "version_date": "2021-08-27T16:45:07.750936Z",
+          "account_id": "account-external-01",
+          "reissued_id": "reissued-external-9",
+          "combo_account_id": "combo-card-id-10",
+          "customer_id": "43253"
+        },
+        "cid": "9be0486e-073a-4f56-80bb-5c400337e721",
+        "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+        "last_4_digits": "0121",
+        "printed_name": "printedName_aeho ae",
+        "status": "BLOCKED",
+        "stage": "UNBLOCKED",
+        "issuing_date": "2021-08-19T16:45:07.750936Z",
+        "expiration_date": "2025/08",
+        "name": "name_aeho pismo",
+        "type": "PLASTIC",
+        "transaction_limit": "15",
+        "atc": [
+          1000,
+          1005
+        ],
+        "template_id": "TEMPLATE",
+        "mode": "CREDIT",
+        "contactless_enabled": "1",
+        "abu_enabled": "1",
+        "additional": "1",
+        "last_blocked_date": "2021-08-23T16:45:07.750936Z",
+        "unlock_date": "2022-06-06T21:00:00.750936Z",
+        "cvv_rotation_interval": 1234,
+        "network": "VISA",
+        "bin": "18218276",
+        "metadata": {
+          "mykey": "myvalue",
+          "mysecond-key": "myvalue2"
+        }
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents a card.",
+      "examples": [
+        {
+          "migration": {
+            "id": "card-external-10",
+            "version_date": "2021-08-27T16:45:07.750936Z",
+            "account_id": "account-external-01",
+            "reissued_id": "reissued-external-9",
+            "combo_account_id": "combo-card-id-10",
+            "customer_id": "43253"
+          },
+          "cid": "9be0486e-073a-4f56-80bb-5c400337e721",
+          "org_id": "TN_c642ca23-4ea8-4218-a00d-8331a496253c",
+          "last_4_digits": "0121",
+          "printed_name": "printedName_aeho ae",
+          "status": "blocked",
+          "stage": "normal",
+          "issuing_date": "2021-08-19T16:45:07.750936Z",
+          "expiration_date": "2025/08",
+          "name": "name_aeho pismo",
+          "type": "plastic",
+          "transaction_limit": "15",
+          "atc": [
+            1000,
+            1005
+          ],
+          "mode": "credit",
+          "contactless_enabled": "1",
+          "abu_enabled": "1",
+          "additional": "1",
+          "last_blocked_date": "2021-08-23T16:45:07.750936Z",
+          "unlock_date": "2022-06-06T21:00:00.750936Z",
+          "cvv_rotation_interval": 1234,
+          "network": "VISA",
+          "bin": "18218276",
+          "metadata": {
+            "mykey": "myvalue",
+            "mysecond-key": "myvalue2"
+          }
+        }
+      ],
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "abu_enabled": {
+          "$id": "#/properties/entity/properties/abu_enabled",
+          "type": [
+            "string",
+            "boolean"
+          ],
+          "description": "This field identifies whether abu is enabled on the card.",
+          "examples": [
+            "1",
+            "0"
+          ]
+        },
+        "additional": {
+          "$id": "#/properties/entity/properties/additional",
+          "type": [
+            "string",
+            "boolean"
+          ],
+          "description": "This field identifies if the card is an additional.",
+          "default": "0",
+          "examples": [
+            "1",
+            "0"
+          ]
+        },
+        "atc": {
+          "$id": "#/properties/entity/properties/atc",
+          "type": "array",
+          "description": "This field identifies the atc of card.",
+          "examples": [
+            [
+              1000,
+              1005
+            ]
+          ],
+          "items": {
+            "$id": "#/properties/atc/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/atc/items/anyOf/0",
+                "type": "string"
+              },
+              {
+                "$id": "#/properties/atc/items/anyOf/1",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "cid": {
+          "$id": "#/properties/entity/properties/cid",
+          "type": "string",
+          "format": "uuid",
+          "description": "This field identifies a file processing or an API request.",
+          "examples": [
+            "9be0486e-073a-4f56-80bb-5c400337e721"
+          ]
+        },
+        "contactless_enabled": {
+          "$id": "#/properties/entity/properties/contactless_enabled",
+          "type": [
+            "string",
+            "boolean"
+          ],
+          "description": "This field identifies whether contactless is enabled on the card.",
+          "examples": [
+            "0",
+            "1"
+          ]
+        },
+        "cvv_rotation_interval": {
+          "$id": "#/properties/entity/properties/cvv_rotation_interval",
+          "type": "integer",
+          "description": "This field identifies the interval in hours for CVV rotation in a VIRTUAL card. Defaults to 24",
+          "examples": [
+            1,
+            360,
+            4320
+          ]
+        },
+        "expiration_date": {
+          "$id": "#/properties/entity/properties/expiration_date",
+          "type": "string",
+          "pattern": "^\\d{4}/\\d{2}$",
+          "description": "This field identifies the expiration date of card.",
+          "examples": [
+            "2025/08"
+          ]
+        },
+        "issuing_date": {
+          "$id": "#/properties/entity/properties/issuing_date",
+          "type": "string",
+          "format": "date-time",
+          "description": "This field identifies the issuing date of card.",
+          "examples": [
+            "2021-08-19T16:45:07.750936Z"
+          ]
+        },
+        "last_blocked_date": {
+          "$id": "#/properties/entity/properties/last_blocked_date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "This field identifies the last blocked date of card.",
+          "default": null,
+          "examples": [
+            null,
+            "2021-08-23T16:45:07.750936Z"
+          ]
+        },
+        "last_4_digits": {
+          "$id": "#/properties/entity/properties/last_4_digits",
+          "type": "string",
+          "description": "This field identifies the last four digits of card.",
+          "examples": [
+            "0121"
+          ]
+        },
+        "network": {
+          "$id": "#/properties/entity/properties/network",
+          "type": "string",
+          "description": "This field identifies Card's network/brand.",
+          "examples": [
+            "VISA",
+            "MASTERCARD",
+            "ELO"
+          ]
+        },
+        "bin": {
+          "$id": "#/properties/entity/properties/bin",
+          "type": "string",
+          "description": "This field identifies Card's BIN (6 or 8 first digits).",
+          "examples": [
+            "17564578"
+          ]
+        },
+        "metadata": {
+          "$id": "#/properties/entity/properties/metadata",
+          "type": "object",
+          "description": "This field contains others card information.",
+          "default": {},
+          "examples": [
+            {
+              "mykey": "myvalue",
+              "mysecond-key": "myvalue2"
+            }
+          ],
+          "additionalProperties": true
+        },
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "This field contains the data that identifies a migration.",
+          "examples": [
+            {
+              "id": "card-external-10",
+              "version_date": "2021-08-27T16:45:07.750936Z",
+              "account_id": "account-external-01",
+              "reissued_id": "reissued-external-9"
+            }
+          ],
+          "required": [
+            "id",
+            "version_date"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "This field is the unique identifier of migration.",
+              "examples": [
+                "card-external-10"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "This field is the date of version of migration.",
+              "examples": [
+                "2021-08-27T16:45:07.750936Z"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "This field identifies the external account the card belongs to.",
+              "examples": [
+                "account-external-01"
+              ]
+            },
+            "reissued_id": {
+              "$id": "#/properties/entity/properties/migration/properties/reissued_id",
+              "type": "string",
+              "description": "This field identifies the external reissued id the card.",
+              "examples": [
+                "reissued-external-9"
+              ]
+            },
+            "combo_account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/combo_account_id",
+              "type": "string",
+              "description": "This field identifies when a COMBO mode is used (account should have a program Credit or Debit).",
+              "examples": [
+                "reissued-external-9"
+              ]
+            },
+            "customer_id": {
+              "$id": "#/properties/entity/properties/migration/properties/customer_id",
+              "type": "string",
+              "description": "This field identifies the additional customer ID.",
+              "examples": [
+                "additional-customer-id"
+              ]
+            },
+            "phase_id": {
+              "$id": "#/properties/entity/properties/migration/properties/phase_id",
+              "type": "string",
+              "description": "Migration phase ID, which represents a batch of an account migration",
+              "examples": [
+                "phase-1"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "template_id": {
+          "$id": "#/properties/entity/properties/template_id",
+          "type": "string",
+          "description": "Card template to use in order to override the account's program definitions. Used when the card brand is different from the default account program brand",
+          "examples": [
+            "VISA",
+            "ELO"
+          ]
+        },
+        "mode": {
+          "$id": "#/properties/entity/properties/mode",
+          "type": "string",
+          "description": "This field identifies the mode of card.",
+          "enum": [
+            "DEBIT",
+            "CREDIT",
+            "COMBO"
+          ],
+          "examples": [
+            "DEBIT",
+            "CREDIT"
+          ]
+        },
+        "name": {
+          "$id": "#/properties/entity/properties/name",
+          "type": "string",
+          "description": "This field identifies the name in card.",
+          "examples": [
+            "name_aeho pismo"
+          ]
+        },
+        "org_id": {
+          "$id": "#/properties/entity/properties/org_id",
+          "type": "string",
+          "description": "Internal identifier of the client organization registered into the platform.",
+          "examples": [
+            "TN_c642ca23-4ea8-4218-a00d-8331a496253c"
+          ]
+        },
+        "printed_name": {
+          "$id": "#/properties/entity/properties/printed_name",
+          "type": "string",
+          "description": "This field identifies the printed name in card.",
+          "examples": [
+            "printedName_aeho ae"
+          ]
+        },
+        "stage": {
+          "$id": "#/properties/entity/properties/stage",
+          "type": "string",
+          "description": "This field identifies the stage of card.",
+          "examples": [
+            "UNBLOCKED"
+          ]
+        },
+        "status": {
+          "$id": "#/properties/entity/properties/status",
+          "type": "string",
+          "description": "This field identifies the status of card.",
+          "examples": [
+            "BLOCKED",
+            "UNBLOCKED",
+            "THEFT"
+          ]
+        },
+        "transaction_limit": {
+          "$id": "#/properties/entity/properties/transaction_limit",
+          "type": [
+            "string",
+            "number"
+          ],
+          "description": "This field identifies the transaction limit of card. Always a numeric value, but file-parsed data may show up as a string.",
+          "examples": [
+            "10000",
+            1500,
+            10000
+          ]
+        },
+        "type": {
+          "$id": "#/properties/entity/properties/type",
+          "type": "string",
+          "description": "This field identifies the type of card.",
+          "enum": [
+            "PLASTIC",
+            "VIRTUAL"
+          ],
+          "examples": [
+            "PLASTIC",
+            "VIRTUAL"
+          ]
+        },
+        "unlock_date": {
+          "$id": "#/properties/entity/properties/unlock_date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "This field identifies the unlock date of card.",
+          "default": null,
+          "examples": [
+            null,
+            "2022-06-06T21:00:00.750936Z"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "file_id": {
+      "$id": "#/properties/file_id",
+      "type": [
+        "string",
+        "integer",
+        "null"
+      ],
+      "description": "This field is the unique identifier of the file that originated the event (can be null when origin is API).",
+      "examples": [
+        "5832868-ca4d-475f-888b-02bb44f84d19",
+        null
+      ]
+    },
+    "file_name": {
+      "$id": "#/properties/file_name",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "This field identifies the name file.",
+      "examples": [
+        "pismo.csv",
+        null
+      ]
+    },
+    "file_size": {
+      "$id": "#/properties/file_size",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "This field identifies the size file.",
+      "examples": [
+        999,
+        null
+      ]
+    },
+    "line_number": {
+      "$id": "#/properties/line_number",
+      "type": "string",
+      "description": "This field identifies the line of the file that originated the event (can be 0 when origin is API).",
+      "examples": [
+        "0",
+        "2",
+        "11"
+      ]
+    },
+    "origin": {
+      "$id": "#/properties/origin",
+      "type": "string",
+      "description": "This field identifies the source of the event: FILE/API",
+      "enum": [
+        "API",
+        "FILE"
+      ],
+      "examples": [
+        "API",
+        "FILE"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

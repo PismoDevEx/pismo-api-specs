@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Delinquent Account",
+  "description": "Emitted when all eligible loans on an account are cancelled due to delinquency.",
+  "required": [
+    "cid",
+    "org_id",
+    "account_id",
+    "program_id",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "cid": {
+      "$id": "#/properties/cid",
+      "type": "string",
+      "title": "CID",
+      "description": "Correlation ID",
+      "example": "7da3db3b-400d-4851-a362-2022dab27284"
+    },
+    "org_id": {
+      "$id": "#/properties/org_id",
+      "type": "string",
+      "title": "Org ID",
+      "description": "Organization/tenant ID",
+      "example": "TN-89e56522-726a-453e-ba6d-796b03245128"
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "example": 12176
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Pismo platform program ID",
+      "example": 9000
+    },
+    "cancelled_loans": {
+      "$id": "#/properties/cancelled_loans",
+      "type": "array",
+      "title": "Cancelled loans",
+      "description": "List of loans cancelled due to delinquency",
+      "items": {
+        "$ref": "#/definitions/cancelled_loan"
+      },
+      "example": [
+        {
+          "loan_id": "ded913af-abc9-4769-b179-068ed6181ec5",
+          "repayment_count": 12
+        },
+        {
+          "loan_id": "a1b2c3d4-5678-4abc-9def-0123456789ab",
+          "repayment_count": 6
+        }
+      ]
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "title": "Created at",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "example": "2026-08-29T14:30:00.000Z"
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": "string",
+      "title": "Updated at",
+      "description": "ISO 8601 / RFC 3339 format: YYYY-MM-DDThh:mm:ss.sssZ (UTC)",
+      "format": "date-time",
+      "example": "2026-08-29T14:30:00.000Z"
+    }
+  },
+  "definitions": {
+    "cancelled_loan": {
+      "type": "object",
+      "title": "Cancelled loan",
+      "description": "Details of a single cancelled loan",
+      "required": [
+        "loan_id",
+        "repayment_count"
+      ],
+      "properties": {
+        "loan_id": {
+          "$id": "#/definitions/cancelled_loan/properties/loan_id",
+          "type": "string",
+          "title": "Loan ID",
+          "description": "UUID of the cancelled loan",
+          "example": "ded913af-abc9-4769-b179-068ed6181ec5"
+        },
+        "repayment_count": {
+          "$id": "#/definitions/cancelled_loan/properties/repayment_count",
+          "type": "integer",
+          "title": "Repayment count",
+          "description": "Number of repayments cancelled on the loan (payable installments that were cancelled; excludes already-settled installments)",
+          "example": 12
+        }
+      }
+    }
+  }
+}

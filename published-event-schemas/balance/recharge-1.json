@@ -1,0 +1,350 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Debit transaction used for recharge",
+  "description": "This event is generated when a credit transaction is canceled and the customer's debt is recharged.",
+  "required": [
+    "account_id",
+    "program_id",
+    "program_type_id",
+    "debit_transaction",
+    "reverted_credit_transaction",
+    "recharges"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Account ID",
+      "examples": [
+        5106089
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Program ID",
+      "examples": [
+        252
+      ]
+    },
+    "program_type_id": {
+      "type": "integer",
+      "title": "Program type ID",
+      "description": "Program type ID",
+      "examples": [
+        1
+      ]
+    },
+    "debit_transaction": {
+      "type": "object",
+      "title": "Debit transaction",
+      "description": "Debit transaction used to recharge the original debt",
+      "required": [
+        "transaction_id",
+        "statement_id",
+        "transaction_amount",
+        "transaction_type_id",
+        "event_datetime",
+        "authorization_tracking_id"
+      ],
+      "properties": {
+        "transaction_id": {
+          "type": "number",
+          "title": "Debit transaction ID",
+          "description": "Debit transaction ID",
+          "examples": [
+            1325789799
+          ]
+        },
+        "statement_id": {
+          "type": "number",
+          "title": "Debit transaction statement ID",
+          "description": "ID of the statement associated with the debit transaction",
+          "examples": [
+            1205100409
+          ]
+        },
+        "transaction_amount": {
+          "type": "number",
+          "title": "Debit transaction total amount",
+          "description": "Total original amount of the debit transaction",
+          "examples": [
+            100.0
+          ]
+        },
+        "transaction_type_id": {
+          "type": "integer",
+          "title": "Debit transaction type ID",
+          "description": "Transaction type ID",
+          "examples": [
+            301
+          ]
+        },
+        "event_datetime": {
+          "type": "string",
+          "title": "Event date and time",
+          "description": "Date and time of transaction occurrence in ISO 8601 format",
+          "examples": [
+            "2023-07-02T04:43:34.167499Z"
+          ]
+        },
+        "authorization_id": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "comment": "",
+          "title": "Authorization ID",
+          "description": "Unique identifier of the transaction authorization.",
+          "examples": [
+            565456
+          ]
+        },
+        "network_authorization_id": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Network authorization ID",
+          "description": "ID of the network transaction authorization",
+          "examples": [
+            8798789
+          ]
+        },
+        "authorization_tracking_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Tracking authorization ID",
+          "description": "ID of the debit transaction tracking authorization",
+          "examples": [
+            "431dc558-f615-4436-7ba8-2173ec362219"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "transaction_id": 999999,
+          "statement_id": 88888,
+          "transaction_amount": 100.0,
+          "transaction_type_id": 999,
+          "event_datetime": "2023-07-02T04:43:34.167499Z",
+          "authorization_id": 565456,
+          "network_authorization_id": null,
+          "authorization_tracking_id": "431dc558-f615-4436-7ba8-2173ec362219"
+        }
+      ]
+    },
+    "reverted_credit_transaction": {
+      "type": "object",
+      "title": "Credit transaction",
+      "description": "Credit transaction that was canceled.",
+      "required": [
+        "transaction_id",
+        "statement_id",
+        "transaction_amount",
+        "transaction_type_id",
+        "event_datetime",
+        "authorization_tracking_id"
+      ],
+      "properties": {
+        "transaction_id": {
+          "type": "number",
+          "title": "Credit transaction ID",
+          "description": "Credit transaction ID",
+          "examples": [
+            1226589897
+          ]
+        },
+        "statement_id": {
+          "type": "number",
+          "title": "Credit transaction statement ID",
+          "description": "ID of the statement associated with the credit transaction",
+          "examples": [
+            1205100409
+          ]
+        },
+        "transaction_amount": {
+          "type": "number",
+          "title": "Credit transaction total amount",
+          "description": "Total original amount of the credit transaction",
+          "examples": [
+            100.0
+          ]
+        },
+        "transaction_type_id": {
+          "type": "integer",
+          "title": "Credit transaction type ID",
+          "description": "Transaction type ID",
+          "examples": [
+            201
+          ]
+        },
+        "event_datetime": {
+          "type": "string",
+          "title": "Event date and time",
+          "description": "Date and time of transaction occurrence in ISO 8601 format",
+          "examples": [
+            "2023-07-02T03:25:16.826673Z"
+          ]
+        },
+        "authorization_id": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "comment": "",
+          "title": "Authorization ID",
+          "description": "ID of the transaction authorization",
+          "examples": [
+            533489
+          ]
+        },
+        "network_authorization_id": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Network authorization ID",
+          "description": "ID of the network transaction authorization",
+          "examples": [
+            7281910
+          ]
+        },
+        "authorization_tracking_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Tracking authorization ID",
+          "description": "Credit transaction tracking authorization ID",
+          "examples": [
+            "352dd377-f734-4532-8cb9-1523af465629"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "transaction_id": 888888,
+          "statement_id": 77777,
+          "transaction_amount": 100.0,
+          "transaction_type_id": 899,
+          "event_datetime": "2023-07-02T03:25:16.826673Z",
+          "authorization_id": null,
+          "network_authorization_id": 7281910,
+          "authorization_tracking_id": "352dd377-f734-4532-8cb9-1523af465629"
+        }
+      ]
+    },
+    "recharges": {
+      "type": [
+        "array"
+      ],
+      "title": "Recharges",
+      "description": "Array of one or more recharges made by the debit transaction",
+      "items": [
+        {
+          "type": "object",
+          "title": "Transactions recharged",
+          "description": "One or more debit transactions recharged following the cancelation of a credit",
+          "required": [
+            "debit_transaction_id",
+            "transaction_amount",
+            "previous_balance",
+            "recharged_amount",
+            "final_balance",
+            "authorization_tracking_id"
+          ],
+          "properties": {
+            "debit_transaction_id": {
+              "title": "Debit transaction ID",
+              "description": "ID of the recharged debit transaction",
+              "type": "number",
+              "minLength": 1,
+              "maxLength": 9223372036854775807,
+              "examples": [
+                1325789799,
+                2859667253
+              ]
+            },
+            "transaction_amount": {
+              "title": "Transaction amount",
+              "description": "Numerical value of the transaction",
+              "type": "number",
+              "examples": [
+                100.0,
+                250.0
+              ]
+            },
+            "previous_balance": {
+              "title": "Previous balance",
+              "description": "Transaction balance before recharge",
+              "type": "number",
+              "examples": [
+                75.0,
+                200.0
+              ]
+            },
+            "recharged_amount": {
+              "title": "Recharged amount",
+              "description": "Amount recharged in the transaction",
+              "type": "number",
+              "examples": [
+                25.0,
+                50.0
+              ]
+            },
+            "final_balance": {
+              "title": "Final balance",
+              "description": "Final balance of the transaction",
+              "type": "number",
+              "examples": [
+                100.0,
+                250.0
+              ]
+            },
+            "authorization_tracking_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "title": "Tracking authorization ID",
+              "description": "ID of the recharged debit transaction tracking authorization",
+              "examples": [
+                "72sd9977-f541-4bs8-8dc6-4432du559037"
+              ]
+            }
+          }
+        }
+      ],
+      "examples": [
+        {
+          "debit_transaction_id": 1325789799,
+          "transaction_amount": 100.0,
+          "previous_balance": 75.0,
+          "recharged_amount": 25.0,
+          "final_balance": 100.0,
+          "authorization_tracking_id": "72sd9977-f541-4bs8-8dc6-4432du559037"
+        },
+        {
+          "debit_transaction_id": 2859667253,
+          "transaction_amount": 250.0,
+          "previous_balance": 200.0,
+          "recharged_amount": 50.0,
+          "final_balance": 250.0,
+          "authorization_tracking_id": null
+        },
+        {
+          "debit_transaction_id": 3427849128,
+          "transaction_amount": 400.0,
+          "previous_balance": 180.0,
+          "recharged_amount": 170.0,
+          "final_balance": 350.0,
+          "authorization_tracking_id": "35td5428-b42d-2ds5-4d6d-3871cd459908"
+        }
+      ]
+    }
+  }
+}

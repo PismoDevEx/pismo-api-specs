@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://pismo.io/events/judicial-order/amount_unblock.json",
+  "type": "object",
+  "title": "Judicial order amount unblocked",
+  "description": "This event occurs when a previously blocked amount is unblocked by a judicial order",
+  "required": [
+    "external_id",
+    "original_external_id",
+    "status",
+    "protocol_number",
+    "sequence_number",
+    "currency_code",
+    "requested_amount",
+    "effected_amount",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "external_id": {
+      "title": "External ID",
+      "description": "Partner ID of the unblocked judicial order",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "original_external_id": {
+      "title": "Original external ID",
+      "description": "Partner ID of the original blocked judicial order",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "status": {
+      "title": "Status",
+      "description": "Judicial order unblock status",
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "PENDING",
+        "UNBLOCKED",
+        "FAILED",
+        "CANCELED"
+      ]
+    },
+    "protocol_number": {
+      "title": "Protocol number",
+      "description": "Legal protocol number for the judicial order",
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence_number": {
+      "title": "Sequence number",
+      "description": "Protocol sequence number",
+      "type": "string",
+      "minLength": 1
+    },
+    "currency_code": {
+      "title": "Currency code",
+      "description": "Currency code in ISO 4217 format",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD",
+        "EUR"
+      ]
+    },
+    "requested_amount": {
+      "title": "Requested amount",
+      "description": "Amount requested to be unblocked in the account",
+      "type": "number",
+      "minimum": 0.01
+    },
+    "effected_amount": {
+      "title": "Effected amount",
+      "description": "Amount actually unblocked in the account",
+      "type": "number",
+      "minimum": 0.0
+    },
+    "created_at": {
+      "title": "Created at",
+      "description": "Date when the judicial order unblock was created",
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "title": "Updated at",
+      "description": "Date when the judicial order unblock was last updated",
+      "type": "string",
+      "format": "date-time"
+    },
+    "payments": {
+      "title": "Payments",
+      "description": "List of payments related to this judicial order unblock",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "title": "Account ID",
+            "description": "Pismo account ID",
+            "type": "integer",
+            "minimum": 1
+          },
+          "tracking_id": {
+            "title": "Tracking ID",
+            "description": "Payment tracking ID",
+            "type": "string"
+          },
+          "amount": {
+            "title": "Amount",
+            "description": "Payment amount",
+            "type": "number",
+            "minimum": 0.01
+          }
+        },
+        "required": [
+          "account_id",
+          "tracking_id",
+          "amount"
+        ]
+      }
+    }
+  }
+}

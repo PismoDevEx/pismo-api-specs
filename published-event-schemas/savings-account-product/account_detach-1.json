@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Detach an account from a product",
+  "required": [
+    "account_id",
+    "savings_account",
+    "attach_datetime",
+    "detach_datetime"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123456
+      ]
+    },
+    "savings_account": {
+      "$ref": "#/definitions/savings_account"
+    },
+    "attach_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Attach Date",
+      "description": "The date and time when the account was attached.",
+      "examples": [
+        "2023-10-01T12:00:00Z"
+      ]
+    },
+    "detach_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Detach Date",
+      "description": "The date and time when the account was detached.",
+      "examples": [
+        "2023-10-01T12:00:00Z"
+      ]
+    },
+    "maturity_date_days": {
+      "type": "integer",
+      "title": "Maturity days",
+      "description": "Number of days before maturity date",
+      "examples": [
+        1111
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Custom fields",
+      "description": "Key-value pair metadata field.",
+      "examples": [
+        {
+          "custom_info": "value"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "processing_codes": {
+      "type": "object",
+      "title": "Processing Codes",
+      "description": "Processing codes used for accounting",
+      "required": [
+        "interest_processing_code"
+      ],
+      "properties": {
+        "interest_processing_code": {
+          "type": "string",
+          "title": "Interest Processing Code",
+          "description": "Processing code for interest processing",
+          "examples": [
+            "202526"
+          ]
+        }
+      }
+    },
+    "savings_account": {
+      "type": "object",
+      "title": "Savings Account product",
+      "description": "Savings Account product information",
+      "required": [
+        "product_id",
+        "name",
+        "interest_plan_id",
+        "processing_codes",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "title": "Product Identifier",
+          "description": "Product identifier in the pismo platform. UUID v4 format",
+          "examples": [
+            "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Product Name",
+          "description": "Name given to the product by the customer",
+          "examples": [
+            "My product"
+          ]
+        },
+        "interest_plan_id": {
+          "type": "string",
+          "title": "Interest Plan Identifier",
+          "description": "Interest plan identifier in the pismo platform. UUID v4 format",
+          "examples": [
+            "b935a**************************4d509"
+          ]
+        },
+        "processing_codes": {
+          "$ref": "#/definitions/processing_codes"
+        },
+        "status": {
+          "type": "string",
+          "title": "Status",
+          "description": "Savings Account product status.",
+          "examples": [
+            "ACTIVE"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "title": "Creation Datetime",
+          "description": "Savings Account product creation date time. Represented as a RFC3339 timestamp",
+          "examples": [
+            "2024-01-23T13:26:25Z"
+          ]
+        },
+        "min_amount": {
+          "type": "number",
+          "title": "Minimum amount",
+          "description": "Minimum amount for yield",
+          "examples": [
+            10.2,
+            20
+          ]
+        }
+      }
+    }
+  }
+}

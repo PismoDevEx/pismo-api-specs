@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Card excluded",
+  "description": "This event occurs when a card fails its validation and is rejected from being a card on file. The <a href='https://developers.pismo.io/pismo-docs/reference/create-a-cardsonfile-v3' target='_blank'>Create card on file</a>, <a href='https://developers.pismo.io/pismo-docs/reference/updates-a-cardsonfile' target='_blank'>Update card on file</a>, <a href='https://developers.pismo.io/pismo-docs/reference/create-a-new-validation-for-a-given-card' target='_blank'>Create card validation</a>, and <a href='https://developers.pismo.io/pismo-docs/reference/submit-a-validation-try' target='_blank'>Submit validation try</a> endpoints can begin a validation that results in this event occurring.",
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        847696004
+      ]
+    },
+    "uuid": {
+      "type": "string",
+      "title": "Card token",
+      "description": "Card UUID token",
+      "maxLength": 40,
+      "examples": [
+        "bbbb9682-06e4-11ea-9d60-52552f8f99"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "title": "Exclusion origin",
+      "description": "Event origin",
+      "examples": [
+        "APP",
+        "CRM"
+      ]
+    }
+  },
+  "required": [
+    "account_id",
+    "uuid"
+  ]
+}

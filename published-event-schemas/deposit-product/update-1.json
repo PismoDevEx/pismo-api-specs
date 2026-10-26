@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Deposit product updated",
+  "description": "Update deposit by product ID. The <a href='https://developers.pismo.io/pismo-docs/reference/interest-bearing-v1-patch-deposit-product' target='_blank'>Update deposit product</a> endpoint generates this event.",
+  "required": [
+    "product_id",
+    "status",
+    "previous_status",
+    "updated_at"
+  ],
+  "properties": {
+    "previous_status": {
+      "type": "string",
+      "title": "Previous status",
+      "description": "Updated deposit product's previous status. Can be `CREATED`,` ACTIVE`, or `INACTIVE`",
+      "examples": [
+        "CREATED",
+        "ACTIVE",
+        "INACTIVE"
+      ]
+    },
+    "product_id": {
+      "type": "string",
+      "title": "Product ID",
+      "description": "Product ID in the Pismo platform. UUID v4 format",
+      "examples": [
+        "2c336e9d-d04f-4fd0-8f6e-25808f48d70c"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Deposit product updated status. Can be either `ACTIVE` or `INACTIVE`",
+      "examples": [
+        "ACTIVE",
+        "INACTIVE"
+      ]
+    },
+    "min_amount": {
+      "type": "number",
+      "title": "Minimum amount",
+      "description": "Updated the deposit product\u2019s minimum amount. Included in the payload only when the product has a minimum amount configured. Represents the minimum balance required to earn yield.",
+      "examples": [
+        50.0
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "title": "Update datetime",
+      "description": "Deposit product update datetime. Represented as an RFC3339 timestamp.",
+      "examples": [
+        "2024-01-23T18:26:25Z"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "title": "Reason",
+      "description": "Reason provided for the update.",
+      "examples": [
+        "Product deactivated by request"
+      ]
+    },
+    "notices": {
+      "type": "array",
+      "title": "Notices",
+      "description": "Maturity notices configured for the product. Included only when notices were provided in the update.",
+      "items": {
+        "type": "object",
+        "title": "Notice",
+        "description": "A single maturity notice.",
+        "required": [
+          "days_before_maturity"
+        ],
+        "properties": {
+          "days_before_maturity": {
+            "type": "integer",
+            "title": "Days before maturity",
+            "description": "Number of days before maturity when the notice is emitted.",
+            "examples": [
+              5
+            ]
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Description of the notice.",
+            "examples": [
+              "Maturity approaching"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

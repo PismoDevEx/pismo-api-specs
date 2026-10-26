@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pismo.io/events/migration/balance_control_incoming-1.json",
+  "type": "object",
+  "default": {},
+  "title": "Balance control migration started",
+  "description": "Event generated when a balance control migration is started. Contains the payload with the data to be migrated.",
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "Balance control migration object",
+      "required": [
+        "migration"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "Balance control migration extra information.",
+          "required": [
+            "id",
+            "version_date",
+            "account_id"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "Record identifier for migration purposes.",
+              "examples": [
+                "13e0ea50-5acf-4b26-a429-6140c89fc666"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "description": "Record identifier for an update to a migrated entity. Valid format (yyyy-MM-ddTHH:mm:ssZ).",
+              "examples": [
+                "2024-03-09T15:23:00Z"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "An external account ID provided for a balance control.",
+              "examples": [
+                "23368537-3"
+              ]
+            },
+            "additionalProperties": true
+          },
+          "examples": [
+            {
+              "id": "13e0ea50-5acf-4b26-a429-6140c89fc666",
+              "version_date": "2024-03-09T15:23:00Z",
+              "account_id": "23368537-3"
+            }
+          ]
+        },
+        "accrual_date_cutoff": {
+          "$id": "#/properties/entity/properties/accrual_date_cutoff",
+          "type": "string",
+          "description": "Cut-off date up to which date accruals should be calculated considering the migrated balances (format: yyyy-MM-dd). This date typically is the go-live date. Pismo will calculate the accruals from account's dueDate +1 until the cut-off date.",
+          "examples": [
+            "2024-03-12"
+          ]
+        },
+        "calculate_retroactive_accruals": {
+          "$id": "#/properties/entity/properties/calculate_retroactive_accruals",
+          "type": "boolean",
+          "description": "If `true`, Pismo will calculate the retroactive accruals for this migrated balance control",
+          "examples": [
+            true
+          ]
+        },
+        "balance_types": {
+          "$id": "#/properties/entity/properties/balance_types",
+          "type": "array",
+          "description": "Collection of balance types (accrual amount and type)",
+          "items": {
+            "$id": "#/properties/entity/properties/balance_types/properties/items",
+            "type": "object",
+            "properties": {
+              "balance_type": {
+                "$id": "#/properties/entity/properties/balance_types/properties/items/anyOf/0/properties/balance_type",
+                "title": "Balance categories (accruable and fineable) that needs to be retroactively calculated.\n                  The following types are valid:\n                  - ACCRUABLE_FINEABLE\n                  - ACCRUABLE_NOTFINEABLE\n                  - NOTACCRUABLE_FINEABLE\n                  - NOTACCRUABLE_NOTFINEABLE\n                  - CREDIT",
+                "examples": [
+                  "CREDIT"
+                ]
+              },
+              "balance_amount": {
+                "$id": "#/properties/entity/properties/balance_types/properties/items/anyOf/0/properties/balance_amount",
+                "type": "number",
+                "description": "The balance amount is a position that depends on the account's cycle closing date.\n                    - Statements between the due date and closing date at the migration date:\n                        If the open statement is `M`, the balance_amount should belong to the previous statement (`M-1`)\n                    - Statements between the closing date and due date:\n                        If the open statement is \"M\" and the statement between the closing date and due date is \"M-1\", the balance_amount should belong to \"M-2\" statement",
+                "examples": [
+                  0.0
+                ]
+              }
+            },
+            "examples": [
+              {
+                "balance_type": "ACCRUABLE_FINEABLE",
+                "balance_amount": 0.0
+              }
+            ]
+          },
+          "examples": [
+            [
+              {
+                "balance_type": "ACCRUABLE_FINEABLE",
+                "balance_amount": 0.0
+              }
+            ]
+          ]
+        },
+        "additionalProperties": true
+      },
+      "examples": [
+        {
+          "migration": {
+            "id": "13e0ea50-5acf-4b26-a429-6140c89fc666",
+            "version_date": "2024-03-09T15:23:00Z",
+            "account_id": "23368537-3"
+          },
+          "accrual_date_cutoff": "2024-03-12",
+          "calculate_retroactive_accruals": true,
+          "balance_types": [
+            {
+              "balance_type": "ACCRUABLE_FINEABLE",
+              "balance_amount": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    "additionalProperties": true
+  },
+  "examples": [
+    {
+      "entity": {
+        "migration": {
+          "id": "13e0ea50-5acf-4b26-a429-6140c89fc666",
+          "version_date": "2024-03-09T15:23:00Z",
+          "account_id": "23368537-3"
+        },
+        "accrual_date_cutoff": "2024-03-12",
+        "calculate_retroactive_accruals": true,
+        "balance_types": [
+          {
+            "balance_type": "ACCRUABLE_FINEABLE",
+            "balance_amount": 0.0
+          }
+        ]
+      }
+    }
+  ]
+}

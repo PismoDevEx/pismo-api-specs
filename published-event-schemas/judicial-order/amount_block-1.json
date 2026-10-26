@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://pismo.io/events/judicial-order/amount_block.json",
+  "type": "object",
+  "title": "Judicial order amount blocked",
+  "description": "This event occurs when an amount is blocked by a judicial order",
+  "required": [
+    "external_id",
+    "status",
+    "protocol_number",
+    "sequence_number",
+    "currency_code",
+    "requested_amount",
+    "effected_amount",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "external_id": {
+      "title": "External ID",
+      "description": "Judicial order partner ID",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "status": {
+      "title": "Status",
+      "description": "Judicial order block status",
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "PENDING",
+        "BLOCKED",
+        "FAILED",
+        "CANCELED"
+      ]
+    },
+    "protocol_number": {
+      "title": "Protocol number",
+      "description": "Legal protocol number for the judicial order",
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence_number": {
+      "title": "Sequence number",
+      "description": "Protocol sequence number",
+      "type": "string",
+      "minLength": 1
+    },
+    "currency_code": {
+      "title": "Currency code",
+      "description": "Currency code in ISO 4217 format",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "examples": [
+        "BRL",
+        "USD",
+        "EUR"
+      ]
+    },
+    "requested_amount": {
+      "title": "Requested amount",
+      "description": "Amount requested to be blocked in the account",
+      "type": "number",
+      "minimum": 0.01
+    },
+    "effected_amount": {
+      "title": "Effected amount",
+      "description": "Amount actually blocked in the account",
+      "type": "number",
+      "minimum": 0.0
+    },
+    "created_at": {
+      "title": "Created at",
+      "description": "Date when the judicial order block was created",
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "title": "Updated at",
+      "description": "Date when the judicial order block was last updated",
+      "type": "string",
+      "format": "date-time"
+    },
+    "payments": {
+      "title": "Payments",
+      "description": "List of payments related to this judicial order block",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "title": "Account ID",
+            "description": "Pismo account ID",
+            "type": "integer",
+            "minimum": 1
+          },
+          "tracking_id": {
+            "title": "Tracking ID",
+            "description": "Payment tracking ID",
+            "type": "string"
+          },
+          "amount": {
+            "title": "Amount",
+            "description": "Payment amount",
+            "type": "number",
+            "minimum": 0.01
+          }
+        },
+        "required": [
+          "account_id",
+          "tracking_id",
+          "amount"
+        ]
+      }
+    }
+  }
+}

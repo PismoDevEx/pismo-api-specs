@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "PAN updated",
+  "description": "Event happen when Pan Update process finishes.",
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Accound ID",
+      "description": "Pismo account ID.",
+      "examples": [
+        24146066
+      ]
+    },
+    "old_card_id": {
+      "title": "Old card ID",
+      "description": "Old card to be updated",
+      "type": "integer",
+      "examples": [
+        42488842
+      ]
+    },
+    "new_card_id": {
+      "title": "New card ID",
+      "description": "New card ID",
+      "type": "integer",
+      "examples": [
+        42488843
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Processing status",
+      "description": "Processing status",
+      "examples": [
+        "SUCCESS",
+        "FAILURE"
+      ]
+    },
+    "reason": {
+      "title": "Reason",
+      "description": "Reason in case of failure",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "Error processing request"
+      ]
+    },
+    "reason_code": {
+      "title": "Reason Code",
+      "description": "Reason code in case of failure",
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "ERR7655"
+      ]
+    },
+    "old_program_id": {
+      "title": "Old Program ID",
+      "description": "Card's old Pismo program ID",
+      "type": "integer",
+      "examples": [
+        32455543
+      ]
+    },
+    "new_program_id": {
+      "title": "New Program ID",
+      "description": "Card's new Pismo program ID",
+      "type": "integer",
+      "examples": [
+        71455543
+      ]
+    }
+  },
+  "required": [
+    "account_id",
+    "old_card_id",
+    "new_card_id",
+    "status",
+    "old_program_id",
+    "new_program_id"
+  ]
+}

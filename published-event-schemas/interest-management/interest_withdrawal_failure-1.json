@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest withdrawal failed",
+  "description": "This event occurs when a withdrawal is invalid and cannot be redeemed with product interest management.",
+  "required": [
+    "tracking_id",
+    "account_id",
+    "message",
+    "created_at"
+  ],
+  "properties": {
+    "tracking_id": {
+      "type": "string",
+      "title": "Tracking ID.",
+      "description": "Unique withdrawal identifier defined by Customer.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        "999999999"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of error that occurred when trying to register new withdrawal",
+      "examples": [
+        "This deposit does not have any more available units."
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of withdrawal on Pismo platform",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    },
+    "available_balance": {
+      "type": "number",
+      "title": "Net available balance",
+      "description": "Net balance available to be withdrawn from account",
+      "format": "double",
+      "examples": [
+        100.75
+      ]
+    }
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset registration succeeded",
+  "description": "This event occurs when an asset is registered with Pismo.",
+  "required": [
+    "asset",
+    "quota",
+    "created_at"
+  ],
+  "properties": {
+    "asset": {
+      "type": "object",
+      "title": "Object representing the registered asset.",
+      "required": [
+        "id",
+        "asset_type",
+        "issuer_id",
+        "registration_mode",
+        "issuing_date",
+        "maturity_date",
+        "issued_units",
+        "unit_value",
+        "index_type",
+        "currency",
+        "early_redemption_terms"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Asset ID",
+          "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions and cancellations.",
+          "examples": [
+            "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+          ]
+        },
+        "asset_type": {
+          "type": "string",
+          "title": "Asset type",
+          "description": "Financial instrument type",
+          "enum": [
+            "cdb",
+            "rdb"
+          ]
+        },
+        "issuer_id": {
+          "type": "string",
+          "title": "Issuer id",
+          "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+          "examples": [
+            "12345678"
+          ]
+        },
+        "registration_mode": {
+          "type": "string",
+          "title": "Registration mode",
+          "description": "Registration mode of asset. When `single`, asset has only one quota. When `many`, it can be filled with any number of quotas based on `issued_units`.",
+          "examples": [
+            "single",
+            "many"
+          ]
+        },
+        "issuing_date": {
+          "type": "string",
+          "title": "Issuing date",
+          "description": "Date asset was effectively issued by client",
+          "format": "date",
+          "examples": [
+            "2020-12-01"
+          ]
+        },
+        "maturity_date": {
+          "type": "string",
+          "title": "Issuing date",
+          "description": "Date asset expires, finishing its cycle",
+          "format": "date",
+          "examples": [
+            "2022-12-01"
+          ]
+        },
+        "issued_units": {
+          "type": "number",
+          "title": "Issued units",
+          "description": "Number of units asset can support. When `single`, the number should reflect the entire quota. When `many`, it should reflect the number of units available for purchase in the asset.",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        },
+        "unit_value": {
+          "type": "number",
+          "title": "Unit value",
+          "description": "Value of asset's units",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        },
+        "index_type": {
+          "type": "string",
+          "title": "Index type",
+          "description": "Daily accrual calculations are based on the index type. For example, \"di\" for DI rate or \"pre\" for prefixed rate.",
+          "enum": [
+            "di",
+            "pre",
+            "vpc",
+            "ipca",
+            "monthdi"
+          ]
+        },
+        "index_rate": {
+          "type": "number",
+          "title": "Index rate",
+          "description": "How much asset accrues per day",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "title": "Currency",
+          "description": "ISO 4217 currency code",
+          "examples": [
+            "986"
+          ]
+        },
+        "isin_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "ISIN code",
+          "description": "ISIN code for asset",
+          "examples": [
+            "pismo1234"
+          ]
+        },
+        "early_redemption_terms": {
+          "type": "string",
+          "title": "Early redemption terms",
+          "description": "Identifies an asset with a different calculation condition. For value \"no\", `additional_data.early_redemption_attributes` must be omitted; otherwise it must be set.",
+          "enum": [
+            "yes",
+            "no",
+            "market",
+            "staggered"
+          ]
+        },
+        "additional_data": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "title": "Custom additional information for the asset",
+          "properties": {
+            "early_redemption_attributes": {
+              "type": "array",
+              "title": "List of early redemption attributes",
+              "items": {
+                "$ref": "#/definitions/early_redemption_attributes"
+              }
+            }
+          }
+        },
+        "interest_rate": {
+          "type": "number",
+          "title": "Interest rate",
+          "description": "Interest rate for asset",
+          "format": "double",
+          "examples": [
+            1.0
+          ]
+        }
+      }
+    },
+    "quota": {
+      "type": "object",
+      "title": "Quota registered",
+      "required": [
+        "id",
+        "customer_document_number",
+        "type",
+        "purchased_units"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Quota ID",
+          "description": "Quota identifier",
+          "examples": [
+            "99999999-9999-9999-9999-999999999999"
+          ]
+        },
+        "customer_name": {
+          "type": "string",
+          "title": "Customer name",
+          "description": "Name of asset quota owner. Can be a company or an individual.",
+          "examples": [
+            "Lorem ipsum"
+          ]
+        },
+        "customer_document_number": {
+          "type": "string",
+          "title": "Customer document number",
+          "description": "Number of asset quota owner's legal document",
+          "examples": [
+            "00000000012"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Entity type",
+          "description": "Legal nature of asset quota owner",
+          "enum": [
+            "natural",
+            "legal"
+          ]
+        },
+        "purchased_units": {
+          "type": "number",
+          "title": "Purchased quota units",
+          "description": "Number of quota units purchased by asset quota owner",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        },
+        "deposit_number": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Deposit number of the asset quota",
+          "description": "Optional attribute provided by client when registering asset quota on Pismo platform",
+          "format": "int",
+          "examples": [
+            999999999
+          ]
+        },
+        "operation_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Operation code",
+          "description": "Optional attribute generated when registering asset quota on Pismo platform",
+          "examples": [
+            "202404110000000900"
+          ]
+        },
+        "external_id": {
+          "type": "string",
+          "title": "External ID",
+          "description": "External identifier for operation. Optional field provided by client in asset registration.",
+          "examples": [
+            "deposit:6104253a-qt53-41m0-a630-2z1h2761e3f8"
+          ]
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of asset on Pismo platform",
+      "format": "date-time",
+      "examples": [
+        "2020-12-29T19:48:25"
+      ]
+    }
+  },
+  "definitions": {
+    "early_redemption_attributes": {
+      "type": "object",
+      "title": "Early redemption attributes",
+      "required": [
+        "date"
+      ],
+      "description": "Custom redemption conditions",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "title": "Date",
+          "description": "Custom date to be considered",
+          "examples": [
+            "2021-02-01"
+          ]
+        },
+        "interest_rate": {
+          "type": "number",
+          "format": "double",
+          "title": "Interest rate",
+          "description": "Interest rate to be considered until date established",
+          "examples": [
+            1.09
+          ]
+        },
+        "floating_rate": {
+          "type": "number",
+          "format": "double",
+          "title": "Floating rate",
+          "description": "Floating rate to be considered until date established",
+          "examples": [
+            1.18
+          ]
+        }
+      }
+    }
+  }
+}

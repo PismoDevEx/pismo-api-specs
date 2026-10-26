@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix infraction status changed",
+  "description": "Pix infraction creation and status change event. The following endpoints generate this event:  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-infraction-create'>Create infraction report</a>,  <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-infraction-close'>Close infraction report</a>, and <a href='https://developers.pismo.io/pismo-docs/reference/post-v2-pix-infraction-cancel'>Cancel infraction report</a>. For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments'>Pix instant payments</a> guide. Also see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-payments-data-events'>Pix payments data events</a> guide.",
+  "required": [
+    "counterparty_participant",
+    "creation_datetime",
+    "id",
+    "last_modified_datetime",
+    "reason",
+    "reporter_participant",
+    "situation_type",
+    "status",
+    "transaction_id"
+  ],
+  "properties": {
+    "counterparty_participant": {
+      "type": "string",
+      "title": "Counterparty participant",
+      "description": "Transaction recipient participant's ISPB (Brazilian payments system) ID",
+      "maxLength": 8,
+      "examples": [
+        "99999011"
+      ]
+    },
+    "creation_datetime": {
+      "type": "string",
+      "title": "Creation datetime",
+      "description": "Infraction report creation datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "title": "ID",
+      "description": "Pix infraction ID",
+      "examples": [
+        "91d65e98-97c0-4b0f-b577-73625da1f9fc"
+      ]
+    },
+    "last_modified_datetime": {
+      "type": "string",
+      "title": "Last modified datetime",
+      "description": "Last infraction report modification datetime. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'",
+      "format": "date-time",
+      "examples": [
+        "2021-10-29T11:00:00.000Z"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "title": "Reason",
+      "description": "Reason for opening an infraction report.",
+      "maxLength": 16,
+      "enum": [
+        "REFUND_REQUEST",
+        "REFUND_CANCELLED"
+      ],
+      "example": "REFUND_REQUEST"
+    },
+    "reporter_participant": {
+      "type": "string",
+      "title": "Reporter Participant",
+      "description": "Transaction payer participant's ISPB (Brazilian payments system) ID",
+      "maxLength": 8,
+      "examples": [
+        "99999010"
+      ]
+    },
+    "situation_type": {
+      "type": "string",
+      "title": "Situation type",
+      "description": "Situation that gave rise to the infraction notification. For notifications created in api v1, the value `UNKNOWN` appears.",
+      "maxLength": 17,
+      "enum": [
+        "SCAM",
+        "ACCOUNT_TAKEOVER",
+        "COERCION",
+        "FRAUDULENT_ACCESS",
+        "OTHER",
+        "UNKNOWN"
+      ],
+      "example": "SCAM"
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Infraction report status.",
+      "maxLength": 15,
+      "enum": [
+        "OPEN",
+        "ACKNOWLEDGED",
+        "CLOSED",
+        "CANCELLED"
+      ],
+      "example": "OPEN"
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction ID",
+      "description": "Pix transaction ID",
+      "examples": [
+        "E9999901012341234123412345678900"
+      ]
+    },
+    "analysis_details": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Analysis details",
+      "description": "Infraction analysis details, which can guide the payer's next steps.",
+      "maxLength": 2000
+    },
+    "analysis_result": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Analysis result",
+      "description": "Result of the recipient's infraction analysis.",
+      "enum": [
+        "AGREED",
+        "DISAGREED",
+        ""
+      ],
+      "example": "AGREED"
+    },
+    "correlation_id": {
+      "type": "string",
+      "title": "Correlation ID",
+      "description": "The correlation ID (CID) field is used to link related API requests and events. The CID can help the Pismo engineering team track everything related to a call. You can find the CID field in the response header from an API endpoint call."
+    },
+    "details": {
+      "type": "string",
+      "title": "Report Details",
+      "description": "Details that may help the counterparty payment service provider (PSP) to analysis the infraction.",
+      "maxLength": 2000,
+      "examples": []
+    },
+    "fraud_marker_id": {
+      "type": "string",
+      "title": "Fraud marker ID",
+      "description": "Fraud marker ID. Marks a transaction as possibly being fraudulent.",
+      "examples": [
+        "53D0F66A-BAB0-49D7-B7DC-807B82AABD8D"
+      ]
+    },
+    "contact_information": {
+      "type": "object",
+      "title": "Contact information for the participant who created the infringement notification",
+      "properties": {
+        "phone": {
+          "type": "string",
+          "title": "Phone number",
+          "description": "Contact telephone number",
+          "examples": [
+            "+5511104587451"
+          ]
+        },
+        "email": {
+          "type": "string",
+          "title": "Email contact",
+          "description": "Email for contact",
+          "examples": [
+            "email@email"
+          ]
+        }
+      }
+    },
+    "fund_recovery_id": {
+      "type": "string",
+      "title": "Fund Recovery ID",
+      "description": "Fund recovery identifier. Present if the violation notification was generated during a fund recovery operation.",
+      "examples": [
+        "53D0F66A-BAB0-49D7-B7DC-807B82AABD8D"
+      ]
+    },
+    "infraction_amount": {
+      "type": "number",
+      "title": "Infraction Amount",
+      "description": "Amount involved in the infraction.",
+      "examples": [
+        100.0
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    }
+  }
+}

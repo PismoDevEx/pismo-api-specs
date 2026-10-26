@@ -1,0 +1,499 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Authorization",
+  "additionalProperties": false,
+  "properties": {
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction type",
+      "description": "Identifies the type of the saga authorization",
+      "examples": [
+        "BANKSLIP_CASHIN",
+        "P2P_CASH",
+        "P2M_CASH",
+        "P2P_CARD_ON_FILE",
+        "P2M_CARD_ON_FILE",
+        "TED_CASHOUT",
+        "TEF_CASHOUT",
+        "OP_CASHOUT",
+        "TED_CASHOUT_REVERSAL",
+        "TEF_CASHOUT_REVERSAL",
+        "OP_CASHOUT_REVERSAL",
+        "TED_CASHIN",
+        "TEF_CASHIN",
+        "P2P_CASH_CANCEL",
+        "P2P_CARD_ON_FILE_CANCEL",
+        "PURCHASE_CASH_CANCEL",
+        "PURCHASE_CARD_ON_FILE_CANCEL"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "title": "Outcome",
+      "description": "Outcome of the authorization",
+      "examples": [
+        "SUCCESS",
+        "FAILED"
+      ]
+    },
+    "entry_mode": {
+      "type": "string",
+      "title": "Entry mode",
+      "description": "Entrymode of the authorization",
+      "examples": [
+        "QRCODE",
+        "ALIAS",
+        "BENEFI",
+        "PHONEC",
+        "PAYREQ",
+        "BKOFFI",
+        "AUTOST"
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code of the authorization",
+      "examples": [
+        "004000",
+        "004001",
+        "004005",
+        "007000",
+        "007100",
+        "007101",
+        "007300",
+        "007301",
+        "007400",
+        "007500",
+        "007600",
+        "007601",
+        "007700"
+      ]
+    },
+    "source_holder": {
+      "$ref": "#/definitions/account_holder"
+    },
+    "destination_holder": {
+      "$ref": "#/definitions/account_holder"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Amount of the authorization",
+      "examples": [
+        10.4,
+        17.5
+      ]
+    },
+    "fee_amount": {
+      "type": "number",
+      "title": "Fee amount",
+      "description": "Transfer fee amount",
+      "examples": [
+        1.2,
+        5.5
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization identifier",
+      "description": "Authorization identifier",
+      "examples": [
+        45672
+      ]
+    },
+    "bar_code": {
+      "type": "string",
+      "title": "Bar code",
+      "description": "Bankslip Bar Code",
+      "examples": [
+        "22222.33333  44444.902111  50059.440003  9  82320000991111",
+        "11111.77777  55555.902111  55667.222222  9  82320000991111"
+      ]
+    },
+    "bankslip_status": {
+      "type": "string",
+      "title": "Bankslip Status",
+      "description": "Is the status of a specific bank slip when the operation happens",
+      "examples": [
+        "SETTLED",
+        "CANCELLED"
+      ]
+    },
+    "tid_authorization_id": {
+      "type": "string",
+      "title": "Tid authorization ID",
+      "description": "Terminal identifier of the authorization (Acquirer)",
+      "examples": [
+        "11051907031228097309"
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Event date",
+      "description": "Date of the authorization",
+      "examples": [
+        "2019-07-05T12:29:12.300Z"
+      ]
+    },
+    "mdr_amount": {
+      "type": "number",
+      "title": "MDR Amount",
+      "description": "MDR means merchant discount rate. In other words, is how much the processor of the credit card charges over the operation",
+      "examples": [
+        0.47
+      ]
+    },
+    "is_card_on_file": {
+      "type": "boolean",
+      "title": "Is card on file",
+      "description": "A flag that identifies if the operation is a card on file",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "is_payment_request": {
+      "type": "boolean",
+      "title": "Is payment request",
+      "description": "A flag that identifies if is a payment request operation",
+      "examples": [
+        true,
+        false
+      ]
+    },
+    "payment_request_id": {
+      "type": "integer",
+      "title": "Payment request identifier",
+      "description": "Identifier of the payment request paid",
+      "examples": [
+        997602
+      ]
+    },
+    "card_details": {
+      "type": "object",
+      "$ref": "#/definitions/card_details"
+    },
+    "current_balance": {
+      "type": "number",
+      "title": "Current balance",
+      "description": "Current balance after authorization",
+      "examples": [
+        100.84,
+        0
+      ]
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Latitude",
+      "description": "Latitude of the user when the operation happens",
+      "examples": [
+        -34.84454364
+      ]
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Longitude",
+      "description": "Longitude of the user when the operation happens",
+      "examples": [
+        47.32434343
+      ]
+    },
+    "error_code": {
+      "type": "string",
+      "title": "Error Code",
+      "description": "If the operation results in an error it will set an error code, that could be checked on Pismo's documentation",
+      "examples": [
+        "WRUL0400"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "title": "Error Message",
+      "description": "If the operation results in an error it will set an error message, describing what goes wrong.",
+      "examples": [
+        "Transa\u00e7\u00e3o n\u00e3o permitida antes das 7:00 ou ap\u00f3s 16:00."
+      ]
+    },
+    "declination_source": {
+      "type": "string",
+      "title": "Declination Source",
+      "description": "Indicate the actor that declined the operation",
+      "examples": [
+        "BUSINESS_LIMIT"
+      ]
+    },
+    "anti_fraud": {
+      "$ref": "#/definitions/anti_fraud"
+    }
+  },
+  "required": [
+    "transaction_type",
+    "outcome",
+    "current_balance"
+  ],
+  "definitions": {
+    "account_holder": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Account Holder",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Account holder name",
+          "examples": [
+            "Destinat\u00e1rio da Silva"
+          ]
+        },
+        "legal_name": {
+          "type": "string",
+          "title": "Legal Name",
+          "description": "Account holder legal name",
+          "examples": [
+            "Destinat\u00e1rio da Silva"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": "Account holder document number",
+          "examples": [
+            "01969270306"
+          ]
+        },
+        "entity_type": {
+          "type": "string",
+          "title": "Entity type",
+          "description": "Identifies if the account belongs to a company or a person",
+          "examples": [
+            "F"
+          ]
+        },
+        "phone_country_code": {
+          "type": "string",
+          "title": "Phone country code",
+          "description": "Account holder phone country code",
+          "examples": [
+            "55"
+          ]
+        },
+        "phone_area_code": {
+          "type": "string",
+          "title": "Phone area code",
+          "description": "Account holder phone area code",
+          "examples": [
+            "11"
+          ]
+        },
+        "phone_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Phone number",
+          "description": "Account holder phone number",
+          "examples": [
+            "988887777"
+          ]
+        },
+        "external_id": {
+          "type": "string",
+          "title": "External ID",
+          "description": "External correlation identifier",
+          "examples": [
+            "b133facc-7db7-4ddb-8b68-946350bd4787"
+          ]
+        },
+        "company_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Company Name",
+          "description": "Account holder company name",
+          "examples": [
+            "Empresa S.A."
+          ]
+        },
+        "bankaccount": {
+          "$ref": "#/definitions/bankaccount"
+        }
+      }
+    },
+    "bankaccount": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Bank Account",
+      "required": [
+        "bank",
+        "branch",
+        "account_number",
+        "check_digit"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "maxLength": 3,
+          "title": "Bank Code",
+          "description": "Identifies the bank",
+          "examples": [
+            "341"
+          ]
+        },
+        "branch": {
+          "type": "string",
+          "maxLength": 5,
+          "title": "Branch Code",
+          "description": "Identifies the bank's branch",
+          "examples": [
+            "0500"
+          ]
+        },
+        "account_number": {
+          "type": "string",
+          "maxLength": 12,
+          "title": "Account number",
+          "description": "identifier of a specific user's bank account",
+          "examples": [
+            "000000001"
+          ]
+        },
+        "check_digit": {
+          "type": "string",
+          "maxLength": 8,
+          "title": "Check digit",
+          "description": "The check digit of the account number",
+          "examples": [
+            "8"
+          ]
+        },
+        "program_id": {
+          "type": "integer",
+          "title": "Program ID",
+          "description": "Pismo's program identifier of the source holder",
+          "examples": [
+            540
+          ]
+        },
+        "account_id": {
+          "type": "integer",
+          "title": "Account ID",
+          "description": "Pismo's account identifier",
+          "examples": [
+            1
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "Status",
+          "description": "Flag that Identifies the status of the bank account",
+          "examples": [
+            "ACTIVE"
+          ]
+        }
+      }
+    },
+    "card_details": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Used Card Details",
+      "required": [
+        "printed_name",
+        "last_4_digits",
+        "network",
+        "expiration_date",
+        "is_issuer"
+      ],
+      "properties": {
+        "printed_name": {
+          "type": "string",
+          "title": "Printed name",
+          "examples": [
+            "Mr. Card Owner"
+          ]
+        },
+        "last_4_digits": {
+          "type": "string",
+          "title": "Last 4 digits",
+          "examples": [
+            "2424"
+          ]
+        },
+        "network": {
+          "type": "string",
+          "title": "Network",
+          "examples": [
+            "MASTERCARD"
+          ]
+        },
+        "expiration_date": {
+          "type": "string",
+          "title": "Expiration Date",
+          "examples": [
+            "2020"
+          ]
+        },
+        "is_issuer": {
+          "type": "boolean",
+          "title": "Is itau the card issuer"
+        }
+      }
+    },
+    "anti_fraud": {
+      "type": [
+        "object"
+      ],
+      "title": "Anti fraud",
+      "required": [
+        "name",
+        "external_id",
+        "outcome",
+        "engine_response"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Descriptor of the antifraud origin",
+          "examples": [
+            "simility"
+          ]
+        },
+        "external_id": {
+          "type": "string",
+          "title": "External ID",
+          "description": "External identifier sent to the antifraud engine"
+        },
+        "outcome": {
+          "type": "string",
+          "title": "Outcome",
+          "description": "Engine check result",
+          "examples": [
+            "SUCCESS",
+            "FAILED"
+          ]
+        },
+        "engine_response": {
+          "type": "string",
+          "title": "Engine response",
+          "description": "Antifraude engine response json as string"
+        }
+      }
+    }
+  }
+}

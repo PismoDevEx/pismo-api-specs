@@ -1,0 +1,344 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Bulk single schedules created",
+  "description": "This event occurs when bulk single schedule processing has finished. If errors occur, no schedules are registered. Errors for each schedule will be described in its `violations` field.<br><br>More information: <a href='https://developers.pismo.io/pismo-docs/docs/payment-scheduler'>Payment scheduler</a>",
+  "required": [
+    "schedule_status",
+    "schedules"
+  ],
+  "properties": {
+    "schedule_status": {
+      "type": "string",
+      "title": "Schedule status",
+      "description": "Indicates whether all schedules were processed successfully or with errors",
+      "enum": [
+        "SUCCESS",
+        "ERROR"
+      ],
+      "examples": [
+        "SUCCESS"
+      ]
+    },
+    "schedules": {
+      "type": "array",
+      "title": "Schedules",
+      "description": "Array of schedule objects",
+      "items": {
+        "$ref": "#/definitions/schedule"
+      }
+    }
+  },
+  "definitions": {
+    "schedule": {
+      "type": "object",
+      "title": "Schedule object",
+      "description": "Object with schedule information",
+      "required": [
+        "schedule_id",
+        "description",
+        "account_id",
+        "processing_code",
+        "amount",
+        "currency",
+        "schedule_details"
+      ],
+      "properties": {
+        "schedule_id": {
+          "$ref": "#/definitions/schedule_id"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "account_id": {
+          "$ref": "#/definitions/account_id"
+        },
+        "processing_code": {
+          "$ref": "#/definitions/processing_code"
+        },
+        "amount": {
+          "$ref": "#/definitions/amount"
+        },
+        "currency": {
+          "$ref": "#/definitions/currency"
+        },
+        "schedule_details": {
+          "$ref": "#/definitions/schedule_details"
+        },
+        "restrictions": {
+          "$ref": "#/definitions/restrictions"
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadata"
+        },
+        "violations": {
+          "$ref": "#/definitions/violations"
+        }
+      }
+    },
+    "schedule_id": {
+      "type": "string",
+      "title": "Schedule ID",
+      "description": "Schedule ID",
+      "examples": [
+        "9cd6485a-5680-4df0-a1f1-507e21d3428c"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Schedule description",
+      "description": "Schedule description",
+      "examples": [
+        "Monthly purchase",
+        "Daily purchase"
+      ]
+    },
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        100602614
+      ]
+    },
+    "processing_code": {
+      "type": "string",
+      "title": "Processing code",
+      "description": "Processing code used for the authorization",
+      "examples": [
+        "007700",
+        "009900",
+        "007200"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Authorization amount",
+      "minimum": 1,
+      "examples": [
+        20.1,
+        100.0,
+        50
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency code",
+      "description": "Three-letter currency code (ISO 4217)",
+      "examples": [
+        "CLP",
+        "USD",
+        "BRL"
+      ]
+    },
+    "schedule_details": {
+      "type": "object",
+      "title": "Details object",
+      "description": "Object with schedule details",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "RECURRING"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "interval",
+          "end_date"
+        ]
+      },
+      "required": [
+        "type",
+        "start_date",
+        "day_type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Schedule type",
+          "description": "Indicates if the schedule is one-time or recurring",
+          "enum": [
+            "ONCE",
+            "RECURRING"
+          ],
+          "examples": [
+            "ONCE",
+            "RECURRING"
+          ]
+        },
+        "interval": {
+          "type": "string",
+          "title": "Interval",
+          "description": "Recurrence interval (required for RECURRING type)",
+          "enum": [
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "YEARLY"
+          ],
+          "examples": [
+            "MONTHLY"
+          ]
+        },
+        "start_date": {
+          "type": "string",
+          "title": "Start date",
+          "description": "Schedule start date in ISO 8601 format",
+          "examples": [
+            "2024-01-15T10:00:00Z"
+          ]
+        },
+        "end_date": {
+          "type": "string",
+          "title": "End date",
+          "description": "Schedule end date in ISO 8601 format (required for RECURRING type)",
+          "examples": [
+            "2024-12-31T10:00:00Z"
+          ]
+        },
+        "day_type": {
+          "type": "string",
+          "title": "Day type",
+          "description": "Indicates if schedule runs on business days or calendar days",
+          "enum": [
+            "BUSINESS_DAY",
+            "CALENDAR_DAY"
+          ],
+          "examples": [
+            "BUSINESS_DAY"
+          ]
+        },
+        "retries": {
+          "$ref": "#/definitions/retries"
+        },
+        "allow_execution_after_day_change": {
+          "type": "boolean",
+          "title": "Allow execution after day change",
+          "description": "Allows schedule execution after 11:30pm UTC",
+          "examples": [
+            false
+          ]
+        }
+      }
+    },
+    "retries": {
+      "type": "object",
+      "title": "Retries",
+      "description": "Retry configuration for failed executions",
+      "required": [
+        "number_of_attempts",
+        "interval_recurrence"
+      ],
+      "properties": {
+        "number_of_attempts": {
+          "type": "integer",
+          "title": "Number of attempts",
+          "description": "Number of retry attempts (1-10)",
+          "minimum": 1,
+          "maximum": 10,
+          "examples": [
+            3
+          ]
+        },
+        "interval_recurrence": {
+          "type": "integer",
+          "title": "Interval recurrence",
+          "description": "Interval between retries in minutes (1-60)",
+          "minimum": 1,
+          "maximum": 60,
+          "examples": [
+            15
+          ]
+        }
+      }
+    },
+    "restrictions": {
+      "type": "object",
+      "title": "Restrictions",
+      "description": "Execution restrictions based on account conditions",
+      "properties": {
+        "minimum_daily_available": {
+          "type": "number",
+          "title": "Minimum daily available",
+          "description": "Minimum daily available balance required",
+          "minimum": 1,
+          "examples": [
+            100.0
+          ]
+        },
+        "minimum_monthly_average_available": {
+          "type": "number",
+          "title": "Minimum monthly average available",
+          "description": "Minimum monthly average balance required",
+          "minimum": 1,
+          "examples": [
+            500.0
+          ]
+        },
+        "minimum_days_account_inactivity": {
+          "type": "integer",
+          "title": "Minimum days account inactivity",
+          "description": "Minimum days of account inactivity required",
+          "minimum": 1,
+          "examples": [
+            30
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata",
+      "description": "Additional information relevant to the customer. No business rule validation is performed on it.",
+      "examples": [
+        {
+          "metadata": {
+            "customer-data": {
+              "any": "fields"
+            }
+          }
+        }
+      ]
+    },
+    "violations": {
+      "type": "array",
+      "title": "Violations",
+      "description": "List of violations encountered while processing each schedule",
+      "properties": {
+        "violation": {
+          "$ref": "#/definitions/violation"
+        }
+      }
+    },
+    "violation": {
+      "type": "object",
+      "title": "Violation",
+      "description": "Object with violation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Violation type",
+          "description": "Violation type",
+          "enum": [
+            "ACCOUNT",
+            "PROCESSING_CODE",
+            "ALREADY_EXISTS"
+          ],
+          "examples": [
+            "ACCOUNT"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "title": "Violation message",
+          "description": "Error message related to the violation type",
+          "examples": [
+            "[AC001] Account not found."
+          ]
+        }
+      }
+    }
+  }
+}

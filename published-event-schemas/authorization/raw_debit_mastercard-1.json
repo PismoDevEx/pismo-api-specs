@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://pismo.io/events/authorization/raw_credit_mastercard-1.json",
+  "type": "object",
+  "title": "Masterard raw debit authorization received",
+  "description": "Raw message received from Mastercard network. For more information on authorization events, see the <a href='https://developers.pismo.io/pismo-docs/docs/authorization-events' target='_blank'>Authorization events guide</a>.",
+  "additionalProperties": true,
+  "properties": {}
+}

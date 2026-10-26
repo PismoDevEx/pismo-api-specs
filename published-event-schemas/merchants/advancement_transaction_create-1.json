@@ -1,0 +1,263 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Merchant advancement transaction created",
+  "required": [
+    "merchant_transaction_id",
+    "org_operation_id",
+    "merchant_id",
+    "creditor_id",
+    "scheduled_payment_date",
+    "transaction_amount",
+    "transaction_status",
+    "type"
+  ],
+  "properties": {
+    "merchant_transaction_id": {
+      "$id": "#/properties/merchant_transaction_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The merchant transaction identifier",
+      "description": "This field identifies the merchant advancement transaction.",
+      "examples": [
+        null,
+        1
+      ]
+    },
+    "authorization_id": {
+      "$id": "#/properties/authorization_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The authorization identifier",
+      "description": "This field identifies the authorization identifier related to advancement transaction.",
+      "examples": [
+        null,
+        2
+      ]
+    },
+    "org_operation_id": {
+      "$id": "#/properties/org_operation_id",
+      "type": "integer",
+      "title": "The operation identifier relate to organization",
+      "description": "This field identifies the operation related to advancement transaction.",
+      "examples": [
+        3
+      ]
+    },
+    "merchant_id": {
+      "$id": "#/properties/merchant_id",
+      "type": "integer",
+      "title": "The merchant identifier",
+      "description": "This field identifies the merchant related to advancement transaction.",
+      "examples": [
+        4
+      ]
+    },
+    "creditor_id": {
+      "$id": "#/properties/creditor_id",
+      "type": "integer",
+      "title": "The creditor identifier",
+      "description": "This field identifies the creditor related to merchant thats requires the advancement transaction.",
+      "examples": [
+        5
+      ]
+    },
+    "event_date": {
+      "$id": "#/properties/event_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time",
+      "title": "The advancement event date",
+      "description": "This field identifies the advancement event date (in UTC RFC 3339 format).",
+      "examples": [
+        null,
+        "2021-03-25T00:00:00.000Z"
+      ]
+    },
+    "scheduled_payment_date": {
+      "$id": "#/properties/scheduled_payment_date",
+      "type": "string",
+      "format": "date",
+      "title": "The scheduled payment date of advancement transaction",
+      "description": "This field identifies the scheduled payment date related to advancement transaction.",
+      "examples": [
+        "2021-03-25"
+      ]
+    },
+    "scheduled_payment_date_adjusted": {
+      "$id": "#/properties/scheduled_payment_date_adjusted",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "The scheduled payment date adjusted of advancement transaction",
+      "description": "This field identifies the scheduled payment date adjusted related to advancement transaction.",
+      "examples": [
+        null,
+        "2021-03-25"
+      ]
+    },
+    "settlement_date": {
+      "$id": "#/properties/settlement_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date",
+      "title": "The settlement date of advancement transaction",
+      "description": "This field identifies the settlement date related to advancement transaction.",
+      "examples": [
+        null,
+        "2021-03-25"
+      ]
+    },
+    "transaction_amount": {
+      "$id": "#/properties/transaction_amount",
+      "type": "number",
+      "title": "The transaction amount of advancement transaction",
+      "description": "This field identifies the transaction amount related to advancement transaction.",
+      "examples": [
+        100.0
+      ]
+    },
+    "mdr_amount": {
+      "$id": "#/properties/mdr_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The mdr amount of advancement transaction",
+      "description": "This field identifies the transaction mdr amount related to advancement transaction.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "advanced_amount": {
+      "$id": "#/properties/advanced_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The advanced amount of advancement transaction",
+      "description": "This field identifies the transaction advanced amount related to advancement transaction.",
+      "examples": [
+        null,
+        0.0
+      ]
+    },
+    "settled_amount": {
+      "$id": "#/properties/settled_amount",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "The settled amount of advancement transaction",
+      "description": "This field identifies the transaction settled amount related to advancement transaction.",
+      "examples": [
+        null,
+        0.0
+      ]
+    },
+    "transaction_status": {
+      "$id": "#/properties/transaction_status",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "title": "The transaction status of advancement transaction",
+      "description": "This field identifies the status of advancement transaction.",
+      "examples": [
+        "PAID",
+        "SCHEDULED",
+        "SETTLED"
+      ]
+    },
+    "type": {
+      "$id": "#/properties/type",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "title": "The transaction type of advancement transaction",
+      "description": "This field identifies the type of advancement transaction.",
+      "examples": [
+        "SALES",
+        "FEES",
+        "ADVANCEMENTS"
+      ]
+    },
+    "origin_transaction_id": {
+      "$id": "#/properties/origin_transaction_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The identifier of original transaction related to advancement transaction",
+      "description": "This field identifies the original transaction identifier related to advancement transaction.",
+      "examples": [
+        null,
+        6
+      ]
+    },
+    "advancement_request_id": {
+      "$id": "#/properties/advancement_request_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The identifier of advancement request related to advancement transaction",
+      "description": "This field identifies the advancement request related to advancement transaction.",
+      "examples": [
+        null,
+        7
+      ]
+    },
+    "advancement_fee": {
+      "$id": "#/properties/advancement_fee",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Advancement fee",
+      "description": "This field contains the amount of fee payed for the advancement.",
+      "examples": [
+        null,
+        0.0,
+        10.0
+      ]
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The account identifier of advancement transaction",
+      "description": "This field identifies the account related to advancement transaction.",
+      "examples": [
+        null,
+        8
+      ]
+    },
+    "program_id": {
+      "$id": "#/properties/program_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "The program identifier of advancement transaction",
+      "description": "This field identifies the program related to advancement transaction.",
+      "examples": [
+        null,
+        9
+      ]
+    }
+  }
+}

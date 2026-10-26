@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Token resync",
+  "description": "Token information was retrieved from the network and updated/created on Pismo.",
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo account ID",
+      "examples": [
+        24146066
+      ]
+    },
+    "card_id": {
+      "title": "Card ID",
+      "description": "Pismo card ID",
+      "type": "integer",
+      "examples": [
+        42488842
+      ]
+    },
+    "token_id": {
+      "title": "Pismo-created token ID",
+      "type": "integer",
+      "examples": [
+        42488842
+      ]
+    },
+    "network": {
+      "title": "Network",
+      "type": "string",
+      "examples": [
+        "vts",
+        "mdes"
+      ]
+    },
+    "source": {
+      "title": "Source",
+      "description": "Origin of the token resync event",
+      "type": "string",
+      "examples": [
+        "MIGRATION_TOKEN_IMPORT"
+      ]
+    },
+    "detail": {
+      "type": "object",
+      "title": "Token's detail",
+      "description": "Token field(s) to insert",
+      "properties": {
+        "token_unique_reference": {
+          "type": "string",
+          "title": "Token unique reference",
+          "examples": [
+            "DNITHE302303458684581302"
+          ]
+        },
+        "pan_unique_reference": {
+          "type": "string",
+          "title": "Pan unique reference",
+          "examples": [
+            "V-3023032630894529861293"
+          ]
+        },
+        "pan_source": {
+          "type": "string",
+          "title": "Pan source",
+          "examples": [
+            "ON_FILE",
+            "KEY_ENTERED"
+          ]
+        },
+        "token_type": {
+          "type": "string",
+          "title": "Token type",
+          "examples": [
+            "CARD_ON_FILE",
+            "HCE"
+          ]
+        },
+        "token": {
+          "type": "string",
+          "title": "Token",
+          "examples": [
+            "1237780150000031"
+          ]
+        },
+        "token_activation_date": {
+          "type": "string",
+          "title": "Token activation date",
+          "format": "date-time",
+          "description": "Token activation date",
+          "examples": [
+            "2020-01-30T10:18:17.000Z"
+          ]
+        },
+        "token_expiration_date": {
+          "type": "string",
+          "title": "Token expiration date",
+          "description": "Expiration date format = YYYY-MM",
+          "examples": [
+            "2024-09"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "title": "Token status",
+          "examples": [
+            "INACTIVE",
+            "FAILED",
+            "ACTIVE",
+            "SUSPENDED",
+            "DEACTIVATED"
+          ]
+        },
+        "token_requestor": {
+          "type": "string",
+          "title": "Token requestor",
+          "examples": [
+            "40010059239"
+          ]
+        },
+        "device_id": {
+          "type": "string",
+          "title": "Device ID",
+          "description": "A unique identifier for the device itself, such as the device IMEI number, serial number, or MAC address",
+          "examples": [
+            "C2ZBY14310005664"
+          ]
+        }
+      },
+      "required": [
+        "token_unique_reference",
+        "pan_unique_reference",
+        "pan_source",
+        "token_type",
+        "token",
+        "token_activation_date",
+        "token_expiration_date",
+        "status",
+        "token_requestor",
+        "device_id"
+      ]
+    },
+    "error": {
+      "type": "object",
+      "title": "Error",
+      "description": "Error details if an error occurs",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "title": "Error reason",
+          "description": "Detailed error message when an error occurs."
+        }
+      }
+    }
+  }
+}

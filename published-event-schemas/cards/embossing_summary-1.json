@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Embossing summary received",
+  "description": "Event that occurs when the embossing process is complete. Provides summary information about the process.",
+  "examples": [
+    {
+      "embosser_id": 7,
+      "embossing_time": "2022-11-09T18:02:53.549Z",
+      "file_id": "8de1d746-ef43-480a-add5-5c71fc2caa09",
+      "file_name": "42CS20221109180314_8544.pgp",
+      "file_type": "NOMINAL",
+      "generation_date": "2022-11-09T18:03:27.556Z",
+      "program_id": 8544,
+      "sequential_number": 27,
+      "total_embossed_cards": 193,
+      "total_not_embossed_cards": 26
+    }
+  ],
+  "required": [
+    "file_id",
+    "program_id"
+  ],
+  "properties": {
+    "file_id": {
+      "type": "string",
+      "title": "File ID",
+      "description": "References the historical record of the file in which the card was embossed.",
+      "examples": [
+        "a37a3dfc-41bb-484b-90fd-b387dd7d2c51"
+      ]
+    },
+    "program_id": {
+      "type": "integer",
+      "title": "Program ID",
+      "description": "Card's Pismo program ID.",
+      "examples": [
+        9856
+      ]
+    },
+    "file_type": {
+      "type": "string",
+      "title": "File Type",
+      "description": "Embossing file type.",
+      "enum": [
+        "NOMINAL",
+        "NONAME"
+      ],
+      "examples": [
+        "NOMINAL"
+      ]
+    },
+    "embosser_id": {
+      "type": "integer",
+      "title": "Embosser ID",
+      "description": "Pismo assigned embosser ID.",
+      "examples": [
+        1
+      ]
+    },
+    "embossing_time": {
+      "type": [
+        "string"
+      ],
+      "title": "Embossing Time",
+      "description": "Date and time the embossing was scheduled to run, formatted as an RFC3339 UTC string.",
+      "format": "date-time",
+      "examples": [
+        "2022-01-01T20:20:39Z"
+      ]
+    },
+    "file_name": {
+      "type": "string",
+      "title": "File Name",
+      "description": "File containing card sent for embossing.",
+      "examples": [
+        "ORGNAME20220808154156_1226.pgp"
+      ]
+    },
+    "generation_date": {
+      "type": [
+        "string"
+      ],
+      "title": "Generation Date",
+      "description": "Date and time when embossing is generated, formatted as an RFC3339 UTC string.",
+      "format": "date-time",
+      "examples": [
+        "2022-01-01T20:20:39Z"
+      ]
+    },
+    "sequential_number": {
+      "type": "integer",
+      "title": "Sequential Number",
+      "description": "Embossing sequential number.",
+      "examples": [
+        1
+      ]
+    },
+    "total_embossed_cards": {
+      "type": "integer",
+      "title": "Total Embossed Cards",
+      "description": "Total number of cards successfully embossed.",
+      "examples": [
+        10
+      ]
+    },
+    "total_not_embossed_cards": {
+      "type": "integer",
+      "title": "Total Not Embossed Cards",
+      "description": "Total number of cards not embossed.",
+      "examples": [
+        5
+      ]
+    }
+  },
+  "definitions": {}
+}

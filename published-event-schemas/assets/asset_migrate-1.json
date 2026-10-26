@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset Migrated",
+  "description": "This event occurs when an asset is migrated.",
+  "required": [
+    "asset_id",
+    "issuer_id",
+    "operation_code",
+    "created_at"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "title": "Asset ID",
+      "description": "Unique asset identifier defined by client. This is part of the asset identifier on the Pismo platform. It can be used to make redemptions and cancellations.",
+      "examples": [
+        "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. It needs to be in every API call. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "external_id": {
+      "type": "string",
+      "title": "External ID",
+      "description": "External identifier for operation. Optional field provided by customer in asset migration operation.",
+      "examples": [
+        "00000000013"
+      ]
+    },
+    "ticket_symbol": {
+      "type": "string",
+      "title": "Ticket Symbol",
+      "description": "External ticket symbol. Field provided by external service.",
+      "examples": [
+        "00000000013"
+      ]
+    },
+    "operation_code": {
+      "type": "string",
+      "title": "Operation Code",
+      "description": "External operation code. Field provided by external service.",
+      "examples": [
+        "00000000013"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created date",
+      "description": "Creation date of asset migrate operation on Pismo platform",
+      "format": "date-time",
+      "examples": [
+        "2020-02-02T17:12:40Z"
+      ]
+    },
+    "quota": {
+      "type": "object",
+      "title": "Quota registered",
+      "required": [
+        "id",
+        "customer_document_number",
+        "type",
+        "migrated_units",
+        "ticket_symbol"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Quota ID",
+          "description": "Quota identifier",
+          "examples": [
+            "99999999-9999-9999-9999-999999999999"
+          ]
+        },
+        "customer_name": {
+          "type": "string",
+          "title": "Customer name",
+          "description": "Name of asset quota owner. Can be a company or an individual.",
+          "examples": [
+            "Lorem ipsum"
+          ]
+        },
+        "customer_document_number": {
+          "type": "string",
+          "title": "Customer document number",
+          "description": "Number of asset quota owner's legal document",
+          "examples": [
+            "00000000012"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "title": "Entity type",
+          "description": "Legal nature of asset quota owner",
+          "enum": [
+            "natural",
+            "legal"
+          ]
+        },
+        "migrated_units": {
+          "type": "number",
+          "title": "migrated quota units",
+          "description": "Number of quota units migrate by asset quota owner",
+          "format": "double",
+          "examples": [
+            100.0
+          ]
+        },
+        "deposit_number": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Deposit number of the asset quota",
+          "description": "Optional attribute provided by client when registering asset quota on Pismo platform",
+          "format": "int",
+          "examples": [
+            999999999
+          ]
+        },
+        "operation_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Operation code",
+          "description": "Optional attribute generated when registering asset quota on Pismo platform",
+          "examples": [
+            "202404110000000900"
+          ]
+        },
+        "ticket_symbol": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "title": "Ticket symbol",
+          "description": "Optional attribute generated when registering asset quota on Pismo platform",
+          "examples": [
+            "CDBB25004OK"
+          ]
+        }
+      }
+    }
+  }
+}

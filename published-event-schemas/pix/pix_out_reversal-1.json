@@ -1,0 +1,249 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Pix-out reversed",
+  "description": "Internal-only endpoint. This event is sent from a partner's webhook after a successful reverse cashing out. This flow starts via a partner's webhook, after a successful reverse cashing out.  For more information, see the <a href='https://developers.pismo.io/pismo-docs/docs/pix-instant-payments' target='_blank'>Pix-instant payments</a> guide.",
+  "examples": [
+    {
+      "domain": "pix",
+      "event_type": "pix_out_reversal",
+      "schema_version": 1,
+      "org_id": "TN-34778262-f4f0-464d-b4c6-a14e2dc6xxx",
+      "cid": "468fa881-fee5-4d6e-aa17-bbac0a1df0a5",
+      "timestamp": "2023-10-26T17:47:35Z",
+      "data": {
+        "account_id": 9837,
+        "authorization_id": 9837,
+        "end_to_end_id": "E2198371298371",
+        "amount": 15.34,
+        "transaction_type": "",
+        "authorization_datetime": "2022-07-19T12:00:00Z",
+        "status": "SETTLED",
+        "original_transaction": {
+          "end_to_end_id": "E2198371298371",
+          "amount": 15.34,
+          "authorization_datetime": "2022-07-20T12:00:00Z"
+        },
+        "payer": {
+          "name": "Fett Ahcheene",
+          "document_number": "12334567890",
+          "bank": "123345678"
+        },
+        "additional_information": "additional information",
+        "description": "description",
+        "internal": false
+      }
+    }
+  ],
+  "required": [
+    "account_id",
+    "amount",
+    "authorization_datetime",
+    "authorization_id",
+    "end_to_end_id",
+    "original_transaction",
+    "payer",
+    "status",
+    "transaction_type",
+    "internal"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "integer",
+      "title": "Account ID",
+      "description": "Pismo platform account ID",
+      "examples": [
+        123
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "format": "double",
+      "title": "Pix-out reversal amount",
+      "description": "Pix-out reversal amount",
+      "examples": [
+        125.5
+      ]
+    },
+    "authorization_datetime": {
+      "type": "string",
+      "title": "Refund datetime",
+      "description": "Refund datetime on Pismo platform. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+      "format": "date-time",
+      "examples": [
+        "2022-07-19T19:03:04Z",
+        "2022-07-19T16:03:46-03:00"
+      ]
+    },
+    "authorization_id": {
+      "type": "integer",
+      "title": "Authorization ID",
+      "description": "Pismo platform authorization ID",
+      "examples": [
+        123
+      ]
+    },
+    "end_to_end_id": {
+      "type": "string",
+      "title": "Pix-out end-to-end ID",
+      "description": "Pix-out end-to-end ID. This field is a Brazil Central Bank (BCB) requirement to track Pix transactions. Basically, there are two steps to a Pix transaction: 1. Initialize a transaction and 2. Confirm a transaction. This field is sent to the BCB in both steps in order to identify all transaction information.",
+      "examples": [
+        "E0000000020210519134701363533333"
+      ]
+    },
+    "original_transaction": {
+      "type": "object",
+      "required": [
+        "amount",
+        "authorization_datetime",
+        "end_to_end_id"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "title": "Pix-in amount",
+          "description": "Pix-in original transaction amount",
+          "examples": [
+            125.5
+          ]
+        },
+        "authorization_datetime": {
+          "type": "string",
+          "title": "Original Authorization Datetime",
+          "description": "Original Pismo authorization datetime on Pismo. A RFC 3339 date-time value, i.e., '2023-04-12T23:20:50.52Z'.",
+          "format": "date-time",
+          "examples": [
+            "2022-07-19T19:03:04Z",
+            "2022-07-19T16:03:46-03:00"
+          ]
+        },
+        "end_to_end_id": {
+          "type": "string",
+          "title": "Pix-in end-to-end ID",
+          "description": "Orignal transaction's Pix-in end-to-end ID",
+          "examples": [
+            "E0000000020210519134701363533333"
+          ]
+        }
+      }
+    },
+    "payer": {
+      "type": "object",
+      "required": [
+        "bank",
+        "document_number",
+        "name"
+      ],
+      "properties": {
+        "bank": {
+          "type": "string",
+          "title": "Bank",
+          "description": "Account's payer bank code - ISPB (Identifcador do Sistema de Pagamento Brazil) - the Brazilian Payment System identifier, an 8-digit value.",
+          "maxLength": 8,
+          "examples": [
+            "30306294"
+          ]
+        },
+        "document_number": {
+          "type": "string",
+          "title": "Document number",
+          "description": " Payer's document number.  A government document number, such as a Social Security number (US) or Cadastro de Pessoas F\u00edsicas number (Brazil). Must be numeric with 11-14 digits.",
+          "maxLength": 14,
+          "examples": [
+            "12345678900"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "title": "Account's payer name",
+          "description": "Account's payer name",
+          "examples": [
+            "Bill Ding"
+          ]
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "title": "Pix-out reversal status",
+      "description": "Pix-out reversal status",
+      "enum": [
+        "SETTLED",
+        "PROCESSING",
+        "ERROR"
+      ],
+      "examples": [
+        "SETTLED"
+      ]
+    },
+    "transaction_type": {
+      "type": "string",
+      "title": "Transaction type",
+      "description": "Type of transaction: `TRANSFER` = simple transfer (purchases or cash only); `CHANGE` = transfer of cash in addition to purchase amount (only when initiated by a `CHANGE` type QR code); `WITHDRAWAL` = cash-only transaction (only when initiated by a `WITHDRAWAL` type QR code); `REFUND_AUTOMATIC_PIX` = refund a pix to the PSP payer  (only when initiated by a `MANUAL`); `REFUND` = total or partial refund to the paying user within the scope of MED 2.0, when this refund occurs from the PI Account of the user's PSP who participated in the distribution chain of the resources of the original transaction (only when initiated by a `MANUAL`); `INSTALLMENT_PIX` = For INSTALLMENT PIX transactions",
+      "enum": [
+        "TRANSFER",
+        "CHANGE",
+        "WITHDRAWAL",
+        "REFUND_AUTOMATIC_PIX",
+        "REFUND",
+        "INSTALLMENT_PIX"
+      ],
+      "examples": [
+        "TRANSFER"
+      ]
+    },
+    "initiation_type": {
+      "type": "string",
+      "title": "Initiation Type",
+      "description": "Initiated payment type:  `MANUAL` - Manually initiated. Key is not used - bank account, bank code, document number, and branch is used for identification. `DICT` - Diretorio de Identificadores de Contas de Transacapo (Transaction accounts identifier directory). Pix/DICT key is used for identification. `STATIC_QRCODE` - Reusable code that contains only the data necessary to complete a transaction. When using static QR code, the transaction amount must be provided manually. `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically. `PAYMENT_INITIATOR` - Payment provider initiated. A payment initiator is a 3rd party that has obtained authorization from the Central Bank and has an Open Finance certification. `AUTOMATIC_PIX` - Payment order initiated via automatic PIX. `DYNAMIC_PROXIMITY_PIX` - Dynamic NFC-based initiation. `STATIC_PROXIMITY_PIX` - Static NFC-based initiation",
+      "maxLength": 50,
+      "enum": [
+        "MANUAL",
+        "DICT",
+        "STATIC_QRCODE",
+        "DYNAMIC_QRCODE",
+        "PAYMENT_INITIATOR",
+        "AUTOMATIC_PIX",
+        "DYNAMIC_PROXIMITY_PIX",
+        "STATIC_PROXIMITY_PIX"
+      ],
+      "examples": [
+        "DICT"
+      ]
+    },
+    "additional_information": {
+      "type": "string",
+      "title": "Additional information",
+      "description": "Additional operation information",
+      "examples": [
+        "['code':'value']"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Operation description",
+      "examples": [
+        "Invalid value"
+      ]
+    },
+    "external_movement_id": {
+      "type": "string",
+      "title": "External movement id",
+      "description": "Particpant movement ID",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "internal": {
+      "type": "boolean",
+      "title": "Internal transaction",
+      "description": "Internal transaction informs if the transaction was made inside Pismo (between accounts at the same Org), in this case, the SPI was not called",
+      "examples": [
+        true,
+        false
+      ]
+    }
+  }
+}
