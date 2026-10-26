@@ -767,8 +767,30 @@ components:
           `DICT` - Diretorio de Identificadores de Contas de Transação (Transaction accounts ID directory). Pix/DICT key is used for identification.
 
           `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically. 
-          
       example: DICT
+    InitiatorDocumentNumber:
+      type: string
+      maxLength: 14
+      description: >
+        Payment initiator CNPJ, validated as a CNPJ.
+
+
+        Cadastro Nacional da Pessoa Jurídica (CNPJ) is Brazil's 14-character
+        federal taxpayer registration number for companies and legal entities.
+
+
+        **REQUIRED** when `initiation_type` = `PAYMENT_INITIATOR`.
+
+
+        Also accepted when `initiation_type` = `AUTOMATIC_PIX`, for a payment
+        initiator Pix out originated in <a
+        href="https://www.bcb.gov.br/en/financialstability/open_finance"
+        target="_blank">Open Finance</a>. 
+            
+        It is this field's presence, not the `initiation_type` that identifies
+        an Open Finance origin: when it is passed, `transaction_identification`
+        **MUST NOT** be passed.
+      example: '12345678912345'
     InterestValue:
       type: number
       description: Interest value.
@@ -953,6 +975,8 @@ components:
           $ref: '#/components/schemas/pix.TransactionExternalAccount'
         status:
           $ref: '#/components/schemas/TransactionStatus'
+        taxes:
+          $ref: '#/components/schemas/Taxes'
     pix.InReversalRequest:
       type: object
       required:
@@ -1203,30 +1227,7 @@ components:
         initial_amount:
           $ref: '#/components/schemas/InitialAmount'
         initiator_document_number:
-          type: string
-          description: >
-            Payment initiator CNPJ, validated as a CNPJ.
-
-
-            Cadastro Nacional da Pessoa Jurídica (CNPJ) is Brazil's 14-character
-            federal taxpayer registration number for companies and legal
-            entities.
-
-
-            **REQUIRED** when `initiation_type` = `PAYMENT_INITIATOR`.
-
-
-            Also accepted when `initiation_type` = `AUTOMATIC_PIX`, for a
-            payment initiator Pix out originated in <a
-            href="https://www.bcb.gov.br/en/financialstability/open_finance"
-            target="_blank">Open Finance</a>. 
-
-
-            It is this field's presence, not the `initiation_type` that
-            identifies an Open Finance origin: when it is passed,
-            `transaction_identification` **MUST NOT** be passed.
-          maxLength: 14
-          example: '12345678912345'
+          $ref: '#/components/schemas/InitiatorDocumentNumber'
         payment_type:
           $ref: '#/components/schemas/PaymentType'
         psp_account:
@@ -2670,6 +2671,8 @@ components:
             codes](doc:processing-codes-and-transaction-types) guide.
           maxLength: 6
           example: '500001'
+        initiator_document_number:
+          $ref: '#/components/schemas/InitiatorDocumentNumber'
     scheduler.SchedulerRegisterResponse:
       type: object
       properties:
