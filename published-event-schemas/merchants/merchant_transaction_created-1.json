@@ -400,34 +400,15 @@
         "object"
       ],
       "title": "Metadata attached to the transaction",
-      "properties": {
-        "terminal_id": {
-          "$id": "#/properties/metadata/properties/terminal_id",
-          "type": [
-            "null",
-            "string"
-          ],
-          "title": "The Terminal identifier",
-          "description": "Terminal ID of the authorization",
-          "examples": [
-            null,
-            "12345678"
-          ]
-        },
-        "nsu": {
-          "$id": "#/properties/metadata/properties/nsu",
-          "type": [
-            "null",
-            "string"
-          ],
-          "title": "NSU",
-          "description": "NSU of the authorization",
-          "examples": [
-            null,
-            "12345678"
-          ]
+      "description": "Any additional information relevant to the caller",
+      "examples": [
+        {
+          "customer-data": {
+            "any": "fields"
+          }
         }
-      }
+      ],
+      "additionalProperties": true
     }
   }
 }
