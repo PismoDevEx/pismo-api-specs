@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest registration cancellation failed",
+  "description": "This event occurs when a registration cannot be canceled with product interest management.",
+  "required": [
+    "external_cancellation_id",
+    "external_quota_id",
+    "cancellation_date",
+    "message"
+  ],
+  "properties": {
+    "external_cancellation_id": {
+      "type": "string",
+      "title": "External cancellation ID",
+      "description": "External identifier for the cancellation request.",
+      "examples": [
+        "9f1c2d3e-4b5a-4c6d-8e7f-0a1b2c3d4e5f"
+      ]
+    },
+    "external_quota_id": {
+      "type": "string",
+      "title": "External quota ID",
+      "description": "External identifier for the quota operation requested to be canceled.",
+      "examples": [
+        "6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "cancellation_date": {
+      "type": "string",
+      "title": "Cancellation date",
+      "description": "Cancellation date informed in the request.",
+      "format": "date",
+      "examples": [
+        "2026-10-27"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "title": "Error message",
+      "description": "Description of the error that occurred when trying to cancel the registration.",
+      "examples": [
+        "Cancellation outside the allowed cancellation window."
+      ]
+    }
+  }
+}
