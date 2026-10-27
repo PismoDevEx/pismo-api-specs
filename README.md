@@ -1,6 +1,6 @@
 # Pismo API Specifications
 
-This repository contains OpenAPI 3.1 specifications for the Pismo APIs. With these OpenAPI files, you can generate SDKs, code examples, test cases, and reference documentation.
+This repository contains OpenAPI 3.1 specifications and Event schemas for the Pismo APIs. With these OpenAPI files, you can generate SDKs, code examples, test cases, and reference documentation.
 
 Pismo generates the public API reference documentation at  
 https://developers.pismo.io/ using these files.
