@@ -33,7 +33,9 @@ tags:
   - name: Migration
     description: Endpoints to manage dispute migration
   - name: On-Us
+    description: Endpoints to manage on-us disputes
   - name: Setup
+    description: Setup endpoints
 components:
   parameters:
     accountIdQuery:
