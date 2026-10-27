@@ -33,6 +33,7 @@ tags:
   - name: Migration
     description: Endpoints to manage dispute migration
   - name: On-Us
+  - name: Setup
 components:
   parameters:
     accountIdQuery:
@@ -11419,3 +11420,215 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
+  /v1/disputes/setup:
+    post:
+      summary: Create setup
+      description: Create a new state machine program setup.
+      operationId: post-create-setup
+      tags:
+        - Setup
+      parameters:
+        - $ref: '#/components/parameters/orgIdHeader'
+        - $ref: '#/components/parameters/cidHeader'
+      requestBody:
+        required: true
+        description: Create setup request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSetupRequest'
+      responses:
+        '200':
+          description: Setup created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSetupResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Program ID not found:
+                  value:
+                    message: Program ID not found
+                    http_status_code: 404
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Duplicate setup for program:
+                  value:
+                    message: 'Already exist a setup for this program: 123'
+                    http_status_code: 409
+        '422':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Missing or invalid required fields:
+                  value:
+                    message: >-
+                      The following fields are invalid or required [field1,
+                      field2, field3]
+                    http_status_code: 422
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Internal error:
+                  value:
+                    message: Something went wrong while registering a setup
+                    http_status_code: 500
+    get:
+      summary: List org state machine setups
+      description: Retrieve all organization state machine setups
+      operationId: get-statemachin-setups
+      tags:
+        - Setup
+      parameters:
+        - $ref: '#/components/parameters/orgIdHeader'
+        - $ref: '#/components/parameters/cidHeader'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSetupsResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                No state machine registered for this Org:
+                  value:
+                    message: State machines is empty
+                    http_status_code: 404
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Internal error:
+                  value:
+                    message: Something went wrong finding all state machines
+                    http_status_code: 500
+  /v1/disputes/setup/{statemachineId}:
+    get:
+      summary: Get setup
+      description: Get a specific state machine setup given its ID in the path.
+      operationId: get-specfic-setup
+      tags:
+        - Setup
+      parameters:
+        - $ref: '#/components/parameters/stateMachineIdPath'
+        - $ref: '#/components/parameters/cidHeader'
+        - $ref: '#/components/parameters/orgIdHeader'
+      responses:
+        '200':
+          description: Organization setup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupObject'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                No state machine registered for this Org:
+                  value:
+                    message: State machine not found
+                    http_status_code: 404
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Internal error:
+                  value:
+                    message: Something went wrong finding state machine
+                    http_status_code: 500
+    put:
+      summary: Update setup
+      description: |
+        Update a specific state machine setup given its ID in the path. 
+      operationId: put-specfic-setup
+      tags:
+        - Setup
+      parameters:
+        - $ref: '#/components/parameters/stateMachineIdPath'
+        - $ref: '#/components/parameters/cidHeader'
+        - $ref: '#/components/parameters/orgIdHeader'
+      requestBody:
+        required: true
+        description: Update setup request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSetupRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateSetupResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                No state machine registered for this Org:
+                  value:
+                    message: State machine not found
+                    http_status_code: 404
+        '422':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Missing required fields:
+                  value:
+                    message: >-
+                      The following fields are invalid or required [org_id,
+                      statemachine_id]
+                    http_status_code: 422
+                Type field provided:
+                  value:
+                    message: The following fields are invalid or required [type]
+                    http_status_code: 422
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+              examples:
+                Internal error:
+                  value:
+                    message: Something went wrong while updating setup
+                    http_status_code: 500
