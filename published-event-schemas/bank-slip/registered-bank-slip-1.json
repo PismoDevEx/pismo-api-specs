@@ -78,7 +78,7 @@
       "title": "kind of bank slip wallet",
       "description": "Identifies the type of the wallet",
       "examples": [
-        175
+        109
       ]
     },
     "our_number": {
@@ -86,14 +86,14 @@
       "title": "our number",
       "description": "Itau's account number",
       "examples": [
-        "00013840"
+        "12345678"
       ]
     },
     "our_number_check_number": {
       "type": "string",
       "title": "our number check digit",
       "examples": [
-        "3",
+        "4",
         "7"
       ]
     },
@@ -102,7 +102,7 @@
       "title": "bar code",
       "description": "Bank slip bar code",
       "examples": [
-        "34191798200000189331750001384032525048415000"
+        "34191965600000150001091234567841234123451000"
       ]
     },
     "due_date": {
@@ -111,7 +111,7 @@
       "description": "Bank slip due date",
       "format": "date",
       "examples": [
-        "2019-08-15"
+        "2024-03-15"
       ]
     },
     "bankslip_type": {
@@ -128,7 +128,7 @@
       "title": "issue date",
       "description": "Bank slip issue date",
       "examples": [
-        "2019-08-15"
+        "2024-03-01"
       ]
     },
     "payment_type": {
@@ -143,7 +143,7 @@
       "title": "digitable line number",
       "description": "Bar code with out the formating",
       "examples": [
-        "34191750090138403252850484150003179820000018933"
+        "34191091233456784123341234510000196560000015000"
       ]
     },
     "payment_place": {
@@ -159,7 +159,7 @@
       "title": "processing date",
       "description": "The issue date of the bank slip",
       "examples": [
-        "2019-08-15"
+        "2024-03-01"
       ]
     },
     "bankslip_amount": {
@@ -167,7 +167,7 @@
       "title": "bankslip amount",
       "description": "The amount of the bank slip",
       "examples": [
-        189.33
+        150.0
       ]
     },
     "discount_amount": {
@@ -294,7 +294,7 @@
       "description": "Limit date for payment.",
       "format": "date",
       "examples": [
-        "2019-08-15"
+        "2024-03-15"
       ]
     },
     "currency": {
@@ -319,7 +319,7 @@
           "title": "payer name",
           "description": "The name of the payer",
           "examples": [
-            "GABRIEL ANTONIO FORTE"
+            "JOHN DOE"
           ]
         },
         "payer_address": {
@@ -351,7 +351,7 @@
           "title": "payer postal code",
           "description": "The postal code of the payer",
           "examples": [
-            "03720030"
+            "12345678"
           ]
         },
         "cpf_cnpj_payer": {
@@ -362,8 +362,8 @@
           "title": "CPF/CNPJ payer",
           "description": "Payer document number. In Brazil, this is the CPF/CNPJ. Only numbers are allowed.",
           "examples": [
-            "00021100080",
-            "43416178000120"
+            "00000000000",
+            "00000000000000"
           ]
         },
         "payer_neighborhood": {
@@ -395,7 +395,7 @@
           "title": "Guarantor name",
           "description": "The name of the guarantor",
           "examples": [
-            "GABRIEL ANTONIO FORTE"
+            "JANE DOE"
           ]
         },
         "guarantor_address": {
@@ -428,7 +428,7 @@
           "title": "Guarantor postal code",
           "description": "Postal code of the guarantor",
           "examples": [
-            "03390010"
+            "12345678"
           ]
         },
         "cpf_cnpj_guarantor": {
@@ -439,8 +439,8 @@
           "title": "Guarantor document number",
           "description": "Guarantor document number. In Brazil, this is the CPF/CNPJ. Only numbers are allowed.",
           "examples": [
-            "00021100080",
-            "43416178000120"
+            "00000000000",
+            "00000000000000"
           ]
         },
         "guarantor_neighborhood": {
@@ -500,7 +500,7 @@
           "title": "beneficiary agency",
           "description": "The bank agency of the beneficiary",
           "examples": [
-            "2525"
+            "1234"
           ]
         },
         "beneficiary_accout": {
@@ -508,7 +508,7 @@
           "title": "beneficiary account",
           "description": "The bank account of the beneficiary",
           "examples": [
-            "04841"
+            "12345"
           ]
         },
         "beneficiary_account_check_digit": {
@@ -516,7 +516,7 @@
           "title": "beneficiary account check digit",
           "description": "The bank account check digit of the beneficiary",
           "examples": [
-            "5"
+            "1"
           ]
         },
         "beneficiary_cpf_cnpj": {
@@ -524,7 +524,7 @@
           "title": "beneficiary document number",
           "description": "Beneficiary  document number. Ex: In Brazil is CPF/CNPJ, only numbers",
           "examples": [
-            "17192451000170"
+            "00000000000000"
           ]
         },
         "corporate_name_beneficiary": {
@@ -532,14 +532,14 @@
           "title": "beeficiary corporate name",
           "description": "The corporate name of the beneficiary",
           "examples": [
-            "ITAUCARD FIN S CRED FINANC INV"
+            "ACME FINANCIAL SERVICES LTDA"
           ],
           "beneficiary_address": {
             "type": "string",
             "title": "beneficiary address",
             "description": "The address of the beneficiary",
             "examples": [
-              "AL PEDRO CALIL"
+              "ADDRESS OF BENEFICIARY, 000"
             ]
           },
           "beneficiary_neighborhood": {
@@ -547,7 +547,7 @@
             "title": "beneficiary neighborhood",
             "description": "The neighborhood of the beneficiary",
             "examples": [
-              "VILA DAS ACACIA"
+              "BAIRRO"
             ]
           },
           "beneficiary_address_complement": {
@@ -563,7 +563,7 @@
             "title": "beneficiary city",
             "description": "The city of the beneficiary",
             "examples": [
-              "POA"
+              "S\u00e3o Paulo"
             ]
           },
           "beneficiario_uf": {
@@ -579,7 +579,7 @@
             "title": "beneficiary postal code",
             "description": "The postal code of the beneficiary",
             "examples": [
-              "08557105"
+              "12345678"
             ]
           }
         }
