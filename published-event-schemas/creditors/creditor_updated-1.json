@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Creditor updated",
+  "description": "This event occurs when a creditor is updated.",
+  "required": [
+    "id",
+    "name",
+    "advancement_fee",
+    "discount_rate",
+    "maximum_advancement_percentage",
+    "crediting_method",
+    "account_id"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": [
+        "integer"
+      ],
+      "title": "Creditor identifier",
+      "description": "This field contains the identifier of the updated creditor.",
+      "examples": [
+        77
+      ]
+    },
+    "name": {
+      "$id": "#/properties/name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "title": "Creditor name",
+      "description": "This field contains the creditor name, or null when the creditor has no name.",
+      "examples": [
+        null,
+        "Creditor A"
+      ]
+    },
+    "advancement_fee": {
+      "$id": "#/properties/advancement_fee",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Advancement fee",
+      "description": "This field contains the advancement fee rate of the creditor, or null when not set.",
+      "examples": [
+        null,
+        0.0125
+      ]
+    },
+    "discount_rate": {
+      "$id": "#/properties/discount_rate",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Discount rate",
+      "description": "This field contains the discount rate of the creditor, or null when not set.",
+      "examples": [
+        null,
+        0.0099
+      ]
+    },
+    "maximum_advancement_percentage": {
+      "$id": "#/properties/maximum_advancement_percentage",
+      "type": [
+        "null",
+        "number"
+      ],
+      "title": "Maximum advancement percentage",
+      "description": "This field contains the maximum advancement percentage of the creditor, or null when not set.",
+      "examples": [
+        null,
+        0.8
+      ]
+    },
+    "crediting_method": {
+      "$id": "#/properties/crediting_method",
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "ACCOUNT",
+        "NONE"
+      ],
+      "title": "Crediting method",
+      "description": "This field contains how the creditor is credited. ACCOUNT means a Pismo account is credited and account_id is set; NONE means no account crediting and account_id is null.",
+      "examples": [
+        "ACCOUNT",
+        "NONE"
+      ]
+    },
+    "account_id": {
+      "$id": "#/properties/account_id",
+      "type": [
+        "null",
+        "integer"
+      ],
+      "title": "Account identifier",
+      "description": "This field contains the Pismo account credited for the creditor, or null when crediting_method is NONE.",
+      "examples": [
+        null,
+        901234
+      ]
+    }
+  }
+}
