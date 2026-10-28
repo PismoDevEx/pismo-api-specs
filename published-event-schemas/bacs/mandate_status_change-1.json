@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "BACS mandate status change.",
   "type": "object",
-  "description": "Bankers' Automated Clearing System (BACS) mandate event data. <a href='https://www.moderntreasury.com/learn/what-is-bacs' target = '_blank'>BACS</a> is a UK service that facilitates electronic money transfers between banks within a 3-day settlement cycle \u2014 day 1 (submission), day 2 (processing), and day 3 (clearing). This event represents a BACS Direct Debit mandate request received from the scheme. It is emitted when a mandate transitions between lifecycle states such as `CREATED`, `CONFIRMED`, `CANCELLED`, or `FAILED`.",
+  "description": "Bankers' Automated Clearing System (BACS) mandate event data. <a href='https://www.moderntreasury.com/learn/what-is-bacs' target = '_blank'>BACS</a> is a UK service that facilitates electronic money transfers between banks within a 3-day settlement cycle \u2014 day 1 (submission), day 2 (processing), and day 3 (clearing). This event represents a BACS Direct Debit mandate request received from the scheme. It is emitted when a mandate transitions between lifecycle states such as `CREATED`, `CONFIRMED`, `CANCELLED`, `FAILED`, or `DORMANT`.",
   "required": [
     "id",
     "org_id",
@@ -66,7 +66,7 @@
     "status": {
       "title": "Status",
       "type": "string",
-      "description": "Mandate status.",
+      "description": "Mandate status. `DORMANT` means no Direct Debit has been received against the mandate for the scheme dormancy period (currently 24 months), and later collections against it are returned.",
       "enum": [
         "CREATED",
         "SUBMITTED",
@@ -75,7 +75,8 @@
         "AMENDED",
         "CANCEL_PENDING",
         "CANCELLED",
-        "FAILED"
+        "FAILED",
+        "DORMANT"
       ],
       "examples": [
         "CONFIRMED"
@@ -90,7 +91,7 @@
           "type": "null"
         }
       ],
-      "description": "Reason associated with the mandate status, typically populated when a mandate is `FAILED` or `CANCELLED`."
+      "description": "Reason associated with the mandate status, typically populated when a mandate is `FAILED`, `CANCELLED`, or `DORMANT`."
     },
     "creation_date_time": {
       "title": "Creation date time",
@@ -128,13 +129,14 @@
           "examples": [
             "invalid sort code [EBACS0011]",
             "Mandate not found [EBACS0017]",
-            "Mandate rejected by scheme [ADDACS]"
+            "Mandate rejected by scheme [ADDACS]",
+            "No Direct Debit received since before 2024-10-13"
           ]
         },
         "code": {
           "title": "Code",
           "type": "string",
-          "description": "Reason code. Form3 error codes (`EBACSxxxx`) or BACS mandate return reason codes (`ADDACS`, `AUDDIS`, `DUPL`).",
+          "description": "Reason code. Form3 error codes (`EBACSxxxx`) or BACS mandate return reason codes (`ADDACS`, `AUDDIS`, `DUPL`), or `dormant` when Pismo marks the mandate `DORMANT`.",
           "examples": [
             "EBACS0011",
             "EBACS0013",
@@ -142,7 +144,8 @@
             "EBACS0017",
             "ADDACS",
             "AUDDIS",
-            "DUPL"
+            "DUPL",
+            "dormant"
           ]
         }
       },
