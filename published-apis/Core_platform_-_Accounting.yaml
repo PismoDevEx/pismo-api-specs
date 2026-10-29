@@ -1122,7 +1122,7 @@ components:
         reason:
           $ref: '#/components/schemas/HistoryReason'
         responsible:
-          $ref: '#/components/schemas/HistoryResponsible'
+          $ref: '#/components/schemas/HistoryResponsibleResponse'
         version:
           type: integer
           format: int64
@@ -1153,6 +1153,15 @@ components:
       minLength: 3
       maxLength: 100
       description: User name or ID of the person performing the operation.
+      example: John Doe
+    HistoryResponsibleResponse:
+      type: string
+      maxLength: 100
+      description: >-
+        User name or ID of the person performing the operation, as stored in the
+        audit history. May be empty when the entry was recorded without a
+        responsible person, which is optional for create, update, and delete
+        operations.
       example: John Doe
     OrgID:
       type: string
