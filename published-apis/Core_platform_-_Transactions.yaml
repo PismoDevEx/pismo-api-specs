@@ -576,42 +576,41 @@ components:
         - processing_code
         - key
       type: object
-      items:
-        properties:
-          transaction_type_id:
-            $ref: '#/components/schemas/TransactionTypeId'
-          processing_code:
-            type: string
-            maxLength: 6
-            description: Processing code that issues the transaction type
-          key:
-            type: string
-            description: >
-              Sets the relation key that links transaction type and processing
-              code.
+      properties:
+        transaction_type_id:
+          $ref: '#/components/schemas/TransactionTypeId'
+        processing_code:
+          type: string
+          maxLength: 6
+          description: Processing code that issues the transaction type
+        key:
+          type: string
+          description: >
+            Sets the relation key that links transaction type and processing
+            code.
 
 
-              * `PRINCIPAL` uses principal amount.
+            * `PRINCIPAL` uses principal amount.
 
-              * `INSTALLMENT` uses installment amount.
+            * `INSTALLMENT` uses installment amount.
 
-              * `CONTRACT` uses contract amount.
+            * `CONTRACT` uses contract amount.
 
-              * `OTHER` uses any custom amount, such as fees, taxes, or other
-              charges. When the key is OTHER, you must define the `custom_key`
-              value.
-            enum:
-              - PRINCIPAL
-              - INSTALLMENT
-              - CONTRACT
-              - OTHER
-          custom_key:
-            type: string
-            maxLength: 200
-            description: >-
-              Sets a customized relation between transaction type and processing
-              code, usually to configure fees, taxes, or other charges. REQUIRED
-              if the key is OTHER.
+            * `OTHER` uses any custom amount, such as fees, taxes, or other
+            charges. When the key is OTHER, you must define the `custom_key`
+            value.
+          enum:
+            - PRINCIPAL
+            - INSTALLMENT
+            - CONTRACT
+            - OTHER
+        custom_key:
+          type: string
+          maxLength: 200
+          description: >-
+            Sets a customized relation between transaction type and processing
+            code, usually to configure fees, taxes, or other charges. REQUIRED
+            if the key is OTHER.
       example:
         transaction_type_id: 7001
         processing_code: 00AB11
@@ -619,24 +618,23 @@ components:
         custom_key: national_rate
     ListTransactionTypes:
       type: object
-      items:
-        properties:
-          transaction_type_id:
-            $ref: '#/components/schemas/TransactionTypeId'
-          description:
-            type: string
-            description: Transaction type description
-            maxLength: 30
-          credit:
-            type: boolean
-            description: >-
-              Indicates whether the transaction type is a credit (`true`) a
-              debit (`false`).
-          posted_transaction:
-            type: boolean
-            description: >-
-              Indicates whether transactions are posted on statements (`true`)
-              or not (`false`)
+      properties:
+        transaction_type_id:
+          $ref: '#/components/schemas/TransactionTypeId'
+        description:
+          type: string
+          description: Transaction type description
+          maxLength: 30
+        credit:
+          type: boolean
+          description: >-
+            Indicates whether the transaction type is a credit (`true`) a debit
+            (`false`).
+        posted_transaction:
+          type: boolean
+          description: >-
+            Indicates whether transactions are posted on statements (`true`) or
+            not (`false`)
       example:
         transaction_type_id: 7001
         description: Purchase
@@ -788,13 +786,17 @@ paths:
             default: 100
         - in: query
           name: orderBy
-          description: Transaction type sort parameter
+          description: >-
+            Transaction type sort parameter. Accepted values are
+            `transactionTypeId` and `description`. Any value outside this enum
+            is ignored and the results are returned using the default sorting
+            (`transactionTypeId`).
           schema:
             type: string
             enum:
-              - transactionId
+              - transactionTypeId
               - description
-            default: transactionId
+            default: transactionTypeId
         - in: query
           name: pageOffset
           description: >-
