@@ -25,11 +25,11 @@ tags:
   - name: Phones
     description: Endpoints to manage phones
   - name: Statuses and reasons
-    description: Endpoints to configure accounts, statuses, and reasons
+    description: Endpoints to configure accounts, statuses, and reasons.
   - name: Transfer account
     description: Endpoints dealing with account transfer
   - name: Migration
-    description: Endpoints to manage migration
+    description: Endpoints to manage migration.
 components:
   parameters:
     AccountIdPath:
@@ -438,7 +438,9 @@ components:
         account_type:
           $ref: '#/components/schemas/AccountType'
         account_name:
-          $ref: '#/components/schemas/AccountName'
+          oneOf:
+            - $ref: '#/components/schemas/AccountName'
+            - type: 'null'
         creation_date:
           $ref: '#/components/schemas/AccountCreationDate'
         is_centralizer:
@@ -446,21 +448,31 @@ components:
         external_id:
           $ref: '#/components/schemas/AccountExternalId'
         division_id:
-          $ref: '#/components/schemas/DivisionID'
+          oneOf:
+            - $ref: '#/components/schemas/DivisionID'
+            - type: 'null'
         customer_id:
           $ref: '#/components/schemas/CustomerID'
         parent_account_id:
-          $ref: '#/components/schemas/ParentAccountID'
+          oneOf:
+            - $ref: '#/components/schemas/ParentAccountID'
+            - type: 'null'
         children:
           $ref: '#/components/schemas/Children'
         status:
           $ref: '#/components/schemas/AccountStatus'
         status_reason_id:
-          $ref: '#/components/schemas/StatusReasonID'
+          oneOf:
+            - $ref: '#/components/schemas/StatusReasonID'
+            - type: 'null'
         status_reason_description:
-          $ref: '#/components/schemas/StatusReasonDescription'
+          oneOf:
+            - $ref: '#/components/schemas/StatusReasonDescription'
+            - type: 'null'
         account_status_date:
-          $ref: '#/components/schemas/AccountStatusDate'
+          oneOf:
+            - $ref: '#/components/schemas/AccountStatusDate'
+            - type: 'null'
         program_name:
           $ref: '#/components/schemas/ProgramName'
         program_type:
@@ -470,17 +482,23 @@ components:
         org:
           $ref: '#/components/schemas/OrganizationID'
         entity_type:
-          $ref: '#/components/schemas/EntityType'
+          $ref: '#/components/schemas/EntityTypeDefault'
         name:
           $ref: '#/components/schemas/IndividualsName'
         social_name:
-          $ref: '#/components/schemas/SocialName'
+          oneOf:
+            - $ref: '#/components/schemas/SocialName'
+            - type: 'null'
         email:
-          $ref: '#/components/schemas/IndividualsEmailAddress'
+          oneOf:
+            - $ref: '#/components/schemas/IndividualsEmailAddress'
+            - type: 'null'
         document_number:
           $ref: '#/components/schemas/DocumentNumber'
         postal_address_type:
-          $ref: '#/components/schemas/PostalAddressType'
+          oneOf:
+            - $ref: '#/components/schemas/PostalAddressType'
+            - type: 'null'
         acquisition_id:
           $ref: '#/components/schemas/AcquisitionIdOfApplicationForm'
         currency_numeric_code:
@@ -488,11 +506,17 @@ components:
         collections_status:
           $ref: '#/components/schemas/CollectionStatus'
         open_due_date:
-          $ref: '#/components/schemas/OpenDueDate'
+          oneOf:
+            - $ref: '#/components/schemas/OpenDueDate'
+            - type: 'null'
         current_cicle:
-          $ref: '#/components/schemas/CurrentCycle'
+          oneOf:
+            - $ref: '#/components/schemas/CurrentCycle'
+            - type: 'null'
         current_balance:
-          $ref: '#/components/schemas/CurrentBalance'
+          oneOf:
+            - $ref: '#/components/schemas/CurrentBalance'
+            - type: 'null'
         available_withdrawal_credit:
           $ref: '#/components/schemas/AvailableWithdrawalCredit'
         available_monthly_credit:
@@ -512,13 +536,19 @@ components:
         available_limit:
           $ref: '#/components/schemas/AvailableLimit'
         blocked_amount:
-          $ref: '#/components/schemas/BlockedAmount'
+          oneOf:
+            - $ref: '#/components/schemas/BlockedAmount'
+            - type: 'null'
         exchange_mode:
           $ref: '#/components/schemas/ExchangeMode'
         program_due_date_id:
-          $ref: '#/components/schemas/ProgramDueDateID'
+          oneOf:
+            - $ref: '#/components/schemas/ProgramDueDateID'
+            - type: 'null'
         custom_fields:
-          $ref: '#/components/schemas/CustomFieldsString'
+          oneOf:
+            - $ref: '#/components/schemas/CustomFieldsString'
+            - type: 'null'
     AccountDueDateID:
       type: integer
       format: int64
@@ -3027,6 +3057,17 @@ components:
         - COMPANY
       maxLength: 10
       example: INDIVIDUAL
+    EntityTypeDefault:
+      type: string
+      description: |
+        Account's entity type:
+          * `FISICA` - Natural person
+          * `JURIDICA` - Legal person
+      enum:
+        - FISICA
+        - JURIDICA
+      maxLength: 10
+      example: FISICA
     ExchangeMode:
       type: string
       description: |
@@ -5207,7 +5248,8 @@ paths:
 
         * Some of the fields returned vary depending on whether the account was
         created with a `person` or `company` object as the account owner.  The
-        `entity_type` (`INDIVIDUAL`, `COMPANY`) identifies this.
+        `entity_type` (`FISICA` for a person, `JURIDICA` for a company)
+        identifies this.
 
 
         * The fields `name`, `email_address`, `customer_id`, and
@@ -5232,7 +5274,7 @@ paths:
                   value:
                     acquisition_id: 123
                     document_number: 514-08-3862
-                    entity_type: INDIVIDUAL
+                    entity_type: FISICA
                     name: John Doe
                     email: john.doe@email.com
                     org: TN-34778262-f4f0-464d-b4c6-a14e2dc6f4be
