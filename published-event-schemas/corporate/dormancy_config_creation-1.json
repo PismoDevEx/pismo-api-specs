@@ -256,7 +256,7 @@
           "title": "Permitted Attribute Values",
           "description": "Lists the values that, when present in the specified field, prevent the account from being reactivated by that transaction.",
           "type": "array",
-          "maxItems": 30,
+          "maxItems": 75,
           "items": {
             "type": "string",
             "maxLength": 100,
