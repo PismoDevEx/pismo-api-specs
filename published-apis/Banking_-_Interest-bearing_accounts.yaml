@@ -163,6 +163,46 @@ components:
           - ACTIVE
           - INACTIVE
       example: ACTIVE
+    nameQuery:
+      description: >-
+        Filter results by product name using a substring match, regardless of
+        letter case.
+      in: query
+      name: name
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+      example: Premium
+    productIdQuery:
+      description: >
+        Filter by product ID. If specified, the request ignores name,
+        pagination, and ordering parameters; only `productType`, `status`, and
+        the date range are applied in addition to the product ID filter. The
+        response contains at most one product, and `next_page` is set to
+        `false`.
+      in: query
+      name: productId
+      required: false
+      schema:
+        type: string
+        format: uuid
+      example: 4f1c2d3e-1234-4a5b-8c9d-0123456789ab
+    orderByQuery:
+      description: >-
+        Field used to sort the result. It can be either `created_at` or `name`.
+        Default is `created_at`.
+      in: query
+      name: orderBy
+      required: false
+      schema:
+        type: string
+        enum:
+          - created_at
+          - name
+        default: created_at
+      example: name
     idempotencyHeader:
       name: idempotency
       in: header
@@ -1581,9 +1621,11 @@ components:
           example: 20
           default: 20
         items:
-          allOf:
-            - $ref: '#/components/schemas/DepositProduct'
-            - $ref: '#/components/schemas/SavingsAccountProduct'
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/DepositProduct'
+              - $ref: '#/components/schemas/SavingsAccountProduct'
           description: A collection of individual product objects.
     PatchProductRequest:
       type: object
@@ -2997,8 +3039,11 @@ paths:
         - $ref: '#/components/parameters/afterIdQuery'
         - $ref: '#/components/parameters/perPageQuery'
         - $ref: '#/components/parameters/orderQuery'
+        - $ref: '#/components/parameters/orderByQuery'
         - $ref: '#/components/parameters/productTypeQuery'
         - $ref: '#/components/parameters/statusQuery'
+        - $ref: '#/components/parameters/nameQuery'
+        - $ref: '#/components/parameters/productIdQuery'
       responses:
         '200':
           description: Success
