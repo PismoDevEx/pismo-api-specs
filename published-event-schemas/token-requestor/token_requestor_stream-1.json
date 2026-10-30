@@ -21,7 +21,11 @@
             "description": "The previous value",
             "type": [
               "string",
-              "null"
+              "null",
+              "number",
+              "boolean",
+              "object",
+              "array"
             ]
           },
           "path": {
@@ -35,7 +39,11 @@
             "description": "The new value",
             "type": [
               "string",
-              "null"
+              "null",
+              "number",
+              "boolean",
+              "object",
+              "array"
             ]
           },
           "type": {
@@ -56,8 +64,15 @@
       "type": "string"
     },
     "new_image": {
-      "$ref": "#/definitions/images",
-      "description": "The new table values"
+      "description": "The new table values",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/images"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "old_image": {
       "description": "The previous table values",
