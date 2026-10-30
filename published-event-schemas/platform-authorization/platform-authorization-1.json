@@ -624,6 +624,30 @@
       ],
       "additionalProperties": true
     },
+    "anti_fraud_metadata": {
+      "title": "Anti-fraud metadata",
+      "description": "Metadata returned by the anti-fraud system in its decision for this authorization. Its content is defined by the anti-fraud integration. This field is different from the `metadata` field, which contains custom information provided by the customer. When the authorization is not evaluated by the anti-fraud system, you see null or an empty string, or the field is omitted from the payload.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": true
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "const": ""
+        }
+      ],
+      "examples": [
+        {
+          "anti-fraud-data": {
+            "any": "fields"
+          }
+        }
+      ]
+    },
     "number_of_installments": {
       "type": "integer",
       "title": "Number of installments",
