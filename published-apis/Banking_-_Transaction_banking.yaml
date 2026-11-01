@@ -2524,7 +2524,7 @@ components:
       description: >-
         Lists the values that, when present in the specified field, prevent the
         account from being reactivated by that transaction.
-      maxItems: 30
+      maxItems: 75
       items:
         $ref: '#/components/schemas/ValidExceptionValue'
     DormancyRestrictions:
@@ -7066,10 +7066,25 @@ paths:
       summary: Close transaction banking account
       operationId: post-accounts-accountId-close
       description: >
-        Close a transaction banking account and all of its children.
+        Close a transaction banking account and all of its children. 
 
 
-        Book balance and earmark balance must be zero.
+        To close an account, the account must satisfy the folloiwng conditions:
+
+        * The following balances must be zero:
+          * `book_balance`
+          * `ledger_balance`
+          * `uncleared_checks_balance`
+          * `earmarked_balance`
+
+        * The account must also have no active scheduled payments
+
+
+        Payment operations update account balances asynchronously. To avoid
+        closing an account while balance updates are still pending, call [Get
+        transaction banking account balance](ref:get-account-balances) after
+        posting a payment and close the account only when all balances are zero.
+        If the request returns `WCAC0019`, retry after a short delay.
 
 
         This endpoint generates an [Account status
