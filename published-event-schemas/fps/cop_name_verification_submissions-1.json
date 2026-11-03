@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "type": "object",
   "title": "CoP name verification requested",
-  "description": "Confirmation of Payee (CoP) name verification event. This event is generated when a name verification request is submitted for processing. The [Confirmation of Payment](https://developers.pismo.io/pismo-docs/reference/post-cop-verification) endpoint generates this event. The client receives the result in a [CoP name verification result received](https://developers.pismo.io/events/docs/fps-cop-name-verification-admissions-1) event. ",
+  "description": "Confirmation of Payee (CoP) name verification event. This event is generated when a name verification request is submitted for processing. The [Confirmation of Payee](https://developers.pismo.io/pismo-docs/reference/post-cop-verification) endpoint generates this event. The client receives the result in a [CoP name verification result received](https://developers.pismo.io/events/docs/fps-cop-name-verification-admissions-1) event. ",
   "required": [
     "name_verification_id",
     "account_number",
@@ -93,11 +93,7 @@
       ]
     },
     "name": {
-      "type": [
-        "array",
-        "null",
-        "string"
-      ],
+      "type": "string",
       "title": "Name",
       "description": "Name provided for verification",
       "maxLength": 135,
