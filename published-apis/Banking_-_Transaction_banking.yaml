@@ -1957,6 +1957,11 @@ components:
     CreditLegV3Request:
       title: CreditLegV3Request
       type: object
+      description: >
+        **Note**: Use `force_post` or `validation_rules.ACCOUNT_STATUS.override`
+        on a leg posts the transaction as a forced authorization. This can
+        affect dormancy handling. Forced transactions might not reactivate a
+        dormant account.
       required:
         - tracking_id
         - amount
@@ -2258,6 +2263,11 @@ components:
     DebitLegV3Request:
       title: DebitLegV3Request
       type: object
+      description: >
+        **Note**: Use `force_post` or `validation_rules.ACCOUNT_STATUS.override`
+        on a leg posts the transaction as a forced authorization. This can
+        affect dormancy handling. Forced transactions might not reactivate a
+        dormant account.
       required:
         - tracking_id
         - amount
