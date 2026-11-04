@@ -1730,16 +1730,13 @@ components:
 
 
             A Zone PIN Key (ZPK) identifier. The ZPK is a data encrypting or
-            decrypting key for PIN transfer between parties. Ffor example,
+            decrypting key for PIN transfer between parties. For example,
             between issuers and processors or acquirers and networks or networks
             and processors, and so on.
 
 
-            In a sandbox environment, a fixed ZPK is used:
+            In a sandbox environment, a fixed ZPK is used.
 
-               key_id: 7d14ca2e-1057-11ee-8cee-060f666de710
-
-               HSM key: 0404F2543B1C6E70AB61586E1304B6A7
 
             For production, open a Jira ticket with type = **Configuration**.
             Request you need the key to use endpoints with PIN management such
@@ -1849,16 +1846,13 @@ components:
 
 
         A Zone PIN Key (ZPK) identifier. The ZPK is a data encrypting or
-        decrypting key for PIN transfer between parties. Ffor example, between
+        decrypting key for PIN transfer between parties. For example, between
         issuers and processors or acquirers and networks or networks and
         processors, and so on.
 
 
-        In a sandbox environment, a fixed ZPK is used:
+        In a sandbox environment, a fixed ZPK is used.
 
-          key_id: 7d14ca2e-1057-11ee-8cee-060f666de710
-
-          HSM key: 0404F2543B1C6E70AB61586E1304B6A7
 
         For production, open a Jira ticket with type = **Configuration**.
         Request you need the key to use endpoints with PIN management such as
@@ -2946,11 +2940,8 @@ components:
             and processors, and so on.
 
 
-            In a sandbox environment, a fixed ZPK is used:
+            In a sandbox environment, a fixed ZPK is used.
 
-               key_id: `7d14ca2e-1057-11ee-8cee-060f666de710`
-
-               HSM key: `0404F2543B1C6E70AB61586E1304B6A7`
 
             For production, open a Jira ticket with type = **Configuration**.
             Request you need the key to use endpoints with PIN management such
@@ -3772,11 +3763,8 @@ paths:
             and processors, and so on.
 
 
-            In a sandbox environment, a fixed ZPK is used:
+            In a sandbox environment, a fixed ZPK is used.
 
-               key_id: 7d14ca2e-1057-11ee-8cee-060f666de710
-
-               HSM key: 0404F2543B1C6E70AB61586E1304B6A7
 
             For production, open a Jira ticket with type = **Configuration**.
             Request you need the key to use endpoints with PIN management such
