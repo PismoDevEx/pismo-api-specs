@@ -30,7 +30,7 @@
         "event_date_time": "2020-01-31T12:34:56.000123Z",
         "device_id": "0jqfHOrefhK7FX0ryNEnFSI19",
         "correlation_id": "c1f18245-0a69-4887-80b2-df92cbf559bd",
-        "devices_binding": true,
+        "consume_devices": true,
         "metadata": {
           "migrationDate": "2022-06-02 15:14:00",
           "tcDateTime": "202206021526",
@@ -286,10 +286,10 @@
             "c1f18245-0a69-4887-80b2-df92cbf559bd"
           ]
         },
-        "devices_binding": {
-          "$id": "#/properties/entity/properties/devices_binding",
+        "consume_devices": {
+          "$id": "#/properties/entity/properties/consume_devices",
           "type": "boolean",
-          "title": "Devices binding",
+          "title": "Consume devices",
           "description": "Indicates whether the token requires an additional network call to retrieve device binding information (true) or not (false).",
           "examples": [
             true,

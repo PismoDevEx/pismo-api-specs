@@ -36,7 +36,7 @@
         "network": "mdes",
         "device_id": "0jqfHOrefhK7FX0ryNEnFSI19",
         "correlation_id": "c1f18245-0a69-4887-80b2-df92cbf559bd",
-        "devices_binding": true,
+        "consume_devices": true,
         "metadata": {
           "key1": "value1",
           "key2": "value2"
@@ -374,10 +374,10 @@
             "c1f18245-0a69-4887-80b2-df92cbf559bd"
           ]
         },
-        "devices_binding": {
-          "$id": "#/properties/entity/properties/devices_binding",
+        "consume_devices": {
+          "$id": "#/properties/entity/properties/consume_devices",
           "type": "boolean",
-          "title": "Devices binding",
+          "title": "Consume devices",
           "description": "Indicates whether the token requires an additional network call to retrieve device binding information (true) or not (false).",
           "examples": [
             true,
