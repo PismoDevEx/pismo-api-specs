@@ -107,6 +107,23 @@ components:
       maxLength: 60
       description: External account ID managed by the requester
       example: '4141'
+    ForecastDate:
+      type: string
+      format: date
+      description: >-
+        Date to calculate the forecast for. Must be equal to or later than the
+        current date (UTC). Format = YYYY-MM-DD.
+      example: '2026-11-17'
+    ForecastId:
+      type: string
+      format: UUID
+      maxLength: 36
+      description: >
+        Client-generated forecast UUID in the hyphenated 36-character format
+        (8-4-4-4-12). A UUID without hyphens returns a `400` error. Do not reuse
+        the `forecast_id` of a previous request. Letters are accepted in either
+        case and returned in lowercase.
+      example: 8d0c4a3e-2f71-4b9a-9e5d-6c1f0b7a2e94
     InterestAccountCancellationRequest:
       title: InterestAccountCancellationRequest
       type: object
@@ -251,6 +268,74 @@ components:
       example:
         tracking_id: 41dee***************************9789
         external_account_id: '4141'
+    InterestForecastRequest:
+      title: InterestForecastRequest
+      type: object
+      required:
+        - forecast_id
+        - account_id
+        - interest_plan_id
+        - forecast_date
+      properties:
+        forecast_id:
+          $ref: '#/components/schemas/ForecastId'
+        division_id:
+          $ref: '#/components/schemas/DivisionId'
+        account_id:
+          $ref: '#/components/schemas/AccountId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
+        interest_plan_id:
+          $ref: '#/components/schemas/InterestPlanId'
+        forecast_date:
+          $ref: '#/components/schemas/ForecastDate'
+      example:
+        forecast_id: 8d0c4a3e-2f71-4b9a-9e5d-6c1f0b7a2e94
+        division_id: '123'
+        account_id: '4040'
+        external_account_id: '4141'
+        interest_plan_id: df3f3e3e-62d3-4323-902e-6ae6cc210f49
+        forecast_date: '2026-11-17'
+    InterestForecastResponse:
+      title: InterestForecastResponse
+      type: object
+      description: >-
+        Echo of the forecast request, plus `org_id` and `program_id`, which are
+        not passed in the request body. It does not contain forecast values.
+        Optional fields are returned only when passed in the request.
+      required:
+        - forecast_id
+        - org_id
+        - program_id
+        - account_id
+        - interest_plan_id
+        - forecast_date
+      properties:
+        forecast_id:
+          $ref: '#/components/schemas/ForecastId'
+        org_id:
+          $ref: '#/components/schemas/OrgId'
+        program_id:
+          $ref: '#/components/schemas/ProgramId'
+        division_id:
+          $ref: '#/components/schemas/DivisionId'
+        account_id:
+          $ref: '#/components/schemas/AccountId'
+        external_account_id:
+          $ref: '#/components/schemas/ExternalAccountId'
+        interest_plan_id:
+          $ref: '#/components/schemas/InterestPlanId'
+        forecast_date:
+          $ref: '#/components/schemas/ForecastDate'
+      example:
+        forecast_id: 8d0c4a3e-2f71-4b9a-9e5d-6c1f0b7a2e94
+        org_id: '1'
+        program_id: '0105'
+        division_id: '123'
+        account_id: '4040'
+        external_account_id: '4141'
+        interest_plan_id: df3f3e3e-62d3-4323-902e-6ae6cc210f49
+        forecast_date: '2026-11-17'
     InterestPlanId:
       type: string
       format: UUID
@@ -309,6 +394,12 @@ components:
         bytes.
       example:
         key: value
+    OrgId:
+      type: string
+      description: >-
+        Organization ID, parsed from your access token. You don't pass it in the
+        request body, but it is returned in the response.
+      example: '1'
     ProgramId:
       type: string
       description: Program ID
@@ -396,6 +487,54 @@ components:
                 message: >-
                   value_date must be in the past for RETROACTIVE_CYCLE_CLOSING
                   trigger_reason.
+            tenantHeaderNotPresent:
+              summary: x-tenant header is not present
+              value:
+                message: 400 BAD_REQUEST "Required header 'x-tenant' is not present."
+            programIdHeaderMissing:
+              summary: Neither the x-program-id nor the program-id header is present
+              value:
+                message: x-program-id or program-id must be provided
+            programIdHeadersMismatch:
+              summary: x-program-id and program-id headers have different values
+              value:
+                message: x-program-id and program-id must have the same value
+            forecastRequiredFieldsNotInformed:
+              summary: Forecast request body without the required fields
+              value:
+                message:
+                  - forecast_id must be informed.
+                  - account_id must be informed.
+                  - interest_plan_id must be informed.
+                  - forecast_date must be informed.
+            forecastDateBeforeToday:
+              summary: forecast_date is before the current date (UTC)
+              value:
+                message:
+                  - forecast_date must be equal or greater than today.
+            invalidForecastDate:
+              summary: forecast_date is not a valid YYYY-MM-DD date
+              value:
+                message: forecast_date is not valid
+            invalidForecastId:
+              summary: forecast_id is not a valid UUID
+              value:
+                message: forecast_id must be a valid UUID
+            accountIdNotInformed:
+              summary: account_id is missing or blank
+              value:
+                message:
+                  - account_id must be informed.
+            externalAccountIdTooLong:
+              summary: external_account_id is longer than 60 characters
+              value:
+                message:
+                  - ' external_account_id maximum size accepted [60]'
+            invalidInterestPlanId:
+              summary: interest_plan_id is not a valid UUID
+              value:
+                message:
+                  - interest_plan_id must be a valid UUID
     401Unauthorized:
       description: Unauthorized access
       content:
@@ -669,5 +808,64 @@ paths:
           $ref: '#/components/responses/401Unauthorized'
         '404':
           $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/interest/forecast:
+    post:
+      summary: Create interest forecast [Beta]
+      description: >
+        Request a forecast of the gross interest and the gross balance that an
+        interest-bearing account is expected to have on `forecast_date`.
+
+
+        The forecast is asynchronous. The `200` response only confirms receipt
+        of the request and does not contain forecast values. A failure event
+        reports any problem with the interest plan or account.
+
+
+        The following events deliver endpoint results:
+
+        - [Interest forecast
+        succeeded](https://developers.pismo.io/events/docs/interest-engine-interest-forecast-success-1)
+        when the forecast is calculated
+
+        - [Interest forecast
+        failed](https://developers.pismo.io/events/docs/interest-engine-interest-forecast-failure-1)
+        when the forecast cannot be calculated
+
+
+        If a request repeats a `forecast_id`, the endpoint still returns `200`,
+        and an Interest forecast failed event reports the message `The provided
+        forecast_id has already been used.`
+
+
+        In rare cases, such as a retry after a temporary failure, you can
+        receive the same event more than once. All events for a request carry
+        its `forecast_id`, so you can use it to recognize and ignore a repeated
+        event.
+      tags:
+        - Interest engine
+      operationId: post-v1-interest-forecast
+      parameters:
+        - $ref: '#/components/parameters/ContentType'
+        - $ref: '#/components/parameters/Authorization'
+      requestBody:
+        description: Interest forecast request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterestForecastRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterestForecastResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
         '500':
           $ref: '#/components/responses/500InternalServerError'
