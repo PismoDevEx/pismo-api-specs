@@ -3441,7 +3441,19 @@ paths:
         '404':
           $ref: '#/components/responses/404NotFound'
         '409':
-          description: Conflict.
+          description: >
+            Conflict. The product cannot be detached because it has already been
+            detached from the account, or the account is undergoing closure.
+
+            When an account enters the `CANCELED` state, the Pismo platform
+            automatically detaches the associated product as part of the account
+            closure process. Any detach request submitted after the product has
+            already been detached, or while the account closure is in progress,
+            is rejected with this error.
+
+            The error code identifies the case: `EIBACC0114` when the product
+            has already been detached, and `EIBACC0419` while the account
+            closure is in progress.
           content:
             application/json:
               schema:
@@ -3453,6 +3465,13 @@ paths:
                   value:
                     code: EIBACC0114
                     message: Product is already detached
+                accountClosureInProgress:
+                  summary: Account closure in progress.
+                  value:
+                    code: EIBACC0419
+                    message: >-
+                      Account closure in progress: the product will be detached
+                      by the account closure
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/deposits/accounts/open:
@@ -4233,7 +4252,19 @@ paths:
         '404':
           $ref: '#/components/responses/404NotFound'
         '409':
-          description: Conflict.
+          description: >
+            Conflict. The product cannot be detached because it has already been
+            detached from the account, or the account is undergoing closure.
+
+            When an account enters the `CANCELED` state, the Pismo platform
+            automatically detaches the associated product as part of the account
+            closure process. Any detach request submitted after the product has
+            already been detached, or while the account closure is in progress,
+            is rejected with this error.
+
+            The error code identifies the case: `EIBACC0114` when the product
+            has already been detached, and `EIBACC0419` while the account
+            closure is in progress.
           content:
             application/json:
               schema:
@@ -4245,6 +4276,13 @@ paths:
                   value:
                     code: EIBACC0114
                     message: Product is already detached
+                accountClosureInProgress:
+                  summary: Account closure in progress.
+                  value:
+                    code: EIBACC0419
+                    message: >-
+                      Account closure in progress: the product will be detached
+                      by the account closure
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/savings-accounts/accounts/{accountId}:
