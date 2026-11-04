@@ -45,18 +45,18 @@ components:
       required: true
       schema:
         type: string
-      example: 1234
+      example: '1234'
     beneficiaryIDpath:
       name: beneficiaryId
       in: path
       description: >
-        Beneficiary identifier (UUID). This field is returned from the <a
-        href="https://developers.pismo.io/pismo-docs/reference/post-intl-bank-accounts-v1-bank-accounts-beneficiaries">Register
-        beneficiary</a> endpoint.
+        Beneficiary identifier (UUID). This field is returned from the [Register
+        beneficiary](ref:post-intl-bank-accounts-v1-bank-accounts-beneficiaries)
+        endpoint.
       required: true
       schema:
         type: string
-      example: 3456
+      example: '3456'
     schemeNamePath:
       name: schemeName
       in: path
@@ -893,6 +893,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v2/accounts/{accountId}/bank-accounts/ach:
     post:
@@ -1054,6 +1071,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v2/accounts/{accountId}/bank-accounts/fedwire:
     post:
@@ -1215,6 +1249,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v2/accounts/{accountId}/bank-accounts/clabe:
     post:
@@ -1381,6 +1432,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v2/accounts/{accountId}/bank-accounts/uk-scan:
     post:
@@ -1547,6 +1615,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v2/accounts/{accountId}/bank-accounts/brazil:
     post:
@@ -1705,6 +1790,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v2/accounts/{accountId}/bank-accounts/bban:
     post:
@@ -1867,6 +1969,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v2/accounts/{accountId}/bank-accounts/{schemeName}:
     get:
@@ -2134,6 +2253,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
     patch:
       tags:
         - Bank accounts
@@ -2268,6 +2404,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
   /v1/sortcodes/{sortCode}:
     get:
       summary: Get UK bank branch info
@@ -2532,6 +2685,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
     get:
       tags:
         - Beneficiaries
@@ -2705,6 +2875,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v1/beneficiaries/{beneficiaryId}/activate:
     post:
@@ -2846,6 +3033,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
   /v1/beneficiaries/{beneficiaryId}:
     get:
       tags:
@@ -2978,6 +3182,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
     patch:
       tags:
         - Beneficiaries
@@ -3126,6 +3347,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
     delete:
       tags:
         - Beneficiaries
@@ -3248,6 +3486,23 @@ paths:
                   value:
                     code: EIBA0015
                     message: Database internal error
+        '503':
+          description: Service unavailable
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/domain.Error'
+              examples:
+                EIBA0045:
+                  summary: Accounts API temporarily unavailable
+                  value:
+                    code: EIBA0045
+                    message: Accounts - API temporarily unavailable
       x-codegen-request-body-name: RequestBody
   /v3/bank-accounts/{schemeName}/search:
     post:
