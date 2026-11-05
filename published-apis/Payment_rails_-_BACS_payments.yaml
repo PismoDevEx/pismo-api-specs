@@ -10,7 +10,7 @@ info:
   version: '1.0'
 servers:
   - url: https://sandbox.pismolabs.io/bacs
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
 tags:
   - name: BACS direct credit
   - name: BACS direct debit
@@ -117,10 +117,7 @@ components:
       description: Mandate status filter.
       required: false
       schema:
-        type: string
-        enum:
-          - CREATED
-          - CANCELLED
+        $ref: '#/components/schemas/mandate.status'
     claimIdPath:
       name: id
       in: path
@@ -849,6 +846,7 @@ components:
           * `CANCEL_PENDING` - Cancel intent accepted; pending submission to Form3
           * `CANCELLED` - Mandate cancelled. Terminal state
           * `FAILED` - Mandate processing failed. Terminal state
+          * `DORMANT` - No Direct Debit received for the dormancy period (default = 24 months). Later collections generate a `return_code` of `6` (no instruction). This is a terminal state - collections only resume with a new mandate.
       enum:
         - CREATED
         - SUBMITTED
@@ -858,6 +856,7 @@ components:
         - CANCEL_PENDING
         - CANCELLED
         - FAILED
+        - DORMANT
       example: CREATED
     claim.id:
       type: string
@@ -1045,9 +1044,11 @@ components:
         original_instruction_id:
           type: string
           maxLength: 20
+          pattern: ^[A-Za-z0-9]{1,20}$
           description: >-
-            Claim being reversed's DDIC claim sequence number. Forwarded to the
-            scheme.
+            Claim being reversed's DDIC claim sequence number, as shown on the
+            Bacs DDIC submission report. Letters and digits only. Forwarded to
+            the scheme.
           example: '0000000000001234'
         reason:
           $ref: '#/components/schemas/reversalReason'
@@ -1300,8 +1301,8 @@ components:
           * `1` - Instruction cancelled by payer
           * `2` - Payer deceased
           * `3` - Account transferred to a new bank or building society
-          * `5` - No account. Handled automatically by Form3 when using Bacs Mandate Management.
-          * `6` - No instruction. Handled automatically by Form3 when using Bacs Mandate Management.
+          * `5` - No account. Handled automatically by Form3 when using BACS Mandate Management.
+          * `6` - No instruction. Handled automatically by Form3 when using BACS Mandate Management.
           * `B` - Account closed
           * `C` - Account transferred to a different branch of the bank/building society
           * `F` - Invalid account type
@@ -1794,6 +1795,9 @@ paths:
           * The claim is persisted with `status` = `CREATED` and submitted asynchronously. Creation itself returns immediately. 
           
           * Subsequent status transitions generate a [BACS direct debit claim status changed](https://developers.pismo.io/events/docs/bacs-direct-debit-claim-status-change-1) event.
+
+        For more information, refer to the [BACS Direct Debut indemity
+        claims](doc:bacs-direct-debit-indemity-claims) guide.
       operationId: post-create-claim
       tags:
         - BACS direct debit
@@ -1967,6 +1971,8 @@ paths:
 
           * Subsequent status transitions generate a [BACS direct debit claim reversal status changed](https://developers.pismo.io/events/docs/bacs-direct-debit-claim-reversal-status-change-1) event.
           
+        For more information, refer to the [BACS Direct Debut indemity
+        claims](doc:bacs-direct-debit-indemity-claims) guide.
       operationId: post-raise-claim-reversal
       tags:
         - BACS direct debit
