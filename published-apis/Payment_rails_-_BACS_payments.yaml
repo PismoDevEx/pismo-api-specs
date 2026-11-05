@@ -1147,8 +1147,10 @@ components:
       example: Weekly money for Mom
     returnCode:
       type: string
-      description: |
-        ARUDD (Automated Return of Unpaid Direct Debit) return code:
+      description: >
+        <a href="https://www.accesspaysuite.com/blog/arudd-reason-codes/"
+        target="_blank">ARUDD (Automated Return of Unpaid Direct Debit) return
+        code</a>:
           * `0` - Refer to payer
           * `1` - Instruction cancelled
           * `2` - Payer deceased
