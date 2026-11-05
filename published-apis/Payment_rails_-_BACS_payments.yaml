@@ -973,7 +973,7 @@ components:
           allOf:
             - $ref: '#/components/schemas/mandateClearingId'
             - description: >-
-                The six-digit Bacs Service User Number (SUN) of the institution
+                The six-digit BACS Service User Number (SUN) of the institution
                 raising the claim
         reference:
           $ref: '#/components/schemas/claim.reference'
@@ -1161,6 +1161,8 @@ components:
           * `9` - Presentation overdue
           * `A` - Originator differs
           * `B` - Account closed
+
+          **Note:** In the context of a BACS mandate, an _instruction_ is the formal authorization a customer gives to their bank. It explicitly permits a Service User to collect varying amounts of money from the customer's bank account, provided the customer is given advance notice of the payment dates and amounts.
       enum:
         - '0'
         - '1'
