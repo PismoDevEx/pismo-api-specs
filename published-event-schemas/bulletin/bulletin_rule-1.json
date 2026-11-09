@@ -98,11 +98,20 @@
     "ica": {
       "$id": "#/properties/ica",
       "title": "Interbank Card Association (ICA) number",
-      "description": "Interbank Card Association (ICA) number - a six-digit account number that identifies a financial institution or third-party processor operating in the Mastercard network. **REQUIRED** for Mastercard.",
+      "description": "Interbank Card Association (ICA) number - a six-digit account number that identifies a financial institution or third-party processor operating in the Mastercard network. Digits only, leading zeros are kept. **REQUIRED** for Mastercard.",
       "type": "string",
       "examples": [
         "012345",
         "null"
+      ]
+    },
+    "gsi": {
+      "$id": "#/properties/gsi",
+      "title": "Group Sign-on ID (GSI)",
+      "description": "Group Sign-on ID (GSI) - a five-digit Mastercard Member Group ID that, together with the `ica`, identifies the Mastercard connection used to send the program's Protection Bulletin messages. Leading zeros are kept. **REQUIRED** for Mastercard.",
+      "type": "string",
+      "examples": [
+        "01234"
       ]
     },
     "bid": {
@@ -190,6 +199,7 @@
       "brand_type": "MASTERCARD",
       "event_type": "GET",
       "ica": "123456",
+      "gsi": "01234",
       "org_id": "TN-1234",
       "program_id": 123456
     },
