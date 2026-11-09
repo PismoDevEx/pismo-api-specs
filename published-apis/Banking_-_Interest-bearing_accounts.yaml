@@ -116,6 +116,30 @@ components:
         type: string
         format: date-time
       example: '2024-01-30T10:33:01.000Z'
+    pageQuery:
+      description: >
+        Page number, starting at `1`. Values lower than `1` fall back to `1`. A
+        page beyond the last one returns an empty list with `next_page` set to
+        `false`.
+      in: query
+      name: page
+      required: false
+      schema:
+        type: integer
+        default: 1
+      example: 1
+    cycleSnapshotPerPageQuery:
+      description: >
+        Number of cycles per page. Values lower than `1` fall back to `20`, and
+        values greater than `100` are capped at `100`.
+      in: query
+      name: perPage
+      required: false
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+      example: 20
     perPageQuery:
       description: Number of items per page.
       in: query
@@ -2519,19 +2543,25 @@ components:
           example: '2026-01-26T12:00:00Z'
         previous_product_id:
           type: string
-          description: Previous product ID
+          description: Previous product ID. Empty if the account is in its initial cycle.
           example: ae2b8k77-f6a0-4ba4-890a-0dc23f13fcb4
         previous_attachment_id:
           type: string
-          description: Previous attachment ID
+          description: >-
+            Previous attachment ID. Empty if the account is in its initial
+            cycle.
           example: attach685
         previous_interest_plan_id:
           type: string
-          description: Previous interest plan ID
+          description: >-
+            Previous interest plan ID. Empty if the account is in its initial
+            cycle.
           example: ee2b8b77-f6a0-4ba4-890a-0dc23f13fcb4
         previous_grace_period:
           type: integer
-          description: Previous grace period in days
+          description: >-
+            Previous grace period in days. `0` when the account is in its first
+            cycle.
           example: 5
         previous_calendar_maturity_date:
           type:
@@ -2539,8 +2569,9 @@ components:
             - 'null'
           format: date-time
           description: >-
-            Previous calendar maturity date. The datetime format follows the ISO
-            8601 standard `yyyy-mm-ddThh:mm:ss.sssZ`.
+            Previous calendar maturity date. `null` when the account is in its
+            first cycle. The datetime format follows the ISO 8601 standard
+            `yyyy-mm-ddThh:mm:ss.sssZ`.
           example: '2025-12-01T00:00:00Z'
         cycle_start_date:
           type: string
@@ -2556,6 +2587,150 @@ components:
             Start date of the cycle. The datetime format follows the ISO 8601
             standard `yyyy-mm-ddThh:mm:ss.sssZ`.
           example: '2024-12-01T00:00:00Z'
+    CycleSnapshotV2Response:
+      type: object
+      description: >
+        Full cycle history for a deposit account, including one record per
+        cycle, returned in descending order from the most recent cycle to the
+        oldest, with page-based pagination metadata.
+      properties:
+        account_id:
+          type: integer
+          description: Deposit account ID
+          example: 1234567
+        cycles:
+          type: array
+          description: >-
+            Cycles for the requested page, sorted in descending chronological
+            order. Empty if the page number is beyond the last available page.
+          items:
+            $ref: '#/components/schemas/CycleSnapshotV2Item'
+        page:
+          type: integer
+          description: Returned page
+          example: 1
+        per_page:
+          type: integer
+          description: Number of cycles per page applied to the request
+          example: 20
+        next_page:
+          type: boolean
+          description: >-
+            Returns `true` if at least one page of results exists after the
+            current page
+          example: false
+        total_items:
+          type: integer
+          description: Total number of cycles of the account
+          example: 2
+        total_pages:
+          type: integer
+          description: Total number of pages for the applied `per_page`
+          example: 1
+    CycleSnapshotV2Item:
+      type: object
+      description: >
+        Attributes describing a single cycle in the deposit account lifecycle.
+        All cycle dates are calculated from `00:00` in the account division's
+        timezone in effect for that cycle. When no division timezone is
+        configured, UTC is used instead.
+      properties:
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - IN_GRACE
+            - INACTIVE
+          description: >
+            Cycle status:
+
+            * `ACTIVE`: The status of an open cycle when the request date falls
+            outside the configured grace period.
+
+            * `IN_GRACE`: The status of an open cycle when the request date
+            falls within the grace period. Grace period eligibility is evaluated
+            by calendar day and includes both `grace_start_date` and
+            `grace_end_date`.
+
+            * `INACTIVE`: A completed or closed cycle.
+          example: ACTIVE
+        active:
+          type: boolean
+          description: >-
+            Active cycle indicator. Exactly one cycle is marked as active while
+            the account is open. No cycles are marked as active after account
+            closure.
+          example: true
+        product_id:
+          type: string
+          description: Product ID in effect for the cycle
+          example: ze2b8k77-f6a0-4ba4-890a-0dc23f13fhg4
+        attachment_id:
+          type: string
+          description: Attachment ID that defines the cycle
+          example: 1234test
+        interest_plan_id:
+          type: string
+          description: Interest plan ID in effect for the cycle
+          example: ee2b8b77-f6a0-4ba4-890a-0dc23f13fcb4
+        grace_period:
+          type: integer
+          description: >-
+            Number of days in the cycle's grace period. For the first cycle,
+            this value is always `0` because no grace period is defined.
+        grace_start_date:
+          type: string
+          format: date-time
+          description: >-
+            Timestamp marking the start of the grace period. Equal to
+            `cycle_start_date`. Omitted when the cycle does not have a grace
+            period. Format = `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-01-26T00:00:00Z'
+        grace_end_date:
+          type: string
+          format: date-time
+          description: >-
+            Timestamp marking the end of the grace period. Calculated as
+            `grace_start_date` + `grace_period` days. Omitted when the cycle
+            does not have a grace period. Format = `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-01-31T00:00:00Z'
+        cycle_start_date:
+          type: string
+          format: date-time
+          description: Start date of the cycle. Format = `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-01-26T00:00:00Z'
+        start_date:
+          type: string
+          format: date-time
+          description: >-
+            Start date of the deposit lifecycle, the same for every cycle of the
+            account. Format = `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2024-12-01T00:00:00Z'
+        calendar_maturity_date:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: >-
+            Cycle maturity date. Calculated using an inclusive day count, with
+            `cycle_start_date` counted as day 1. For the initial cycle, the
+            maturity date is `cycle_start_date` + `term` - 1 day. For renewed
+            cycles, the maturity date is `cycle_start_date` + `grace_period` +
+            `term` - 1 day, as the grace period extends the cycle duration.
+            Returns null when the maturity date was not recorded for the cycle.
+            Format = `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-12-01T00:00:00Z'
+        rollover_date:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: >-
+            Cycle rollover date. Equal to `calendar_maturity_date` + 1 day and
+            corresponds to the next cycle's `cycle_start_date`. Returns null
+            when the rollover date was not recorded for the cycle. Format =
+            `yyyy-mm-ddThh:mm:ss.sssZ`.
+          example: '2026-12-02T00:00:00Z'
     UpdatePayoutAccountRequest:
       type: object
       required:
@@ -2844,18 +3019,24 @@ components:
           format: date-time
           minLength: 24
           maxLength: 24
-          description: >-
-            Account creation timestamp in RFC 3339 (a strict profile of ISO
-            8601). That is, the format should be `yyyy-mm-ddThh:mm:ss.sssZ` (24
-            characters). Optional. It is forwarded to the transaction-banking
-            API for account creation and is also used by the deposit flow to
-            anchor the attachment's effective date. The timestamp is converted
-            to the account division's local calendar day, and the
-            `calendar_maturity_date` plus the interest cycle are computed from
-            that day. So, a retroactive open (a past timestamp) backdates
-            maturity and interest accrual accordingly. When omitted, the current
-            instant expressed in the division timezone is used. When the
-            division has no timezone configured, the day is resolved in UTC.
+          description: >
+            Account creation timestamp in RFC 3339 format, a strict profile of
+            ISO 8601 (`yyyy-mm-ddThh:mm:ss.sssZ`). This field is optional. 
+
+            When passed, the value is forwarded to the transaction banking API
+            during account creation and is used by the deposit workflow to
+            determine the attachment's effective date. 
+
+            The timestamp is converted to the account division's local calendar
+            day, which serves as the basis for calculating both the
+            `calendar_maturity_date` and the interest cycle. 
+
+            As a result, passing a historical timestamp backdates the maturity
+            date and interest accrual calculations accordingly. 
+
+            If omitted, the current timestamp in the division's configured
+            timezone is used. When no division timezone is configured, UTC is
+            used to determine the calendar day.
           example: '2026-06-24T14:49:36.017Z'
     UnifiedOpenApplicant:
       type: object
@@ -3451,9 +3632,9 @@ paths:
             already been detached, or while the account closure is in progress,
             is rejected with this error.
 
-            The error code identifies the case: `EIBACC0114` when the product
-            has already been detached, and `EIBACC0419` while the account
-            closure is in progress.
+            The returned error code identifies the condition: `EIBACC0114` when
+            the product is already detached and `EIBACC0419` when the account is
+            undergoing closure.
           content:
             application/json:
               schema:
@@ -4262,9 +4443,9 @@ paths:
             already been detached, or while the account closure is in progress,
             is rejected with this error.
 
-            The error code identifies the case: `EIBACC0114` when the product
-            has already been detached, and `EIBACC0419` while the account
-            closure is in progress.
+            The returned error code identifies the condition: `EIBACC0114` when
+            the product is already detached and `EIBACC0419` when the account is
+            undergoing closure.
           content:
             application/json:
               schema:
@@ -4992,7 +5173,12 @@ paths:
         lifecycle, providing current and previous cycle details such as active
         and prior product attachments, key dates (cycle start, maturity,
         rollover), interest plan information, and principal context to support
-        audit, statement, and reconciliation use cases.
+        audit, statement, and reconciliation use cases.<br>
+
+        The `current_*` fields come from the most recent cycle and the
+        `previous_*` fields from the cycle immediately before it. When the
+        account is in its first cycle, the `previous_*` fields are empty and
+        `previous_calendar_maturity_date` is `null`.
       operationId: interest-bearing-v1-get-cycle-snapshot
       parameters:
         - $ref: '#/components/parameters/accountId'
@@ -5004,13 +5190,218 @@ paths:
               schema:
                 $ref: '#/components/schemas/CycleSnapshotResponse'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidAccountIdPath:
+                  summary: Invalid account ID
+                  value:
+                    code: EIBACC0015
+                    message: Invalid accountId path param
         '403':
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingTenant:
+                  summary: Missing x-tenant header
+                  value:
+                    code: EIBACC0005
+                    message: 'Missing required header: ''x-tenant'''
+                invalidAccountIdHeader:
+                  summary: Invalid x-account-id header
+                  value:
+                    code: EIBACC0006
+                    message: 'Invalid account id header: ''x-account-id'''
+                accountIdMismatch:
+                  summary: Account ID differs from the token
+                  value:
+                    code: EIBACC0014
+                    message: >-
+                      The path param accountId does not match the x-account-id
+                      header
         '404':
-          $ref: '#/components/responses/404NotFound'
+          description: Not found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                cycleSnapshotNotFound:
+                  summary: The account has no cycles
+                  value:
+                    code: EIBACC0291
+                    message: Cycle snapshot data not found
         '500':
-          $ref: '#/components/responses/500InternalServer'
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                cycleSnapshotError:
+                  summary: Failed to read the cycle history
+                  value:
+                    code: EIBACC0290
+                    message: Failed to get cycle snapshot data
+  /v2/deposits/accounts/{accountId}/cycle-snapshot:
+    get:
+      tags:
+        - Deposit account lifecycle
+      summary: Get cycle snapshot history for deposit account [beta]
+      description: >
+        Return the complete cycle history for a deposit account, with one record
+        per cycle, enabling audit, statement generation, and reconciliation
+        workflows without requiring reconstruction from individual events.
+
+
+        Cycles are returned in descending order, from the most recent to the
+        oldest. The currently active cycle is the only record with active set to
+        `true`. Its status is reported as `IN_GRACE` when the request is made
+        during the cycle's grace period. Accounts in their initial cycle return
+        a single record, while accounts with incomplete historical data return
+        only the cycles available.
+
+
+        Results are paginated using the `page` and `perPage` query parameters.
+        Identification of the active cycle is based on the account's full cycle
+        history and is not limited to the cycles included in the current page.
+
+
+        All cycle lifecycle dates are calculated from `00:00` in the account
+        division's timezone applicable to that cycle. If no division timezone is
+        configured, UTC is used.
+
+
+        Cycle history remains available for the lifetime of an open account,
+        including after a product has been detached. Following account closure,
+        cycle history might be removed according to the retention policy
+        configured for the environment. By default, cycle history is retained
+        indefinitely.
+      operationId: interest-bearing-v2-get-cycle-snapshot
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/cycleSnapshotPerPageQuery'
+      responses:
+        '200':
+          description: Cycle history returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CycleSnapshotV2Response'
+              examples:
+                renewedCycleInGrace:
+                  summary: Renewed account within the grace window of the current cycle
+                  value:
+                    account_id: 1234567
+                    cycles:
+                      - status: IN_GRACE
+                        active: true
+                        product_id: ze2b8k77-f6a0-4ba4-890a-0dc23f13fhg4
+                        attachment_id: 1234test
+                        interest_plan_id: ee2b8b77-f6a0-4ba4-890a-0dc23f13fcb4
+                        grace_period: 5
+                        grace_start_date: '2026-01-26T00:00:00Z'
+                        grace_end_date: '2026-01-31T00:00:00Z'
+                        cycle_start_date: '2026-01-26T00:00:00Z'
+                        start_date: '2025-01-26T00:00:00Z'
+                        calendar_maturity_date: '2027-01-30T00:00:00Z'
+                        rollover_date: '2027-01-31T00:00:00Z'
+                      - status: INACTIVE
+                        active: false
+                        product_id: ae2b8k77-f6a0-4ba4-890a-0dc23f13fcb4
+                        attachment_id: attach685
+                        interest_plan_id: ee2b8b77-f6a0-4ba4-890a-0dc23f13fcb4
+                        grace_period: 0
+                        cycle_start_date: '2025-01-26T00:00:00Z'
+                        start_date: '2025-01-26T00:00:00Z'
+                        calendar_maturity_date: '2026-01-25T00:00:00Z'
+                        rollover_date: '2026-01-26T00:00:00Z'
+                    page: 1
+                    per_page: 20
+                    next_page: false
+                    total_items: 2
+                    total_pages: 1
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidPagination:
+                  summary: page or perPage is not an integer
+                  value:
+                    code: EIBACC0003
+                    message: Bad Request
+                    details: invalid page or perPage query parameter
+                invalidAccountIdPath:
+                  summary: Invalid account ID
+                  value:
+                    code: EIBACC0015
+                    message: Invalid accountId path param
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingTenant:
+                  summary: Missing x-tenant header
+                  value:
+                    code: EIBACC0005
+                    message: 'Missing required header: ''x-tenant'''
+                invalidAccountIdHeader:
+                  summary: Invalid x-account-id header
+                  value:
+                    code: EIBACC0006
+                    message: 'Invalid account id header: ''x-account-id'''
+                accountIdMismatch:
+                  summary: Account ID differs from the token
+                  value:
+                    code: EIBACC0014
+                    message: >-
+                      The path param accountId does not match the x-account-id
+                      header
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                cycleSnapshotNotFound:
+                  summary: The account has no cycles
+                  value:
+                    code: EIBACC0291
+                    message: Cycle snapshot data not found
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                cycleSnapshotError:
+                  summary: Failed to read the cycle history
+                  value:
+                    code: EIBACC0290
+                    message: Failed to get cycle snapshot data
   /v1/accounts/{accountId}/average-balance:
     post:
       tags:
