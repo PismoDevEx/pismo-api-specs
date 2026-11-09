@@ -15586,6 +15586,11 @@ paths:
                     message: >-
                       The payment date cannot be earlier than the account
                       migration date
+                Back business dating disabled:
+                  summary: Back business dating is disabled
+                  value:
+                    code: WCPT0019
+                    message: Back business dating is disabled
         '401':
           description: Unauthorized
           content:
@@ -15799,6 +15804,11 @@ paths:
                   value:
                     message: No releasable settlements found
                     code: WCPT0015
+                back business dating disabled:
+                  summary: Back business dating is disabled
+                  value:
+                    code: WCPT0019
+                    message: Back business dating is disabled
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -15830,7 +15840,7 @@ paths:
                 VersionConflict:
                   summary: Check posting was concurrently modified
                   value:
-                    code: WCPT0019
+                    code: WCPT0020
                     message: Check posting was concurrently modified
         '500':
           $ref: '#/components/responses/500InternalServer'
@@ -15940,7 +15950,7 @@ paths:
                 VersionConflict:
                   summary: Check posting was concurrently modified
                   value:
-                    code: WCPT0019
+                    code: WCPT0020
                     message: Check posting was concurrently modified
         '500':
           $ref: '#/components/responses/500InternalServer'
@@ -16440,6 +16450,10 @@ paths:
                   value:
                     code: WRFO0023
                     message: Restricted funds was concurrently modified
+                Operation in progress:
+                  value:
+                    code: WRFO0024
+                    message: Restricted fund has an operation in progress
         '429':
           description: Too many requests
           content:
