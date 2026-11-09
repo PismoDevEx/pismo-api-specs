@@ -13480,7 +13480,7 @@ paths:
         feature for a specific division, as well as `business_date` in the
         payments and multileg payments endpoint. For `business_date`, see [Post
         payment](ref:corporate-v2-post-payments) and [Post multileg
-        payment](ref:corporate-v2-post-multileg-payments) for details.
+        payment](ref:corporate-v3-post-multileg-payments) for details.
 
 
         NOTE:
