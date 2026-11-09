@@ -1119,9 +1119,8 @@ components:
           type: string
           description: >-
             The division code registered in the [Create
-            division](https://developers.pismo.io/pismo-docs/reference/post-division-v2)
-            endpoint for which payments are enabled or disabled. It must comply
-            with the rule `^[a-zA-Z0-9-]+$`.
+            division](ref:post-division-v2) endpoint for which payments are
+            enabled or disabled. It must comply with the rule `^[a-zA-Z0-9-]+$`.
           maxLength: 36
           pattern: ^[a-zA-Z0-9-]+$
           example: my-division-code
@@ -1205,7 +1204,7 @@ components:
         metadata:
           $ref: '#/components/schemas/ConfirmPaymentMetadata'
     ChannelCode:
-      description: Alphanumeric channel code identifier
+      description: Alphanumeric channel code ID
       type: string
       minLength: 1
       maxLength: 20
@@ -16641,6 +16640,10 @@ paths:
                   value:
                     code: WRFO0023
                     message: Restricted funds was concurrently modified
+                Operation in progress:
+                  value:
+                    code: WRFO0024
+                    message: Restricted fund has an operation in progress
         '422':
           description: Unprocessable Entity
           content:
