@@ -196,7 +196,7 @@ components:
       description: >
         Beginning date filter. Return statements that have opening date after or
         equal to this date. Default value is account creation date. Format =
-        yyyy-mm-dd.
+        YYYY-MM-DD.
       required: false
       schema:
         type: string
@@ -208,7 +208,7 @@ components:
       description: >
         Beginning date filter. Return statements that have opening date after or
         equal to this date. Default value is account creation date. Format =
-        yyyy-mm-dd.
+        YYYY-MM-DD.
       required: true
       schema:
         type: string
@@ -233,7 +233,7 @@ components:
       required: false
       description: >
         Start date to filter credit transactions. If not provided, it defaults
-        to today's date minus 184 days. Format = yyyy-mm-dd.
+        to today's date minus 184 days. Format = YYYY-MM-DD
 
 
         This endpoint returns no credit transactions older than 184 days, so
@@ -249,7 +249,7 @@ components:
       required: false
       description: >-
         End date to filter credit transactions. If not provided, it defaults to
-        `creditTransactionBeginDate` plus 184 days. Format = yyyy-mm-dd.
+        `creditTransactionBeginDate` plus 184 days. Format = YYYY-MM-DD.
       schema:
         type: string
         format: date
@@ -309,7 +309,7 @@ components:
       in: query
       description: >-
         End date filter. Return statements that have opening date before or
-        equal to this date. Default value is today's date. Format = yyyy-mm-dd.
+        equal to this date. Default value is today's date. Format = YYYY-MM-DD.
       required: false
       schema:
         type: string
@@ -320,7 +320,7 @@ components:
       in: query
       description: >-
         End date filter. Return statements that have opening date before or
-        equal to this date. Default value is today's date. Format = yyyy-mm-dd.
+        equal to this date. Default value is today's date. Format = YYYY-MM-DD.
       required: true
       schema:
         type: string
@@ -342,7 +342,7 @@ components:
     FirstPaymentDateQuery:
       name: firstPaymentDate
       in: query
-      description: Payment date. Format = yyyy-mm-dd.
+      description: Payment date. Format = YYYY-MM-DD.
       required: false
       style: form
       explode: true
@@ -630,7 +630,7 @@ components:
       in: query
       description: >
         Payment date. Default is current statement's real due date. Format =
-        yyyy-mm-dd.
+        YYYY-MM-DD.
       required: false
       schema:
         type: string
@@ -945,7 +945,7 @@ components:
     AccountCanceledDate:
       type: string
       format: date
-      description: Account definitive cancellation date. Format = yyyy-mm-dd.
+      description: Account definitive cancellation date. Format = YYYY-MM-DD.
       example: '2020-08-19'
     AccountCollectionStatusV1PatchResponse:
       type: object
@@ -1148,7 +1148,7 @@ components:
     AccrualDate:
       type: string
       format: date
-      description: Accrual date. Format = yyyy-mm-dd.
+      description: Accrual date. Format = YYYY-MM-DD.
       example: '2021-01-01'
     AccrualInterestRate:
       type: number
@@ -1369,7 +1369,7 @@ components:
       description: Bankslip amount to be paid
       example: 99.99
     BankslipDueDate:
-      description: Bankslip due date. Format = yyyy-mm-dd.
+      description: Bankslip due date. Format = YYYY-MM-DD.
       type: string
       format: date
       example: '2020-06-06'
@@ -1382,7 +1382,7 @@ components:
       description: >-
         Statement best transaction date. The first full day of a cycle. This
         always comes right after the last cycle closing date. Format =
-        yyyy-mm-dd.
+        YYYY-MM-DD.
       format: date
       example: '2020-05-23'
     BestTransactionDay:
@@ -1536,7 +1536,7 @@ components:
       example: true
     CanceledAt:
       type: string
-      description: Cancellation date/time. Format = yyyy-mm-ddThh:mm:ss.
+      description: Cancellation date/time. Format = YYYY-MM-DDThh:mm:ss.
       example: '2021-08-20T00:00:00'
     CardBlocked:
       type: boolean
@@ -1546,7 +1546,7 @@ components:
       type: string
       description: >-
         Expiration date for the cardholder's last issued physical
-        (plastic/metal) card. Format = mm-yyyy.
+        (plastic/metal) card. Format = MM-YYYY.
       example: 08-2026
     CET:
       type: object
@@ -1633,7 +1633,7 @@ components:
       example: abc-123-dfg
     CreatedAt:
       type: string
-      description: Creation date/time. Format = yyyy-mm-ddThh:mm:ss.
+      description: Creation date/time. Format = YYYY-MM-DDThh:mm:ss.
       example: '2021-08-10T00:00:00'
     CreditLimit:
       type: number
@@ -1724,7 +1724,7 @@ components:
     CycleClosingDate:
       type: string
       format: date
-      description: Cycle closing date. Format = yyyy-mm-dd.
+      description: Cycle closing date. Format = YYYY-MM-DD.
       example: '2021-05-14'
     CycleNumber:
       type: integer
@@ -1749,7 +1749,7 @@ components:
     CycleOpeningDate:
       type: string
       format: date
-      description: Cycle opening date. Format = yyyy-mm-dd.
+      description: Cycle opening date. Format = YYYY-MM-DD.
       example: '2020-01-01'
     DailyIofAmount:
       type: number
@@ -1769,7 +1769,7 @@ components:
     DateLastPurchase:
       type: string
       format: date
-      description: Date of customer's last purchase. Format = yyyy-mm-dd.
+      description: Date of customer's last purchase. Format = YYYY-MM-DD.
       example: '2020-09-13'
     Day:
       type: integer
@@ -1957,7 +1957,7 @@ components:
     DueDate:
       type: string
       format: date
-      description: Due date. Format = yyyy-mm-dd.
+      description: Due date. Format = YYYY-MM-DD.
       example: '2021-05-24'
     EligibleForInstallments:
       type: boolean
@@ -1977,7 +1977,7 @@ components:
     EventDatetime:
       type: string
       format: date-time
-      description: Event datetime. Format = yyyy-mm-dd:hr:mm:ss.
+      description: Event datetime. Format = YYYY-MM-DDTh:h:mm:ss.
       example: '2023-02-22T15:17:05'
     EvolveToDelinquency:
       type: boolean
@@ -2050,7 +2050,7 @@ components:
     FirstPaymentDate:
       type: string
       format: date
-      description: Due date for first payment. Format = yyyy-mm-dd.
+      description: Due date for first payment. Format = YYYY-MM-DD.
       example: '2021-06-01'
     FixedIofAmount:
       type: number
@@ -2466,7 +2466,7 @@ components:
             paid_amount_before_due_date: 14
             max_number_of_installments: 4
             financed_balance: 85
-            posted_date: '2020-05-21T03:00:00Z'
+            posted_date: '2020-06-21T10:05:01'
             international_debts: 0
             exchange_rate: 0
             summary:
@@ -2586,7 +2586,7 @@ components:
     ImportedAt:
       type: string
       format: date-time
-      description: When statement was imported. Format = yyyy-mm-ddThh:mm:ss.
+      description: When statement was imported. Format = YYYY-MM-DDThh:mm:ss.
       example: '2021-08-10T00:00:00'
     ImportStatementID:
       type: integer
@@ -3284,7 +3284,7 @@ components:
     LastPaymentDate:
       type: string
       format: date
-      description: Last payment date. Format = yyyy-mm-dd.
+      description: Last payment date. Format = YYYY-MM-DD.
       example: '2021-04-14'
     ListStatementBalancesResponse:
       type: object
@@ -3537,7 +3537,7 @@ components:
       type: string
       format: date
       example: '2021-05-24'
-      description: Open due date. Format = yyyy-mm-dd.
+      description: Open due date. Format = YYYY-MM-DD.
     OptionalDescription:
       type: string
       description: Optional description for this installment transaction
@@ -3595,7 +3595,7 @@ components:
     OverdueDate:
       type: string
       format: date
-      description: Overdue date. Format = yyyy-mm-dd.
+      description: Overdue date. Format = YYYY-MM-DD.
       example: '2020-08-17'
     OverdueDays:
       type: integer
@@ -3691,13 +3691,13 @@ components:
     PaymentDate:
       type: string
       format: date
-      description: Payment date. Format = yyyy-mm-dd.
+      description: Payment date. Format = YYYY-MM-DD.
       example: '2020-05-01'
     PaymentDatetime:
       type: string
       format: date-time
       description: >
-        Date/time of the down payment. Format = YYYY-MM-DDThr:mm:ss.
+        Date/time of the down payment. Format = YYYY-MM-DDThh:mm:ss.
 
 
         This field may represent the payment date for the down payment. When
@@ -3806,7 +3806,7 @@ components:
     PostedDate:
       type: string
       format: date
-      description: Date posted. Format = yyyy-mm-dd.
+      description: Date posted. Format = YYYY-MM-DD.
       example: '2022-02-11'
     PreviousBalance:
       type: number
@@ -3815,7 +3815,7 @@ components:
       example: 99.99
     PreviousDueDate:
       type: string
-      description: Previous statement due date. Format = yyyy-mm-dd.
+      description: Previous statement due date. Format = YYYY-MM-DD.
       format: date
       example: '2020-05-01'
     PreviousUseOriginalRate:
@@ -4036,7 +4036,7 @@ components:
       description: >-
         Real due date. The regular due date does not take holidays into account.
         The real due date does, so it might be a later date. Format =
-        yyyy-mm-dd.
+        YYYY-MM-DD.
       example: '2021-05-24'
     RefinancingRateAfterDueDate:
       type: number
@@ -4216,7 +4216,7 @@ components:
       description: >
         Account cycle in which this interest rate should start being applied.
         **Must** be greater than or equal to the current account cycle. Enter
-        either this field or `start_date`, but not both. Format = yyyy-mm-dd.
+        either this field or `start_date`, but not both. Format = YYYY-MM-DD.
       example: 4
     StartDateInResponse:
       type: string
@@ -4228,7 +4228,7 @@ components:
       description: >
         When this interest rate should start being applied. Enter either this
         field or `start_cylce` but not both. Date **must** be greater than
-        current date. Format = yyyy-mm-dd.
+        current date. Format = YYYY-MM-DD.
       format: date
       example: '2021-08-20'
     Statement:
@@ -4271,7 +4271,7 @@ components:
       example: 7
     StatementCloseDate:
       type: string
-      description: Statement close date. Format = yyyy-mm-ddThh:mm:ss.
+      description: Statement close date. Format = YYYY-MM-DDThh:mm:ss.
       format: date-time
       example: '2020-05-21T03:00:00Z'
     StatementDueDateRequest:
@@ -4413,7 +4413,7 @@ components:
       format: date-time
       description: >-
         When the status's imported statement was updated. Format =
-        yyyy-mm-ddThh:mm:ss.
+        YYYY-MM-DDThh:mm:ss.
       example: '2021-08-10T00:00:00'
     SummaryItems:
       type: array
@@ -4779,7 +4779,7 @@ components:
           $ref: '#/components/schemas/TransactionTypeDescription'
     UpdatedAt:
       type: string
-      description: When this interest rate was updated. Format = yyyy-mm-ddThh:mm:ss.
+      description: When this interest rate was updated. Format = YYYY-MM-DDThh:mm:ss.
       example: '2021-08-20T00:00:00'
     UpdatedIDs:
       type: array
