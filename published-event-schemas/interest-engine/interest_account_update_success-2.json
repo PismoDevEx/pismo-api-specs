@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "title": "Interest account update succeeded [Beta]",
+  "title": "Interest account update succeeded",
   "description": "This event occurs when an interest account configuration is successfully updated with product interest engine.",
   "required": [
     "account_id",
