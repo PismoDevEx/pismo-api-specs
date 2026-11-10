@@ -1715,7 +1715,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/account/{accountId}:
     get:
-      summary: Get account interest [Beta]
+      summary: Get account interest
       description: >
         Get the configuration changes recorded for an account with [Partially
         update account interest](ref:patch-v1-interest-account).
@@ -1873,7 +1873,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     patch:
-      summary: Partially update account interest [Beta]
+      summary: Partially update account interest
       description: >
         Record an effective-dated change to the interest configuration of an
         account. Send only the interest parameters you want to change, together
