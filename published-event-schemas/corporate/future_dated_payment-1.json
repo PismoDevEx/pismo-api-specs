@@ -99,7 +99,7 @@
     "amount": {
       "type": "number",
       "title": "Future dated payment amount",
-      "minimum": 1,
+      "minimum": 0,
       "maximum": 18446744073709551617,
       "examples": [
         10.1,
@@ -110,7 +110,8 @@
     "uncleared_funds": {
       "type": "number",
       "title": "The balance of the future dated payment funds that was posted on the account pending for clearance or confirmation.",
-      "minimum": 1,
+      "description": "It equals the `amount` while the future dated payment status is `CREATED` or `UNSETTLED`, and becomes `0` when the status changes to `SETTLED`, `CANCELED`, or `EXPIRED`.",
+      "minimum": 0,
       "maximum": 18446744073709551617,
       "examples": [
         10.1,
@@ -190,7 +191,7 @@
         "amount": {
           "type": "number",
           "title": "Internal operation amount",
-          "minimum": 1,
+          "minimum": 0,
           "maximum": 18446744073709551617,
           "examples": [
             10.1,
