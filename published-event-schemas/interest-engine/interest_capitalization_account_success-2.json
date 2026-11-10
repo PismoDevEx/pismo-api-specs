@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "title": "Interest capitalization account succeeded [Beta]",
+  "title": "Interest capitalization account succeeded",
   "description": "This event occurs when a capitalization is available with product interest engine.",
   "required": [
     "org_id",
