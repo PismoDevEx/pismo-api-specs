@@ -123,10 +123,7 @@
       "additionalProperties": true
     },
     "authorization_processing_codes": {
-      "type": [
-        "array",
-        "null"
-      ],
+      "type": "array",
       "title": "Authorization processing codes",
       "description": "Authorization processing codes",
       "examples": [
@@ -144,10 +141,7 @@
       ]
     },
     "acknowledges": {
-      "type": [
-        "array",
-        "null"
-      ],
+      "type": "array",
       "title": "Acknowledges ",
       "description": "Acknowledges - internal",
       "examples": [
@@ -167,10 +161,7 @@
       ]
     },
     "tags": {
-      "type": [
-        "array",
-        "null"
-      ],
+      "type": "array",
       "title": "Tags",
       "description": "Metadata tags",
       "examples": [
