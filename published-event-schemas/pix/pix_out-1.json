@@ -104,6 +104,15 @@
         "E0000000020210519134701363533333"
       ]
     },
+    "contested_med_root_transaction_id": {
+      "type": "string",
+      "title": "MED contested root transaction ID",
+      "description": "Unique identifier (end-to-end ID or refund end-to-end ID) of the root transaction of the dispute within MED (Mecanismo Especial de Devolu\u00e7\u00e3o, the Pix special refund mechanism). Always present when `transaction_type` is `REFUND`, optional when `transaction_type` is `TRANSFER`, and never present for the other transaction types.",
+      "maxLength": 32,
+      "examples": [
+        "E0000000020210519134701363533333"
+      ]
+    },
     "initiation_type": {
       "type": "string",
       "title": "Payment initiation type",
