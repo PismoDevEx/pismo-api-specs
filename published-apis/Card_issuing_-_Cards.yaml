@@ -12,7 +12,7 @@ servers:
   - url: https://sandbox.pismolabs.io
     description: Sandbox API server for testing
   - url: https://gw-pci.pismolabs.io
-    description: Sandbox PCI API server for testing.
+    description: Sandbox PCI API server for testing
 security:
   - BearerAuth: []
 tags:
@@ -689,10 +689,7 @@ components:
           type: string
           description: >
             Pending renewal status. Only renewals with status `WAITING` are
-            returned.
-          enum:
-            - WAITING
-            - APPLIED
+            returned. 
           example: WAITING
         renewal_request_date:
           type: string
@@ -4952,13 +4949,22 @@ paths:
       operationId: patch-embossing-address
       summary: Update card embossing address
       description: >
-        Updates the embossing address. Currently, the embossing process uses the
-        address of the customer linked to the account. However, you can use this
-        endpoint to send the embossed card to an address other than the mailing
-        address. For example, a customer is traveling and loses their card. They
-        request a duplicate and want it delivered to their hotel. With this
-        endpoint, it is possible to have it sent to another address without
-        changing their default mailing address.
+        Updates the embossing address of a card that is registered for
+        embossing. Registration is asynchronous after card creation; call this
+        endpoint after receiving the [Card can be added to next scheduled
+        embossing](https://developers.pismo.io/events/docs/cards-embossing-card-ingress-1)
+        event. For no-name cards, call it after the card is bound to an account.
+        If it still returns 404 right after receiving the event, retry after a
+        short delay. 
+
+
+        Currently, the embossing process uses the address of the customer linked
+        to the account. However, you can use this endpoint to send the embossed
+        card to an address other than the mailing address. For example, a
+        customer is traveling and loses their card. They request a duplicate and
+        want it delivered to their hotel. With this endpoint, it is possible to
+        have it sent to another address without changing their default mailing
+        address.
 
 
         You can call the [Create new
@@ -5026,6 +5032,29 @@ paths:
                     message: Invalid payload
                     error: bad_request
                     status: 400
+                    error_code: ''
+        '404':
+          description: Card not found on embossing context
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                  message:
+                    type: string
+                  status:
+                    type: integer
+                  error:
+                    type: string
+              examples:
+                example-card-not-found:
+                  value:
+                    message: card not found
+                    error: not_found
+                    status: 404
                     error_code: ''
         '406':
           description: Not acceptable
