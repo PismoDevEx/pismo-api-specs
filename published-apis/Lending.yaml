@@ -297,7 +297,10 @@ components:
     AdjustmentAmount:
       type: number
       format: double
-      description: Amount of the adjustment
+      description: >-
+        Amount of the adjustment. It cannot have more decimal places than the
+        installment's currency allows (for example, 2 for USD and BRL, 0 for
+        JPY).
       example: 1000
     AdjustmentPostResponse:
       required:
@@ -471,13 +474,14 @@ components:
           example: 2
     ToBeCanceledLoanV2Summary:
       type: object
+      description: Summary of a to-be-canceled loan
       required:
         - loan_id
         - tracking_id
       properties:
         loan_id:
           type: string
-          description: Loan ID
+          description: Loan ID for the cancellation
           example: 550e8400-e29b-41d4-a716-446655440000
         tracking_id:
           type: string
@@ -551,7 +555,11 @@ components:
           $ref: '#/components/schemas/LoanBalanceImpact'
         processing_code:
           type: string
-          description: Processing code for the adjustment
+          description: >-
+            Processing code of the adjustment. Its `balance_impact` sets the
+            direction: credit (`1`) reduces the installment component selected
+            in `loan_balance_impact` (for example, principal or interest), and
+            debit (`-1`) increases it.
         repayment_id:
           $ref: '#/components/schemas/RepaymentID'
     CreateLoanProductV2Request:
@@ -660,6 +668,9 @@ components:
             $ref: '#/components/schemas/ProcessingCode'
     DisbursementScheduleItem:
       type: object
+      description: >-
+        Item in the disbursement schedule, representing a single disbursement
+        event with its associated details
       properties:
         amount:
           $ref: '#/components/schemas/LoanDisbursementAmount'
@@ -698,6 +709,7 @@ components:
       type: object
       properties:
         disbursement_account:
+          description: Account to which the disbursement will be made
           anyOf:
             - $ref: '#/components/schemas/InternalDisburseAccountV2'
             - $ref: '#/components/schemas/ExternalDisburseAccountV2'
@@ -1092,6 +1104,7 @@ components:
           $ref: '#/components/schemas/InternalAccountType'
     LendingLoanRepaymentResponse:
       type: object
+      description: Response object for lending loan repayment details
       required:
         - account_id
         - created_at
@@ -1273,7 +1286,9 @@ components:
       example: 2422410859
     LoanBalanceImpact:
       type: string
-      description: Loan balance impact
+      description: >-
+        Installment component to adjust. It does not set the direction; the
+        processing code's `balance_impact` does.
       example: PRINCIPAL
       enum:
         - PRINCIPAL
@@ -1337,6 +1352,7 @@ components:
           $ref: '#/components/schemas/LoanDisbursementType'
     LoanDisbursementAccount:
       type: object
+      description: Account details for the loan disbursement
       properties:
         account_id:
           type: integer
@@ -1486,7 +1502,7 @@ components:
           $ref: '#/components/schemas/LoanProductV2DisbursementType'
     LoanProductV2DisbursementType:
       type: string
-      description: Disbursement method type or how the loan is delivered.
+      description: Disbursement method type or how the loan is delivered
       example: SINGLE
       default: NONE
       enum:
@@ -1495,7 +1511,9 @@ components:
         - MULTIPLE
     LoanProductV2Parameters:
       type: object
-      description: Loan product parameters
+      description: >-
+        Parameters for the loan product, including overdue thresholds,
+        delinquency handling, and backdating rules
       properties:
         overdue_threshold_days:
           description: Number of days before the account is considered overdue
@@ -1573,6 +1591,9 @@ components:
         - product_name
         - status
       type: object
+      description: >-
+        Response object for a loan product, including its configuration and
+        status
       properties:
         collateral:
           $ref: '#/components/schemas/Collateral'
@@ -1738,6 +1759,7 @@ components:
           $ref: '#/components/schemas/HasNext'
         items:
           type: array
+          description: List of loans for the account
           items:
             $ref: '#/components/schemas/LendingLoanRepaymentResponse'
         next_cursor:
@@ -1878,25 +1900,15 @@ components:
         prepayment, shown by component
       properties:
         fee:
-          type: number
-          format: double
-          example: 0
+          $ref: '#/components/schemas/FeeAmount'
         interest:
-          type: number
-          format: double
-          example: 150
+          $ref: '#/components/schemas/InterestAmount'
         penalty:
-          type: number
-          format: double
-          example: 50
+          $ref: '#/components/schemas/PenaltyAmount'
         principal:
-          type: number
-          format: double
-          example: 1800
+          $ref: '#/components/schemas/PrincipalAmount'
         tax:
-          type: number
-          format: double
-          example: 0
+          $ref: '#/components/schemas/TaxAmount'
     PrepaymentMetadata:
       type: object
       description: >
@@ -1942,6 +1954,7 @@ components:
         fee_amount:
           type: number
           format: double
+          description: Fee amount for the installment
           example: 0
         installment_number:
           type: integer
@@ -1950,18 +1963,22 @@ components:
         interest_amount:
           type: number
           format: double
+          description: Interest amount for the installment
           example: 15
         principal_amount:
           type: number
           format: double
+          description: Principal amount for the installment
           example: 200
         tax_amount:
           type: number
           format: double
+          description: Tax amount for the installment
           example: 0
         total_amount:
           type: number
           format: double
+          description: Total amount for the installment
           example: 215
     PrepaymentSimulationID:
       type: string
@@ -1975,6 +1992,7 @@ components:
         - reduce_option
       properties:
         amount_paid:
+          description: Amount paid for the prepayment simulation
           allOf:
             - $ref: '#/components/schemas/AmountPaid'
             - type: number
@@ -2178,10 +2196,12 @@ components:
             Reference date applied to the prepayment (pricing base); `null` when
             not provided in the request. Format = YYYY-MM-DD.
     PresentValueAmount:
+      description: Present value amount for the loan component
       type: number
       format: double
       example: 100
     PresentValueDiscount:
+      description: Present value discount for the loan component
       type: number
       format: double
       example: 100
@@ -2533,9 +2553,13 @@ components:
       example: 1100
     TotalPayable:
       type: object
+      description: >-
+        Total payable amount for the loan, including breakdowns by component and
+        arrears
       properties:
         amount_due:
           type: object
+          description: Amount due for the loan, broken down by component
           properties:
             charge:
               $ref: '#/components/schemas/ChargeAmount'
@@ -2598,6 +2622,7 @@ components:
       properties:
         amount_paid:
           type: object
+          description: Amount paid for the loan, broken down by component
           properties:
             principal:
               $ref: '#/components/schemas/PrincipalAmount'
@@ -3068,7 +3093,7 @@ paths:
         - Loans
       summary: Cancel all loans by account
       description: >
-        Cancels all active loans for the specified account
+        Cancels all active loans for the specified account.
 
 
         **Note**: This endpoint requires an [account-specific access
@@ -3456,7 +3481,43 @@ paths:
       tags:
         - Loans
       summary: Create loan adjustment
-      description: Create loan adjustment
+      description: >
+        Creates a manual adjustment on one component of one loan installment.
+
+
+        The direction of the adjustment comes from the processing code's
+        `balance_impact`:
+
+        - `1` (credit): reduces the selected component. The customer owes less
+        and the account is credited.
+
+        - `-1` (debit): increases the selected component. The customer owes more
+        and the account is debited.
+
+
+        The endpoint rejects processing codes with any other `balance_impact`
+        (including `0`). The `loan_balance_impact` field
+
+        selects the component (`PRINCIPAL`, `INTEREST`, `TAX`, `PENALTY` or
+        `FEE`) but does not set the direction.
+
+
+        A reduction cannot exceed the component's outstanding amount on the
+        installment, including payments, accruals and
+
+        earlier adjustments already booked. Adjustments are not allowed on
+        `CANCELED`, `PAID` or `PAID_WITHIN_GRACE` installments.
+
+
+        The `adjustment_amount` cannot have more decimal places than the
+        installment's currency allows, in either direction.
+
+
+        Only one adjustment per loan can be in progress. Until the previous
+        adjustment on the loan is booked (usually a few
+
+        seconds), a new request on the same loan is rejected with `WLND0001` and
+        can be retried.
       operationId: createLoanAdjustmentV2
       parameters:
         - $ref: '#/components/parameters/LoanIdPath'
@@ -3480,6 +3541,105 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND1900:
+                  description: The loan_balance_impact field is missing.
+                  value:
+                    code: ELND1900
+                    message: Field loan_balance_impact is invalid.
+                ELND1901:
+                  description: The processing_code field is missing.
+                  value:
+                    code: ELND1901
+                    message: Field processing_code is invalid.
+                ELND1902:
+                  description: The repayment_id field is missing.
+                  value:
+                    code: ELND1902
+                    message: Field repayment_id is invalid.
+                ELND1903:
+                  description: The adjustment_amount field is missing.
+                  value:
+                    code: ELND1903
+                    message: Field adjustment_amount is invalid.
+                ELND1904:
+                  description: The loan_balance_impact value is not a valid component.
+                  value:
+                    code: ELND1904
+                    message: >-
+                      Field loan_balance_impact must be [PRINCIPAL, INTEREST,
+                      TAX, PENALTY, FEE].
+                ELND1905:
+                  description: The adjustment_amount is zero or negative.
+                  value:
+                    code: ELND1905
+                    message: Field adjustment_amount can not be negative or zero.
+                ELND1906:
+                  description: The repayment does not exist on the loan.
+                  value:
+                    code: ELND1906
+                    message: >-
+                      The repayment id 864396a1-dc23-4f73-b4f2-40805cfcadfe was
+                      not found.
+                ELND1907:
+                  description: The installment status does not allow adjustments.
+                  value:
+                    code: ELND1907
+                    message: The repayment status PAID does not allow adjustments.
+                ELND1908:
+                  description: The adjustment authorization could not be created.
+                  value:
+                    code: ELND1908
+                    message: Cannot authorize adjustment.
+                ELND1909:
+                  description: >-
+                    The processing code is configured on a loan product or has
+                    no transaction flow.
+                  value:
+                    code: ELND1909
+                    message: Processing code 0FLZ is not allowed to operate adjustment.
+                ELND1910:
+                  description: The processing code does not exist.
+                  value:
+                    code: ELND1910
+                    message: Processing code 0FLZ is invalid or does not exist.
+                ELND1911:
+                  description: >-
+                    The processing code balance_impact is not 1 (credit) or -1
+                    (debit).
+                  value:
+                    code: ELND1911
+                    message: Adjustment only accepts CREDIT or DEBIT processing code.
+                ELND1912:
+                  description: >-
+                    A credit processing code would reduce the component below
+                    zero.
+                  value:
+                    code: ELND1912
+                    message: >-
+                      Field adjustment_amount exceeds the outstanding FEE of the
+                      repayment.
+                ELND1913:
+                  description: >-
+                    The adjustment_amount has more decimal places than the
+                    installment's currency allows.
+                  value:
+                    code: ELND1913
+                    message: >-
+                      Field adjustment_amount has more decimal places than the
+                      currency USD allows.
+                WLND0001:
+                  description: >-
+                    Another operation, such as a previous adjustment that is not
+                    booked yet, holds the loan lock.
+                  value:
+                    code: WLND0001
+                    message: Loan is already in use
+                ELND0375:
+                  description: The processing code has no BNPL or LENDING tag.
+                  value:
+                    code: ELND0375
+                    message: Processing code 0FLZ must have a BNPL or LENDING tag
   /v2/loan-products:
     post:
       tags:
@@ -3638,7 +3798,7 @@ paths:
       tags:
         - Loan products
       summary: List loan products
-      description: List loan products.
+      description: List loan products, including their configuration and status.
       operationId: getLoanProductsV2
       parameters:
         - $ref: '#/components/parameters/NextCursorQueryCamelCase'
@@ -3816,7 +3976,7 @@ paths:
       tags:
         - Loans
       summary: List loans
-      description: List loans
+      description: List loans, including their status and associated details.
       operationId: retrievePaginatedLoans
       parameters:
         - $ref: '#/components/parameters/NextCursorQueryCamelCase'
@@ -4172,7 +4332,10 @@ paths:
       tags:
         - Disbursements
       summary: Disburse loan
-      description: Disburse a loan.
+      description: |
+        Disburse a loan, specifying the account and amount for the disbursement.
+
+         This endpoint generates a [Loan disbursement status change](https://developers.pismo.io/events/docs/lending-loan-disbursement-status-change-2) event.
       operationId: disburseLoanV2
       parameters:
         - $ref: '#/components/parameters/LoanIdPath'
@@ -4463,7 +4626,13 @@ paths:
       tags:
         - Loans
       summary: Restructure a loan
-      description: Restructures an existing loan based on provided details.
+      description: >
+        Restructures an existing loan based on provided details.
+
+
+        This endpoint generates a [Loan
+        updated](https://developers.pismo.io/events/docs/lending-lending-loan-update-1)
+        event and changes the original loan to a `RENEGOTIATED` status.
       operationId: restructureLoan
       parameters:
         - name: originalLoanId
