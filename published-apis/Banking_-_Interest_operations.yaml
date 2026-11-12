@@ -416,10 +416,13 @@ components:
         - RETROACTIVE_CYCLE_CLOSING
       default: CYCLE_CLOSING
       description: >
-        Reason that triggers the balance registration. Defaults to
-        `CYCLE_CLOSING` when omitted or `null`. `RETROACTIVE_CYCLE_CLOSING`
-        requires `value_date` to be before the current day. Otherwise, the
-        request is rejected with a `400` error.
+        Reason that triggers the balance registration. Default is
+        `CYCLE_CLOSING`.
+
+
+        `RETROACTIVE_CYCLE_CLOSING` requires `value_date` to be before the
+        current day and not more than 365 days before the current day.
+        Otherwise, the request is rejected with a `400` error.
       example: CYCLE_CLOSING
     TrackingId:
       type: string
@@ -576,7 +579,7 @@ security:
 paths:
   /v1/interest/balance:
     post:
-      summary: Create balance [Beta]
+      summary: Create balance
       description: >
         Register a balance for an interest-bearing account using a previously
         configured interest plan to determine applicable interest rates.
