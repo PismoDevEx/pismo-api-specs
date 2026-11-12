@@ -1,0 +1,303 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Interest accrual succeeded",
+  "description": "This event occurs when the quotas of an account are accrued with product interest management. The quotas of an account on an accrual date are split into pages of up to `page_size` quotas, and each page is one event. Pages may arrive out of order and more than once; deduplicate by `external_quota_id` within `account_id` and `accrual_date`.",
+  "required": [
+    "account_id",
+    "accrual_date",
+    "total_gross_balance",
+    "total_net_balance",
+    "total_daily_gross_earnings",
+    "total_daily_net_earnings",
+    "page",
+    "total_pages",
+    "page_size",
+    "total_quotas",
+    "quotas"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Investor account that holds the quotas.",
+      "examples": [
+        "1234567"
+      ]
+    },
+    "accrual_date": {
+      "type": "string",
+      "title": "Accrual date",
+      "description": "Reference date of the accrual. On non-working days it stays on the last working day.",
+      "format": "date",
+      "examples": [
+        "2026-10-29"
+      ]
+    },
+    "total_gross_balance": {
+      "type": "number",
+      "title": "Total gross balance",
+      "description": "Gross balance of all quotas of the account, across all pages.",
+      "format": "double",
+      "examples": [
+        1015.67
+      ]
+    },
+    "total_net_balance": {
+      "type": "number",
+      "title": "Total net balance",
+      "description": "Net balance of all quotas of the account, across all pages.",
+      "format": "double",
+      "examples": [
+        1012.3456
+      ]
+    },
+    "total_daily_gross_earnings": {
+      "type": "number",
+      "title": "Total daily gross earnings",
+      "description": "Gross earnings of all quotas of the account on the day, across all pages.",
+      "format": "double",
+      "examples": [
+        0.52
+      ]
+    },
+    "total_daily_net_earnings": {
+      "type": "number",
+      "title": "Total daily net earnings",
+      "description": "Net earnings of all quotas of the account on the day, across all pages.",
+      "format": "double",
+      "examples": [
+        0.41
+      ]
+    },
+    "page": {
+      "type": "integer",
+      "title": "Page",
+      "description": "Page number, starting at 1.",
+      "minimum": 1,
+      "examples": [
+        1
+      ]
+    },
+    "total_pages": {
+      "type": "integer",
+      "title": "Total pages",
+      "description": "Number of pages of the account on the accrual date. The last page has `page` equal to `total_pages`.",
+      "minimum": 1,
+      "examples": [
+        1
+      ]
+    },
+    "page_size": {
+      "type": "integer",
+      "title": "Page size",
+      "description": "Maximum number of quotas per page. Defined by the platform; read it from the event.",
+      "minimum": 1,
+      "examples": [
+        200
+      ]
+    },
+    "total_quotas": {
+      "type": "integer",
+      "title": "Total quotas",
+      "description": "Number of distinct quotas of the account on the accrual date, across all pages.",
+      "minimum": 1,
+      "examples": [
+        1
+      ]
+    },
+    "quotas": {
+      "type": "array",
+      "title": "List of quotas",
+      "description": "Quotas of this page.",
+      "items": {
+        "$ref": "#/definitions/quota"
+      }
+    }
+  },
+  "definitions": {
+    "quota": {
+      "type": "object",
+      "title": "Quota",
+      "description": "Accrued quota.",
+      "required": [
+        "external_quota_id",
+        "external_asset_id",
+        "issuing_date",
+        "maturity_date",
+        "issued_units",
+        "available_units",
+        "gross_unit_value",
+        "gross_balance",
+        "net_unit_value",
+        "net_balance",
+        "daily_gross_earnings",
+        "daily_net_earnings",
+        "taxes"
+      ],
+      "properties": {
+        "external_quota_id": {
+          "type": "string",
+          "title": "External quota ID",
+          "description": "Unique quota identifier defined by client.",
+          "examples": [
+            "quota-ext-0001"
+          ]
+        },
+        "external_asset_id": {
+          "type": "string",
+          "title": "External asset ID",
+          "description": "Unique asset identifier defined by Pismo.",
+          "examples": [
+            "kxBHNMCAYDnQav"
+          ]
+        },
+        "issuing_date": {
+          "type": "string",
+          "title": "Issuing date",
+          "description": "Date the asset was issued.",
+          "format": "date",
+          "examples": [
+            "2026-10-29"
+          ]
+        },
+        "maturity_date": {
+          "type": "string",
+          "title": "Maturity date",
+          "description": "Date the asset matures.",
+          "format": "date",
+          "examples": [
+            "2028-10-30"
+          ]
+        },
+        "issued_units": {
+          "type": "integer",
+          "title": "Issued units",
+          "description": "Units issued for the quota.",
+          "examples": [
+            1000
+          ]
+        },
+        "available_units": {
+          "type": "integer",
+          "title": "Available units",
+          "description": "Units still held by the quota.",
+          "examples": [
+            1000
+          ]
+        },
+        "gross_unit_value": {
+          "type": "number",
+          "title": "Gross unit value",
+          "description": "Accrued gross unit value.",
+          "format": "double",
+          "examples": [
+            1.01567
+          ]
+        },
+        "gross_balance": {
+          "type": "number",
+          "title": "Gross balance",
+          "description": "Gross balance of the quota.",
+          "format": "double",
+          "examples": [
+            1015.67
+          ]
+        },
+        "net_unit_value": {
+          "type": "number",
+          "title": "Net unit value",
+          "description": "Accrued net unit value, after taxes.",
+          "format": "double",
+          "examples": [
+            1.01234
+          ]
+        },
+        "net_balance": {
+          "type": "number",
+          "title": "Net balance",
+          "description": "Net balance of the quota.",
+          "format": "double",
+          "examples": [
+            1012.34
+          ]
+        },
+        "daily_gross_earnings": {
+          "type": "number",
+          "title": "Daily gross earnings",
+          "description": "Gross earnings of the quota on the day.",
+          "format": "double",
+          "examples": [
+            0.52
+          ]
+        },
+        "daily_net_earnings": {
+          "type": "number",
+          "title": "Daily net earnings",
+          "description": "Net earnings of the quota on the day.",
+          "format": "double",
+          "examples": [
+            0.41
+          ]
+        },
+        "taxes": {
+          "type": "array",
+          "title": "List of taxes",
+          "description": "IR and IOF of the quota.",
+          "items": {
+            "$ref": "#/definitions/tax"
+          }
+        }
+      }
+    },
+    "tax": {
+      "type": "object",
+      "title": "Tax",
+      "description": "Tax of the quota.",
+      "required": [
+        "type",
+        "rate",
+        "unit_value",
+        "amount"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Tax type",
+          "description": "Tax type.",
+          "enum": [
+            "IR",
+            "IOF"
+          ]
+        },
+        "rate": {
+          "type": "number",
+          "title": "Tax rate",
+          "description": "Tax rate, in percent.",
+          "format": "double",
+          "examples": [
+            22.5
+          ]
+        },
+        "unit_value": {
+          "type": "number",
+          "title": "Tax unit value",
+          "description": "Tax per unit.",
+          "format": "double",
+          "examples": [
+            0.00333
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tax amount",
+          "description": "Tax amount of the quota.",
+          "format": "double",
+          "examples": [
+            3.33
+          ]
+        }
+      }
+    }
+  }
+}
