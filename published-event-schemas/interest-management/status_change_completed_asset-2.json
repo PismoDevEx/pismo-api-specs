@@ -1,0 +1,253 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset status changed to completed",
+  "description": "This event occurs when an asset reaches its maturity date and its status changes to `COMPLETED` with product interest management. The quotas with available units are split into pages, one event per page. Pages can arrive out of order and more than once, with the same `event_id` for the same page, so consumers should deduplicate by `external_quota_id`.",
+  "required": [
+    "external_asset_id",
+    "issuer_id",
+    "status",
+    "page",
+    "total_pages",
+    "page_size",
+    "total_quotas",
+    "quotas"
+  ],
+  "properties": {
+    "external_asset_id": {
+      "type": "string",
+      "title": "External asset ID",
+      "description": "Unique asset short identifier defined by Pismo.",
+      "examples": [
+        "kxBHNMCAYDnQav"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Asset status",
+      "description": "Status of asset.",
+      "enum": [
+        "COMPLETED"
+      ]
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Page",
+      "description": "Page number of this event, starting at 1. Each page lists a different part of the asset's quotas.",
+      "examples": [
+        1
+      ]
+    },
+    "total_pages": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Total pages",
+      "description": "Number of pages published for this asset completion. The asset is fully described once every page from 1 to `total_pages` is received. An asset with no quota left has a single page with an empty `quotas` list.",
+      "examples": [
+        3
+      ]
+    },
+    "page_size": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Page size",
+      "description": "Maximum number of quotas in a page. Every page has `page_size` quotas except the last one, which can have fewer.",
+      "examples": [
+        200
+      ]
+    },
+    "total_quotas": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Total quotas",
+      "description": "Number of completed quotas listed for this asset across all pages. It equals the sum of the quotas of every page from 1 to `total_pages`. Quotas with no available units are not listed.",
+      "examples": [
+        450
+      ]
+    },
+    "quotas": {
+      "type": "array",
+      "title": "List of quotas",
+      "description": "Completed quotas of this page, each with its final position at maturity.",
+      "items": {
+        "$ref": "#/definitions/quota"
+      }
+    }
+  },
+  "definitions": {
+    "quota": {
+      "type": "object",
+      "title": "Quota",
+      "description": "Completed quota with its final position at maturity.",
+      "required": [
+        "external_quota_id",
+        "account_id",
+        "issuing_date",
+        "maturity_date",
+        "issued_units",
+        "available_units",
+        "gross_unit_value",
+        "gross_balance",
+        "net_unit_value",
+        "net_balance",
+        "taxes"
+      ],
+      "properties": {
+        "external_quota_id": {
+          "type": "string",
+          "title": "External quota ID",
+          "description": "Unique quota identifier defined by client.",
+          "examples": [
+            "d0855c6b-b037-4dce-94c5-7a6ffc1800a3"
+          ]
+        },
+        "account_id": {
+          "type": "string",
+          "title": "Account identifier",
+          "description": "A custom account ID string that uniquely identifies the account within client organization.",
+          "examples": [
+            "999999999"
+          ]
+        },
+        "issuing_date": {
+          "type": "string",
+          "title": "Issuing date",
+          "description": "Date asset was effectively issued by client.",
+          "format": "date",
+          "examples": [
+            "2025-10-14"
+          ]
+        },
+        "maturity_date": {
+          "type": "string",
+          "title": "Maturity date",
+          "description": "Date asset matures and its quotas are completed.",
+          "format": "date",
+          "examples": [
+            "2026-10-14"
+          ]
+        },
+        "issued_units": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Issued units",
+          "description": "Number of units issued for the quota.",
+          "examples": [
+            1000
+          ]
+        },
+        "available_units": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Available units",
+          "description": "Number of units the quota still holds at maturity, after redemptions.",
+          "examples": [
+            1000
+          ]
+        },
+        "gross_unit_value": {
+          "type": "number",
+          "title": "Gross unit value",
+          "description": "Gross unit value of the final accrual, the one of the day before maturity. It is the asset unit value when the asset was issued after that day.",
+          "format": "double",
+          "examples": [
+            1.14231187
+          ]
+        },
+        "gross_balance": {
+          "type": "number",
+          "title": "Gross balance",
+          "description": "Gross position of the quota: `available_units` times `gross_unit_value`, truncated to 2 decimals.",
+          "format": "double",
+          "examples": [
+            1142.31
+          ]
+        },
+        "net_unit_value": {
+          "type": "number",
+          "title": "Net unit value",
+          "description": "Net unit value of the final accrual: the gross unit value minus the IR and IOF unit values.",
+          "format": "double",
+          "examples": [
+            1.11740729
+          ]
+        },
+        "net_balance": {
+          "type": "number",
+          "title": "Net balance",
+          "description": "Net position of the quota: `gross_balance` minus the `amount` of every tax.",
+          "format": "double",
+          "examples": [
+            1117.41
+          ]
+        },
+        "taxes": {
+          "type": "array",
+          "title": "List of taxes",
+          "description": "Taxes on the quota position, always one IR and one IOF entry.",
+          "items": {
+            "$ref": "#/definitions/tax"
+          }
+        }
+      }
+    },
+    "tax": {
+      "type": "object",
+      "title": "Tax",
+      "description": "Tax on the quota position.",
+      "required": [
+        "type",
+        "rate",
+        "unit_value",
+        "amount"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Tax type",
+          "description": "Tax type.",
+          "enum": [
+            "IR",
+            "IOF"
+          ]
+        },
+        "rate": {
+          "type": "number",
+          "title": "Tax rate",
+          "description": "Tax rate, as a percentage. It is 0 when the tax does not apply.",
+          "format": "double",
+          "examples": [
+            17.5
+          ]
+        },
+        "unit_value": {
+          "type": "number",
+          "title": "Tax unit value",
+          "description": "Tax per unit of the final accrual.",
+          "format": "double",
+          "examples": [
+            0.02490458
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "title": "Tax amount",
+          "description": "Tax on the quota position: `available_units` times `unit_value`, truncated to 2 decimals.",
+          "format": "double",
+          "examples": [
+            24.9
+          ]
+        }
+      }
+    }
+  }
+}
