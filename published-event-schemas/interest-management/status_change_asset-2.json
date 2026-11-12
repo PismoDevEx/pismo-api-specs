@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Asset status changed",
+  "description": "This event occurs when an asset's status changes with product interest management. It is published by the treasury confirmation step of the closing process when a pending asset is activated.",
+  "required": [
+    "external_asset_id",
+    "issuer_id",
+    "status"
+  ],
+  "properties": {
+    "external_asset_id": {
+      "type": "string",
+      "title": "External asset ID",
+      "description": "Unique asset short identifier defined by Pismo.",
+      "examples": [
+        "kxBHNMCAYDnQav"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset. This is part of the asset identifier on the Pismo platform. An organization can have multiple issuer IDs.",
+      "examples": [
+        "12345678"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "title": "Asset status",
+      "description": "Status of asset.",
+      "enum": [
+        "ACTIVE"
+      ]
+    }
+  }
+}
