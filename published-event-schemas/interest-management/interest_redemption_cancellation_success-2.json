@@ -8,7 +8,10 @@
     "external_redemption_id",
     "external_quota_id",
     "external_asset_id",
-    "cancellation_date"
+    "cancellation_date",
+    "restored_units",
+    "quota_reopened",
+    "asset_reopened"
   ],
   "properties": {
     "external_cancellation_id": {
@@ -50,6 +53,30 @@
       "format": "date",
       "examples": [
         "2026-10-27"
+      ]
+    },
+    "restored_units": {
+      "type": "integer",
+      "title": "Restored units",
+      "description": "Units returned to the quota balance by the cancellation.",
+      "examples": [
+        495
+      ]
+    },
+    "quota_reopened": {
+      "type": "boolean",
+      "title": "Quota reopened",
+      "description": "Indicates whether the quota went from REDEEMED back to ACTIVE.",
+      "examples": [
+        true
+      ]
+    },
+    "asset_reopened": {
+      "type": "boolean",
+      "title": "Asset reopened",
+      "description": "Indicates whether the asset went from REDEEMED back to ACTIVE.",
+      "examples": [
+        false
       ]
     }
   }

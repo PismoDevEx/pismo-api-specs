@@ -7,6 +7,7 @@
     "external_cancellation_id",
     "external_redemption_id",
     "cancellation_date",
+    "reason_code",
     "message"
   ],
   "properties": {
@@ -33,6 +34,14 @@
       "format": "date",
       "examples": [
         "2026-10-27"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "title": "Reason code",
+      "description": "Code of the business rule that refused the redemption cancellation.",
+      "examples": [
+        "DAILY_CLOSURE_NOT_OPEN"
       ]
     },
     "message": {
