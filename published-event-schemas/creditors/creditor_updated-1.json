@@ -83,12 +83,14 @@
       ],
       "enum": [
         "ACCOUNT",
+        "PIX",
         "NONE"
       ],
       "title": "Crediting method",
-      "description": "This field contains how the creditor is credited. ACCOUNT means a Pismo account is credited and account_id is set; NONE means no account crediting and account_id is null.",
+      "description": "This field contains how the creditor is credited. ACCOUNT means an internal Pismo account is credited and account_id is set. PIX means the creditor is paid through Pix, Brazil's instant payment rail: the settlement is credited to the Pismo account in account_id and then paid out to the creditor's external Pix destination, so account_id is set. NONE means no account crediting and account_id is null. Additional payment rail values may be added as new clearing systems are supported.",
       "examples": [
         "ACCOUNT",
+        "PIX",
         "NONE"
       ]
     },

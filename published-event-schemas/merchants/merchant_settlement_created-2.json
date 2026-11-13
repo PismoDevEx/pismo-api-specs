@@ -98,9 +98,10 @@
       "$id": "#/properties/payment_type",
       "type": "string",
       "title": "The payment type.",
-      "description": "This field identifies the type related to the payment.",
+      "description": "This field identifies the type related to the payment. ACCOUNT means the amount is credited to an internal Pismo account. PIX means the settlement is for a creditor paid through Pix, Brazil's instant payment rail. Additional payment rail values may be added as new clearing systems are supported.",
       "examples": [
-        "ACCOUNT"
+        "ACCOUNT",
+        "PIX"
       ]
     },
     "payment_info": {
