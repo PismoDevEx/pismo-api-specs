@@ -50,8 +50,7 @@
           "title": "Program type definitions.",
           "required": [
             "id",
-            "description",
-            "pci"
+            "description"
           ],
           "properties": {
             "id": {
