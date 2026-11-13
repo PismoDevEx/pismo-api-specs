@@ -169,9 +169,8 @@ components:
       name: divisionCode
       in: path
       description: >-
-        Division code registered in the [Create
-        division](https://developers.pismo.io/pismo-docs/reference/post-division-v2)
-        endpoint.
+        Division code registered in the [Create division](ref:post-division-v2)
+        endpoint
       schema:
         type: string
         maxLength: 36
@@ -395,8 +394,7 @@ components:
       required: false
       schema:
         type: string
-      example: >-
-        MEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=
+      example: MEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=
     numberOfLatestTransactionsQuery:
       name: numberOfLatestTransactions
       in: query
@@ -1119,9 +1117,8 @@ components:
           type: string
           description: >-
             The division code registered in the [Create
-            division](https://developers.pismo.io/pismo-docs/reference/post-division-v2)
-            endpoint for which payments are enabled or disabled. It must comply
-            with the rule `^[a-zA-Z0-9-]+$`.
+            division](ref:post-division-v2) endpoint for which payments are
+            enabled or disabled. It must comply with the rule `^[a-zA-Z0-9-]+$`.
           maxLength: 36
           pattern: ^[a-zA-Z0-9-]+$
           example: my-division-code
@@ -1134,7 +1131,6 @@ components:
               - The business date is in ISO 8601 format.
               - Users are restricted to specifying a `business_date` that is within a past business cycle.
               - Setting a `business_date` that falls within the current or a future business cycle returns a `400` error.
-              - The current business date is calculated in the timezone of the division hierarchy and defaults to UTC when no timezone is defined.
           example: '2023-03-09'
         enabled:
           type: boolean
@@ -1206,7 +1202,7 @@ components:
         metadata:
           $ref: '#/components/schemas/ConfirmPaymentMetadata'
     ChannelCode:
-      description: Alphanumeric channel code identifier
+      description: Alphanumeric channel code ID
       type: string
       minLength: 1
       maxLength: 20
@@ -1443,8 +1439,7 @@ components:
         separated by '.', in the form:
         protected.encrypted_key.iv.ciphertext.tag.
       pattern: ^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+){4}$
-      example: >-
-        eyJhbGciOiJSU0.cG8IjDbOwrNmuFuu.cG8IjDbOwrNmuFuu.hRmQ0dLFA.Uo3S0eDP0GLkQW6LJVNi5
+      example: eyJhbGciOiJSU0.cG8IjDbOwrNmuFuu.cG8IjDbOwrNmuFuu.hRmQ0dLFA.Uo3S0eDP0GLkQW6LJVNi5
     CreateAccountBalanceHistoryConfigurationRequest:
       description: Create account balance history configuration request object
       type: object
@@ -1525,7 +1520,7 @@ components:
         target_id:
           $ref: '#/components/schemas/BalanceHistoryTargetID'
         cycle_closing_time:
-          $ref: '#/components/schemas/CycleClosingTimeV2'
+          $ref: '#/components/schemas/CycleClosingTime'
         cycle_event_delay:
           $ref: '#/components/schemas/CycleEventDelay'
         cycle_config_validity:
@@ -1621,7 +1616,7 @@ components:
       description: Create AES key request object
       type: object
       example:
-        public_key_id: b6cdccc4-f6bf-4218-9e5e-7fb8f66008e3
+        public_key_id: string
       properties:
         public_key_id:
           $ref: '#/components/schemas/PublicKeyID'
@@ -1826,14 +1821,11 @@ components:
         - name
         - levels
       example:
-        name: Hierarchy One
+        name: string
         levels:
-          - name: Central
+          - name: string
             index: 0
-            description: Root level
-          - name: Region
-            index: 1
-            description: Regional level
+            description: string
     CreateHierarchiesResponse:
       description: Create hierarchy response object
       type: object
@@ -1961,6 +1953,11 @@ components:
     CreditLegV3Request:
       title: CreditLegV3Request
       type: object
+      description: >
+        **Note**: Use `force_post` or `validation_rules.ACCOUNT_STATUS.override`
+        on a leg posts the transaction as a forced authorization. This can
+        affect dormancy handling. Forced transactions might not reactivate a
+        dormant account.
       required:
         - tracking_id
         - amount
@@ -2116,8 +2113,7 @@ components:
     Cursor:
       type: string
       description: Cursor pointing to the next page of results
-      example: >-
-        eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
+      example: eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
     CustomFields:
       type: object
       description: >-
@@ -2129,25 +2125,9 @@ components:
       type: string
       format: time
       description: >-
-        Cycle closing time for a division.
-
-
-        For each account, the cycle closes at this time in the account's
-        timezone, as determined by the `timezone` field described in [Create
-        division](ref:post-division-v2).
-
-
-        Division cycle closing events use the timezone of the division hierarchy
-        and default to UTC when no timezone is configured.
-
-
-        The [Get division by code](ref:get-division-by-code-v2) endpoint returns
-        only the timezone explicitly configured on the division:
-
-
-        - The returned value reflects the timezone set directly on the division.
-
-        - A timezone inherited from a parent division is not returned.
+        Time of day the cycle closes for a division. This time follows the
+        timezone configured in division. You can find the division timezone
+        using the [Get division by code](ref:get-division-by-code-v2) endpoint.
       pattern: ^(?:([01]?\d|2[0-3]):([0-5]?\d):)?([0-5]?\d)$
       example: '22:00:00'
       maxLength: 8
@@ -2155,27 +2135,9 @@ components:
       type: string
       format: time
       description: >-
-        Cycle closing time specifies the time of day when a cycle closes for a
-        division, organization, or program.
-
-
-        For each account, the cycle closes at this time in the account's
-        timezone, as determined by the `timezone` field described in [Create
-        division](ref:post-division-v2).
-
-
-        The cycle closing event uses the timezone of the target entity:
-
-
-        - Division: Uses the timezone of the division hierarchy and defaults to
-        UTC when no timezone is configured.
-
-        - Program: Uses the program timezone. If no program timezone is
-        configured, the organization timezone is used. If neither is configured,
-        UTC is used.
-
-        - Organization: Uses the organization timezone and defaults to UTC when
-        no timezone is configured.
+        Cycle closing time indicates what time of day the cycle closes for a
+        division, organization, or program. This time uses the timezone
+        configured for the corresponding division, organization, or program.
       pattern: ^(?:([01]?\d|2[0-3]):([0-5]?\d):)?([0-5]?\d)$
       example: '23:00:00'
       maxLength: 8
@@ -2296,6 +2258,11 @@ components:
     DebitLegV3Request:
       title: DebitLegV3Request
       type: object
+      description: >
+        **Note**: Use `force_post` or `validation_rules.ACCOUNT_STATUS.override`
+        on a leg posts the transaction as a forced authorization. This can
+        affect dormancy handling. Forced transactions might not reactivate a
+        dormant account.
       required:
         - tracking_id
         - amount
@@ -2396,14 +2363,14 @@ components:
     DivisionCode2:
       type: string
       description: >-
-        Division code registered in the [Create
-        division](https://developers.pismo.io/pismo-docs/reference/post-division-v2)
-        endpoint.
+        Division code registered in the [Create division](ref:post-division-v2)
+        endpoint
       maxLength: 36
       example: US
     DivisionDescription:
-      type: string
-      nullable: true
+      type:
+        - string
+        - 'null'
       maxLength: 80
       description: Division description
       example: NY - New York City
@@ -2561,7 +2528,7 @@ components:
       description: >-
         Lists the values that, when present in the specified field, prevent the
         account from being reactivated by that transaction.
-      maxItems: 30
+      maxItems: 75
       items:
         $ref: '#/components/schemas/ValidExceptionValue'
     DormancyRestrictions:
@@ -3148,6 +3115,8 @@ components:
           $ref: '#/components/schemas/DivisionName'
         division_id:
           $ref: '#/components/schemas/DivisionID'
+        division_code:
+          $ref: '#/components/schemas/DivisionCode2'
         administrative_division_id:
           $ref: '#/components/schemas/AdministrativeDivisionID'
         parent_code:
@@ -3227,8 +3196,11 @@ components:
                 $ref: '#/components/schemas/HierarchyID'
               name:
                 $ref: '#/components/schemas/HierarchyName'
-              level:
-                $ref: '#/components/schemas/Level'
+              levels:
+                type: array
+                description: List of hierarchy levels
+                items:
+                  $ref: '#/components/schemas/Level'
         pagination:
           $ref: '#/components/schemas/Pagination'
       required:
@@ -3406,8 +3378,7 @@ components:
     KeyMaterial:
       type: string
       description: Public-key encoded in DER and base64 formats
-      example: >-
-        MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
+      example: MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
     LedgerBalance:
       type: number
       format: float
@@ -4132,8 +4103,7 @@ components:
       type: string
       nullable: true
       description: Cursor value for the next page
-      example: >-
-        MEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=
+      example: MEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=
     Offset:
       type: integer
       format: int32
@@ -4865,7 +4835,7 @@ components:
       description: >-
         Expiration date and time of the public key. If not provided, it is set
         to 6 months from the date of submission.
-      example: '2027-05-21T12:27:00Z'
+      example: '2025-05-21T12:27:00Z'
     PublicKeyID:
       type: string
       description: >-
@@ -5594,27 +5564,10 @@ components:
       description: >
         Division timezone in timezone database format.<br>
 
-        This value is used to calculate holidays, weekends, and daily balances.
-
-
-        If no timezone is specified, the division inherits the timezone of the
-        nearest parent division that has one. For account operations, when no
-        division in the hierarchy has a timezone configured, Pismo uses the
-        account's program timezone, then the organization's timezone, and
-        finally UTC.
-
-
-        The following operations use only the division hierarchy timezone and
-        default to UTC when no timezone is configured:
-
-
-        - The [Past business date toggle](ref:put-back-business-toggle)
-
-        - Division cycle closing events
-
-
-        Dormancy checks follow a separate rule, set by `check_timezone_origin`.
-
+        This value is used in the calculations for holidays, weekends, and daily
+        balances. If a timezone is not specified, the division inherits the
+        timezone from its parent division. If the parent division also lacks a
+        specified timezone, Pismo defaults to using UTC.
 
         To clear this field, specify an empty string.
       example: America/New_York
@@ -5879,9 +5832,8 @@ components:
       type: object
       example:
         id: b6cdccc4-f6bf-4218-9e5e-7fb8f66008e3
-        key_material: >-
-          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
-        expires_at: '2027-05-21T12:27:00Z'
+        key_material: MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
+        expires_at: '2025-05-21T12:27:00Z'
       properties:
         id:
           $ref: '#/components/schemas/PublicKeyID'
@@ -6341,8 +6293,7 @@ paths:
                             description: Branch level
                     pagination:
                       limit: 10
-                      cursor: >-
-                        eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
+                      cursor: eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
         '400':
           description: A Bad Request validation error
           content:
@@ -6446,12 +6397,6 @@ paths:
         Creates a division by level and hierarchy ID. To use the holidays
         defined in an administrative division, specify its ID in
         `administrative_division_id` to link your division.
-
-
-        The `timezone` you set applies to this division, to child divisions that
-        don't set their own, and to their accounts. See `timezone` for how it is
-        inherited and which timezone accounts use when no division in the
-        hierarchy has one.
 
 
         This endpoint generates a [Corporate division
@@ -6695,6 +6640,7 @@ paths:
                     level_id: 7d574f66-ebd0-4b83-85a1-98ce7569e5c3
                     name: NORAM
                     division_id: 6f8a456a-8b1a-4022-a2f8-7612595330b5
+                    division_code: NORAM
                     administrative_division_id: 13
                     parent_code: my-parent-division
                     description: North American regional division
@@ -7045,6 +6991,22 @@ paths:
                   value:
                     code: WCAC0005
                     message: 'currency_code: invalid currency code'
+                currency_code not resolved:
+                  value:
+                    code: WCAC0048
+                    message: >-
+                      currency_code was not provided and could not be resolved
+                      from the program or the org
+                program not found while resolving currency_code:
+                  value:
+                    code: WCAC0049
+                    message: >-
+                      currency_code was not provided and the program was not
+                      found
+                org not found while resolving currency_code:
+                  value:
+                    code: WCAC0050
+                    message: currency_code was not provided and the org was not found
                 Not mapped 400 error:
                   value:
                     code: WCAC0009
@@ -7104,10 +7066,25 @@ paths:
       summary: Close transaction banking account
       operationId: post-accounts-accountId-close
       description: >
-        Close a transaction banking account and all of its children.
+        Close a transaction banking account and all of its children. 
 
 
-        Book balance and earmark balance must be zero.
+        To close an account, the account must satisfy the folloiwng conditions:
+
+        * The following balances must be zero:
+          * `book_balance`
+          * `ledger_balance`
+          * `uncleared_checks_balance`
+          * `earmarked_balance`
+
+        * The account must also have no active scheduled payments
+
+
+        Payment operations update account balances asynchronously. To avoid
+        closing an account while balance updates are still pending, call [Get
+        transaction banking account balance](ref:get-account-balances) after
+        posting a payment and close the account only when all balances are zero.
+        If the request returns `WCAC0019`, retry after a short delay.
 
 
         This endpoint generates an [Account status
@@ -8072,7 +8049,7 @@ paths:
                   value:
                     earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                     account_id: 102701621
-                    description: Funds held for pending invoice
+                    description: string
                     amount: 50
                     balance: 50
                     release_datetime: '2022-02-10T15:00:00.000Z'
@@ -8279,7 +8256,7 @@ paths:
                     data:
                       earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                       account_id: 102701621
-                      description: Funds held for pending invoice
+                      description: string
                       amount: 20
                       balance: 20
                       release_datetime: '2022-02-10T15:00:00.000Z'
@@ -8304,7 +8281,7 @@ paths:
                     data:
                       earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                       account_id: 102701621
-                      description: Funds held for pending invoice
+                      description: string
                       amount: 20
                       balance: 20
                       release_datetime: '2022-02-10T15:00:00.000Z'
@@ -8420,7 +8397,7 @@ paths:
                   value:
                     earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                     account_id: 102701621
-                    description: Funds held for pending invoice
+                    description: string
                     amount: 20
                     balance: 20
                     release_datetime: '2022-02-10T15:00:00.000Z'
@@ -8612,7 +8589,7 @@ paths:
                     data:
                       earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                       account_id: 102701621
-                      description: Funds held for pending invoice
+                      description: string
                       amount: 20
                       balance: 20
                       release_datetime: '2022-02-10T15:00:00.000Z'
@@ -8718,7 +8695,7 @@ paths:
                   value:
                     earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                     account_id: 102701621
-                    description: Funds held for pending invoice
+                    description: string
                     amount: 50
                     balance: 0
                     release_datetime: '2022-02-10T15:00:00.000Z'
@@ -8872,7 +8849,7 @@ paths:
                     data:
                       earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                       account_id: 102701621
-                      description: Funds held for pending invoice
+                      description: string
                       amount: 20
                       balance: 20
                       release_datetime: '2022-02-10T15:00:00.000Z'
@@ -8975,8 +8952,7 @@ paths:
                               my-id: 2933
                     pagination:
                       limit: 10
-                      cursor: >-
-                        eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
+                      cursor: eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
         '400':
           description: Bad Request
           content:
@@ -9021,17 +8997,8 @@ paths:
         Create an account balance history configuration by division code.
 
 
-        Timezone:
-
-        - Each account closes its cycle at `cycle_closing_time` in the account's
-        timezone. See `cycle_closing_time` for how the account's timezone and
-        the timezone of the division cycle closing event are resolved.
-
-        - The configuration becomes effective at the next `cycle_closing_time`
-        plus `cycle_event_delay`, calculated in the timezone set on the division
-        itself. A timezone inherited from a parent division is not used. If the
-        division has no timezone of its own, UTC is used.
-
+        The configuration becomes effective on the day after the cycle closing
+        time plus the cycle event delay.
 
         Example:
           - Division timezone: `UTC`
@@ -9039,13 +9006,6 @@ paths:
           - Account balance history configuration `cycle_closing_time` is: `22:00:00`
           - Account balance history configuration `cycle_event_delay` is: `10`
           - Account balance history configuration starts at `2023-05-01T22:10:00Z`
-
-        Example with a division timezone:
-          - Division timezone: `Australia/Sydney` (UTC+11 in November)
-          - Create account balance history configuration is called at: `2026-11-11T10:00:00Z` (21:00 in Sydney)
-          - Account balance history configuration `cycle_closing_time` is: `22:00:00`
-          - Account balance history configuration `cycle_event_delay` is: `10`
-          - Account balance history configuration starts at `2026-11-11T11:10:00Z` (22:10 in Sydney)
 
         This endpoint generates an [Account balance history configuration
         created](https://developers.pismo.io/events/docs/account-balances-balance-history-config-creation-1)
@@ -9059,8 +9019,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: >-
-                #/components/schemas/CreateAccountBalanceHistoryConfigurationRequest
+              $ref: '#/components/schemas/CreateAccountBalanceHistoryConfigurationRequest'
             examples:
               Create account balance history configuration:
                 value:
@@ -9073,8 +9032,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: >-
-                  #/components/schemas/CreateAccountBalanceHistoryConfigurationResponse
+                $ref: '#/components/schemas/CreateAccountBalanceHistoryConfigurationResponse'
               examples:
                 Created account balance history configuration successfully:
                   value:
@@ -9176,8 +9134,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: >-
-                  #/components/schemas/GetAccountBalanceHistoryConfigurationResponse
+                $ref: '#/components/schemas/GetAccountBalanceHistoryConfigurationResponse'
               examples:
                 Example transaction:
                   value:
@@ -9289,8 +9246,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: >-
-                #/components/schemas/UpdateAccountBalanceHistoryConfigurationRequest
+              $ref: '#/components/schemas/UpdateAccountBalanceHistoryConfigurationRequest'
             examples:
               Update account balances history configuration:
                 value:
@@ -9560,19 +9516,8 @@ paths:
         organization, or program ID.
 
 
-        Timezone:
-
-        - Each account closes its cycle at `cycle_closing_time` in the account's
-        timezone, wherever the configuration is set. See `cycle_closing_time`
-        for how the account's timezone and the timezone of the target's cycle
-        closing event are resolved.
-
-        - The configuration becomes effective at the next `cycle_closing_time`
-        plus `cycle_event_delay`, calculated in the timezone set on the target
-        itself: the division's own timezone (a timezone inherited from a parent
-        division is not used), the program's timezone, or the organization's
-        timezone. If the target has no timezone, UTC is used.
-
+        The configuration becomes effective on the day after the cycle closing
+        time plus the cycle event delay.
 
         Example:
           - Division timezone: `UTC`
@@ -9580,13 +9525,6 @@ paths:
           - Account balance history configuration `cycle_closing_time` is: `22:00:00`
           - Account balance history configuration `cycle_event_delay` is: `10`
           - Account balance history configuration starts at `2023-05-01T22:10:00Z`
-
-        Example with a division timezone:
-          - Division timezone: `Australia/Sydney` (UTC+11 in November)
-          - Create account balance history configuration is called at: `2026-11-11T10:00:00Z` (21:00 in Sydney)
-          - Account balance history configuration `cycle_closing_time` is: `22:00:00`
-          - Account balance history configuration `cycle_event_delay` is: `10`
-          - Account balance history configuration starts at `2026-11-11T11:10:00Z` (22:10 in Sydney)
 
         This endpoint generates an [Account balance history configuration
         created](https://developers.pismo.io/events/docs/account-balances-balance-history-config-creation-1)
@@ -9600,8 +9538,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: >-
-                #/components/schemas/CreateAccountBalanceHistoryConfigurationRequestv2
+              $ref: '#/components/schemas/CreateAccountBalanceHistoryConfigurationRequestv2'
             examples:
               Create account balance history config response:
                 value:
@@ -9621,8 +9558,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: >-
-                  #/components/schemas/CreateAccountBalanceHistoryConfigurationResponseV2
+                $ref: '#/components/schemas/CreateAccountBalanceHistoryConfigurationResponseV2'
               examples:
                 Created account balance history configuration successfully:
                   value:
@@ -9748,8 +9684,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: >-
-                  #/components/schemas/ListAccountBalanceHistoryConfigurationResponsev2
+                $ref: '#/components/schemas/ListAccountBalanceHistoryConfigurationResponsev2'
               examples:
                 Created account balance history config successfully:
                   value:
@@ -9878,8 +9813,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: >-
-                  #/components/schemas/GetAccountBalanceHistoryConfigurationResponseV2
+                $ref: '#/components/schemas/GetAccountBalanceHistoryConfigurationResponseV2'
               examples:
                 Example transaction:
                   value:
@@ -9991,8 +9925,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: >-
-                #/components/schemas/UpdateAccountBalanceHistoryConfigurationRequestV2
+              $ref: '#/components/schemas/UpdateAccountBalanceHistoryConfigurationRequestV2'
             examples:
               Update account balances history config response:
                 value:
@@ -13046,9 +12979,8 @@ paths:
               New public key:
                 value:
                   id: b6cdccc4-f6bf-4218-9e5e-7fb8f66008e3
-                  key_material: >-
-                    MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
-                  expires_at: '2027-05-21T12:27:00Z'
+                  key_material: MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
+                  expires_at: '2025-05-21T12:27:00Z'
       responses:
         '201':
           description: Created
@@ -13129,9 +13061,8 @@ paths:
                 Division response:
                   value:
                     id: b6cdccc4-f6bf-4218-9e5e-7fb8f66008e3
-                    key_material: >-
-                      MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
-                    expires_at: '2027-05-21T12:27:00Z'
+                    key_material: MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsdRPlk9sW4I79X8hDarn82E9/6AZmEpHrG/IAdUkpaHHsQdvELnFySTAWtw5dNPIdBrYyn1jA6+Cf1dKuTjYxqt+TufMVsBbEbRobXHQezu8JajkkCgW9mzVweVP5qVpUFiryH3jHr3sPD8P8nDuKEzVe8Q83mmSt2YKyg95vkHl6iIrbM11whdZS5jy5VzV++P5BLTVvpPbrDFK/OStxStO7JjI0Lhz8zXqIDhopkOHtP9Ai/gFtdKZB3BefYFHTJFNifzyu8CGAZ00wLVfx61eRCi2cFBsW0HngTT+fLoELyvyxfpKmgkV+3eCMr8CkyEIxEpWNCxkOBxGk5LKMUHMka6YfurS0jXKNGi93wKJX3N1h93sPw4QHtRvqTm07zj8S9drSN6qa8B1u6kltWB+FckdOAqDWt2HBme0cy61xWK2REqXUPqywSrN1w2HitCoJOORUjf5zwUyzoGFMHjW9r7eChr8wsidu34DsMQNf6Lu9OzER2kCbhZlRMKZAgMBAAE=
+                    expires_at: '2025-05-21T12:27:00Z'
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -13199,8 +13130,7 @@ paths:
                 $ref: '#/components/schemas/CreateAESKeyResponse'
               examples:
                 AES key response:
-                  value: >-
-                    eyJhbGciOiJSU0.cG8IjDbOwrNmuFuu.cG8IjDbOwrNmuFuu.hRmQ0dLFA.Uo3S0eDP0GLkQW6LJVNi5
+                  value: eyJhbGciOiJSU0.cG8IjDbOwrNmuFuu.cG8IjDbOwrNmuFuu.hRmQ0dLFA.Uo3S0eDP0GLkQW6LJVNi5
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -13527,7 +13457,7 @@ paths:
         feature for a specific division, as well as `business_date` in the
         payments and multileg payments endpoint. For `business_date`, see [Post
         payment](ref:corporate-v2-post-payments) and [Post multileg
-        payment](ref:corporate-v2-post-multileg-payments) for details.
+        payment](ref:corporate-v3-post-multileg-payments) for details.
 
 
         NOTE:
@@ -13539,13 +13469,6 @@ paths:
         - It is not allowed to set a business date that falls within the current
         or a future business cycle.
 
-        - The current business date used for this validation is determined using
-        the timezone of the division hierarchy, which is the timezone configured
-        on the division or, if none is configured, on the nearest parent
-        division with a timezone. If no division in the hierarchy has a
-        timezone, UTC is used.
-
-          Program and organization timezones are not used. As a result, when no timezone is configured in the division hierarchy, the current business date of the division can differ from the current business date of its accounts.
         - The channel codes configured in this toggle act as an allowlist, so
         any payment submitted through one of those channels bypasses the
         back-business-dated restriction for the relevant division and business
@@ -13657,983 +13580,6 @@ paths:
                   value:
                     code: ECMN9999
                     message: Internal error
-  /corporate/v2/payments/multileg:
-    post:
-      summary: Post multi-leg payment (deprecated)
-      deprecated: true
-      description: >
-        Enable users to submit a payment with multiple legs to the platform. The
-        payments are processed asynchronously and must contain at least two
-        legs, but no more than twenty.
-
-
-        The payload contains `debits` and `credits` lists. These lists include
-        legs that follow the requirements of `credit` and `debit` objects in the
-        [Post
-        payment](https://developers.pismo.io/pismo-docs/reference/corporate-v2-post-payments)
-        endpoint.
-
-
-        For information about multi-leg payments, see the [Post multi-leg
-        payment](https://developers.pismo.io/pismo-docs/docs/payment-overview#post-multi-leg-payment)
-        section in _Payment overview_.
-
-
-        <b>NOTES</b>:
-          - To find the correct reason IDs, refer to the [List account status reasons](https://developers.pismo.io/pismo-docs/reference/get-accounts-v1-accounts-status-reasons) endpoint.
-          - This endpoint does not support forced transfers from an earmark balance.
-          - For error handling, see [Error handling mechanism](https://developers.pismo.io/pismo-docs/docs/payment-overview#error-handling-mechanism) in _Payment overview_.
-
-        Each leg generates the following events:
-
-        - [Platform authorization
-        created](https://developers.pismo.io/events/docs/platform-authorization-platform-authorization-1)
-
-        - [Account balance
-        changed](https://developers.pismo.io/events/docs/account-balances-balance-change-1)
-
-        - [Account balance changed
-        (Availables)](https://developers.pismo.io/events/docs/availables-change-available-1)
-
-        - [Accounting entry
-        created](https://developers.pismo.io/events/docs/accounting-entry-creation-1)
-
-        - If flex controls are configured, a [Flex control
-        evaluated](https://developers.pismo.io/events/docs/rules-evaluation-requested-1)
-        event is triggered.
-
-
-        Additionally, the following events are generated for multi-leg payments:
-
-        - [Multi-leg payment lifecycle
-        created](https://developers.pismo.io/events/docs/corporate-multi-leg-creation-1)
-
-        - [Multi-leg payment lifecycle status
-        changed](https://developers.pismo.io/events/docs/corporate-multi-leg-status-change-1)
-
-
-        See [Data and reporting](doc:data-reporting-overview) for more
-        information about events and setting up event notifications.
-      parameters: []
-      operationId: corporate-v2-post-multileg-payments
-      tags:
-        - Payments
-      requestBody:
-        description: Request body
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MultiLegPaymentV2Request'
-      responses:
-        '202':
-          description: Accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MultiLegPaymentV2Response'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MultiLegPaymentV2ErrorResponse'
-              examples:
-                Invalid JSON payload:
-                  value:
-                    code: WMLP0001
-                    message: 'Invalid JSON payload received: Error unmarshalling request'
-                Tracking ID exceed size:
-                  value:
-                    code: WMLP0002
-                    message: tracking_id must be a maximum of 43 characters in length
-                Tracking ID required:
-                  value:
-                    code: WMLP0002
-                    message: '`tracking_id` is a required field'
-                Payment with more than 20 legs:
-                  value:
-                    code: WMLP0003
-                    message: Multi-leg payments must have up to 20 legs
-                Payment with less than 2 legs:
-                  value:
-                    code: WMLP0004
-                    message: Multi-leg payments must have at least 2 legs
-                Multi-leg payments don't allow single transfers:
-                  value:
-                    code: WMLP0006
-                    message: Multi-leg payments don't allow single transfers
-                Processing code exceed size:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '12345'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP0002
-                            message: >-
-                              processing_code must be a maximum of 6 characters
-                              in length
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                External Account ID exceed size:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: abcdefghijklmnopqrstuvwxyz012345689abcdefghijklmno
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP0002
-                            message: >-
-                              external_account_id must be a maximum of 60
-                              characters in length
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                External Account ID required:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP0002
-                            message: external_account_id is a required field
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Amount value exceed:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 100000000000000000
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP0002
-                            message: amount must be 100,000,000,000,000,000 or less
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                External account ID contains characters not permitted:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '288'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP0002
-                            message: >-
-                              external_account_id contains characters not
-                              permitted: [characters]
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Currency required:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP0002
-                            message: currency is a required field
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Validation rules errors:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        force_post: true
-                        validation_rules:
-                          ACCOUNT_STATUS:
-                            override: true
-                          LEDGER:
-                            force: true
-                        errors:
-                          - code: WMLP1026
-                            message: Payment request with conflicting force parameters
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        force_post: false
-                        validation_rules:
-                          ACCOUNT_STATUS:
-                            force: true
-                        errors:
-                          - code: WMLP1028
-                            message: Invalid params for validation rule ACCOUNT_STATUS
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        force_post: false
-                        validation_rules:
-                          UNKNOWN:
-                            override: true
-                        errors:
-                          - code: WMLP1027
-                            message: Invalid validation rule UNKNOWN
-                Insufficient balance:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1002
-                            message: Insufficient balance
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Invalid processing code:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1003
-                            message: Invalid processing code
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Currency mismatch:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1004
-                            message: >-
-                              Cannot perform conversion between account currency
-                              and provided currency
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Amount has invalid decimal places for currency:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.523
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP0002
-                            message: >-
-                              The number of decimal places is not compatible
-                              with the specified currency
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Invalid account status:
-                  description: >-
-                    This error occurs when the account is in an invalid state,
-                    examples include a closed account.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1005
-                            message: Invalid account status
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Account has not finished onboarding:
-                  description: >-
-                    This error occurs when the account has not completed its
-                    onboarding process.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1039
-                            message: Account has not finished onboarding
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Earmark not active:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1006
-                            message: Earmark is not active
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Earmark insufficient funds:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1022
-                            message: >-
-                              There is insufficient balance in the earmark to
-                              complete this operation
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Weekend error:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1007
-                            message: Cannot post transaction on weekends
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Holiday error:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1008
-                            message: Cannot post transaction on holidays
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Account not found:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1009
-                            message: Account not found
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Earmark not found:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1010
-                            message: Earmark not found
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Processing code not found:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1011
-                            message: Processing code not found
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Tracking ID already exists:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1013
-                            message: Tracking ID already exists
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Closed debit account:
-                  description: >-
-                    This error occurs when a force debit operation is attempted
-                    on a closed account.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1014
-                            message: Debit not permitted on a closed account
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Closed credit account:
-                  description: >-
-                    This error occurs when a force credit operation is attempted
-                    on a closed account.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors: []
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors:
-                          - code: WMLP1015
-                            message: Credit not permitted on a closed account
-                Force debit restrictions:
-                  description: >-
-                    This error occurs when a force debit operation is attempted
-                    on an account with force debit restrictions.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors:
-                          - code: WMLP1016
-                            message: >-
-                              Force debit not allowed by reason - Credit Only -
-                              No Force Debit Allowed
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Force credit restrictions:
-                  description: >-
-                    This error occurs when a force credit operation is attempted
-                    on an account with force credit restrictions.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        errors: []
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors:
-                          - code: WMLP1017
-                            message: Force credit not allowed by reason - {Reason}
-                Payment date cannot be earlier than account creation date:
-                  description: >-
-                    This error occurs when the user specifies a payment date
-                    earlier than the account creation date.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        payment_datetime: '2033-10-24T12:00:00Z'
-                        errors:
-                          - code: WMLP1019
-                            message: >-
-                              The payment date cannot be earlier than the
-                              account creation date
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Payment date cannot be earlier than account migration date:
-                  description: >-
-                    This error occurs when the user specifies a payment date
-                    earlier than the account migration date.
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        payment_datetime: '2033-10-24T12:00:00Z'
-                        errors:
-                          - code: WMLP1048
-                            message: >-
-                              The payment date cannot be earlier than the
-                              account migration date
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Retroactive payment datetime not allowed:
-                  description: >-
-                    This error occurs when the given `payment_datetime` is
-                    earlier than the maximum number of retroactive days
-                    specified in the account or program payment settings
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        payment_datetime: '2033-10-24T12:00:00Z'
-                        errors:
-                          - code: WMLP1023
-                            message: >-
-                              The maximum retroactive payment datetime allowed
-                              is [n] days
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Payment business date before earmark creation:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        business_date: '2024-12-15'
-                        errors:
-                          - code: WMLP1036
-                            message: >-
-                              Payment business date cannot be earlier than the
-                              earmark creation date
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Back business dating disabled:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        business_date: '2024-12-15'
-                        errors:
-                          - code: WMLP1034
-                            message: Back business dating is disabled
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Operations blocked for account:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        earmark_id: dadaab22-6e28-4746-8440-0caa030f0f3f
-                        business_date: '2024-12-15'
-                        errors:
-                          - code: WMLP1035
-                            message: Operations blocked for account
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors: []
-                Invalid business date for the current business day cycle:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        business_date: '2030-06-30'
-                        currency: USD
-                        errors:
-                          - code: WMLP1024
-                            message: >-
-                              Invalid business date for the current business day
-                              cycle
-                Invalid business date format:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        business_date: '2025-05-30'
-                        currency: USD
-                        errors:
-                          - code: WMLP0002
-                            message: >-
-                              business_date 2025-05-32 should be formatted as
-                              yyyy-mm-dd and be a valid date
-                Debit not allowed by status reason:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    debits:
-                      - external_account_id: '289'
-                        processing_code: '220037'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors:
-                          - code: WMLP1037
-                            message: Debit not allowed by reason - <reason>
-                Credit not allowed by status reason:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        currency: USD
-                        errors:
-                          - code: WMLP1038
-                            message: Credit not allowed by reason - <reason>
-                Future payment datetime above limit:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        payment_datetime: '2030-06-30T12:23:45.000Z'
-                        currency: USD
-                        errors:
-                          - code: WMLP1030
-                            message: >-
-                              Future dated payment datetime must be before date
-                              limit
-                Cannot post back value-dated for division:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        payment_datetime: '2030-06-30T12:23:45.000Z'
-                        currency: USD
-                        errors:
-                          - code: WMLP1041
-                            message: >-
-                              Cannot post back value-dated transaction for this
-                              division
-                Cannot post future value-dated for division:
-                  value:
-                    code: WMLP0005
-                    message: 'Validation error: one or more legs did not pass validation'
-                    credits:
-                      - external_account_id: '289'
-                        processing_code: '220035'
-                        soft_descriptor: ACME Inc. - Invoice 2938
-                        amount: 1000.52
-                        payment_datetime: '2030-06-30T12:23:45.000Z'
-                        currency: USD
-                        errors:
-                          - code: WMLP1042
-                            message: >-
-                              Cannot post future value-dated transaction for
-                              this division
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
-  /corporate/v2/payments/multileg/{trackingId}:
-    get:
-      summary: Get multi-leg payment status (deprecated)
-      operationId: corporate-v2-get-multileg-payment
-      deprecated: true
-      description: Enables users to query the processing status of a multi-leg payment.
-      parameters:
-        - $ref: '#/components/parameters/TrackingIdPath'
-      tags:
-        - Payments
-      responses:
-        '200':
-          description: Get multi-leg payment status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MultiLegStatus'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                Invalid JSON payload:
-                  value:
-                    code: WMLP0007
-                    message: multi leg not found
-        '401':
-          $ref: '#/components/responses/401Unauthorized'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '500':
-          $ref: '#/components/responses/500InternalServer'
   /corporate/v1/corporate-transactions:
     get:
       summary: List transactions (transaction banking)
@@ -15242,8 +14188,7 @@ paths:
                         check_timezone_origin: PROGRAM
                     pagination:
                       limit: 10
-                      cursor: >-
-                        eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
+                      cursor: eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
         '400':
           description: Bad Request
           content:
@@ -15751,8 +14696,7 @@ paths:
                         created_at: '2025-01-04T12:00:00Z'
                     pagination:
                       limit: 10
-                      cursor: >-
-                        eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
+                      cursor: eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
         '400':
           description: Bad Request
           content:
@@ -16556,12 +15500,12 @@ paths:
                   summary: Posting on a holiday
                   value:
                     code: WCPT0006
-                    message: Cannot post checks on holiday
+                    message: Cannot post check on holiday
                 Weekend:
                   summary: Posting on a weekend
                   value:
                     code: WCPT0007
-                    message: Cannot post checks on a weekend
+                    message: Cannot post check on weekend
                 Invalid BusinessDate:
                   summary: Invalid business date
                   value:
@@ -16572,11 +15516,6 @@ paths:
                   value:
                     code: WCPT0010
                     message: Invalid check processing code
-                Invalid Check Status:
-                  summary: Invalid check status
-                  value:
-                    code: WCPT0011
-                    message: Check status is invalid for this operation
                 Corporate Account Not Found:
                   summary: Corporate account not found
                   value:
@@ -16587,11 +15526,16 @@ paths:
                   value:
                     code: WCPT0018
                     message: Account has not finished onboarding
-                Account Closed:
-                  summary: Account is closed
+                Operations Blocked:
+                  summary: Operations blocked
+                  value:
+                    code: WOBK0007
+                    message: Operations blocked for account
+                Account In Final Status:
+                  summary: Account is in a final status
                   value:
                     code: WCPT0009
-                    message: Action not permitted on a closed account
+                    message: Action not permitted on an account in a final status
                 Credit Not Active:
                   summary: Account credit not active
                   value:
@@ -16618,6 +15562,11 @@ paths:
                     message: >-
                       The payment date cannot be earlier than the account
                       migration date
+                Back business dating disabled:
+                  summary: Back business dating is disabled
+                  value:
+                    code: WCPT0019
+                    message: Back business dating is disabled
         '401':
           description: Unauthorized
           content:
@@ -16699,6 +15648,23 @@ paths:
                     amount: 200
                     settlement_date: '2026-01-27'
                     status: UNSETTLED
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Corporate Account Not Found:
+                  summary: Corporate account not found
+                  value:
+                    code: WCPT0004
+                    message: Corporate account not found
+                Account Onboarding Not Finished:
+                  summary: Account has not finished onboarding
+                  value:
+                    code: WCPT0018
+                    message: Account has not finished onboarding
         '404':
           description: Not Found
           content:
@@ -16831,6 +15797,38 @@ paths:
                   value:
                     message: No releasable settlements found
                     code: WCPT0015
+                credit not active:
+                  summary: Account credit not active
+                  value:
+                    code: WCPT0012
+                    message: >-
+                      The account cannot be credited. Credit function is not
+                      active
+                account in final status:
+                  summary: Account is in a final status
+                  value:
+                    code: WCPT0009
+                    message: Action not permitted on an account in a final status
+                invalid processing code:
+                  summary: Invalid check processing code
+                  value:
+                    code: WCPT0010
+                    message: Invalid check processing code
+                holiday:
+                  summary: Releasing on a holiday
+                  value:
+                    code: WCPT0006
+                    message: Cannot post check on holiday
+                weekend:
+                  summary: Releasing on a weekend
+                  value:
+                    code: WCPT0007
+                    message: Cannot post check on weekend
+                back business dating disabled:
+                  summary: Back business dating is disabled
+                  value:
+                    code: WCPT0019
+                    message: Back business dating is disabled
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -16862,7 +15860,7 @@ paths:
                 VersionConflict:
                   summary: Check posting was concurrently modified
                   value:
-                    code: WCPT0019
+                    code: WCPT0020
                     message: Check posting was concurrently modified
         '500':
           $ref: '#/components/responses/500InternalServer'
@@ -16917,8 +15915,8 @@ paths:
                 check_id max:
                   summary: check_id exceeds maximum length
                   value:
-                    message: check_id must be a maximum of 60 characters in length
                     code: WCPT0002
+                    message: check_id must be a maximum of 60 characters in length
                 Corporate Account Not Found:
                   summary: Corporate account not found
                   value:
@@ -16932,13 +15930,18 @@ paths:
                 Operations Blocked:
                   summary: Operations blocked
                   value:
-                    message: Operations blocked for account
                     code: WOBK0007
+                    message: Operations blocked for account
                 Invalid Check Status:
                   summary: Invalid check status
                   value:
-                    message: Check status is invalid for this operation
                     code: WCPT0011
+                    message: Check status is invalid for this operation
+                Account In Final Status:
+                  summary: Account is in a final status
+                  value:
+                    code: WCPT0009
+                    message: Action not permitted on an account in a final status
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
@@ -16968,11 +15971,11 @@ paths:
                   summary: Tracking ID already exists
                   value:
                     code: WCPT0013
-                    message: Tracking ID already exists for another operation
+                    message: tracking_id [...] is already in use
                 VersionConflict:
                   summary: Check posting was concurrently modified
                   value:
-                    code: WCPT0019
+                    code: WCPT0020
                     message: Check posting was concurrently modified
         '500':
           $ref: '#/components/responses/500InternalServer'
@@ -17042,22 +16045,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                code: WCPT0002
-                message: Invalid request parameters
+              examples:
+                Invalid Request Parameters:
+                  summary: Invalid request parameters
+                  value:
+                    code: WCPT0002
+                    message: Invalid request parameters
+                Invalid Query Parameter:
+                  summary: Invalid query parameter
+                  value:
+                    code: WCMN0005
+                    message: Invalid query parameter
+                Corporate Account Not Found:
+                  summary: Corporate account not found
+                  value:
+                    code: WCPT0004
+                    message: Corporate account not found
+                Account Onboarding Not Finished:
+                  summary: Account has not finished onboarding
+                  value:
+                    code: WCPT0018
+                    message: Account has not finished onboarding
         '401':
           $ref: '#/components/responses/401Unauthorized'
         '403':
           $ref: '#/components/responses/403Forbidden'
-        '404':
-          description: Check posting not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                code: WCPT0003
-                message: Check posting not found
         '500':
           $ref: '#/components/responses/500InternalServer'
       security:
@@ -17472,6 +16484,10 @@ paths:
                   value:
                     code: WRFO0023
                     message: Restricted funds was concurrently modified
+                Operation in progress:
+                  value:
+                    code: WRFO0024
+                    message: Restricted fund has an operation in progress
         '429':
           description: Too many requests
           content:
@@ -17672,6 +16688,10 @@ paths:
                   value:
                     code: WRFO0023
                     message: Restricted funds was concurrently modified
+                Operation in progress:
+                  value:
+                    code: WRFO0024
+                    message: Restricted fund has an operation in progress
         '422':
           description: Unprocessable Entity
           content:
@@ -19050,7 +18070,7 @@ paths:
                   value:
                     earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                     account_id: 102701621
-                    description: Funds held for pending invoice
+                    description: string
                     amount: 50
                     balance: 50
                     release_datetime: '2022-02-10T15:00:00.000Z'
@@ -19243,7 +18263,7 @@ paths:
                     data:
                       earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                       account_id: 102701621
-                      description: Funds held for pending invoice
+                      description: string
                       amount: 20
                       balance: 20
                       release_datetime: '2022-02-10T15:00:00.000Z'
@@ -19355,7 +18375,7 @@ paths:
                   value:
                     earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                     account_id: 102701621
-                    description: Funds held for pending invoice
+                    description: string
                     amount: 20
                     balance: 20
                     release_datetime: '2022-02-10T15:00:00.000Z'
@@ -19635,7 +18655,7 @@ paths:
                   value:
                     earmark_id: da85b309-a7f7-4316-b2ad-f069f0838058
                     account_id: 102701621
-                    description: Funds held for pending invoice
+                    description: string
                     amount: 50
                     balance: 0
                     release_datetime: '2022-02-10T15:00:00.000Z'
@@ -19874,8 +18894,7 @@ paths:
                               my-id: 2933
                     pagination:
                       limit: 10
-                      cursor: >-
-                        eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
+                      cursor: eyJJRCI6IjBjOGVhMTA4LWNhZTYtNDA2Mi1iMmQzLTFhMTZkNmJiNGIyOCIsIk9yZ0lEIjoiMDllYThhMDQtNWY5My0xMWVkLTliNmEtMDI0MmFjMTIwMDAyIn0=
         '400':
           description: Bad Request
           content:
