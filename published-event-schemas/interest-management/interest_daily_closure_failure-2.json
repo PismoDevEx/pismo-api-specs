@@ -4,10 +4,20 @@
   "title": "Interest daily closure failed",
   "description": "This event occurs when a daily closure request cannot be processed with product interest management.",
   "required": [
+    "external_operation_id",
     "operation_date",
+    "reason_code",
     "message"
   ],
   "properties": {
+    "external_operation_id": {
+      "type": "string",
+      "title": "External operation ID",
+      "description": "Identifier sent by the client in the external_id field of the daily closure request.",
+      "examples": [
+        "c0a8012e-7f3b-4d1a-9e55-2b6f0d9a1c44"
+      ]
+    },
     "operation_date": {
       "type": "string",
       "title": "Operation date",
@@ -17,12 +27,20 @@
         "2026-10-20"
       ]
     },
+    "reason_code": {
+      "type": "string",
+      "title": "Reason code",
+      "description": "Code of the business rule that refused the request: DAILY_CLOSURE_NOT_FOUND, INVALID_OPERATION_DATE, INVALID_STEP, STEP_IN_PROGRESS or DAILY_CLOSURE_OUTDATED.",
+      "examples": [
+        "INVALID_OPERATION_DATE"
+      ]
+    },
     "message": {
       "type": "string",
       "title": "Error message",
       "description": "Description of the error that occurred when processing the request",
       "examples": [
-        "Invalid operation_date. 2026-10-19 remains open"
+        "requested operation_date 2026-10-19 is invalid, the open operation_date is 2026-10-20"
       ]
     }
   }

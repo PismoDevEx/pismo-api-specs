@@ -4,10 +4,20 @@
   "title": "Interest reconciliation failed",
   "description": "This event occurs when a reconciliation request cannot be processed with product interest management.",
   "required": [
+    "external_operation_id",
     "operation_date",
+    "reason_code",
     "message"
   ],
   "properties": {
+    "external_operation_id": {
+      "type": "string",
+      "title": "External operation ID",
+      "description": "Identifier sent by the client in the external_id field of the reconciliation request.",
+      "examples": [
+        "c0a8012e-7f3b-4d1a-9e55-2b6f0d9a1c44"
+      ]
+    },
     "operation_date": {
       "type": "string",
       "title": "Operation date",
@@ -17,12 +27,20 @@
         "2026-10-20"
       ]
     },
+    "reason_code": {
+      "type": "string",
+      "title": "Reason code",
+      "description": "Code of the business rule that refused the request: DAILY_CLOSURE_NOT_FOUND, INVALID_OPERATION_DATE, INVALID_STEP, STEP_IN_PROGRESS or DAILY_CLOSURE_OUTDATED.",
+      "examples": [
+        "DAILY_CLOSURE_OUTDATED"
+      ]
+    },
     "message": {
       "type": "string",
       "title": "Error message",
       "description": "Description of the error that occurred when processing the request",
       "examples": [
-        "DAILY_CLOSURE must be executed again. New transactions were found after the last execution for treasury_date 2026-10-20"
+        "new transactions were found after DAILY_CLOSURE for operation_date 2026-10-20, run DAILY_CLOSURE again"
       ]
     }
   }
