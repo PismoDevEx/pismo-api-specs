@@ -43,16 +43,23 @@ components:
     CalculatorQuery:
       name: calculator
       in: query
-      description: >-
-        Specifies the type of calculation to be applied for interest reduction
-        when an installment is advanced to the current cycle. To recalculate the
-        interest on advancements, set `calculator` to `PRESENT_VALUE`. Default
-        is `NONE`.
+      description: >
+        Type of interest calculation to apply when an installment is advanced to
+        the current cycle. The following options are available. Default is
+        `NONE`.
+
+        - `PRESENT_VALUE`: Recalculate the interest on advancements.
+
+        - `REMOVE_ALL_INTEREST`: Remove the interest from advancements.
+
+        - `NONE`: Do not recalculate or remove the interest on advancements.
+        (That is, keep everything the same.)
       required: false
       schema:
         type: string
         enum:
           - PRESENT_VALUE
+          - REMOVE_ALL_INTEREST
           - NONE
     ConditionQuery:
       name: condition
