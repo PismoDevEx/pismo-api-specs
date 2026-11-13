@@ -45,18 +45,18 @@ components:
       required: true
       schema:
         type: string
-      example: '1234'
+      example: 1234
     beneficiaryIDpath:
       name: beneficiaryId
       in: path
       description: >
-        Beneficiary identifier (UUID). This field is returned from the [Register
-        beneficiary](ref:post-intl-bank-accounts-v1-bank-accounts-beneficiaries)
-        endpoint.
+        Beneficiary identifier (UUID). This field is returned from the <a
+        href="https://developers.pismo.io/pismo-docs/reference/post-intl-bank-accounts-v1-bank-accounts-beneficiaries">Register
+        beneficiary</a> endpoint.
       required: true
       schema:
         type: string
-      example: '3456'
+      example: 3456
     schemeNamePath:
       name: schemeName
       in: path
@@ -2469,10 +2469,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/domain.Error'
               examples:
-                EIBA0031:
+                EIBA0046:
                   summary: Invalid Sort Code
                   value:
-                    code: EIBA0005
+                    code: EIBA0046
                     message: Invalid sort code path parameter, expected 6-digit number
         '403':
           description: Forbidden
@@ -2500,7 +2500,7 @@ paths:
                 EIBA0031:
                   summary: Sort Code Not Found
                   value:
-                    code: EIBA0005
+                    code: EIBA0031
                     message: Sort Code not found
         '500':
           description: Internal Server
