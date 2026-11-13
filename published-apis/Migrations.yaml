@@ -3944,9 +3944,9 @@ components:
 
                   - `ACCRUABLE_FINEABLE` (TT 6901)
 
-                  - `ACCRUABLE_NOTFINEABLE` (TT 6903)
+                  - `ACCRUABLE_NOTFINEABLE` (TT 6902)
 
-                  - `NOTACCRUABLE_FINEABLE` (TT 6902)
+                  - `NOTACCRUABLE_FINEABLE` (TT 6903)
 
                   - `NOTACCRUABLE_NOTFINEABLE` (TT 6904)
 
