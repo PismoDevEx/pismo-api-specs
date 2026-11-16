@@ -297,6 +297,46 @@
         8899
       ]
     },
+    "card_owner": {
+      "type": "object",
+      "title": "Card owner",
+      "description": "Account and customer that own the card used in the authorization. The field is present only when the authorization has a card (`card_id` is not 0). For confirmations and cancellations, the values come from the original authorization, so they identify the cardholder even when the request does not include the card. `card_owner.account_id` is always the same as the top-level `account_id`. `card_owner.customer_id` can differ from the top-level `customer_id`: the top-level field is the customer of the request, and `card_owner.customer_id` is the cardholder.",
+      "required": [
+        "account_id",
+        "customer_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "type": "integer",
+          "title": "Card owner account ID",
+          "description": "Pismo ID of the account that owns the card.",
+          "minimum": 0,
+          "maximum": 9223372036854775807,
+          "examples": [
+            123,
+            456
+          ]
+        },
+        "customer_id": {
+          "type": "integer",
+          "title": "Card owner customer ID",
+          "description": "Pismo ID of the customer that holds the card (cardholder). In the absence of the value you see 0.",
+          "minimum": 0,
+          "maximum": 9223372036854775807,
+          "examples": [
+            82123,
+            98991
+          ]
+        }
+      },
+      "examples": [
+        {
+          "account_id": 123,
+          "customer_id": 82123
+        }
+      ]
+    },
     "customer_id": {
       "type": "integer",
       "title": "Customer ID",
