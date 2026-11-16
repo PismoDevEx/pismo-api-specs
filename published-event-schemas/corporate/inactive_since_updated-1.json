@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "Account inactive_since status updated",
-  "description": "This event occurs when the inactive_since attribute of an account is updated. It is triggered by an account status change, a transaction on the account, when a new account is created under a division/program that has dormancy configured, or for each existing account when a dormancy configuration is created for their division/program.",
+  "description": "This event occurs when the `inactive_since` attribute of an account is updated. It is triggered by an account status change, a transaction on the account, when a new account is created under a division/program that has dormancy configured, or for each existing account when a dormancy configuration is created for their division/program.\n\nNote that this event is not generated for every transaction posting. The effective interval is calculated as the account's configured inactivity threshold plus an additional one-minute processing interval, resulting in an effective interval of eleven minutes in the load tests environment (ten-minute threshold + one minute) and two minutes in all other environments, including production (one-minute threshold + one minute). Additional postings within the effective interval do not generate new events.",
   "required": [
     "account_id",
     "program_id",
@@ -33,7 +33,7 @@
     "trigger_reason": {
       "type": "string",
       "title": "Trigger Reason",
-      "description": "The reason that triggered the inactive_since update on the account.",
+      "description": "The reason that triggered the `inactive_since` update on the account.",
       "minLength": 1,
       "maxLength": 50,
       "examples": [
