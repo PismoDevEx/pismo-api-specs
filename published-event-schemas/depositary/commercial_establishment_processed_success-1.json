@@ -2,16 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "Commercial establishment processed successfully",
-  "description": "Per-item success outcome of a Tangara commercial establishment batch registration/update. One event is emitted per processed item to the commercial_establishment_processed_success event type.",
+  "description": "Per-item success outcome of a Tangara commercial establishment batch registration/update. The payload carries the payment schemes and their bank domicile grouped in infos[]. One event is emitted per processed item to the commercial_establishment_processed_success event type. Produced by ce-api, the Tangara commercial establishment service, and not by the legacy commercial-establishment-api.",
   "required": [
     "key",
     "debtor",
     "documentNumber",
     "documentType",
-    "paymentSchemes",
     "enabled",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "infos"
   ],
   "properties": {
     "key": {
@@ -35,7 +35,7 @@
       "title": "Debtor document number",
       "description": "Debtor (acquirer) document number that owns the commercial establishment",
       "examples": [
-        "01816783000149"
+        "54LF8MIL000176"
       ]
     },
     "documentNumber": {
@@ -43,7 +43,7 @@
       "title": "Document number",
       "description": "Commercial establishment document number",
       "examples": [
-        "94740799000104"
+        "54LF8MIL000176"
       ]
     },
     "documentType": {
@@ -54,103 +54,6 @@
         "CNPJ",
         "CPF"
       ]
-    },
-    "paymentSchemes": {
-      "type": "array",
-      "title": "Payment schemes",
-      "description": "Payment arrangement identifiers registered for the commercial establishment",
-      "items": {
-        "type": "string"
-      },
-      "examples": [
-        [
-          "AVC",
-          "BCD"
-        ]
-      ]
-    },
-    "bankAccount": {
-      "type": "object",
-      "title": "Bank account",
-      "description": "Bank domicile of the commercial establishment. Present only when supplied on creation/update",
-      "properties": {
-        "branch": {
-          "type": "string",
-          "title": "Branch",
-          "description": "Bank branch number",
-          "examples": [
-            "0910"
-          ]
-        },
-        "account": {
-          "type": "string",
-          "title": "Account",
-          "description": "Bank account number",
-          "examples": [
-            "093962"
-          ]
-        },
-        "accountDigit": {
-          "type": "string",
-          "title": "Account digit",
-          "description": "Bank account check digit",
-          "examples": [
-            "2"
-          ]
-        },
-        "accountType": {
-          "type": "string",
-          "title": "Account type",
-          "description": "Bank account type",
-          "examples": [
-            "CHECKING_ACCOUNT",
-            "SAVINGS_ACCOUNT"
-          ]
-        },
-        "ispb": {
-          "type": "string",
-          "title": "ISPB",
-          "description": "Brazilian Payment System Identifier (ISPB) of the bank, zero-padded to 8 digits",
-          "examples": [
-            "60701190"
-          ]
-        },
-        "documentNumber": {
-          "type": "string",
-          "title": "Document number",
-          "description": "Document number of the bank account holder",
-          "examples": [
-            "94740799000104"
-          ]
-        },
-        "documentType": {
-          "type": "string",
-          "title": "Document type",
-          "description": "Document type derived from the bank account holder document number. [CPF] [CNPJ]",
-          "examples": [
-            "CNPJ",
-            "CPF"
-          ]
-        },
-        "createdAt": {
-          "type": "string",
-          "title": "Bank account created at",
-          "description": "Timestamp of the first persistence of the bank domicile. Set only when the bank account is present in the payload",
-          "format": "date-time",
-          "examples": [
-            "2026-08-01T09:15:03.221000"
-          ]
-        },
-        "updatedAt": {
-          "type": "string",
-          "title": "Bank account updated at",
-          "description": "Timestamp of the last update of the bank domicile. Set whenever the bank account is created or updated in the payload",
-          "format": "date-time",
-          "examples": [
-            "2026-08-10T14:23:10.987654"
-          ]
-        }
-      }
     },
     "enabled": {
       "type": "boolean",
@@ -163,19 +66,163 @@
     "createdAt": {
       "type": "string",
       "title": "Created at",
-      "description": "Timestamp of the first persistence of the commercial establishment",
+      "description": "Timestamp of the first persistence of the commercial establishment, in Brasilia time with the -03:00 offset",
       "format": "date-time",
       "examples": [
-        "2026-08-01T09:15:03.221000"
+        "2026-08-01T09:15:03.221-03:00"
       ]
     },
     "updatedAt": {
       "type": "string",
       "title": "Updated at",
-      "description": "Timestamp of the last update of the commercial establishment",
+      "description": "Timestamp of the last update of the commercial establishment, in Brasilia time with the -03:00 offset",
       "format": "date-time",
       "examples": [
-        "2026-08-10T14:23:10.987654"
+        "2026-08-10T14:23:10.987-03:00"
+      ]
+    },
+    "b3RegisteredAt": {
+      "type": "string",
+      "title": "B3 registered at",
+      "description": "Value of the request header b3-registered-at, returned unchanged. Omitted when the header is not sent",
+      "examples": [
+        "2026-08-10T14:23:09.000000"
+      ]
+    },
+    "infos": {
+      "type": "array",
+      "title": "Infos",
+      "description": "Groups of payment schemes with the bank domicile of the group",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "paymentSchemes",
+          "bankAccount"
+        ],
+        "properties": {
+          "paymentSchemes": {
+            "type": "array",
+            "title": "Payment schemes",
+            "description": "Payment arrangement identifiers of the group, free text",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            },
+            "examples": [
+              [
+                "MCC",
+                "VCC",
+                "MDC"
+              ]
+            ]
+          },
+          "bankAccount": {
+            "type": "object",
+            "title": "Bank account",
+            "description": "Bank domicile of the group of payment schemes",
+            "properties": {
+              "branch": {
+                "type": "string",
+                "title": "Branch",
+                "description": "Bank branch number",
+                "examples": [
+                  "0910"
+                ]
+              },
+              "account": {
+                "type": "string",
+                "title": "Account",
+                "description": "Bank account number",
+                "examples": [
+                  "093962"
+                ]
+              },
+              "accountDigit": {
+                "type": "string",
+                "title": "Account digit",
+                "description": "Bank account check digit",
+                "examples": [
+                  "2"
+                ]
+              },
+              "accountType": {
+                "type": "string",
+                "title": "Account type",
+                "description": "Bank account type, free text",
+                "examples": [
+                  "CC",
+                  "CHECKING_ACCOUNT"
+                ]
+              },
+              "ispb": {
+                "type": "string",
+                "title": "ISPB",
+                "description": "Brazilian Payment System Identifier (ISPB) of the bank, zero-padded to 8 digits",
+                "examples": [
+                  "60701190"
+                ]
+              },
+              "documentNumber": {
+                "type": "string",
+                "title": "Document number",
+                "description": "Document number of the bank account holder",
+                "examples": [
+                  "54LF8MIL000176"
+                ]
+              },
+              "documentType": {
+                "type": "string",
+                "title": "Document type",
+                "description": "Document type derived from the bank account holder document number. [CPF] [CNPJ]",
+                "examples": [
+                  "CNPJ",
+                  "CPF"
+                ]
+              },
+              "createdAt": {
+                "type": "string",
+                "title": "Bank account created at",
+                "description": "Timestamp of the first persistence of the bank domicile, in Brasilia time with the -03:00 offset",
+                "format": "date-time",
+                "examples": [
+                  "2026-08-01T09:15:03.221-03:00"
+                ]
+              },
+              "updatedAt": {
+                "type": "string",
+                "title": "Bank account updated at",
+                "description": "Timestamp of the last update of the bank domicile, in Brasilia time with the -03:00 offset",
+                "format": "date-time",
+                "examples": [
+                  "2026-08-10T14:23:10.987-03:00"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "examples": [
+        [
+          {
+            "paymentSchemes": [
+              "MCC",
+              "VCC",
+              "MDC"
+            ],
+            "bankAccount": {
+              "branch": "0123",
+              "account": "012345",
+              "accountDigit": "1",
+              "accountType": "CC",
+              "ispb": "60701190",
+              "documentType": "CNPJ",
+              "documentNumber": "54LF8MIL000176",
+              "createdAt": "2026-08-01T09:15:03.221-03:00",
+              "updatedAt": "2026-08-10T14:23:10.987-03:00"
+            }
+          }
+        ]
       ]
     }
   }
