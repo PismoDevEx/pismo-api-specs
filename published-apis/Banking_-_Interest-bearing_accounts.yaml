@@ -2541,6 +2541,27 @@ components:
             because grace extends the cycle. Format =
             `yyyy-mm-ddThh:mm:ss.sssZ`.
           example: '2026-01-26T12:00:00Z'
+        current_first_funded_date:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: >
+            First funded date time of the current cycle. For `BALANCE_BASIS`
+            products, this is the `business_date` of the earliest cycle closing
+            event in the cycle with a balance greater than zero. The value is
+            sent to the interest engine as the cycle's `start_cycle_date`,
+            allowing interest to accrue from the first day the cycle contains
+            funds.
+
+
+            Returns null until the cycle is funded. While this value is null,
+            `cycle_start_date` is sent as the `start_cycle_date`. Always returns
+            null for `DEPOSIT_BASIS` products.
+
+
+            Format = `yyyy-mm-ddT00:00:00Z`.
+          example: '2026-01-27T00:00:00Z'
         previous_product_id:
           type: string
           description: Previous product ID. Empty if the account is in its initial cycle.
@@ -2573,6 +2594,19 @@ components:
             first cycle. The datetime format follows the ISO 8601 standard
             `yyyy-mm-ddThh:mm:ss.sssZ`.
           example: '2025-12-01T00:00:00Z'
+        previous_first_funded_date:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: >
+            First funded date of the previous cycle. This field follows the same
+            rules as `current_first_funded_date`. Returns null when the account
+            is in its first cycle or when the previous cycle was never funded.
+
+
+            Format = `yyyy-mm-ddT00:00:00Z`.
+          example: '2025-01-28T00:00:00Z'
         cycle_start_date:
           type: string
           format: date-time
@@ -5175,10 +5209,11 @@ paths:
         rollover), interest plan information, and principal context to support
         audit, statement, and reconciliation use cases.<br>
 
-        The `current_*` fields come from the most recent cycle and the
-        `previous_*` fields from the cycle immediately before it. When the
-        account is in its first cycle, the `previous_*` fields are empty and
-        `previous_calendar_maturity_date` is `null`.
+        The `current_*` fields contain values from the most recent cycle, while
+        the `previous_*` fields contain values from the cycle immediately
+        preceding it. If the account is in its first cycle, the `previous_*`
+        fields are not populated, and `previous_calendar_maturity_date` and
+        `previous_first_funded_date` return null.
       operationId: interest-bearing-v1-get-cycle-snapshot
       parameters:
         - $ref: '#/components/parameters/accountId'
