@@ -750,7 +750,7 @@ paths:
 
         - To simulate removing 100% of the interest on the advanced
         installment(s), set the `remove_interest_from_current` query parameter
-        to `true` and the `calculator` query parameter to `NONE`.
+        to `true` and the `calculator` query parameter to `REMOVE_ALL_INTEREST`.
 
         - To simulate advancing 100% of the interest on the advanced
         installment(s), set `remove_interest_from_current` to `false` and set
@@ -1054,8 +1054,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: >-
-                  #/components/schemas/CancellationInstallmentAdvancedV2ResponseDto
+                $ref: '#/components/schemas/CancellationInstallmentAdvancedV2ResponseDto'
         '400':
           $ref: '#/components/responses/400BadRequest'
         '404':
