@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unit receivable processed with failure",
+  "description": "Per-item failure outcome of a Tangara unit receivable operation (create, update, inactivate, create payment or cancel payment). One event is emitted per failed item to the unit_receivable_processed_failure event type. Produced by ur-api, the Tangara unit receivable service, and not by the legacy unit-receivables-api.",
+  "required": [
+    "key",
+    "operationType",
+    "errors"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "Key of the item that failed, as sent in the request",
+      "examples": [
+        "fed694f6-0a75-421e-bf60-a85b465ac913"
+      ]
+    },
+    "operationType": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Operation that originated the event. [CREATE] [UPDATE] [INACTIVATE] [CREATE_PAYMENT] [CANCEL_PAYMENT]",
+      "examples": [
+        "INACTIVATE"
+      ]
+    },
+    "b3RegisteredAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "B3 registered at",
+      "description": "Value of the request header b3-registered-at, returned unchanged. Absent or null when the header is not sent",
+      "examples": [
+        "2026-08-10T14:23:09.000000"
+      ]
+    },
+    "errors": {
+      "type": "array",
+      "title": "Errors",
+      "description": "List of processing errors for the item",
+      "examples": [
+        [
+          {
+            "code": "090001",
+            "details": "fed694f6-0a75-421e-bf60-a85b465ac913"
+          }
+        ]
+      ],
+      "items": {
+        "type": "object",
+        "title": "Error detail",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Error code",
+            "description": "Business error code",
+            "examples": [
+              "090001"
+            ]
+          },
+          "details": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Error details",
+            "description": "Detail or identifier of the error, for example the key of the item",
+            "examples": [
+              "fed694f6-0a75-421e-bf60-a85b465ac913"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
