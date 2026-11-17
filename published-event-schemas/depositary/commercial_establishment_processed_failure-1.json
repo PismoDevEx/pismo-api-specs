@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "Commercial establishment processed with failure",
-  "description": "Per-item failure outcome of a Tangara commercial establishment batch registration/update. One event is emitted per failed item to the commercial_establishment_processed_failure event type.",
+  "description": "Per-item failure outcome of a Tangara commercial establishment batch registration/update. One event is emitted per failed item to the commercial_establishment_processed_failure event type. The payload can carry b3RegisteredAt, the value of the request header b3-registered-at, when the header is sent.",
   "required": [
     "key",
     "errors"
@@ -14,6 +14,14 @@
       "description": "Client-provided identifier of the commercial establishment item within the batch",
       "examples": [
         "EC-8860"
+      ]
+    },
+    "b3RegisteredAt": {
+      "type": "string",
+      "title": "B3 registered at",
+      "description": "Value of the header b3-registered-at, returned unchanged; omitted when the header is not sent",
+      "examples": [
+        "2026-08-10T14:23:09.000000"
       ]
     },
     "errors": {
@@ -31,11 +39,12 @@
           "code": {
             "type": "string",
             "title": "Error code",
-            "description": "Business error code. [090001=EC already exists] [090002=EC not found] [090003=invalid request]",
+            "description": "Business error code of the item. Examples: [090001=EC already exists] [090002=EC not found] [090003=invalid request] [090500=failed to persist the EC]. The list is not exhaustive: ce-api sends other codes.",
             "examples": [
               "090001",
               "090002",
-              "090003"
+              "090003",
+              "090500"
             ]
           },
           "details": {
