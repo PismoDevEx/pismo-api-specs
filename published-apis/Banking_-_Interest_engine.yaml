@@ -292,7 +292,8 @@ components:
       description: >-
         Numeric currency code in ISO 4217 standard. Only the following codes are
         accepted: 986 (BRL), 826 (GBP), 356 (INR), 840 (USD), 978 (EUR), 604
-        (PEN), 036 (AUD), 484 (MXN), 764 (THB), 208 (DKK), 752 (SEK), 578 (NOK).
+        (PEN), 036 (AUD), 484 (MXN), 764 (THB), 208 (DKK), 752 (SEK), 578 (NOK)
+        710 (ZAR), 784 (AED).
       enum:
         - '986'
         - '826'
@@ -306,6 +307,8 @@ components:
         - '208'
         - '752'
         - '578'
+        - '710'
+        - '784'
       example: '986'
     Days:
       type:
@@ -1715,7 +1718,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/account/{accountId}:
     get:
-      summary: Get account interest
+      summary: Get account interest [Beta]
       description: >
         Get the configuration changes recorded for an account with [Partially
         update account interest](ref:patch-v1-interest-account).
@@ -1763,8 +1766,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: >-
-                  #/components/schemas/GetInterestAccountConfigurationChangesResponse
+                $ref: '#/components/schemas/GetInterestAccountConfigurationChangesResponse'
         '400':
           $ref: '#/components/responses/400BadRequestForGetAccountInterest'
         '401':
@@ -1873,7 +1875,7 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServerError'
     patch:
-      summary: Partially update account interest
+      summary: Partially update account interest [Beta]
       description: >
         Record an effective-dated change to the interest configuration of an
         account. Send only the interest parameters you want to change, together
