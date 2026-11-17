@@ -1,0 +1,251 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unit receivable processed successfully",
+  "description": "Per-item success outcome of a Tangara unit receivable operation, one event per processed item, with operationType selecting the fields. Produced by ur-api, the Tangara unit receivable service, and not by the legacy unit-receivables-api.",
+  "required": [
+    "key",
+    "operationType",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "Key of the item as sent in the request: the UR key for CREATE and UPDATE, the key that identifies the operation for INACTIVATE, the settlement key for CREATE_PAYMENT and CANCEL_PAYMENT",
+      "examples": [
+        "fed694f6-0a75-421e-bf60-a85b465ac913"
+      ]
+    },
+    "debtor": {
+      "type": "string",
+      "title": "Debtor document number",
+      "description": "Document number of the debtor, the party that owes the unit receivable",
+      "examples": [
+        "94613628000106"
+      ]
+    },
+    "reference": {
+      "type": "string",
+      "title": "Reference",
+      "description": "Client-assigned reference for the unit receivable",
+      "examples": [
+        "REFERENCE-0001"
+      ]
+    },
+    "dueDate": {
+      "type": "string",
+      "title": "Due date",
+      "description": "Due date of the unit receivable",
+      "format": "date",
+      "examples": [
+        "2020-02-02"
+      ]
+    },
+    "originalAssetHolder": {
+      "type": "string",
+      "title": "Original asset holder",
+      "description": "Document of the original holder of the unit receivable",
+      "examples": [
+        "99999999999999"
+      ]
+    },
+    "originalAssetHolderDocumentType": {
+      "type": "string",
+      "title": "Original asset holder document type",
+      "description": "Document type derived from the original asset holder document. [CPF] [CNPJ]",
+      "examples": [
+        "CNPJ",
+        "CPF"
+      ]
+    },
+    "assetHolder": {
+      "type": "string",
+      "title": "Asset holder",
+      "description": "Document of the current holder of the unit receivable after an assignment",
+      "examples": [
+        "77777777777"
+      ]
+    },
+    "paymentScheme": {
+      "type": "string",
+      "title": "Payment scheme",
+      "description": "Payment arrangement code of the unit receivable, free text",
+      "examples": [
+        "VCC"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Amount of the unit receivable",
+      "examples": [
+        5000000
+      ]
+    },
+    "prePaidAmount": {
+      "type": "number",
+      "title": "Pre-paid amount",
+      "description": "Pre-paid amount of the unit receivable",
+      "examples": [
+        0
+      ]
+    },
+    "bankAccount": {
+      "type": "object",
+      "title": "Bank account",
+      "description": "Bank domicile of the unit receivable",
+      "properties": {
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Bank branch number",
+          "examples": [
+            "1144"
+          ]
+        },
+        "account": {
+          "type": "string",
+          "title": "Account",
+          "description": "Bank account number",
+          "examples": [
+            "13341"
+          ]
+        },
+        "accountDigit": {
+          "type": "string",
+          "title": "Account digit",
+          "description": "Bank account check digit",
+          "examples": [
+            "X5"
+          ]
+        },
+        "accountType": {
+          "type": "string",
+          "title": "Account type",
+          "description": "Bank account type, free text",
+          "examples": [
+            "CC"
+          ]
+        },
+        "ispb": {
+          "type": "string",
+          "title": "ISPB",
+          "description": "Brazilian Payment System Identifier (ISPB) of the bank, zero-padded to 8 digits",
+          "examples": [
+            "34100000"
+          ]
+        },
+        "documentNumber": {
+          "type": "string",
+          "title": "Document number",
+          "description": "Document number of the bank account holder",
+          "examples": [
+            "99999999999999"
+          ]
+        },
+        "documentType": {
+          "type": "string",
+          "title": "Document type",
+          "description": "Document type derived from the bank account holder document number. [CPF] [CNPJ]",
+          "examples": [
+            "CNPJ",
+            "CPF"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "title": "Bank account created at",
+          "description": "Timestamp of the first persistence of the bank domicile, in Brasilia time with the -03:00 offset",
+          "format": "date-time",
+          "examples": [
+            "2026-08-01T09:15:03.221-03:00"
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "title": "Bank account updated at",
+          "description": "Timestamp of the last update of the bank domicile, in Brasilia time with the -03:00 offset",
+          "format": "date-time",
+          "examples": [
+            "2026-08-10T14:23:10.987-03:00"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "branch": "1144",
+          "account": "13341",
+          "accountDigit": "X5",
+          "accountType": "CC",
+          "ispb": "34100000",
+          "documentNumber": "99999999999999",
+          "documentType": "CNPJ",
+          "createdAt": "2026-08-01T09:15:03.221-03:00",
+          "updatedAt": "2026-08-10T14:23:10.987-03:00"
+        }
+      ]
+    },
+    "operationType": {
+      "type": "string",
+      "title": "Operation type",
+      "description": "Operation that originated the event. [CREATE] [UPDATE] [INACTIVATE] [CREATE_PAYMENT] [CANCEL_PAYMENT]",
+      "examples": [
+        "CREATE"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "title": "Created at",
+      "description": "Timestamp of the first persistence of the unit receivable, in Brasilia time with the -03:00 offset",
+      "format": "date-time",
+      "examples": [
+        "2026-08-01T09:15:03.221-03:00"
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "title": "Updated at",
+      "description": "Timestamp of the last update of the unit receivable, in Brasilia time with the -03:00 offset",
+      "format": "date-time",
+      "examples": [
+        "2026-08-10T14:23:10.987-03:00"
+      ]
+    },
+    "b3RegisteredAt": {
+      "type": "string",
+      "title": "B3 registered at",
+      "description": "Value of the request header b3-registered-at, returned unchanged. Omitted when the header is not sent",
+      "examples": [
+        "2026-08-10T14:23:09.000000"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operationType": {
+            "enum": [
+              "CREATE",
+              "UPDATE"
+            ]
+          }
+        },
+        "required": [
+          "operationType"
+        ]
+      },
+      "then": {
+        "required": [
+          "debtor",
+          "dueDate",
+          "originalAssetHolder",
+          "paymentScheme",
+          "amount"
+        ]
+      }
+    }
+  ]
+}
