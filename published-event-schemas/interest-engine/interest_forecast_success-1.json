@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "title": "Interest forecast succeeded [Beta]",
+  "title": "Interest forecast succeeded",
   "description": "This event occurs when an interest forecast requested with POST /v1/interest/forecast is successfully calculated with product interest engine. The event is delivered at least once, so the same forecast can be received more than once: use forecast_id to discard duplicates. The optional fields division_id and external_account_id are present only when informed in the request.",
   "required": [
     "forecast_id",
