@@ -815,7 +815,7 @@ paths:
           $ref: '#/components/responses/500InternalServerError'
   /v1/interest/forecast:
     post:
-      summary: Create interest forecast [Beta]
+      summary: Create interest forecast
       description: >
         Request a forecast of the gross interest and the gross balance that an
         interest-bearing account is expected to have on `forecast_date`.
