@@ -291,6 +291,18 @@
       "examples": [
         "2024-01-15"
       ]
+    },
+    "processing_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "title": "Processing date",
+      "description": "Date on which the payment was processed by the FPS gateway, based on the date and time the payment was received and validated. Populated by Provider.",
+      "examples": [
+        "2024-01-15"
+      ]
     }
   }
 }

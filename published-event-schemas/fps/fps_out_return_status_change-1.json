@@ -264,6 +264,18 @@
       "examples": [
         "2024-01-15"
       ]
+    },
+    "processing_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "title": "Processing date",
+      "description": "Date on which the original payment was processed by the FPS gateway. For a return, the Provider populates this field with the processing date of the original payment, as a separate processing date for the return is not provided.",
+      "examples": [
+        "2024-01-15"
+      ]
     }
   }
 }

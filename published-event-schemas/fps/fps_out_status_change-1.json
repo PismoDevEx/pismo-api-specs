@@ -295,6 +295,18 @@
       "examples": [
         "2024-01-15"
       ]
+    },
+    "processing_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "title": "Processing date",
+      "description": "Processing date of the payment (UK calendar date). Set when the payment is created and sent to the Provider as the requested processing date, then replaced by the value the Provider reports, if any.",
+      "examples": [
+        "2024-01-15"
+      ]
     }
   }
 }
