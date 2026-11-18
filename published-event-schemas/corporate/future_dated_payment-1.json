@@ -150,6 +150,28 @@
         "2023-02-06"
       ]
     },
+    "is_transfer": {
+      "type": "boolean",
+      "title": "Transfer indicator",
+      "description": "Indicates that the future dated payment is one leg of a transfer, including transfers within the same account. Only present for transfers.",
+      "examples": [
+        true
+      ]
+    },
+    "leg_type": {
+      "type": "string",
+      "title": "Leg type",
+      "description": "Whether the future dated payment debits or credits the account. For transfers, it identifies the transfer leg (see `is_transfer`).\n\nIt only accepts the following values:\n\n`DEBIT`: The future dated payment debits the account (the debit leg of a transfer).\n\n`CREDIT`: The future dated payment credits the account (the credit leg of a transfer).\n\n",
+      "minLength": 1,
+      "maxLength": 6,
+      "enum": [
+        "DEBIT",
+        "CREDIT"
+      ],
+      "examples": [
+        "DEBIT"
+      ]
+    },
     "internal_operation": {
       "type": [
         "object",
