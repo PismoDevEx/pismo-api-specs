@@ -546,6 +546,7 @@ components:
             - amount-contract
             - amount-dueDate
             - amount-dueDate-cancelment
+            - amount-dueDate-inOverdue
             - amount-interest-iof
             - amount-interest-iof-dueDate
             - amount-principal
@@ -619,6 +620,11 @@ components:
             date posting of the `amount`.
 
             * `amount-dueDate-cancelment`: This amount name is deprecated.
+
+            * `amount-dueDate-inOverdue`: Due-date posting of the refinancing
+            charges accrued on the same day as an overdue accrual. Sent for
+            transaction types 401 and 405 together with `amount-dueDate`, which
+            carries the remaining portion.
 
             * `amount-reversal`: This amount name is deprecated and has no
             corresponding movement, as there are no mapped usage scenarios for
