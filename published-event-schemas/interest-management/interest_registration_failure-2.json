@@ -5,6 +5,8 @@
   "description": "This event occurs when registration of an asset with product interest management fails.",
   "required": [
     "external_quota_id",
+    "account_id",
+    "reason_code",
     "message"
   ],
   "properties": {
@@ -16,15 +18,20 @@
         "6104253a-qt53-41m0-a630-2z1h2761e3f8"
       ]
     },
-    "external_asset_id": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "title": "External asset ID",
-      "description": "Unique asset identifier defined by Pismo",
+    "account_id": {
+      "type": "string",
+      "title": "Account ID",
+      "description": "Account identifier of the quota holder",
       "examples": [
-        "kxBHNMCAYDnQav"
+        "1234567"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "title": "Reason code",
+      "description": "Code of the business rule that refused the registration",
+      "examples": [
+        "ISSUER_ID_MISMATCH"
       ]
     },
     "message": {

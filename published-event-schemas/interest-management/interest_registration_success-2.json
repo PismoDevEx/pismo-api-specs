@@ -6,6 +6,7 @@
   "required": [
     "external_asset_id",
     "external_quota_id",
+    "issuer_id",
     "program_id",
     "currency_code",
     "asset_type",
@@ -16,8 +17,7 @@
     "issuing_date",
     "maturity_date",
     "treasury_date",
-    "redemption_condition",
-    "early_redemption_attributes",
+    "has_redemption_condition",
     "customer_type",
     "document_number",
     "account_id",
@@ -41,6 +41,14 @@
       "description": "External identifier for quota operation",
       "examples": [
         "deposit:6104253a-qt53-41m0-a630-2z1h2761e3f8"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "title": "Issuer ID",
+      "description": "Cetip code of registrator of asset",
+      "examples": [
+        "12345678"
       ]
     },
     "program_id": {
@@ -153,14 +161,12 @@
         "2020-12-03"
       ]
     },
-    "redemption_condition": {
+    "has_redemption_condition": {
       "type": "string",
-      "title": "Redemption condition",
-      "description": "Asset identifier with different types of redemption conditions",
+      "title": "Has redemption condition",
+      "description": "Indicates whether the asset has a redemption condition. Only NO is supported; sent as NO when not informed",
       "enum": [
-        "YES",
-        "NO",
-        "MARKET"
+        "NO"
       ]
     },
     "early_redemption_attributes": {
