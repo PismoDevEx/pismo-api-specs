@@ -246,6 +246,24 @@
           "amount"
         ]
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "operationType": {
+            "const": "INACTIVATE"
+          }
+        },
+        "required": [
+          "operationType"
+        ]
+      },
+      "then": {
+        "required": [
+          "debtor",
+          "originalAssetHolder"
+        ]
+      }
     }
   ]
 }
