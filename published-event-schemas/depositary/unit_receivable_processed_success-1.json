@@ -68,12 +68,46 @@
         "77777777777"
       ]
     },
+    "assetHolderDocumentType": {
+      "type": "string",
+      "title": "Asset holder document type",
+      "description": "Document type derived from the asset holder document. [CPF] [CNPJ]",
+      "examples": [
+        "CNPJ",
+        "CPF"
+      ]
+    },
     "paymentScheme": {
       "type": "string",
       "title": "Payment scheme",
       "description": "Payment arrangement code of the unit receivable, free text",
       "examples": [
         "VCC"
+      ]
+    },
+    "settlementDate": {
+      "type": "string",
+      "title": "Settlement date",
+      "description": "Settlement date of the unit receivable",
+      "format": "date",
+      "examples": [
+        "2021-11-01"
+      ]
+    },
+    "contractKey": {
+      "type": "string",
+      "title": "Contract key",
+      "description": "Key of the contract linked to the unit receivable, when there is one",
+      "examples": [
+        "46fd14e1-1030-447b-ade9-c75a779eef9e"
+      ]
+    },
+    "nuLiquid": {
+      "type": "string",
+      "title": "Settlement external identifier",
+      "description": "External identifier of the settlement",
+      "examples": [
+        "46fd14e1-1030-447b-ade9-c75a779eef9e"
       ]
     },
     "amount": {
@@ -187,6 +221,14 @@
         }
       ]
     },
+    "reasonDetails": {
+      "type": "string",
+      "title": "Reason details",
+      "description": "Reason of the reversal of a settlement, registered for audit",
+      "examples": [
+        "Settlement not processed"
+      ]
+    },
     "operationType": {
       "type": "string",
       "title": "Operation type",
@@ -262,6 +304,26 @@
         "required": [
           "debtor",
           "originalAssetHolder"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operationType": {
+            "const": "CREATE_PAYMENT"
+          }
+        },
+        "required": [
+          "operationType"
+        ]
+      },
+      "then": {
+        "required": [
+          "debtor",
+          "originalAssetHolder",
+          "dueDate",
+          "paymentScheme"
         ]
       }
     }
