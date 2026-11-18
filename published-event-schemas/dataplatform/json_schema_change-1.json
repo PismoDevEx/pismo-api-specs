@@ -32,6 +32,7 @@
     "schema_event_type": {
       "type": "string",
       "title": "Event type of the JSON schema",
+      "description": "",
       "examples": [
         "authorization-event",
         "json_schema_change",
