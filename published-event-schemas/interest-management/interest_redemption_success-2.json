@@ -9,17 +9,16 @@
     "external_quota_id",
     "account_id",
     "document_number",
-    "asset_type",
     "redemption_date",
     "treasury_date",
-    "currency_code",
+    "requested_amount",
     "net_redeemed_amount",
     "gross_redeemed_amount",
     "redeemed_units",
     "net_unit_value",
     "gross_unit_value",
     "taxes",
-    "remaining_amount"
+    "remaining_balance"
   ],
   "properties": {
     "external_redemption_id": {
@@ -71,15 +70,6 @@
         "00000000012"
       ]
     },
-    "asset_type": {
-      "type": "string",
-      "title": "Asset type",
-      "description": "Financial instrument type",
-      "enum": [
-        "CDB",
-        "RDB"
-      ]
-    },
     "redemption_date": {
       "type": "string",
       "title": "Redemption date",
@@ -101,12 +91,13 @@
         "2020-12-03"
       ]
     },
-    "currency_code": {
-      "type": "string",
-      "title": "Currency code",
-      "description": "ISO 4217 currency code",
+    "requested_amount": {
+      "type": "number",
+      "title": "Requested Amount",
+      "description": "Amount requested in the redemption",
+      "format": "double",
       "examples": [
-        "986"
+        100.0
       ]
     },
     "net_redeemed_amount": {
@@ -161,32 +152,41 @@
         "$ref": "#/definitions/taxes"
       }
     },
-    "remaining_amount": {
+    "remaining_balance": {
       "type": "object",
-      "title": "Remaining quota attributes",
+      "title": "Remaining quota balance",
       "required": [
-        "gross_amount",
-        "net_amount",
+        "available_units",
+        "gross_balance",
+        "net_balance",
         "taxes"
       ],
-      "description": "Remaining quota available for redemption",
+      "description": "Balance of the quota after the redemption",
       "properties": {
-        "gross_amount": {
-          "type": "number",
-          "title": "Remaining Gross Amount",
-          "description": "Remaining gross amount from quota",
-          "format": "double",
+        "available_units": {
+          "type": "integer",
+          "title": "Available units",
+          "description": "Quota units available after the redemption",
           "examples": [
-            100.0
+            505
           ]
         },
-        "net_amount": {
+        "gross_balance": {
           "type": "number",
-          "title": "Remaining Net Amount",
-          "description": "Remaining net amount from quota",
+          "title": "Remaining Gross Balance",
+          "description": "Gross balance of the quota after the redemption",
           "format": "double",
           "examples": [
-            100.0
+            513.57
+          ]
+        },
+        "net_balance": {
+          "type": "number",
+          "title": "Remaining Net Balance",
+          "description": "Net balance of the quota after the redemption",
+          "format": "double",
+          "examples": [
+            510.22
           ]
         },
         "taxes": {
@@ -205,8 +205,9 @@
       "title": "Taxes attributes",
       "required": [
         "type",
-        "amount",
-        "rate"
+        "rate",
+        "unit_value",
+        "amount"
       ],
       "description": "Taxes applied to redemptions",
       "properties": {
@@ -217,6 +218,15 @@
           "enum": [
             "IR",
             "IOF"
+          ]
+        },
+        "unit_value": {
+          "type": "number",
+          "title": "Tax Unit Value",
+          "description": "Tax value per quota unit.",
+          "format": "double",
+          "examples": [
+            3.08e-05
           ]
         },
         "amount": {

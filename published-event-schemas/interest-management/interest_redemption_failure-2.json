@@ -6,6 +6,7 @@
   "required": [
     "external_redemption_id",
     "account_id",
+    "reason_code",
     "message"
   ],
   "properties": {
@@ -18,22 +19,27 @@
       ]
     },
     "account_id": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
       "title": "Account identifier",
       "description": "A custom account ID string that uniquely identifies the account within client organization",
       "examples": [
         "999999999"
       ]
     },
+    "reason_code": {
+      "type": "string",
+      "title": "Reason code",
+      "description": "Code of the business rule that refused the redemption",
+      "examples": [
+        "QUOTA_NOT_ACTIVE"
+      ]
+    },
     "message": {
       "type": "string",
       "title": "Error message",
-      "description": "Description of error that occurred when trying to redeem quota",
+      "description": "Description of the business rule that refused the redemption",
       "examples": [
-        "This asset does not have any more available units."
+        "quota status must be ACTIVE, was REDEEMED"
       ]
     }
   }
