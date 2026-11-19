@@ -1257,6 +1257,37 @@ components:
           $ref: '#/components/schemas/NextCursor'
         repayment_calculation_method:
           $ref: '#/components/schemas/RepaymentCalculationMethodV2'
+    ListRepaymentHierarchyV2Response:
+      type: object
+      required:
+        - current_page
+        - items
+        - pages
+        - per_page
+        - total_items
+      properties:
+        current_page:
+          type: integer
+          description: Page number returned (starts with 1 and increments by 1)
+          example: 1
+        items:
+          type: array
+          description: List of repayment hierarchies scoped to the caller's tenant
+          items:
+            $ref: '#/components/schemas/RepaymentHierarchyV2ListItem'
+        pages:
+          type: integer
+          description: Total number of pages available for the applied filter
+          example: 5
+        per_page:
+          type: integer
+          description: Number of items requested per page
+          example: 10
+        total_items:
+          type: integer
+          format: int64
+          description: Total number of repayment hierarchies matching the applied filter
+          example: 50
     LoanAllocationSummary:
       type: object
       description: Summary of a loan allocation within a group payment
@@ -1455,8 +1486,7 @@ components:
         string with underscores (e.g., "MY_LOAN_PRODUCT_001"). If not provided
         during creation, a UUID is auto-generated.
       maxLength: 80
-      pattern: >-
-        ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z0-9_]{1,80})$
+      pattern: ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[A-Z0-9_]{1,80})$
       example: 2717a296-124a-47cc-b2a1-91e80dc723eb
     LoanProductLoanActivationMethod:
       type: string
@@ -1815,8 +1845,7 @@ components:
       description: >-
         Opaque pagination cursor returned by the API. Pass back exactly as
         received to retrieve the next page; do not parse or modify it.
-      example: >-
-        NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
+      example: NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
     NumberOfInstallments:
       type: number
       format: int32
@@ -2442,6 +2471,33 @@ components:
         Repayment hierarchy code. Must be normalized (Unicode NFC), and may
         contain a UUID, or uppercase letters, numbers, and underscore.
       example: RH001
+    RepaymentHierarchyV2ListItem:
+      type: object
+      required:
+        - hierarchy
+        - hierarchy_code
+        - status
+      properties:
+        hierarchy:
+          $ref: '#/components/schemas/HierarchyV2'
+        hierarchy_code:
+          $ref: '#/components/schemas/HierarchyCode'
+        status:
+          $ref: '#/components/schemas/HierarchyStatus'
+        created_at_datetime:
+          type: string
+          format: date-time
+          description: >-
+            Date and time the repayment hierarchy was created. Format =
+            YYYY-MM-DDThh:mm:ss.SSSZ.
+          example: '2026-01-10T12:00:00.000Z'
+        updated_at_datetime:
+          type: string
+          format: date-time
+          description: >-
+            Date and time the repayment hierarchy was last updated. Format =
+            YYYY-MM-DDThh:mm:ss.SSSZ.
+          example: '2026-02-01T09:30:00.000Z'
     RepaymentHierarchyV2Request:
       required:
         - hierarchy_code
@@ -2866,8 +2922,7 @@ paths:
                     Paginated list of loans (default, when summarizeLoans is
                     omitted or false)
                   value:
-                    next_cursor: >-
-                      NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
+                    next_cursor: NmI5NmNlYzUtZTg1Ni00MjY0LTlkNzctNGY5OGIzNTk4YWM1IzE3NDU5NDY2MTg3NTIjMjAyNS0wNC0yOVQxNzoxMDoxOC43MjY3MTY0Mlo
                     has_next: true
                     items:
                       - loan_id: MY_CUSTOM_LOAN_ID
@@ -4627,12 +4682,44 @@ paths:
         - Loans
       summary: Restructure a loan
       description: >
-        Restructures an existing loan based on provided details.
+        Restructures an existing loan: the original loan's authorization is
+        reversed and a new loan is authorized for the
+
+        original loan's outstanding principal (the `total_payable.principal`
+        returned by `GET /v2/loans/{loanId}`, net of
+
+        partial principal payments and adjustments). Interest of the new loan is
+        priced by the selected installment plan.
 
 
         This endpoint generates a [Loan
         updated](https://developers.pismo.io/events/docs/lending-lending-loan-update-1)
         event and changes the original loan to a `RENEGOTIATED` status.
+
+
+        A Rates simulation must exist for exactly that outstanding principal,
+        the installment plan and the number of
+
+        installments. Simulate the outstanding principal first and send the
+        resulting `simulation_id`; without it, Rates
+
+        uses the most recent simulation of the same account, plan and amount.
+        The simulation is validated before anything is
+
+        reversed: when it does not match, the request fails with `ELND2008` and
+        the loan is not changed.
+
+
+        Processing is asynchronous. If the new loan's authorization is denied
+        after the original loan was reversed, the
+
+        original loan stays `RENEGOTIATED` without a `restructure_loan_id`, a
+        `lending_error` event with error code
+
+        `ERST0001` is published, and the restructure can be retried by calling
+        this endpoint again with a new
+
+        Idempotency-Key.
       operationId: restructureLoan
       parameters:
         - name: originalLoanId
@@ -4663,13 +4750,24 @@ paths:
                 number_of_installments:
                   type: integer
                   description: Number of installments
+                simulation_id:
+                  type: string
+                  format: uuid
+                  description: >-
+                    Optional. ID of the Rates simulation of the loan's
+                    outstanding principal for the selected installment plan and
+                    number of installments. Recommended, so the new loan is
+                    priced with the simulation shown to the operator.
+                  example: 8c1f8f0e-3b8e-4f5e-9d0a-2f6a1c7b9e21
       responses:
         '200':
           description: >-
             Restructure request accepted. Processing is asynchronous, so the new
             loan is not returned. The original loan transitions to
             `RENEGOTIATED`; retrieve it and read its `restructure_loan_id` to
-            obtain the new loan ID.
+            obtain the new loan ID. If `restructure_loan_id` stays empty, the
+            new loan was denied (`lending_error` `ERST0001`) and the restructure
+            can be retried.
           content:
             application/json:
               schema:
@@ -4681,7 +4779,64 @@ paths:
                       Tracking ID for the asynchronous restructure processing.
                       Matches the idempotency key sent in the request.
         '400':
-          description: Invalid request.
+          description: Invalid request. Nothing was changed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND2000:
+                  value:
+                    code: ELND2000
+                    message: Loan not found
+                ELND2002:
+                  value:
+                    code: ELND2002
+                    message: Cannot authorize restructuring.
+                ELND2003:
+                  value:
+                    code: ELND2003
+                    message: Invalid status to restructure loan.
+                ELND2004:
+                  value:
+                    code: ELND2004
+                    message: Busy resource. Another operation is changing this loan.
+                ELND2006:
+                  value:
+                    code: ELND2006
+                    message: Loan has already been renegotiated.
+                ELND2008:
+                  description: No Rates simulation matches the outstanding principal
+                  value:
+                    code: ELND2008
+                    message: >-
+                      No simulation matches the outstanding principal,
+                      installment plan and number of installments of this
+                      restructuring. Simulate the loan's outstanding principal
+                      (total_payable.principal) and retry.
+                ELND2009:
+                  value:
+                    code: ELND2009
+                    message: Loan has no outstanding principal to restructure.
+                ELND2010:
+                  description: Rates could not be reached to validate the simulation
+                  value:
+                    code: ELND2010
+                    message: >-
+                      The restructuring simulation could not be validated.
+                      Nothing was changed; try again later.
+                ELND2011:
+                  value:
+                    code: ELND2011
+                    message: >-
+                      The restructuring of this loan cannot be resumed because
+                      its carried-over principal is unknown.
+                ELND2012:
+                  value:
+                    code: ELND2012
+                    message: >-
+                      Loan has a payment pending confirmation and cannot be
+                      restructured.
         '500':
           description: Internal Server Error
   /v2/loans/{loanId}/early-settlement/simulate:
@@ -5214,8 +5369,7 @@ paths:
               schema:
                 type: string
                 format: uri
-              example: >-
-                https://sandbox.pismolabs.io/lending/v2/repayment-hierarchies/CR008
+              example: https://sandbox.pismolabs.io/lending/v2/repayment-hierarchies/CR008
           content:
             application/json:
               schema:
@@ -5274,6 +5428,191 @@ paths:
                   value:
                     code: ELND0608
                     message: Invalid hierarchy type provided
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0001:
+                  description: Unexpected error
+                  value:
+                    code: ELND0001
+                    message: Unexpected error
+      security:
+        - BearerAuth: []
+    get:
+      tags:
+        - Repayment hierarchy
+      summary: List repayment hierarchies
+      description: >
+        Lists the repayment hierarchies available within the caller's tenant,
+        with page-number
+
+        pagination (`page` / `perPage` / `order`) and optional filters. Enables
+        discovery and reuse
+
+        of existing repayment hierarchy configurations (for example, by Control
+        Center) without
+
+        knowing a hierarchy code in advance.
+
+
+        Results are always scoped to the caller's tenant, and hierarchies with
+        status `DELETED` are
+
+        never returned.
+      operationId: getPaginatedRepaymentHierarchiesV2
+      parameters:
+        - in: query
+          name: page
+          description: Page number to retrieve (starts with 1 and increments by 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: perPage
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+        - in: query
+          name: order
+          description: >-
+            Sort direction by hierarchy code, use `ASC` for ascending and `DESC`
+            for descending.
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+            default: ASC
+        - in: query
+          name: code
+          description: Filter by repayment hierarchy code
+          schema:
+            $ref: '#/components/schemas/HierarchyCode'
+        - in: query
+          name: status
+          description: >-
+            Filter by repayment hierarchy status. **Note**: `DELETED`
+            hierarchies are always excluded from the results.
+          schema:
+            $ref: '#/components/schemas/HierarchyStatus'
+        - in: query
+          name: startDate
+          description: >-
+            Search for hierarchies created from this date (inclusive). If
+            provided without `endDate`, `endDate` defaults to the current date
+            (UTC).
+          schema:
+            $ref: '#/components/schemas/DateValue'
+        - in: query
+          name: endDate
+          description: >-
+            Search for hierarchies created until this date (inclusive).
+            **Note**: if `endDate` is provided, `startDate` must also be
+            provided, and `startDate` must be before or equal to `endDate`.
+          schema:
+            $ref: '#/components/schemas/DateValue'
+      responses:
+        '200':
+          description: Repayment hierarchies retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListRepaymentHierarchyV2Response'
+              examples:
+                Success response:
+                  description: A page of repayment hierarchies
+                  value:
+                    current_page: 1
+                    per_page: 10
+                    pages: 5
+                    total_items: 50
+                    items:
+                      - hierarchy_code: CR008
+                        hierarchy:
+                          - PRINCIPAL
+                          - INTEREST
+                          - TAX
+                          - FEE
+                          - CHARGE
+                          - PENALTY
+                          - INSURANCE
+                        status: ENABLED
+                        created_at_datetime: '2026-01-10T12:00:00.000Z'
+                        updated_at_datetime: '2026-02-01T09:30:00.000Z'
+                      - hierarchy_code: CR009
+                        hierarchy:
+                          - PENALTY
+                          - PRINCIPAL
+                          - INTEREST
+                          - TAX
+                          - FEE
+                          - CHARGE
+                          - INSURANCE
+                        status: DISABLED
+                        created_at_datetime: '2026-01-15T08:20:00.000Z'
+                        updated_at_datetime: '2026-03-05T14:10:00.000Z'
+                Empty result:
+                  description: No repayment hierarchies exist for the tenant.
+                  value:
+                    current_page: 1
+                    per_page: 10
+                    pages: 0
+                    total_items: 0
+                    items: []
+        '400':
+          description: A validation error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+              examples:
+                ELND0605:
+                  description: Field code length must be lower or equal to 80.
+                  value:
+                    code: ELND0605
+                    message: >-
+                      Field repayment_hierarchy_code length must be lower or
+                      equal to 80
+                ELND0607:
+                  description: Field code contains invalid characters.
+                  value:
+                    code: ELND0607
+                    message: >-
+                      Field repayment_hierarchy_code must be normalized (Unicode
+                      NFC), and may contain a UUID, or uppercase letters,
+                      numbers, and underscore.
+                ELND0003 (page):
+                  description: page must be greater than or equal to 1.
+                  value:
+                    code: ELND0003
+                    message: page not valid
+                ELND0003 (perPage):
+                  description: perPage must be greater than or equal to 1.
+                  value:
+                    code: ELND0003
+                    message: perPage not valid
+                ELND0809:
+                  description: startDate must be passed when endDate is passed.
+                  value:
+                    code: ELND0809
+                    message: Field startDate must be passed when endDate is passed.
+                ELND0811:
+                  description: startDate must be before or equal to endDate.
+                  value:
+                    code: ELND0811
+                    message: Field startDate must be before or equal to endDate.
+                ELND0916:
+                  description: Invalid status filter value.
+                  value:
+                    code: ELND0916
+                    message: Query parameter status must be one of [ENABLED, DISABLED].
         '500':
           description: Internal Server Error
           content:
