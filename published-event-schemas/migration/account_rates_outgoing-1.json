@@ -1,0 +1,516 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/account_rates_outgoing-1.json",
+  "type": "object",
+  "title": "Account rates migration completed (v1)",
+  "description": "Event generated when an account rates migration finishes and the result is reported. Result can be either `SUCCESS` or `FAIL`.",
+  "examples": [
+    {
+      "operation": "UPDATE",
+      "status": "SUCCESS",
+      "code": "MIGR-0001",
+      "message": "Account rates migrated with success",
+      "migration": {
+        "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+        "version_date": "2026-10-17T19:54:44.000Z",
+        "phase_id": "AccountRate_Jan2022"
+      },
+      "entity": {
+        "account_id": 361262389,
+        "rates": [
+          {
+            "account_accrual_type_rate_id": 1588249,
+            "transaction_category_id": 843,
+            "accrual_type": "WITHDRAWAL_INTEREST",
+            "period_to_calculate": "UNTIL_DUE_DATE",
+            "validity_to_calculate": "IMMEDIATE",
+            "default_rate": 10.0,
+            "rate_if_overdue": 11.0,
+            "created_at": "2026-11-18T06:20:25.946Z",
+            "status": "SUCCESS"
+          },
+          {
+            "account_accrual_type_rate_id": 1588251,
+            "transaction_category_id": 845,
+            "accrual_type": "WITHDRAWAL_INTEREST",
+            "period_to_calculate": "UNTIL_DUE_DATE",
+            "validity_to_calculate": "IMMEDIATE",
+            "default_rate": 17.0,
+            "rate_if_overdue": 18.0,
+            "created_at": "2026-11-18T06:20:26.054Z",
+            "ranges": [
+              {
+                "amount_due_lower_limit": 10,
+                "default_rate": 10.0,
+                "rate_if_overdue": 10.0
+              }
+            ],
+            "status": "SUCCESS"
+          }
+        ]
+      }
+    },
+    {
+      "status": "FAIL",
+      "code": "MIGR-0443",
+      "message": "ACCOUNT_RATES version_date 2026-10-17T19:54:42Z is not newer than the last migrated version_date 2026-10-17T19:54:42Z",
+      "migration": {
+        "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+        "version_date": "2026-10-17T19:54:42Z"
+      }
+    },
+    {
+      "operation": "UPDATE",
+      "status": "FAIL",
+      "code": "MIGR-0444",
+      "message": "Account rates migration failed",
+      "migration": {
+        "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+        "version_date": "2026-10-17T19:54:42.000Z"
+      },
+      "error_details": [
+        {
+          "property": "rates[844::WITHDRAWAL_INTEREST::UNTIL_DUE_DATE::DUEDATE]",
+          "message": "Validation Error: Can't find [ValidityToCalculateAccruals] with params: [Description: DUEDATE]."
+        },
+        {
+          "property": "rates[861::WITHDRAWAL_INTEREST::UNTIL_DUE_DATE::IMMEDIATE]",
+          "message": "Validation Error: Cannot configure this setting because it does not exist at the program level."
+        }
+      ],
+      "entity": {
+        "account_id": 361262389,
+        "rates": [
+          {
+            "account_accrual_type_rate_id": 1588246,
+            "transaction_category_id": 843,
+            "accrual_type": "WITHDRAWAL_INTEREST",
+            "period_to_calculate": "UNTIL_DUE_DATE",
+            "validity_to_calculate": "IMMEDIATE",
+            "default_rate": 10.0,
+            "rate_if_overdue": 11.0,
+            "created_at": "2026-11-18T05:59:59.971Z",
+            "status": "SUCCESS"
+          },
+          {
+            "transaction_category_id": 844,
+            "accrual_type": "WITHDRAWAL_INTEREST",
+            "period_to_calculate": "UNTIL_DUE_DATE",
+            "validity_to_calculate": "DUEDATE",
+            "default_rate": 17.0,
+            "rate_if_overdue": 18.0,
+            "status": "FAILURE"
+          },
+          {
+            "transaction_category_id": 861,
+            "accrual_type": "WITHDRAWAL_INTEREST",
+            "period_to_calculate": "UNTIL_DUE_DATE",
+            "validity_to_calculate": "IMMEDIATE",
+            "default_rate": 17.0,
+            "rate_if_overdue": 18.0,
+            "ranges": [
+              {
+                "amount_due_lower_limit": 10,
+                "default_rate": 10.0,
+                "rate_if_overdue": 10.0
+              }
+            ],
+            "status": "FAILURE"
+          }
+        ]
+      }
+    }
+  ],
+  "required": [
+    "status",
+    "migration"
+  ],
+  "properties": {
+    "operation": {
+      "$id": "#/properties/operation",
+      "type": "string",
+      "title": "Migration Operation",
+      "description": "Account rates migration operation type.",
+      "examples": [
+        "UPDATE"
+      ]
+    },
+    "status": {
+      "$id": "#/properties/status",
+      "type": "string",
+      "title": "Migration status",
+      "description": "Result of the account rates migration.",
+      "enum": [
+        "SUCCESS",
+        "FAIL"
+      ],
+      "examples": [
+        "SUCCESS",
+        "FAIL"
+      ]
+    },
+    "code": {
+      "$id": "#/properties/code",
+      "type": "string",
+      "title": "Migration message code",
+      "description": "A code identifying the type of success or error being reported.",
+      "examples": [
+        "MIGR-0001",
+        "MIGR-0443",
+        "MIGR-0444"
+      ]
+    },
+    "message": {
+      "$id": "#/properties/message",
+      "type": "string",
+      "title": "Result message",
+      "description": "Message describing the account rates migration result.",
+      "examples": [
+        "Account rates migrated with success",
+        "ACCOUNT_RATES version_date 2026-10-17T19:54:42Z is not newer than the last migrated version_date 2026-10-17T19:54:42Z",
+        "Account rates migration failed"
+      ]
+    },
+    "migration": {
+      "$id": "#/properties/migration",
+      "type": "object",
+      "title": "Migration Identifiers Object",
+      "description": "Identifiers sent on the start of the migration process.",
+      "examples": [
+        {
+          "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+          "version_date": "2026-10-17T19:54:44.000Z",
+          "phase_id": "AccountRate_Jan2022"
+        }
+      ],
+      "required": [
+        "id",
+        "version_date"
+      ],
+      "properties": {
+        "id": {
+          "$id": "#/properties/migration/properties/id",
+          "type": "string",
+          "title": "Migration Identifier",
+          "examples": [
+            "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21"
+          ]
+        },
+        "version_date": {
+          "$id": "#/properties/migration/properties/version_date",
+          "type": "string",
+          "format": "date-time",
+          "title": "Version Date of Migration Identifier",
+          "examples": [
+            "2026-10-17T19:54:44.000Z"
+          ]
+        },
+        "phase_id": {
+          "$id": "#/properties/migration/properties/phase_id",
+          "type": "string",
+          "title": "Migration Phase ID",
+          "description": "Migration phase ID, when provided on the start of the migration process.",
+          "examples": [
+            "AccountRate_Jan2022"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "error_details": {
+      "$id": "#/properties/error_details",
+      "type": "array",
+      "title": "Error Details",
+      "description": "List of error causes for an unsuccessful migration.",
+      "examples": [
+        [
+          {
+            "property": "rates[844::WITHDRAWAL_INTEREST::UNTIL_DUE_DATE::DUEDATE]",
+            "message": "Validation Error: Can't find [ValidityToCalculateAccruals] with params: [Description: DUEDATE]."
+          }
+        ]
+      ],
+      "items": {
+        "$id": "#/properties/error_details/items",
+        "type": "object",
+        "examples": [
+          {
+            "property": "rates[844::WITHDRAWAL_INTEREST::UNTIL_DUE_DATE::DUEDATE]",
+            "message": "Validation Error: Can't find [ValidityToCalculateAccruals] with params: [Description: DUEDATE]."
+          }
+        ],
+        "properties": {
+          "property": {
+            "$id": "#/properties/error_details/items/properties/property",
+            "type": "string",
+            "description": "The property of the incoming event that caused the error. A rate is identified as rates[transaction_category_id::accrual_type::period_to_calculate::validity_to_calculate].",
+            "examples": [
+              "rates[844::WITHDRAWAL_INTEREST::UNTIL_DUE_DATE::DUEDATE]"
+            ]
+          },
+          "message": {
+            "$id": "#/properties/error_details/items/properties/message",
+            "type": "string",
+            "description": "An error message.",
+            "examples": [
+              "Validation Error: Cannot configure this setting because it does not exist at the program level."
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "title": "Pismo generated account rates information",
+      "description": "Account and the result of the migration of each rate sent for it.",
+      "examples": [
+        {
+          "account_id": 361262389,
+          "rates": [
+            {
+              "account_accrual_type_rate_id": 1588249,
+              "transaction_category_id": 843,
+              "accrual_type": "WITHDRAWAL_INTEREST",
+              "period_to_calculate": "UNTIL_DUE_DATE",
+              "validity_to_calculate": "IMMEDIATE",
+              "default_rate": 10.0,
+              "rate_if_overdue": 11.0,
+              "created_at": "2026-11-18T06:20:25.946Z",
+              "status": "SUCCESS"
+            },
+            {
+              "account_accrual_type_rate_id": 1588251,
+              "transaction_category_id": 845,
+              "accrual_type": "WITHDRAWAL_INTEREST",
+              "period_to_calculate": "UNTIL_DUE_DATE",
+              "validity_to_calculate": "IMMEDIATE",
+              "default_rate": 17.0,
+              "rate_if_overdue": 18.0,
+              "created_at": "2026-11-18T06:20:26.054Z",
+              "ranges": [
+                {
+                  "amount_due_lower_limit": 10,
+                  "default_rate": 10.0,
+                  "rate_if_overdue": 10.0
+                }
+              ],
+              "status": "SUCCESS"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "account_id": {
+          "$id": "#/properties/entity/properties/account_id",
+          "type": "number",
+          "title": "Account Identifier",
+          "description": "Account identifier generated by Pismo.",
+          "examples": [
+            361262389
+          ]
+        },
+        "rates": {
+          "$id": "#/properties/entity/properties/rates",
+          "type": "array",
+          "title": "Rates",
+          "description": "Result of the migration of each rate sent for the account.",
+          "examples": [
+            [
+              {
+                "account_accrual_type_rate_id": 1588249,
+                "transaction_category_id": 843,
+                "accrual_type": "WITHDRAWAL_INTEREST",
+                "period_to_calculate": "UNTIL_DUE_DATE",
+                "validity_to_calculate": "IMMEDIATE",
+                "default_rate": 10.0,
+                "rate_if_overdue": 11.0,
+                "created_at": "2026-11-18T06:20:25.946Z",
+                "status": "SUCCESS"
+              },
+              {
+                "transaction_category_id": 861,
+                "accrual_type": "WITHDRAWAL_INTEREST",
+                "period_to_calculate": "UNTIL_DUE_DATE",
+                "validity_to_calculate": "IMMEDIATE",
+                "default_rate": 17.0,
+                "rate_if_overdue": 18.0,
+                "ranges": [
+                  {
+                    "amount_due_lower_limit": 10,
+                    "default_rate": 10.0,
+                    "rate_if_overdue": 10.0
+                  }
+                ],
+                "status": "FAILURE"
+              }
+            ]
+          ],
+          "items": {
+            "$id": "#/properties/entity/properties/rates/items",
+            "type": "object",
+            "description": "Result of the migration of a rate.",
+            "examples": [
+              {
+                "account_accrual_type_rate_id": 1588251,
+                "transaction_category_id": 845,
+                "accrual_type": "WITHDRAWAL_INTEREST",
+                "period_to_calculate": "UNTIL_DUE_DATE",
+                "validity_to_calculate": "IMMEDIATE",
+                "default_rate": 17.0,
+                "rate_if_overdue": 18.0,
+                "created_at": "2026-11-18T06:20:26.054Z",
+                "ranges": [
+                  {
+                    "amount_due_lower_limit": 10,
+                    "default_rate": 10.0,
+                    "rate_if_overdue": 10.0
+                  }
+                ],
+                "status": "SUCCESS"
+              }
+            ],
+            "properties": {
+              "account_accrual_type_rate_id": {
+                "$id": "#/properties/entity/properties/rates/items/properties/account_accrual_type_rate_id",
+                "type": "integer",
+                "description": "Account accrual type rate identifier generated by Pismo. Not sent when the rate fails to migrate.",
+                "examples": [
+                  1588249
+                ]
+              },
+              "transaction_category_id": {
+                "$id": "#/properties/entity/properties/rates/items/properties/transaction_category_id",
+                "type": "integer",
+                "description": "The transaction category identifier the rate applies to.",
+                "examples": [
+                  843
+                ]
+              },
+              "accrual_type": {
+                "$id": "#/properties/entity/properties/rates/items/properties/accrual_type",
+                "type": "string",
+                "description": "Accrual type at the account level. Possible values: WITHDRAWAL_INTEREST, BILLPAYMENT_INTEREST, OVERDRAFT_INTEREST, FINANCIAL_TAX.",
+                "examples": [
+                  "WITHDRAWAL_INTEREST",
+                  "BILLPAYMENT_INTEREST",
+                  "OVERDRAFT_INTEREST",
+                  "FINANCIAL_TAX"
+                ]
+              },
+              "period_to_calculate": {
+                "$id": "#/properties/entity/properties/rates/items/properties/period_to_calculate",
+                "type": "string",
+                "description": "The period used to calculate the accrual. Possible values: UNTIL_DUE_DATE, AFTER_DUE_DATE.",
+                "examples": [
+                  "UNTIL_DUE_DATE",
+                  "AFTER_DUE_DATE"
+                ]
+              },
+              "validity_to_calculate": {
+                "$id": "#/properties/entity/properties/rates/items/properties/validity_to_calculate",
+                "type": "string",
+                "description": "When the rate is used to calculate the accrual. Possible values: IMMEDIATE, DUEDATE.",
+                "examples": [
+                  "IMMEDIATE",
+                  "DUEDATE"
+                ]
+              },
+              "default_rate": {
+                "$id": "#/properties/entity/properties/rates/items/properties/default_rate",
+                "type": "number",
+                "description": "The default rate percentage applied to the accrual.",
+                "examples": [
+                  10.0
+                ]
+              },
+              "rate_if_overdue": {
+                "$id": "#/properties/entity/properties/rates/items/properties/rate_if_overdue",
+                "type": "number",
+                "description": "The rate percentage applied to the accrual when overdue.",
+                "examples": [
+                  11.0
+                ]
+              },
+              "created_at": {
+                "$id": "#/properties/entity/properties/rates/items/properties/created_at",
+                "type": "string",
+                "format": "date-time",
+                "description": "Rate creation date, format = yyyy-MM-ddTHH:mm:ss.fffZ. Not sent when the rate fails to migrate.",
+                "examples": [
+                  "2026-11-18T06:20:25.946Z"
+                ]
+              },
+              "ranges": {
+                "$id": "#/properties/entity/properties/rates/items/properties/ranges",
+                "type": "array",
+                "description": "Optional list of amount-based ranges that override the default rates.",
+                "examples": [
+                  [
+                    {
+                      "amount_due_lower_limit": 10,
+                      "default_rate": 10.0,
+                      "rate_if_overdue": 10.0
+                    }
+                  ]
+                ],
+                "items": {
+                  "$id": "#/properties/entity/properties/rates/items/properties/ranges/items",
+                  "type": "object",
+                  "description": "Amount-based range that overrides the default rates.",
+                  "examples": [
+                    {
+                      "amount_due_lower_limit": 10,
+                      "default_rate": 10.0,
+                      "rate_if_overdue": 10.0
+                    }
+                  ],
+                  "properties": {
+                    "amount_due_lower_limit": {
+                      "$id": "#/properties/entity/properties/rates/items/properties/ranges/items/properties/amount_due_lower_limit",
+                      "type": "number",
+                      "description": "The lower limit of the amount due for which this range applies.",
+                      "examples": [
+                        10
+                      ]
+                    },
+                    "default_rate": {
+                      "$id": "#/properties/entity/properties/rates/items/properties/ranges/items/properties/default_rate",
+                      "type": "number",
+                      "description": "The default rate percentage applied within this range.",
+                      "examples": [
+                        10.0
+                      ]
+                    },
+                    "rate_if_overdue": {
+                      "$id": "#/properties/entity/properties/rates/items/properties/ranges/items/properties/rate_if_overdue",
+                      "type": "number",
+                      "description": "The rate percentage applied within this range when overdue.",
+                      "examples": [
+                        10.0
+                      ]
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              },
+              "status": {
+                "$id": "#/properties/entity/properties/rates/items/properties/status",
+                "type": "string",
+                "description": "Result of the migration of the rate.",
+                "examples": [
+                  "SUCCESS",
+                  "FAILURE"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

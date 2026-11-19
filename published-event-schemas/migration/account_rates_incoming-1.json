@@ -1,0 +1,322 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://pismo.io/events/migration/account_rates_incoming-1.json",
+  "type": "object",
+  "title": "Account rates migration started (v1)",
+  "description": "Event generated when an account rates migration is started. Contains the payload with the data to be migrated.",
+  "examples": [
+    {
+      "entity": {
+        "migration": {
+          "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+          "version_date": "2026-10-17T19:54:42Z",
+          "account_id": "00046429504363683042022",
+          "phase_id": "AccountRate_Jan2022"
+        },
+        "rates": [
+          {
+            "transaction_category_id": 843,
+            "accrual_type": "WITHDRAWAL_INTEREST",
+            "period_to_calculate": "UNTIL_DUE_DATE",
+            "validity_to_calculate": "IMMEDIATE",
+            "default_rate": 10.0,
+            "rate_if_overdue": 11.0
+          },
+          {
+            "transaction_category_id": 861,
+            "accrual_type": "WITHDRAWAL_INTEREST",
+            "period_to_calculate": "UNTIL_DUE_DATE",
+            "validity_to_calculate": "DUEDATE",
+            "default_rate": 17.0,
+            "rate_if_overdue": 18.0,
+            "ranges": [
+              {
+                "amount_due_lower_limit": 10,
+                "default_rate": 10.0,
+                "rate_if_overdue": 10.0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "required": [
+    "entity"
+  ],
+  "properties": {
+    "entity": {
+      "$id": "#/properties/entity",
+      "type": "object",
+      "description": "This field represents the rates of an account.",
+      "examples": [
+        {
+          "migration": {
+            "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+            "version_date": "2026-10-17T19:54:42Z",
+            "account_id": "00046429504363683042022",
+            "phase_id": "AccountRate_Jan2022"
+          },
+          "rates": [
+            {
+              "transaction_category_id": 843,
+              "accrual_type": "WITHDRAWAL_INTEREST",
+              "period_to_calculate": "UNTIL_DUE_DATE",
+              "validity_to_calculate": "IMMEDIATE",
+              "default_rate": 10.0,
+              "rate_if_overdue": 11.0
+            },
+            {
+              "transaction_category_id": 861,
+              "accrual_type": "WITHDRAWAL_INTEREST",
+              "period_to_calculate": "UNTIL_DUE_DATE",
+              "validity_to_calculate": "DUEDATE",
+              "default_rate": 17.0,
+              "rate_if_overdue": 18.0,
+              "ranges": [
+                {
+                  "amount_due_lower_limit": 10,
+                  "default_rate": 10.0,
+                  "rate_if_overdue": 10.0
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "required": [
+        "migration",
+        "rates"
+      ],
+      "properties": {
+        "migration": {
+          "$id": "#/properties/entity/properties/migration",
+          "type": "object",
+          "description": "This field contains the data that identifies a migration.",
+          "examples": [
+            {
+              "id": "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21",
+              "version_date": "2026-10-17T19:54:42Z",
+              "account_id": "00046429504363683042022",
+              "phase_id": "AccountRate_Jan2022"
+            }
+          ],
+          "required": [
+            "id",
+            "version_date",
+            "account_id"
+          ],
+          "properties": {
+            "id": {
+              "$id": "#/properties/entity/properties/migration/properties/id",
+              "type": "string",
+              "description": "A record identifier for migration purposes.",
+              "examples": [
+                "5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21"
+              ]
+            },
+            "version_date": {
+              "$id": "#/properties/entity/properties/migration/properties/version_date",
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp used to determine the version of the data being migrated. Valid format (yyyy-MM-ddTHH:mm:ss[.SSS][.SS][.S]Z).",
+              "examples": [
+                "2026-10-17T19:54:42Z"
+              ]
+            },
+            "account_id": {
+              "$id": "#/properties/entity/properties/migration/properties/account_id",
+              "type": "string",
+              "description": "A record identifier for account migration. This is not the internal account ID.",
+              "examples": [
+                "00046429504363683042022"
+              ]
+            },
+            "phase_id": {
+              "$id": "#/properties/entity/properties/migration/properties/phase_id",
+              "type": "string",
+              "description": "Migration Phase ID",
+              "examples": [
+                "AccountRate_Jan2022"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "rates": {
+          "$id": "#/properties/entity/properties/rates",
+          "type": "array",
+          "minItems": 1,
+          "description": "List of rates to be migrated for the account.",
+          "examples": [
+            [
+              {
+                "transaction_category_id": 843,
+                "accrual_type": "WITHDRAWAL_INTEREST",
+                "period_to_calculate": "UNTIL_DUE_DATE",
+                "validity_to_calculate": "IMMEDIATE",
+                "default_rate": 10.0,
+                "rate_if_overdue": 11.0
+              },
+              {
+                "transaction_category_id": 861,
+                "accrual_type": "WITHDRAWAL_INTEREST",
+                "period_to_calculate": "UNTIL_DUE_DATE",
+                "validity_to_calculate": "DUEDATE",
+                "default_rate": 17.0,
+                "rate_if_overdue": 18.0,
+                "ranges": [
+                  {
+                    "amount_due_lower_limit": 10,
+                    "default_rate": 10.0,
+                    "rate_if_overdue": 10.0
+                  }
+                ]
+              }
+            ]
+          ],
+          "items": {
+            "$id": "#/properties/entity/properties/rates/items",
+            "type": "object",
+            "description": "Rate of the account for a transaction category.",
+            "examples": [
+              {
+                "transaction_category_id": 861,
+                "accrual_type": "WITHDRAWAL_INTEREST",
+                "period_to_calculate": "UNTIL_DUE_DATE",
+                "validity_to_calculate": "DUEDATE",
+                "default_rate": 17.0,
+                "rate_if_overdue": 18.0,
+                "ranges": [
+                  {
+                    "amount_due_lower_limit": 10,
+                    "default_rate": 10.0,
+                    "rate_if_overdue": 10.0
+                  }
+                ]
+              }
+            ],
+            "required": [
+              "transaction_category_id",
+              "accrual_type",
+              "period_to_calculate",
+              "validity_to_calculate"
+            ],
+            "properties": {
+              "transaction_category_id": {
+                "$id": "#/properties/entity/properties/rates/items/properties/transaction_category_id",
+                "type": "integer",
+                "description": "The transaction category identifier the rate applies to.",
+                "examples": [
+                  843
+                ]
+              },
+              "accrual_type": {
+                "$id": "#/properties/entity/properties/rates/items/properties/accrual_type",
+                "type": "string",
+                "description": "Accrual type at the account level. Possible values: WITHDRAWAL_INTEREST, BILLPAYMENT_INTEREST, OVERDRAFT_INTEREST, FINANCIAL_TAX.",
+                "examples": [
+                  "WITHDRAWAL_INTEREST",
+                  "BILLPAYMENT_INTEREST",
+                  "OVERDRAFT_INTEREST",
+                  "FINANCIAL_TAX"
+                ]
+              },
+              "period_to_calculate": {
+                "$id": "#/properties/entity/properties/rates/items/properties/period_to_calculate",
+                "type": "string",
+                "description": "The period used to calculate the accrual. Possible values: UNTIL_DUE_DATE, AFTER_DUE_DATE.",
+                "examples": [
+                  "UNTIL_DUE_DATE",
+                  "AFTER_DUE_DATE"
+                ]
+              },
+              "validity_to_calculate": {
+                "$id": "#/properties/entity/properties/rates/items/properties/validity_to_calculate",
+                "type": "string",
+                "description": "When the rate is used to calculate the accrual. Possible values: IMMEDIATE, DUEDATE.",
+                "examples": [
+                  "IMMEDIATE",
+                  "DUEDATE"
+                ]
+              },
+              "default_rate": {
+                "$id": "#/properties/entity/properties/rates/items/properties/default_rate",
+                "type": "number",
+                "description": "The default rate percentage applied to the accrual.",
+                "examples": [
+                  10.0
+                ]
+              },
+              "rate_if_overdue": {
+                "$id": "#/properties/entity/properties/rates/items/properties/rate_if_overdue",
+                "type": "number",
+                "description": "The rate percentage applied to the accrual when overdue.",
+                "examples": [
+                  11.0
+                ]
+              },
+              "ranges": {
+                "$id": "#/properties/entity/properties/rates/items/properties/ranges",
+                "type": "array",
+                "minItems": 1,
+                "description": "Optional list of amount-based ranges that override the default rates.",
+                "examples": [
+                  [
+                    {
+                      "amount_due_lower_limit": 10,
+                      "default_rate": 10.0,
+                      "rate_if_overdue": 10.0
+                    }
+                  ]
+                ],
+                "items": {
+                  "$id": "#/properties/entity/properties/rates/items/properties/ranges/items",
+                  "type": "object",
+                  "description": "Amount-based range that overrides the default rates.",
+                  "examples": [
+                    {
+                      "amount_due_lower_limit": 10,
+                      "default_rate": 10.0,
+                      "rate_if_overdue": 10.0
+                    }
+                  ],
+                  "properties": {
+                    "amount_due_lower_limit": {
+                      "$id": "#/properties/entity/properties/rates/items/properties/ranges/items/properties/amount_due_lower_limit",
+                      "type": "number",
+                      "description": "The lower limit of the amount due for which this range applies.",
+                      "examples": [
+                        10
+                      ]
+                    },
+                    "default_rate": {
+                      "$id": "#/properties/entity/properties/rates/items/properties/ranges/items/properties/default_rate",
+                      "type": "number",
+                      "description": "The default rate percentage applied within this range.",
+                      "examples": [
+                        10.0
+                      ]
+                    },
+                    "rate_if_overdue": {
+                      "$id": "#/properties/entity/properties/rates/items/properties/ranges/items/properties/rate_if_overdue",
+                      "type": "number",
+                      "description": "The rate percentage applied within this range when overdue.",
+                      "examples": [
+                        10.0
+                      ]
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
