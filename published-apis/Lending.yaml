@@ -5247,6 +5247,17 @@ paths:
         Creates a prepayment record containing one or multiple repayments.
 
 
+        The repayments can belong to one or more of the account's loans, with
+        these rules:
+
+        - All loans must belong to the same loan product. Otherwise, the request
+        fails with `ELND0523`.
+
+        - Loans booked under different versions of the loan product can be
+        grouped, unless any of those versions has `minimum_total_payment`
+        configured. In that case, the request fails with `ELND0556`.
+
+
         This endpoint generates a [Prepayment
         created](https://developers.pismo.io/events/docs/lending-prepayment-creation-1)
         event.
@@ -5302,6 +5313,22 @@ paths:
                   value:
                     code: ELND0003
                     message: '{body field} not valid'
+                ELND0523:
+                  description: The repayments belong to loans of different loan products.
+                  value:
+                    code: ELND0523
+                    message: There are repayments with different loan products.
+                ELND0556:
+                  description: >-
+                    The repayments belong to loans booked under different
+                    versions of the loan product, and at least one of those
+                    versions has `minimum_total_payment` configured.
+                  value:
+                    code: ELND0556
+                    message: >-
+                      Repayments from different versions of the loan product
+                      cannot be grouped when the loan product has a minimum
+                      total payment configured.
         '500':
           description: Internal Server Error
           content:
