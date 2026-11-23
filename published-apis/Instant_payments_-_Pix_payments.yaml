@@ -12,7 +12,7 @@ servers:
   - url: https://sandbox-cdn.pismolabs.io
     description: Sandbox API server for testing
   - url: https://sandbox-cdn.pismolabs.io/inst-pull-pay
-    description: Sandbox API server for testing instant pull pay.
+    description: Sandbox API server for testing instant pull pay
 tags:
   - name: Pix
   - name: Scheduled transfers V2
@@ -193,7 +193,7 @@ components:
         result and is used to get the next page of results in a subsequent
         request.
 
-        RFC 3339 format. For example -  "2023-04-12T23:20:50.52Z". 
+        RFC 3339 format. For example -  "2023-04-12T23:20:50.52Z".
       schema:
         type: string
     limitQuery:
@@ -240,7 +240,7 @@ components:
       in: query
       description: >
         Schedule datetime begin filter. RFC 3339 value, for example:
-        `2023-04-12T23:20:50.52Z`. 
+        `2023-04-12T23:20:50.52Z`.
       schema:
         type: string
     ScheduleEndDatetimeQuery:
@@ -248,7 +248,7 @@ components:
       in: query
       description: >
         Schedule datetime end filter. RFC 3339 value, for example:
-        `2023-04-12T23:20:50.52Z`. 
+        `2023-04-12T23:20:50.52Z`.
       schema:
         type: string
     ScheduleCreationBeginDatetimeQuery:
@@ -256,7 +256,7 @@ components:
       in: query
       description: >
         Schedule creation datetime begin filter. RFC 3339 value, for example:
-        `2023-04-12T23:20:50.52Z`. 
+        `2023-04-12T23:20:50.52Z`.
       schema:
         type: string
     ScheduleCreationEndDatetimeQuery:
@@ -264,7 +264,7 @@ components:
       in: query
       description: >
         Schedule creation datetime end filter. RFC 3339 value, for example:
-        `2023-04-12T23:20:50.52Z`. 
+        `2023-04-12T23:20:50.52Z`.
       schema:
         type: string
     ScheduleIdPath:
@@ -310,6 +310,14 @@ components:
         whose executions are all created upfront and available through the [List
         Pix scheduler executions](ref:get-scheduler-executions) endpoint.
       example: true
+    TransactionIdPath:
+      name: transaction_identification
+      in: path
+      required: true
+      schema:
+        type: string
+        maxLength: 36
+      description: Transaction ID
     TransactionTypePath:
       name: type
       in: path
@@ -334,6 +342,18 @@ components:
           - PIX-OUT
           - PIX-IN-REVERSAL
           - PIX-OUT-REVERSAL
+      example: PIX-IN
+    TransactionTypeQuery2:
+      name: type
+      in: query
+      description: |
+        Type of Pix transactions to return. Default is all types if not passed.
+      schema:
+        type: string
+        enum:
+          - PIX-IN
+          - PIX-OUT
+      required: false
       example: PIX-IN
   schemas:
     AccountID:
@@ -430,6 +450,23 @@ components:
         For Pix-in, this is the confirmation request ID the provider received.
       type: string
       example: b84da2fc-dd63-4c6c-a346-797b65f334c7
+    ContestedMedRootTransactionID:
+      type: string
+      description: >
+        This dispute's root transaction `end_to_end_id` or refund `end_to_end_id
+        within the MED (Mecanismo Especial de Devolução, the Pix special refund
+        mechanism).
+
+
+        MED keeps the refund history as a graph, so a refund can be several hops
+        away from the original transaction. This field always points to the root
+        transaction of that graph.
+
+
+        Only returned when the Pix-out was sent with it.
+      minLength: 32
+      maxLength: 32
+      example: E9999999920200808195101608910248
     commons.AdditionalInfo:
       type: object
       properties:
@@ -531,7 +568,7 @@ components:
       type: string
       format: datetime
       description: |
-        Created at datetime. RFC 3339 format 
+        Created at datetime. RFC 3339 format
       example: '2025-11-14T17:54:40Z'
     customer.DetailMessage:
       type: object
@@ -639,7 +676,7 @@ components:
             1. Initialize a transaction 
             2. Confirm a transaction
         The `end_to_end_id` is sent to the BCB in both steps in order to
-        identify all transaction information. 
+        identify all transaction information.
       example: E3030629420200808195101608910248
     ExecutionID:
       type: integer
@@ -749,7 +786,7 @@ components:
 
           `DICT` - Diretorio de Identificadores de Contas de Transação (Transaction accounts ID directory). Pix/DICT key is used for identification.
 
-          `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically. 
+          `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically.
       example: DICT
     InitiationType2:
       type: string
@@ -762,13 +799,13 @@ components:
       description: |
         Initiation type:  
 
-          `MANUAL` - Manually initiated. Key is not used - bank account, bank code, document number, and branch are used for identification.
+          `MANUAL`: Manually initiated. Key is not used&mdash;bank account, bank code, document number, and branch are used for identification.
 
-          `DICT` - Diretorio de Identificadores de Contas de Transação (Transaction accounts ID directory). Pix/DICT key is used for identification.
+          `DICT`: Diretorio de Identificadores de Contas de Transação (Transaction accounts ID directory). Pix/DICT key is used for identification.
 
-          `STATIC_QRCODE` - Reusable code that contains only the data necessary to complete a transaction. When using static QR Code, the transaction amount must be provided manually.
+          `STATIC_QRCODE`: Reusable code that contains only the data necessary to complete a transaction. When using static QR Code, the transaction amount must be provided manually.
 
-          `DYNAMIC_QRCODE` - The amount and other details for a dynamic code are included automatically. 
+          `DYNAMIC_QRCODE`: The amount and other details for a dynamic code are included automatically. 
       example: DICT
     InitiatorDocumentNumber:
       type: string
@@ -789,28 +826,13 @@ components:
         href="https://www.bcb.gov.br/en/financialstability/open_finance"
         target="_blank">Open Finance</a>. 
             
-        It is this field's presence, not the `initiation_type` that identifies
-        an Open Finance origin: when it is passed, `transaction_identification`
-        **MUST NOT** be passed.
-      example: '12345678912345'
-    InitiatorDocumentNumber2:
-      type: string
-      maxLength: 14
-      description: >
-        Payment initiator CNPJ, validated as a CNPJ.
-
-
-        Cadastro Nacional da Pessoa Jurídica (CNPJ) is Brazil's 14-character
-        federal taxpayer registration number for companies and legal entities.
-
-
-        It is this field's presence, not the `initiation_type` that identifies
+        It is this field's presence, not the `initiation_type`, that identifies
         an Open Finance origin: when it is passed, `transaction_identification`
         **MUST NOT** be passed.
       example: '12345678912345'
     InterestValue:
       type: number
-      description: Interest value.
+      description: Interest value
       example: 20.15
     Internal:
       type: boolean
@@ -994,6 +1016,8 @@ components:
           $ref: '#/components/schemas/TransactionStatus'
         taxes:
           $ref: '#/components/schemas/Taxes'
+        contested_med_root_transaction_id:
+          $ref: '#/components/schemas/ContestedMedRootTransactionID'
     pix.InReversalRequest:
       type: object
       required:
@@ -1214,6 +1238,39 @@ components:
                 Settlement value. Amount to be transferred after all charges
                 have been applied.
               example: 10.15
+        contested_med_root_transaction_id:
+          type: string
+          description: >
+            Unique identifier (`end_to_end_id` or refund `end_to_end_id`) of the
+            root transaction of the dispute within MED (Mecanismo Especial de
+            Devolução, the Pix special refund mechanism).
+
+
+            MED keeps the refund history as a graph, so a refund can be several
+            hops away from the original transaction. This field always points to
+            the root transaction of that graph.
+
+
+            * **REQUIRED** when `transaction_type` = `REFUND`.
+
+
+            * Optional when `transaction_type` = `TRANSFER`. Pass it only when
+            the payment refers to a MED refund (`pacs.004`) that has an
+            associated value recovery ID. In that case it must carry the refund
+            `end_to_end_id`, which starts with `D` (for example
+            `D9999999920200808195101608910248`); any other value is rejected
+            with `EPIX0237`.
+
+
+            * Do **NOT** pass it when `transaction_type` = `CHANGE`,
+            `WITHDRAWAL` or `REFUND_AUTOMATIC_PIX`.
+
+
+            The referenced transaction does not need to exist on Pismo, because
+            the root transaction may never have been processed by Pismo.
+          minLength: 32
+          maxLength: 32
+          example: E9999999920200808195101608910248
         debtor:
           type: object
           description: >-
@@ -1237,7 +1294,7 @@ components:
             The `end_to_end_id` is sent to the BCB in both steps in order to
             identify all transaction information.
 
-            **REQUIRED** if you are using a Pix key or QR Code. 
+            **REQUIRED** if you are using a Pix key or QR Code.
           example: E3030629420200808195101608910248
         is_device_registered:
           $ref: '#/components/schemas/IsDeviceRegistered'
@@ -1338,6 +1395,69 @@ components:
             code](doc:processing-codes-and-transaction-types) guide.
           maxLength: 6
           example: '123456'
+        processing_codes:
+          type: object
+          description: >
+            Custom processing codes according to how the transfer is settled.
+            This object is optional.
+
+
+            * `internal` is applied when the transfer is settled within Pismo
+            without going through SPI. This happens when the payee account
+            belongs to the same PSP and the program is not configured to always
+            send transfers to the provider.
+
+            * `external` is applied when the transfer is sent through SPI.
+
+
+            Only the codes of the flow that applies to the transfer are used.
+            The codes of the other flow are ignored, although their format is
+            still validated.
+
+
+            When a debit code is not passed for the applicable flow,
+            `processing_code` is used. If `processing code` is also not passed,
+            Pismo assigns a value managed internally. When `internal.credit` is
+            not passed, Pismo assigns the credit value managed internally.
+
+
+            Debit codes must be authorization codes that debit the account, and
+            credit codes must be authorization codes that credit the account. If
+            you provide a custom value, you take full responsibility for its
+            correctness&mdash;an invalid or mismatched code may cause processing
+            or reconciliation failures.
+
+
+            For more information, refer to the [Processing
+            code](doc:processing-codes-and-transaction-types) guide.
+          properties:
+            internal:
+              type: object
+              description: >-
+                Processing codes used when the transfer is settled within Pismo
+                without going through SPI.
+              properties:
+                debit:
+                  type: string
+                  description: Processing code used to debit the payer account
+                  maxLength: 6
+                  example: '218819'
+                credit:
+                  type: string
+                  description: Processing code used to credit the payee account
+                  maxLength: 6
+                  example: '218822'
+            external:
+              type: object
+              description: Processing codes used when the transfer is sent through SPI
+              properties:
+                debit:
+                  type: string
+                  description: Processing code used to debit the payer account
+                  maxLength: 6
+                  example: '218819'
+        taxes:
+          $ref: '#/components/schemas/Taxes'
     pix.OutTransferPSPaccount:
       type: object
       description: >-
@@ -1363,8 +1483,6 @@ components:
           $ref: '#/components/schemas/DocumentNumber'
         name:
           $ref: '#/components/schemas/Name'
-        taxes:
-          $ref: '#/components/schemas/Taxes'
     pix.OutTransferResponse:
       type: object
       required:
@@ -1734,6 +1852,8 @@ components:
           $ref: '#/components/schemas/TransactionType'
         initiator_document_number:
           $ref: '#/components/schemas/DocumentNumber'
+        contested_med_root_transaction_id:
+          $ref: '#/components/schemas/ContestedMedRootTransactionID'
         internal:
           $ref: '#/components/schemas/Internal'
         payee:
@@ -1887,7 +2007,7 @@ components:
             results.
 
 
-            RFC 3339 value, i.e., "2023-04-12T23:20:50.52Z". 
+            RFC 3339 value, i.e., "2023-04-12T23:20:50.52Z".
         per_page:
           $ref: '#/components/schemas/PerPage'
         total_items:
@@ -1936,7 +2056,7 @@ components:
           description: >
             The <a
             href="https://en.wikipedia.org/wiki/Digital_Signature_Algorithm"
-            target="_blank">digital signature algorithm</a> (DSA). 
+            target="_blank">digital signature algorithm</a> (DSA).
           enum:
             - ECDSA_P256_SHA256
             - ECDSA_P384_SHA384
@@ -2105,6 +2225,8 @@ components:
           description: Payment initiator document number when `type` is `PAYMENT_INITIATOR`
           maxLength: 14
           example: '12345678900'
+        contested_med_root_transaction_id:
+          $ref: '#/components/schemas/ContestedMedRootTransactionID'
         initial_amount:
           $ref: '#/components/schemas/InitialAmount'
         amount:
@@ -2688,8 +2810,6 @@ components:
             codes](doc:processing-codes-and-transaction-types) guide.
           maxLength: 6
           example: '500001'
-        initiator_document_number:
-          $ref: '#/components/schemas/InitiatorDocumentNumber2'
     scheduler.SchedulerRegisterResponse:
       type: object
       properties:
@@ -2923,7 +3043,7 @@ components:
         Transaction ID is **REQUIRED** when `initiation_type` is
         `DYNAMIC_QRCODE` and should not be passed otherwise. If a
         `STATIC_QRCODE` contains the transaction identification, it is also
-        **REQUIRED** to pass it. 
+        **REQUIRED** to pass it.
       example: 1a84daf6-a61b-4aba-919a-a9943db7102e
     TransactionStatus:
       type: string
@@ -3279,6 +3399,33 @@ paths:
                     message: >-
                       Invalid transaction identification length for automatic
                       pix
+                EPIX0235:
+                  summary: >-
+                    Contested MED root transaction ID is required for this
+                    transaction type
+                  value:
+                    code: EPIX0235
+                    message: >-
+                      Contested MED root transaction ID is required for this
+                      transaction type
+                EPIX0236:
+                  summary: >-
+                    Contested MED root transaction ID is not allowed for this
+                    transaction type
+                  value:
+                    code: EPIX0236
+                    message: >-
+                      Contested MED root transaction ID is not allowed for this
+                      transaction type
+                EPIX0237:
+                  summary: >-
+                    Contested MED root transaction ID must be a refund
+                    end-to-end ID for this transaction type
+                  value:
+                    code: EPIX0237
+                    message: >-
+                      Contested MED root transaction ID must be a refund
+                      end-to-end ID for this transaction type
                 EPIX0136:
                   summary: Missing required initiator document number
                   value:
@@ -5640,3 +5787,109 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'
+  /pix/v1/pix/transaction-identification/{transaction_identification}:
+    get:
+      summary: Get Pix transactions by transaction ID
+      description: >
+
+        Get an account's Pix transactions that match a QR Code transaction ID.
+        Transactions are returned in most recent to oldest order.
+
+
+        Pix-in and Pix-out transactions are returned regardless of status or
+        initiation type. Reversals are not returned. 
+
+
+        **Note:** This endpoint takes an account token&mdash;an access token
+        encoded with a Pismo account ID.
+      operationId: post-get-transaction-transactionid
+      tags:
+        - Pix
+      parameters:
+        - $ref: '#/components/parameters/AuthHeader'
+        - $ref: '#/components/parameters/CIDheader'
+        - $ref: '#/components/parameters/TransactionIdPath'
+        - $ref: '#/components/parameters/TransactionTypeQuery2'
+      responses:
+        '200':
+          description: Response Body
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/pix.TransactionWithDetailResponse'
+        '400':
+          description: Bad request
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EPIX0049:
+                  summary: >-
+                    Validation error (invalid `type` or
+                    `transaction_identification`)
+                  value:
+                    code: EPIX0049
+                    message: Validation error
+                    details:
+                      payload:
+                        - field: type
+                          message: Field 'type' is invalid
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          description: Not found
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EPIX0086:
+                  summary: Pix transaction not found
+                  value:
+                    code: EPIX0086
+                    message: Pix transaction not found
+                EPIX0087:
+                  summary: Pix transaction detail not found.
+                  value:
+                    code: EPIX0087
+                    message: Pix transaction detail not found.
+        '500':
+          description: Internal Server Error
+          headers:
+            x-cid:
+              description: Request tracking ID
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer.Error'
+              examples:
+                EPIX0004:
+                  summary: Internal server error
+                  value:
+                    code: EPIX0004
+                    message: Internal server error
+                EPIX0014:
+                  summary: Database internal error
+                  value:
+                    code: EPIX0004
+                    message: Database internal error
