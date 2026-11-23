@@ -11,6 +11,8 @@ info:
 servers:
   - url: https://sandbox.pismolabs.io/sellers
     description: Sandbox API server for testing
+security:
+  - bearerAuth: []
 tags:
   - name: Split requests
     description: Endpoints for managing split requests
@@ -20,8 +22,8 @@ tags:
     description: Endpoint for managing merchant transactions
   - name: Status authorization
     description: Status authorization endpoint
-security:
-  - bearerAuth: []
+  - name: Transaction totals
+    description: Endpoints for merchant transaction totals and period summaries
 components:
   parameters:
     AuthorizationHeader:
@@ -32,6 +34,18 @@ components:
       schema:
         type: string
       example: <your_token>
+    authorizationIdQuery:
+      in: query
+      name: authorizationId
+      description: >-
+        Authorization ID filter. When provided, the maximum date range is 365
+        days.
+      required: false
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+      example: 987654
     balanceDateQuery:
       in: query
       name: date
@@ -61,6 +75,33 @@ components:
         type: string
         format: date
       example: '2023-10-30T00:00:00.000Z'
+    endPaymentDateQuery:
+      in: query
+      name: endPaymentDate
+      description: >
+        End of the payment-date range, as YYYY-MM-DD (ISO 8601). Must be on or
+        after `startPaymentDate`, and the range cannot exceed 1 year.
+      required: true
+      schema:
+        type: string
+        format: date
+      example: '2026-01-31'
+    groupByQuery:
+      in: query
+      name: groupBy
+      description: >
+        Dimension used to aggregate the totals. Allowed values are `status`,
+        `date`, and `date_and_status`. The `date` and `date_and_status` values
+        honor the `order` parameter; `status` ignores it.
+      required: false
+      schema:
+        type: string
+        enum:
+          - status
+          - date
+          - date_and_status
+        default: status
+      example: status
     marketplaceIdPath:
       in: path
       name: marketplaceId
@@ -71,6 +112,16 @@ components:
         format: uint64
         minimum: 1
         maximum: 18446744073709552000
+      example: 1
+    marketplaceIdQuery:
+      in: query
+      name: marketplaceId
+      description: Optional marketplace filter applied to the aggregation.
+      required: false
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
       example: 1
     merchantIdPath:
       in: path
@@ -94,6 +145,30 @@ components:
         minimum: 1
         maximum: 18446744073709552000
       example: 1
+    nextCursorQuery:
+      in: query
+      name: nextCursor
+      description: >-
+        Opaque pagination token returned in the `next_cursor` field of the
+        previous response. Do not build or change it.
+      required: false
+      schema:
+        type: string
+      example: eyJldmVudF9zdGFydCI6Li4ufQ
+    orderQuery:
+      in: query
+      name: order
+      description: >
+        Sort direction for the aggregated items. Applies only when groupBy
+        includes date; ignored for groupBy status.
+      required: false
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+      example: desc
     pageQuery:
       in: query
       name: page
@@ -106,6 +181,17 @@ components:
         minimum: 1
         maximum: 2147483647
       example: 1
+    parentAuthorizationIdQuery:
+      in: query
+      name: parentAuthorizationId
+      description: >-
+        Parent authorization ID filter. When provided, the maximum date range is
+        365 days.
+      required: false
+      schema:
+        type: string
+        maxLength: 52
+      example: '987654'
     parentIdPath:
       in: path
       name: parentId
@@ -129,6 +215,19 @@ components:
         minimum: 1
         maximum: 2147483647
       example: 1
+    processingCodeQuery:
+      in: query
+      name: processingCode
+      description: >
+        Processing code filter.
+
+        For more information, refer to [Processing
+        codes](doc:processing-codes-and-transaction-types).
+      required: false
+      schema:
+        type: string
+        maxLength: 10
+      example: '003000'
     splitIdPath:
       in: path
       name: splitId
@@ -151,7 +250,137 @@ components:
         type: string
         format: date
       example: '2023-10-05T00:00:00.000Z'
+    startPaymentDateQuery:
+      in: query
+      name: startPaymentDate
+      description: >
+        Start of the payment-date range, as YYYY-MM-DD (ISO 8601). The range
+        between `startPaymentDate` and `endPaymentDate` cannot exceed 1 year.
+      required: true
+      schema:
+        type: string
+        format: date
+      example: '2026-01-01'
+    transactionIdPath:
+      in: path
+      name: transactionId
+      description: Merchant transaction ID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        minimum: 1
+        maximum: 18446744073709552000
+      example: 1
+    transactionListEndEventDateQuery:
+      in: query
+      name: endEventDate
+      description: >
+        End of the event-date range, in ISO 8601 date-time format (UTC). Must be
+        on or after `startEventDate`.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-07-31T23:59:59Z'
+    transactionListEndPaymentDateQuery:
+      in: query
+      name: endPaymentDate
+      description: >
+        End of the scheduled payment-date range, as YYYY-MM-DD (ISO 8601). Must
+        be on or after `startPaymentDate`.
+      required: false
+      schema:
+        type: string
+        format: date
+      example: '2026-07-31'
+    transactionListOrderQuery:
+      in: query
+      name: order
+      description: >
+        Sort direction by event date. When this value is not provided, it
+        defaults to `asc`.
+      required: false
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+      example: asc
+    transactionListPerPageQuery:
+      in: query
+      name: perPage
+      description: >
+        Number of items per page, from 1 to 100. When this value is not
+        provided, it defaults to 10. It can change between pages.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 10
+    transactionListStartEventDateQuery:
+      in: query
+      name: startEventDate
+      description: >
+        Start of the event-date range, in ISO 8601 date-time format (UTC).
+        Required with `endEventDate` when no payment-date range is provided.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-07-13T00:00:00Z'
+    transactionListStartPaymentDateQuery:
+      in: query
+      name: startPaymentDate
+      description: >
+        Start of the scheduled payment-date range, as YYYY-MM-DD (ISO 8601).
+        Required with `endPaymentDate` when no event-date range is provided.
+      required: false
+      schema:
+        type: string
+        format: date
+      example: '2026-07-13'
+    transactionStatusQuery:
+      in: query
+      name: status
+      description: Optional transaction-status filter applied to the aggregation.
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerchantTransactionTotalStatus'
+      example: SETTLED
   schemas:
+    AdvancementRequestId:
+      type: integer
+      format: int64
+      nullable: true
+      description: Advancement Requested id
+    AuthorizationId:
+      type: number
+      format: int64
+      nullable: true
+      description: Authorization identifier
+    BalanceRequestGetResponse:
+      type: object
+      properties:
+        currency_code:
+          $ref: '#/components/schemas/OptionalCurrencyCodeResponse'
+        current_available_amount:
+          $ref: '#/components/schemas/CurrentAvailableAmount'
+        date:
+          $ref: '#/components/schemas/TargetDate_date'
+        estimated_available_amount:
+          $ref: '#/components/schemas/EstimatedAvailableAmount'
+        scheduled_amount:
+          $ref: '#/components/schemas/ScheduledAmount'
+    CreditorId:
+      type: integer
+      format: int64
+      nullable: true
+      description: Creditor identifier
     CurrencyCode:
       description: >
         Represents the currency with an ISO-4217 alphabetic or numeric (3
@@ -169,26 +398,6 @@ components:
         ISO-4217 alphabetic (3 characters) currency code
       type: string
       example: BRL
-    OptionalCurrencyCodeResponse:
-      type: string
-      nullable: true
-      description: >-
-        ISO 4217 alphanumeric currency code. `null` when no currency is
-        recorded.
-      example: BRL
-    BalanceRequestGetResponse:
-      type: object
-      properties:
-        date:
-          $ref: '#/components/schemas/TargetDate_date'
-        current_available_amount:
-          $ref: '#/components/schemas/CurrentAvailableAmount'
-        estimated_available_amount:
-          $ref: '#/components/schemas/EstimatedAvailableAmount'
-        scheduled_amount:
-          $ref: '#/components/schemas/ScheduledAmount'
-        currency_code:
-          $ref: '#/components/schemas/OptionalCurrencyCodeResponse'
     CurrentAvailableAmount:
       type: number
       format: float
@@ -200,10 +409,30 @@ components:
       properties:
         code:
           $ref: '#/components/schemas/ErrorCode'
-        message:
-          $ref: '#/components/schemas/ErrorMessage'
         details:
           $ref: '#/components/schemas/ErrorDetails'
+        message:
+          $ref: '#/components/schemas/ErrorMessage'
+    DiscountAmount:
+      description: Total discount amount applied to the transaction
+      type: number
+      format: float
+      example: 1.99
+    DiscountDetail:
+      description: >-
+        The `amount` represents the fee applied - that is, the amount discounted
+        before settlement.
+      type: object
+      properties:
+        amount:
+          description: Total discount amount
+          type: number
+          format: float
+          example: 10
+        name:
+          description: Discount name
+          type: string
+          example: EMISSION_FEE
     ErrorCode:
       type: string
       description: Pismo internal error code
@@ -213,9 +442,10 @@ components:
       properties:
         payload:
           type: array
-          description: Array of fields with error
+          description: List of fields with error
           items:
             type: object
+            description: A field that failed validation
             properties:
               field:
                 $ref: '#/components/schemas/ErrorField'
@@ -242,20 +472,10 @@ components:
       format: datetime
       description: Event datetime. The datetime format follows the ISO 8601 format (UTC).
       example: '2023-01-01T12:00:00Z'
-    ScheduledPaymentDate:
-      type: string
-      format: datetime
-      description: >-
-        The scheduled payment date for the transaction. The datetime format
-        follows the ISO 8601 format (UTC).
-      example: '2023-01-02'
-    Installments:
-      type: integer
-      format: int32
-      description: Number of installments
-      minimum: 1
-      maximum: 2147483647
-      example: 1
+    Fee:
+      type: number
+      format: float
+      description: Merchant transaction fee
     Installment:
       type: integer
       format: int32
@@ -263,7 +483,7 @@ components:
       minimum: 1
       maximum: 2147483647
       example: 1
-    NumberOfInstallments:
+    Installments:
       type: integer
       format: int32
       description: Number of installments
@@ -285,6 +505,18 @@ components:
       minimum: 1
       maximum: 18446744073709552000
       example: 1
+    MdrAmount:
+      type: number
+      format: float
+      description: Merchant transaction MDR amount
+    MdrTax:
+      type: number
+      format: float
+      description: Merchant transaction MDR amount of marketplace
+    MdrWithoutFee:
+      type: number
+      format: float
+      description: Merchant transaction MDR amount without fee
     MerchantId:
       type: integer
       format: uint64
@@ -292,96 +524,391 @@ components:
       minimum: 1
       maximum: 18446744073709552000
       example: 1
-    CreditorId:
-      type: integer
-      format: int64
-      nullable: true
-      description: Creditor identifier
-    MerchTransId:
-      type: integer
-      format: int64
-      description: Merchant transaction identifier
-    OriginMerchTransId:
-      type: integer
-      format: int64
-      nullable: true
-      description: Sale Merchant transaction identifier
-    MdrAmount:
+    MerchantTransactionAdvancedAmount:
       type: number
       format: float
-      description: Merchant transaction MDR amount
-    MdrWithoutFee:
+      description: Merchant transaction amount already advanced
+      example: 0
+    MerchantTransactionAmount:
       type: number
       format: float
-      description: Merchant transaction MDR amount without fee
-    MdrTax:
+      nullable: false
+      description: Merchant transaction amount
+    MerchantTransactionAuthorizationRequest:
+      type: object
+      required:
+        - id
+        - parent_id
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Authorization identifier
+          example: 12345
+        parent_id:
+          type: integer
+          format: int64
+          description: Parent authorization identifier from the original transaction
+          example: 12345
+    MerchantTransactionCancelPostRequest:
+      type: object
+      required:
+        - event_date
+        - amount
+        - authorization
+        - processing_code
+      properties:
+        amount:
+          $ref: '#/components/schemas/MerchantTransactionAmount'
+        authorization:
+          $ref: '#/components/schemas/MerchantTransactionAuthorizationRequest'
+        event_date:
+          $ref: '#/components/schemas/EventDate'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+    MerchantTransactionGetByIdResponse:
+      type: object
+      properties:
+        advanced_amount:
+          $ref: '#/components/schemas/MerchantTransactionAdvancedAmount'
+        advancement_request_id:
+          $ref: '#/components/schemas/AdvancementRequestId'
+        amount:
+          $ref: '#/components/schemas/MerchantTransactionAmount'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        currency_code:
+          $ref: '#/components/schemas/OptionalCurrencyCodeResponse'
+        discount_amount:
+          $ref: '#/components/schemas/DiscountAmount'
+        discount_details:
+          type: array
+          description: List of discounts applied to the transaction
+          items:
+            $ref: '#/components/schemas/DiscountDetail'
+        event_date:
+          $ref: '#/components/schemas/EventDate'
+        fee:
+          $ref: '#/components/schemas/Fee'
+        id:
+          $ref: '#/components/schemas/MerchTransId'
+        installment:
+          $ref: '#/components/schemas/Installment'
+        marketplace_id:
+          $ref: '#/components/schemas/MarketplaceId'
+        mdr_amount:
+          $ref: '#/components/schemas/MdrAmount'
+        mdr_tax:
+          $ref: '#/components/schemas/MdrTax'
+        mdr_without_fee:
+          $ref: '#/components/schemas/MdrWithoutFee'
+        merchant_id:
+          $ref: '#/components/schemas/MerchantId'
+        net_amount:
+          $ref: '#/components/schemas/MerchantTransactionNetAmount'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallments'
+        org_operation_id:
+          $ref: '#/components/schemas/OrgOperationId'
+        origin_merchant_transaction_id:
+          $ref: '#/components/schemas/OriginMerchTransId'
+        parent_authorization_id:
+          $ref: '#/components/schemas/MerchantTransactionParentAuthorizationId'
+        processing_code:
+          $ref: '#/components/schemas/MerchTransProcessingCode'
+        scheduled_payment_date:
+          $ref: '#/components/schemas/ScheduledPaymentDate'
+        status:
+          $ref: '#/components/schemas/MerchTransactionStatus'
+        type:
+          $ref: '#/components/schemas/MerchTransactionType'
+    MerchantTransactionListItemResponse:
+      type: object
+      properties:
+        advanced_amount:
+          $ref: '#/components/schemas/MerchantTransactionAdvancedAmount'
+        advancement_request_id:
+          $ref: '#/components/schemas/AdvancementRequestId'
+        amount:
+          $ref: '#/components/schemas/MerchantTransactionAmount'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        currency_code:
+          $ref: '#/components/schemas/OptionalCurrencyCodeResponse'
+        discount_amount:
+          $ref: '#/components/schemas/DiscountAmount'
+        event_date:
+          $ref: '#/components/schemas/EventDate'
+        fee:
+          $ref: '#/components/schemas/Fee'
+        id:
+          $ref: '#/components/schemas/MerchTransId'
+        installment:
+          $ref: '#/components/schemas/Installment'
+        marketplace_id:
+          $ref: '#/components/schemas/MarketplaceId'
+        mdr_amount:
+          $ref: '#/components/schemas/MdrAmount'
+        mdr_tax:
+          $ref: '#/components/schemas/MdrTax'
+        mdr_without_fee:
+          $ref: '#/components/schemas/MdrWithoutFee'
+        merchant_id:
+          $ref: '#/components/schemas/MerchantId'
+        net_amount:
+          $ref: '#/components/schemas/MerchantTransactionNetAmount'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallments'
+        org_operation_id:
+          $ref: '#/components/schemas/OrgOperationId'
+        origin_merchant_transaction_id:
+          $ref: '#/components/schemas/OriginMerchTransId'
+        parent_authorization_id:
+          $ref: '#/components/schemas/MerchantTransactionParentAuthorizationId'
+        processing_code:
+          $ref: '#/components/schemas/MerchTransProcessingCode'
+        scheduled_payment_date:
+          $ref: '#/components/schemas/ScheduledPaymentDate'
+        status:
+          $ref: '#/components/schemas/MerchTransactionStatus'
+        type:
+          $ref: '#/components/schemas/MerchTransactionType'
+    MerchantTransactionNetAmount:
       type: number
       format: float
-      description: Merchant transaction MDR amount of marketplace
-    Fee:
-      type: number
-      format: float
-      description: Merchant transaction fee
-    MerchTransProcessingCode:
+      description: Net amount of the transaction, computed as amount minus discount_amount.
+      example: 149.6
+    MerchantTransactionPaginatedListResponse:
+      type: object
+      required:
+        - has_next
+        - items
+        - next_cursor
+        - per_page
+      properties:
+        has_next:
+          type: boolean
+          description: Is there a next page?
+          example: true
+        items:
+          type: array
+          description: >-
+            List of merchant transactions for the page. It is empty when no
+            transaction matches the filters.
+          items:
+            $ref: '#/components/schemas/MerchantTransactionListItemResponse'
+        next_cursor:
+          type: string
+          nullable: true
+          description: >-
+            Opaque token to send in the nextCursor parameter to get the next
+            page. `null` on the last page.
+          example: eyJldmVudF9zdGFydCI6Li4ufQ
+        per_page:
+          type: integer
+          format: int32
+          description: Number of items per page.
+          example: 10
+    MerchantTransactionParentAuthorizationId:
       type: string
-      description: Merchant transaction processing code
       nullable: true
-      example: '999999'
-    SplitMerchTransactionsStatus:
+      description: Parent authorization identifier
+      example: '987654'
+    MerchantTransactionPatchStatus:
+      type: string
+      enum:
+        - PENDING
+        - SCHEDULED
+        - CANCELED
+      description: New status for the merchant transaction.
+      example: CANCELED
+    MerchantTransactionPatchStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/MerchantTransactionPatchStatus'
+        reason:
+          $ref: '#/components/schemas/MerchantTransactionStatusReason'
+    MerchantTransactionResponse:
+      type: object
+      properties:
+        advanced_amount:
+          $ref: '#/components/schemas/MerchTransId'
+        advancement_request_id:
+          $ref: '#/components/schemas/AdvancementRequestId'
+        amount:
+          $ref: '#/components/schemas/MerchantTransactionAmount'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        creditor_id:
+          $ref: '#/components/schemas/CreditorId'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCodeResponse'
+        discount_amount:
+          $ref: '#/components/schemas/DiscountAmount'
+        discount_details:
+          type: array
+          description: List of discounts applied to the transaction
+          items:
+            $ref: '#/components/schemas/DiscountDetail'
+        event_date:
+          $ref: '#/components/schemas/EventDate'
+        fee:
+          $ref: '#/components/schemas/Fee'
+        id:
+          $ref: '#/components/schemas/MerchTransId'
+        installment:
+          $ref: '#/components/schemas/Installment'
+        marketplace_id:
+          $ref: '#/components/schemas/MarketplaceId'
+        mdr_amount:
+          $ref: '#/components/schemas/MdrAmount'
+        mdr_tax:
+          $ref: '#/components/schemas/MdrTax'
+        mdr_without_fee:
+          $ref: '#/components/schemas/MdrWithoutFee'
+        merchant_id:
+          $ref: '#/components/schemas/MerchantId'
+        net_amount:
+          $ref: '#/components/schemas/MerchantTransactionNetAmount'
+        number_of_installments:
+          $ref: '#/components/schemas/NumberOfInstallments'
+        org_operation_id:
+          $ref: '#/components/schemas/OrgOperationId'
+        origin_merchant_transaction_id:
+          $ref: '#/components/schemas/OriginMerchTransId'
+        parent_authorization_id:
+          $ref: '#/components/schemas/ParentAuthorizationId'
+        processing_code:
+          $ref: '#/components/schemas/MerchTransProcessingCode'
+        scheduled_payment_date:
+          $ref: '#/components/schemas/ScheduledPaymentDate'
+        status:
+          $ref: '#/components/schemas/MerchTransactionStatus'
+        type:
+          $ref: '#/components/schemas/MerchTransactionType'
+    MerchantTransactionSalePostRequest:
+      type: object
+      required:
+        - event_date
+        - amount
+        - installments
+        - processing_code
+      properties:
+        amount:
+          $ref: '#/components/schemas/MerchantTransactionAmount'
+        event_date:
+          $ref: '#/components/schemas/EventDate'
+        installments:
+          $ref: '#/components/schemas/Installments'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+        authorization_id:
+          $ref: '#/components/schemas/AuthorizationId'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+        transaction_status:
+          $ref: '#/components/schemas/MerchTransactionRequestStatus'
+    MerchantTransactionsResponseList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of merchant transactions
+          items:
+            $ref: '#/components/schemas/MerchantTransactionResponse'
+    MerchantTransactionStatusReason:
+      type: string
+      maxLength: 200
+      description: Free-text reason for the status change.
+      example: customer requested cancellation
+    MerchantTransactionSummaryResponse:
+      type: object
+      required:
+        - discount_amount
+        - gross_amount
+        - net_amount
+      properties:
+        discount_amount:
+          $ref: '#/components/schemas/MerchantTransactionTotalDiscountAmount'
+        gross_amount:
+          $ref: '#/components/schemas/MerchantTransactionTotalGrossAmount'
+        net_amount:
+          $ref: '#/components/schemas/MerchantTransactionTotalNetAmount'
+    MerchantTransactionTotalDiscountAmount:
+      type: number
+      format: float
+      description: Total discount amount aggregated for the period.
+      example: 75.35
+    MerchantTransactionTotalGrossAmount:
+      type: number
+      format: float
+      description: Total gross amount aggregated for the period.
+      example: 1500.75
+    MerchantTransactionTotalItem:
+      type: object
+      required:
+        - discount_amount
+        - gross_amount
+        - net_amount
+      properties:
+        discount_amount:
+          $ref: '#/components/schemas/MerchantTransactionTotalDiscountAmount'
+        gross_amount:
+          $ref: '#/components/schemas/MerchantTransactionTotalGrossAmount'
+        net_amount:
+          $ref: '#/components/schemas/MerchantTransactionTotalNetAmount'
+        scheduled_payment_date:
+          $ref: '#/components/schemas/MerchantTransactionTotalPaymentDate'
+        status:
+          $ref: '#/components/schemas/MerchantTransactionTotalStatus'
+    MerchantTransactionTotalNetAmount:
+      type: number
+      format: float
+      description: >-
+        Net amount for the period, computed as gross_amount minus
+        discount_amount.
+      example: 1425.4
+    MerchantTransactionTotalPaymentDate:
+      type: string
+      format: date
+      description: Scheduled payment date of the aggregated group, as YYYY-MM-DD.
+      example: '2024-09-27'
+    MerchantTransactionTotalsListResponse:
+      type: object
+      properties:
+        has_next:
+          type: boolean
+          description: Is there a next page?
+          example: false
+        items:
+          type: array
+          description: List of aggregated transaction totals for the page.
+          items:
+            $ref: '#/components/schemas/MerchantTransactionTotalItem'
+        page:
+          type: integer
+          format: int64
+          description: Current page number.
+          example: 1
+        per_page:
+          type: integer
+          format: int64
+          description: Number of items per page.
+          example: 100
+    MerchantTransactionTotalStatus:
       type: string
       enum:
         - PENDING
         - SCHEDULED
         - SETTLED
         - CANCELED
-      description: Merchant transaction status
-      nullable: true
-      example: SCHEDULED
-    ParentId:
-      type: integer
-      format: int64
-      nullable: true
-      description: |
-        Parent ID assigned to the child split request
-    ProcessingCode:
-      type: string
-      description: >
-        Processing code.<br>
-
-        For more information, refer to [Processing
-        codes](doc:processing-codes-and-transaction-types).
-      example: '999999'
-    ScheduledAmount:
-      type: number
-      format: float
-      description: >-
-        Scheduled amount on the target date. The scheduled amount is the amount
-        that is not yet available, but is scheduled to be settled on the target
-        date.
-    SplitRequestAmount:
-      type: number
-      format: float
-      description: Split request amount
-    MerchantTransactionAmount:
-      type: number
-      format: float
-      nullable: false
-      description: Merchant transaction amount
-    AuthorizationId:
-      type: number
-      format: int64
-      nullable: true
-      description: Authorization identifier
-    ParentAuthorizationId:
-      type: number
-      format: int64
-      nullable: true
-      description: Parent authorization identifier
-    OrgOperationId:
-      type: number
-      format: int64
-      nullable: true
-      description: Org operation identifier
+        - WAITING_SPLIT
+        - SPLITTED
+      description: Merchant transaction status used as an aggregation key and filter.
+      example: SETTLED
     MerchTransactionRequestStatus:
       type: string
       nullable: true
@@ -413,74 +940,151 @@ components:
       type: string
       nullable: false
       description: Merchant transaction type
-    AdvancementRequestId:
+    MerchTransId:
+      type: integer
+      format: int64
+      description: Merchant transaction identifier
+    MerchTransProcessingCode:
+      type: string
+      description: Merchant transaction processing code
+      nullable: true
+      example: '999999'
+    NumberOfInstallments:
+      type: integer
+      format: int32
+      description: Number of installments
+      minimum: 1
+      maximum: 2147483647
+      example: 1
+    OptionalCurrencyCodeResponse:
+      type: string
+      nullable: true
+      description: >-
+        ISO 4217 alphanumeric currency code. `null` when no currency is
+        recorded.
+      example: BRL
+    OrgOperationId:
+      type: number
+      format: int64
+      nullable: true
+      description: Org operation identifier
+    OriginMerchTransId:
       type: integer
       format: int64
       nullable: true
-      description: Advancement Requested id
+      description: Sale Merchant transaction identifier
+    ParentAuthorizationId:
+      type: number
+      format: int64
+      nullable: true
+      description: Parent authorization identifier
+    ParentId:
+      type: integer
+      format: int64
+      nullable: true
+      description: |
+        Parent ID assigned to the child split request
+    ProcessingCode:
+      type: string
+      description: >
+        Processing code.<br>
+
+        For more information, refer to [Processing
+        codes](doc:processing-codes-and-transaction-types).
+      example: '999999'
+    ScheduledAmount:
+      type: number
+      format: float
+      description: >-
+        Scheduled amount on the target date. The scheduled amount is the amount
+        that is not yet available, but is scheduled to be settled on the target
+        date.
+    ScheduledPaymentDate:
+      type: string
+      format: datetime
+      description: >-
+        The scheduled payment date for the transaction. The datetime format
+        follows the ISO 8601 format (UTC).
+      example: '2023-01-02'
+    SplitMerchTransactionsStatus:
+      type: string
+      enum:
+        - PENDING
+        - SCHEDULED
+        - SETTLED
+        - CANCELED
+      description: Merchant transaction status
+      nullable: true
+      example: SCHEDULED
+    SplitRequestAmount:
+      type: number
+      format: float
+      description: Split request amount
     SplitRequestGetDefinitionsResponse:
       type: object
       properties:
         merchant_id:
           $ref: '#/components/schemas/MerchantId'
-        transaction_status:
-          $ref: '#/components/schemas/SplitMerchTransactionsStatus'
+        merchant_transactions_ids:
+          $ref: '#/components/schemas/SplitRequestMerchTransId'
         processing_code:
           $ref: '#/components/schemas/MerchTransProcessingCode'
         total_amount:
           $ref: '#/components/schemas/SplitRequestTotalAmount'
-        merchant_transactions_ids:
-          $ref: '#/components/schemas/SplitRequestMerchTransId'
+        transaction_status:
+          $ref: '#/components/schemas/SplitMerchTransactionsStatus'
     SplitRequestGetResponse:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/SplitRequestId'
-        event_date:
-          $ref: '#/components/schemas/EventDate'
         amount:
           $ref: '#/components/schemas/SplitRequestAmount'
         currency_code:
           $ref: '#/components/schemas/CurrencyCodeResponse'
-        installments:
-          $ref: '#/components/schemas/Installments'
-        processing_code:
-          $ref: '#/components/schemas/ProcessingCode'
-        merchant_transaction_id:
-          $ref: '#/components/schemas/MerchTransId'
-        marketplace_id:
-          $ref: '#/components/schemas/MarketplaceId'
-        parent_id:
-          $ref: '#/components/schemas/ParentId'
-        type:
-          $ref: '#/components/schemas/SplitRequestType'
-        status:
-          $ref: '#/components/schemas/SplitRequestStatus'
-        message:
-          $ref: '#/components/schemas/SplitRequestMessage'
         definitions:
           type: array
           description: >-
-            Determines how the transaction amount is split among merchants and
-            specifies the applicable taxes and discounts. `definitions` defines
-            the number of merchants involved in the transaction, amount of tax
-            or discount to apply, and the percentage or amount allocated to each
-            merchant.
+            List of split definitions that determine how the transaction amount
+            is split among merchants and specify the applicable taxes and
+            discounts. `definitions` defines the number of merchants involved in
+            the transaction, amount of tax or discount to apply, and the
+            percentage or amount allocated to each merchant.
           items:
             $ref: '#/components/schemas/SplitRequestGetDefinitionsResponse'
-    SplitRequestListResponse:
+        event_date:
+          $ref: '#/components/schemas/EventDate'
+        id:
+          $ref: '#/components/schemas/SplitRequestId'
+        installments:
+          $ref: '#/components/schemas/Installments'
+        marketplace_id:
+          $ref: '#/components/schemas/MarketplaceId'
+        merchant_transaction_id:
+          $ref: '#/components/schemas/MerchTransId'
+        message:
+          $ref: '#/components/schemas/SplitRequestMessage'
+        parent_id:
+          $ref: '#/components/schemas/ParentId'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+        status:
+          $ref: '#/components/schemas/SplitRequestStatus'
+        type:
+          $ref: '#/components/schemas/SplitRequestType'
+    SplitRequestGetTotalGrossAmount:
+      type: number
+      format: float
+      description: >-
+        The gross amount of all split requests using `splitId` and `parentId` as
+        reference
+    SplitRequestGetTotalsDefinitionsResponse:
       type: object
       properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/SplitRequestListItemResponse'
-        page:
-          $ref: '#/components/schemas/SplitRequestPageNumber'
-        per_page:
-          $ref: '#/components/schemas/SplitRequestPerPage'
-        has_next:
-          $ref: '#/components/schemas/SplitRequestHasNextPage'
+        amount:
+          $ref: '#/components/schemas/SplitRequestGrossAmount'
+        merchant_id:
+          $ref: '#/components/schemas/MerchantId'
+        merchant_transactions_ids:
+          $ref: '#/components/schemas/SplitRequestMerchTransId'
     SplitRequestGetTotalsResponse:
       type: object
       properties:
@@ -488,33 +1092,18 @@ components:
           $ref: '#/components/schemas/SplitRequestGetTotalGrossAmount'
         currency_code:
           $ref: '#/components/schemas/OptionalCurrencyCodeResponse'
-        marketplace_id:
-          $ref: '#/components/schemas/MarketplaceId'
         definitions:
           type: array
           description: >-
-            Determines how the transaction amount is split among merchants and
-            specify the applicable taxes and discounts. `definitions` defines
-            the number of merchants involved in the transaction, amount of tax
-            or discount to apply, and the percentage or amount allocated to each
-            merchant.
+            List of split definitions that determine how the transaction amount
+            is split among merchants and specify the applicable taxes and
+            discounts. `definitions` defines the number of merchants involved in
+            the transaction, amount of tax or discount to apply, and the
+            percentage or amount allocated to each merchant.
           items:
             $ref: '#/components/schemas/SplitRequestGetTotalsDefinitionsResponse'
-    SplitRequestGetTotalsDefinitionsResponse:
-      type: object
-      properties:
-        merchant_id:
-          $ref: '#/components/schemas/MerchantId'
-        amount:
-          $ref: '#/components/schemas/SplitRequestGrossAmount'
-        merchant_transactions_ids:
-          $ref: '#/components/schemas/SplitRequestMerchTransId'
-    SplitRequestGetTotalGrossAmount:
-      type: number
-      format: float
-      description: >-
-        The gross amount of all split requests using `splitId` and `parentId` as
-        reference
+        marketplace_id:
+          $ref: '#/components/schemas/MarketplaceId'
     SplitRequestGrossAmount:
       type: number
       format: float
@@ -530,28 +1119,42 @@ components:
     SplitRequestListItemResponse:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/SplitRequestId'
-        parent_id:
-          $ref: '#/components/schemas/ParentId'
-        marketplace_id:
-          $ref: '#/components/schemas/MarketplaceId'
-        merchant_transaction_id:
-          $ref: '#/components/schemas/MerchTransId'
         amount:
           $ref: '#/components/schemas/SplitRequestAmount'
         currency_code:
           $ref: '#/components/schemas/CurrencyCodeResponse'
         event_date:
           $ref: '#/components/schemas/EventDate'
-        processing_code:
-          $ref: '#/components/schemas/ProcessingCode'
-        type:
-          $ref: '#/components/schemas/SplitRequestType'
-        status:
-          $ref: '#/components/schemas/SplitRequestStatus'
+        id:
+          $ref: '#/components/schemas/SplitRequestId'
+        marketplace_id:
+          $ref: '#/components/schemas/MarketplaceId'
+        merchant_transaction_id:
+          $ref: '#/components/schemas/MerchTransId'
         message:
           $ref: '#/components/schemas/SplitRequestMessage'
+        parent_id:
+          $ref: '#/components/schemas/ParentId'
+        processing_code:
+          $ref: '#/components/schemas/ProcessingCode'
+        status:
+          $ref: '#/components/schemas/SplitRequestStatus'
+        type:
+          $ref: '#/components/schemas/SplitRequestType'
+    SplitRequestListResponse:
+      type: object
+      properties:
+        has_next:
+          $ref: '#/components/schemas/SplitRequestHasNextPage'
+        items:
+          type: array
+          description: List of split requests
+          items:
+            $ref: '#/components/schemas/SplitRequestListItemResponse'
+        page:
+          $ref: '#/components/schemas/SplitRequestPageNumber'
+        per_page:
+          $ref: '#/components/schemas/SplitRequestPerPage'
     SplitRequestMerchTransId:
       type: array
       items:
@@ -599,8 +1202,6 @@ components:
       properties:
         event_date:
           $ref: '#/components/schemas/EventDate'
-        installments:
-          $ref: '#/components/schemas/Installments'
         processing_code:
           $ref: '#/components/schemas/ProcessingCode'
         definitions:
@@ -608,22 +1209,25 @@ components:
           items:
             $ref: '#/components/schemas/SplitRequestPostCancelDefinitionsRequest'
           description: >
-            Determines how the transaction amount is split among merchants and
-            specify the applicable taxes and discounts. `definitions` defines
-            the number of merchants involved in the transaction, amount of tax
-            or discount to apply, and the percentage or amount allocated to each
-            merchant.<br>
+            List of split definitions that determine how the transaction amount
+            is split among merchants and specify the applicable taxes and
+            discounts. `definitions` defines the number of merchants involved in
+            the transaction, amount of tax or discount to apply, and the
+            percentage or amount allocated to each merchant.<br>
 
             If you cancel a split request without specifying any values in the
             object, the amounts split among all merchants are canceled.
+        installments:
+          $ref: '#/components/schemas/Installments'
     SplitRequestPostResponse:
       type: object
       description: Split request ID
       properties:
         id:
           type: integer
-          format: uint64
-          description: Marketplace ID
+          format: int64
+          description: Split request ID
+          example: 12345
     SplitRequestPostSaleDefinitionsRequest:
       type: object
       description: >
@@ -639,8 +1243,7 @@ components:
         amount:
           $ref: '#/components/schemas/SplitRequestPostSaleDefinitionsTotalAmount'
         amount_percentage:
-          $ref: >-
-            #/components/schemas/SplitRequestPostSaleDefinitionsTotalAmountPercentage
+          $ref: '#/components/schemas/SplitRequestPostSaleDefinitionsTotalAmountPercentage'
         processing_code:
           $ref: '#/components/schemas/MerchTransProcessingCode'
         transaction_status:
@@ -678,22 +1281,22 @@ components:
         - processing_code
         - definitions
       properties:
+        definitions:
+          type: array
+          description: >
+            List of split definitions that determine how the transaction amount
+            is split among merchants and specify the applicable taxes and
+            discounts. `definitions` defines the number of merchants involved in
+            the transaction, amount of tax or discount to apply, and the
+            percentage or amount allocated to each merchant.
+          items:
+            $ref: '#/components/schemas/SplitRequestPostSaleDefinitionsRequest'
         event_date:
           $ref: '#/components/schemas/EventDate'
         installments:
           $ref: '#/components/schemas/Installments'
         processing_code:
           $ref: '#/components/schemas/ProcessingCode'
-        definitions:
-          type: array
-          description: >
-            Determines how the transaction amount is split among merchants and
-            specifies the applicable taxes and discounts. `definitions` defines
-            the number of merchants involved in the transaction, amount of tax
-            or discount to apply, and the percentage or amount allocated to each
-            merchant. 
-          items:
-            $ref: '#/components/schemas/SplitRequestPostSaleDefinitionsRequest'
     SplitRequestStatus:
       type: string
       enum:
@@ -715,138 +1318,6 @@ components:
       type: string
       format: date
       description: Target date to estimate the merchant balance
-    MerchantTransactionSalePostRequest:
-      type: object
-      required:
-        - event_date
-        - amount
-        - installments
-        - processing_code
-      properties:
-        event_date:
-          $ref: '#/components/schemas/EventDate'
-        amount:
-          $ref: '#/components/schemas/MerchantTransactionAmount'
-        installments:
-          $ref: '#/components/schemas/Installments'
-        processing_code:
-          $ref: '#/components/schemas/ProcessingCode'
-        currency_code:
-          $ref: '#/components/schemas/CurrencyCode'
-        authorization_id:
-          $ref: '#/components/schemas/AuthorizationId'
-        transaction_status:
-          $ref: '#/components/schemas/MerchTransactionRequestStatus'
-    MerchantTransactionCancelPostRequest:
-      type: object
-      required:
-        - event_date
-        - amount
-        - authorization
-        - processing_code
-      properties:
-        event_date:
-          $ref: '#/components/schemas/EventDate'
-        amount:
-          $ref: '#/components/schemas/MerchantTransactionAmount'
-        authorization:
-          $ref: '#/components/schemas/MerchantTransactionAuthorizationRequest'
-        processing_code:
-          $ref: '#/components/schemas/ProcessingCode'
-    MerchantTransactionAuthorizationRequest:
-      type: object
-      required:
-        - id
-        - parent_id
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Authorization identifier
-        parent_id:
-          type: integer
-          format: int64
-          description: Parent authorization identifier from the original transaction
-    MerchantTransactionsResponseList:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/MerchantTransactionResponse'
-    MerchantTransactionResponse:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/MerchTransId'
-        merchant_id:
-          $ref: '#/components/schemas/MerchantId'
-        creditor_id:
-          $ref: '#/components/schemas/CreditorId'
-        authorization_id:
-          $ref: '#/components/schemas/AuthorizationId'
-        parent_authorization_id:
-          $ref: '#/components/schemas/ParentAuthorizationId'
-        org_operation_id:
-          $ref: '#/components/schemas/OrgOperationId'
-        amount:
-          $ref: '#/components/schemas/MerchantTransactionAmount'
-        mdr_amount:
-          $ref: '#/components/schemas/MdrAmount'
-        mdr_without_fee:
-          $ref: '#/components/schemas/MdrWithoutFee'
-        mdr_tax:
-          $ref: '#/components/schemas/MdrTax'
-        fee:
-          $ref: '#/components/schemas/Fee'
-        installment:
-          $ref: '#/components/schemas/Installment'
-        number_of_installments:
-          $ref: '#/components/schemas/NumberOfInstallments'
-        event_date:
-          $ref: '#/components/schemas/EventDate'
-        scheduled_payment_date:
-          $ref: '#/components/schemas/ScheduledPaymentDate'
-        status:
-          $ref: '#/components/schemas/MerchTransactionStatus'
-        advanced_amount:
-          $ref: '#/components/schemas/MerchTransId'
-        type:
-          $ref: '#/components/schemas/MerchTransactionType'
-        origin_merchant_transaction_id:
-          $ref: '#/components/schemas/OriginMerchTransId'
-        advancement_request_id:
-          $ref: '#/components/schemas/AdvancementRequestId'
-        marketplace_id:
-          $ref: '#/components/schemas/MarketplaceId'
-        currency_code:
-          $ref: '#/components/schemas/CurrencyCodeResponse'
-        discount_amount:
-          $ref: '#/components/schemas/DiscountAmount'
-        discount_details:
-          type: array
-          items:
-            $ref: '#/components/schemas/DiscountDetail'
-    DiscountAmount:
-      description: Total discount amount applied to the transaction
-      type: number
-      format: float
-      example: 1.99
-    DiscountDetail:
-      description: >-
-        The `amount` represents the fee applied - that is, the amount discounted
-        before settlement.
-      type: object
-      properties:
-        name:
-          description: Discount name
-          type: string
-          example: EMISSION_FEE
-        amount:
-          description: Total discount amount
-          type: number
-          format: float
-          example: 10
   responses:
     200GetMerchantBalanceResponse:
       description: Successfully get merchant balance
@@ -857,6 +1328,89 @@ components:
           examples:
             Get merchant balance:
               $ref: '#/components/examples/BalanceRequestGetResponse'
+    200MerchantTransactionGetByIdResponse:
+      description: Successfully get merchant transaction
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantTransactionGetByIdResponse'
+          examples:
+            Get merchant transaction:
+              $ref: '#/components/examples/MerchantTransactionGetByIdResponse'
+    200MerchantTransactionPaginatedListResponse:
+      description: Successfully list merchant transactions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantTransactionPaginatedListResponse'
+          examples:
+            List merchant transactions:
+              $ref: '#/components/examples/MerchantTransactionPaginatedListResponse'
+    200MerchantTransactionSummaryResponse:
+      description: >-
+        Aggregated transaction totals for the merchant over the requested
+        period.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantTransactionSummaryResponse'
+          examples:
+            Merchant transaction summary:
+              value:
+                gross_amount: 1500.75
+                discount_amount: 75.35
+                net_amount: 1425.4
+    200MerchantTransactionTotalsResponse:
+      description: Paginated transaction totals grouped by the requested dimension.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantTransactionTotalsListResponse'
+          examples:
+            groupBy=status:
+              value:
+                page: 1
+                per_page: 100
+                has_next: false
+                items:
+                  - status: PENDING
+                    gross_amount: 755.12
+                    discount_amount: 11.03
+                    net_amount: 744.09
+                  - status: SETTLED
+                    gross_amount: 1801.44
+                    discount_amount: 22.06
+                    net_amount: 1779.38
+            groupBy=date:
+              value:
+                page: 1
+                per_page: 100
+                has_next: false
+                items:
+                  - scheduled_payment_date: '2024-09-08'
+                    gross_amount: 54.02
+                    discount_amount: 0
+                    net_amount: 54.02
+                  - scheduled_payment_date: '2024-09-27'
+                    gross_amount: 755.12
+                    discount_amount: 11.03
+                    net_amount: 744.09
+            groupBy=date_and_status:
+              value:
+                page: 1
+                per_page: 100
+                has_next: false
+                items:
+                  - scheduled_payment_date: '2024-09-10'
+                    status: PENDING
+                    gross_amount: 755.12
+                    discount_amount: 11.03
+                    net_amount: 744.09
+                  - scheduled_payment_date: '2024-09-27'
+                    status: SETTLED
+                    gross_amount: 1132.68
+                    discount_amount: 22.06
+                    net_amount: 1110.62
     200SplitRequestGetDetails:
       description: Successfully get split request totals
       content:
@@ -893,15 +1447,6 @@ components:
           examples:
             List merchant transactions success:
               $ref: '#/components/examples/MerchantTransactionListResponse'
-    202CreateSplitRequestAccepted:
-      description: Successfully create split requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SplitRequestPostResponse'
-          examples:
-            Create split request:
-              $ref: '#/components/examples/SplitRequestPostResponse'
     202CancelSplitRequestAccepted:
       description: Successfully canceled split requests
       content:
@@ -910,6 +1455,15 @@ components:
             $ref: '#/components/schemas/SplitRequestPostResponse'
           examples:
             Cancel split request:
+              $ref: '#/components/examples/SplitRequestPostResponse'
+    202CreateSplitRequestAccepted:
+      description: Successfully create split requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SplitRequestPostResponse'
+          examples:
+            Create split request:
               $ref: '#/components/examples/SplitRequestPostResponse'
     400BadRequest:
       description: Bad request
@@ -929,6 +1483,15 @@ components:
           examples:
             Not found:
               $ref: '#/components/examples/DefaultNotFoundResponse'
+    409Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DefaultErrorResponse'
+          examples:
+            Conflict:
+              $ref: '#/components/examples/DefaultConflictResponse'
     500InternalServerError:
       description: Internal server error
       content:
@@ -947,6 +1510,13 @@ components:
         estimated_available_amount: 300
         scheduled_amount: 203.1
         currency_code: BRL
+    DefaultConflictResponse:
+      summary: Conflict response
+      value:
+        code: ESMT3042
+        message: >-
+          Merchant transaction 123456 status changed concurrently, retry the
+          request.
     DefaultErrorResponse:
       summary: Bad request response
       value:
@@ -1088,11 +1658,81 @@ components:
             marketplace_id: 98765
             currency_code: BRL
             discount_amount: 40
+            net_amount: 1460
             discount_details:
               - name: MDR
                 amount: 25
               - name: TRANSACTION_FEE
                 amount: 15
+            processing_code: '003000'
+    MerchantTransactionGetByIdResponse:
+      summary: Merchant transaction get by ID response
+      value:
+        id: 123456
+        merchant_id: 789
+        authorization_id: 987654
+        parent_authorization_id: '987654'
+        org_operation_id: 12
+        amount: 150
+        mdr_amount: 4.5
+        mdr_without_fee: 4.1
+        mdr_tax: 0.2
+        fee: 0.2
+        installment: 1
+        number_of_installments: 1
+        event_date: '2026-07-28T12:00:00Z'
+        scheduled_payment_date: '2026-07-30'
+        status: PENDING
+        advanced_amount: 0
+        type: SALE
+        origin_merchant_transaction_id: null
+        advancement_request_id: null
+        marketplace_id: 1
+        currency_code: BRL
+        discount_amount: 0.4
+        net_amount: 149.6
+        discount_details:
+          - name: MDR
+            amount: 0.2
+          - name: TRANSACTION_FEE
+            amount: 0.2
+        processing_code: '003000'
+    MerchantTransactionPaginatedListResponse:
+      summary: Merchant transaction paginated list response
+      value:
+        per_page: 10
+        has_next: true
+        next_cursor: eyJldmVudF9zdGFydCI6Li4ufQ
+        items:
+          - id: 123456
+            merchant_id: 789
+            authorization_id: 987654
+            parent_authorization_id: '987654'
+            org_operation_id: 12
+            amount: 150
+            mdr_amount: 4.5
+            mdr_without_fee: 4.1
+            mdr_tax: 0.2
+            fee: 0.2
+            installment: 1
+            number_of_installments: 1
+            event_date: '2026-07-28T12:00:00Z'
+            scheduled_payment_date: '2026-07-30'
+            status: PENDING
+            advanced_amount: 0
+            type: SALE
+            origin_merchant_transaction_id: null
+            advancement_request_id: null
+            marketplace_id: 1
+            currency_code: BRL
+            discount_amount: 0.4
+            net_amount: 149.6
+            processing_code: '003000'
+    MerchantTransactionPatchStatusRequest:
+      summary: Merchant transaction patch status request
+      value:
+        status: CANCELED
+        reason: customer requested cancellation
   securitySchemes:
     bearerAuth:
       type: http
@@ -1354,5 +1994,183 @@ paths:
           $ref: '#/components/responses/201MerchantTransactionListResponse'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v4/merchants/{merchantId}/transactions:
+    get:
+      summary: List merchant transactions
+      description: >
+        List a merchant's transactions for a date range, using cursor-based
+        pagination.
+
+
+        A complete date range is required: either `startEventDate` and
+        `endEventDate`, or `startPaymentDate` and `endPaymentDate`. The range
+        can span up to 62 days. When you also filter by `authorizationId` or
+        `parentAuthorizationId`, the range can span up to 365 days. These
+        filters raise the limit but never replace the date range.
+
+
+        Results are always sorted by event date and then by merchant transaction
+        ID, in the direction set by `order`. A payment-date range only filters
+        the results and does not change the sort.
+
+
+        To get the next page, send the `next_cursor` value from the previous
+        response in the `nextCursor` parameter. The cursor keeps the filters and
+        sort order of the first request. On continuation requests, only
+        `perPage` can change. Any filter or `order` value that differs from the
+        cursor returns a `400` error. On the last page, `has_next` is `false`
+        and `next_cursor` is `null`.
+      tags:
+        - Merchant transactions
+      operationId: get-merchant-transactions
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
+        - $ref: '#/components/parameters/merchantIdPath'
+        - $ref: '#/components/parameters/transactionListStartEventDateQuery'
+        - $ref: '#/components/parameters/transactionListEndEventDateQuery'
+        - $ref: '#/components/parameters/transactionListStartPaymentDateQuery'
+        - $ref: '#/components/parameters/transactionListEndPaymentDateQuery'
+        - $ref: '#/components/parameters/authorizationIdQuery'
+        - $ref: '#/components/parameters/parentAuthorizationIdQuery'
+        - $ref: '#/components/parameters/processingCodeQuery'
+        - $ref: '#/components/parameters/transactionListOrderQuery'
+        - $ref: '#/components/parameters/transactionListPerPageQuery'
+        - $ref: '#/components/parameters/nextCursorQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/200MerchantTransactionPaginatedListResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v3/merchants/{merchantId}/transactions/{merchantTransactionId}:
+    get:
+      summary: Get merchant transaction
+      description: >
+        Get a merchant transaction by ID.
+
+
+        The transaction must belong to the merchant in the path. A transaction
+        that exists but belongs to another merchant returns a `404` error.
+      tags:
+        - Merchant transactions
+      operationId: get-merchant-transaction
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
+        - $ref: '#/components/parameters/merchantIdPath'
+        - $ref: '#/components/parameters/merchantTransactionIdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/200MerchantTransactionGetByIdResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/merchants/{merchantId}/transactions/{transactionId}:
+    patch:
+      summary: Update merchant transaction status
+      description: >
+        Update the status of a merchant transaction.
+
+
+        You can set the status to `PENDING`, `SCHEDULED`, or `CANCELED`.
+        Transactions whose current status is `SETTLED`, `WAITING_SPLIT`, or
+        `SPLITTED` can't be updated, and the request returns a `400` error.
+        Sending the transaction's current status also returns `400`, since there
+        is nothing to change.
+
+
+        You can send an optional `reason`, up to 200 characters, to explain the
+        change.
+
+
+        A successful update returns `204 No Content`.
+      tags:
+        - Merchant transactions
+      operationId: patch-merchant-transaction-status
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
+        - $ref: '#/components/parameters/merchantIdPath'
+        - $ref: '#/components/parameters/transactionIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantTransactionPatchStatusRequest'
+            examples:
+              merchant-transaction-patch-status:
+                $ref: '#/components/examples/MerchantTransactionPatchStatusRequest'
+      responses:
+        '204':
+          description: Merchant transaction status updated
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v3/merchants/{merchantId}/transactions/totals:
+    get:
+      summary: List merchant transaction totals
+      description: >
+        List a merchant's aggregated transaction totals (gross, discount, and
+        net amounts) for a payment-date range, grouped by `groupBy` and
+        paginated. The date range is limited to one year.
+      tags:
+        - Transaction totals
+      operationId: get-merchant-transaction-totals
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
+        - $ref: '#/components/parameters/merchantIdPath'
+        - $ref: '#/components/parameters/startPaymentDateQuery'
+        - $ref: '#/components/parameters/endPaymentDateQuery'
+        - $ref: '#/components/parameters/groupByQuery'
+        - $ref: '#/components/parameters/transactionStatusQuery'
+        - $ref: '#/components/parameters/marketplaceIdQuery'
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/perPageQuery'
+        - $ref: '#/components/parameters/orderQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/200MerchantTransactionTotalsResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v3/merchants/{merchantId}/transactions/summary:
+    get:
+      summary: Get merchant transaction summary
+      description: >
+        Get a merchant's aggregated transaction totals (gross, discount, and net
+        amounts) as a single object for a payment-date range. The date range is
+        limited to one year.
+      tags:
+        - Transaction totals
+      operationId: get-merchant-transaction-summary
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
+        - $ref: '#/components/parameters/merchantIdPath'
+        - $ref: '#/components/parameters/startPaymentDateQuery'
+        - $ref: '#/components/parameters/endPaymentDateQuery'
+        - $ref: '#/components/parameters/transactionStatusQuery'
+        - $ref: '#/components/parameters/marketplaceIdQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/200MerchantTransactionSummaryResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
