@@ -1762,14 +1762,6 @@ components:
               example: 5a8ade4e-e89a-11eb-9dd1-4b56d86f7a21
             version_date:
               $ref: '#/components/schemas/VersionDate'
-            authorization_id:
-              type: string
-              description: >
-                Record ID for `DECENDIAL_IOF` accruals that identifies the
-                authorization of the accrual. `DECENDIAL_IOF` is a Brazilian tax
-                charged on a loan or an installment. (Installments are
-                considered a type of loan.)
-              example: accountMigrationId_referenceNumber_planCode_authorizationType
         accounting_date:
           type: string
           format: date
@@ -1797,37 +1789,14 @@ components:
         type:
           type: string
           description: >
-            Accrual type 
-
-
-            **Note:** Do not use `DECENDIAL_IOF` or `WITHDRAW_IOF` as these are
-            **outdated**.
+            Accrual type
 
 
             - `REFINANCING`—Interest accrual amounts where the cardholder pays
-            less than the minumum invoice amount
-
-            - `NOTACCRUABLE_NOTFINEABLE`—Amounts that are not subject to
-            accruals or fines
+            less than the minimum invoice amount
           enum:
             - REFINANCING
-            - DECENDIAL_IOF
-            - WITHDRAW_IOF
-            - NOTACCRUABLE_NOTFINEABLE
           example: REFINANCING
-        authorization_type:
-          type: string
-          deprecated: true
-          description: >-
-            Authorization type of the transaction. **Note:** Required when
-            accrual type is `DECENDIAL_IOF`, however `DECENDIAL_IOF` is outdated
-            and should not be used.
-          example: PLATFORM
-          enum:
-            - PLATFORM
-            - NETWORK
-            - ON_US
-            - BANKING
         projected_values:
           type: array
           description: >-
