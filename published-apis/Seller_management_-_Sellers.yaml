@@ -23,6 +23,12 @@ tags:
     description: Endpoints for marketplace management
   - name: Marketplace merchants links
     description: Endpoints for managing marketplace relationships
+  - name: Business categories
+    description: Endpoints for business category management
+  - name: Merchants
+    description: Endpoints for merchant management
+  - name: Creditor
+    description: Endpoints for creditor management
 components:
   parameters:
     MarketplaceId:
@@ -99,13 +105,36 @@ components:
         format: int32
         description: Number of items per page
         minimum: 1
+    MerchantPage:
+      in: query
+      name: page
+      description: Current page number (starts at 1)
+      required: false
+      example: 1
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        default: 1
+    MerchantPerPage:
+      in: query
+      name: perPage
+      description: Number of items per page
+      required: false
+      example: 25
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 25
     Subnet:
       in: query
       name: subnet
       description: >
-        Filter by merchant subnet. 
+        Filter by merchant subnet.
 
-        Values are `individual`, `hq` (short for `Headquarters`), or `branch`. 
+        Values are `individual`, `hq` (short for `Headquarters`), or `branch`.
 
 
         A merchant is:
@@ -164,6 +193,18 @@ components:
         type: string
         minLength: 1
         maxLength: 100
+    MerchantIdFilter:
+      in: query
+      name: merchantId
+      description: >-
+        Filter marketplaces by merchant ID to return marketplaces linked to that
+        merchant
+      required: false
+      example: 54
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
     Order:
       in: query
       name: order
@@ -180,7 +221,7 @@ components:
       in: query
       name: orderBy
       description: |
-        Field name to sort by. Supported fields:
+        Field name to sort by
         - `marketplace_id`
         - `document_number`
         - `brand_name`
@@ -191,13 +232,198 @@ components:
       schema:
         type: string
         maxLength: 50
+    BusinessCategoryExternalCodePath:
+      in: path
+      name: externalCode
+      required: true
+      description: External code that identifies the business category in the client system
+      example: MCC_5411
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 45
+    ExternalCodeQueryFilter:
+      in: query
+      name: externalCode
+      description: Filter by external code (partial match, case-insensitive)
+      required: false
+      example: MCC_5411
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 45
+    CategoryQueryFilter:
+      in: query
+      name: category
+      description: Filter by category name (partial match, case-insensitive)
+      required: false
+      example: Grocery
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 150
+    DescriptionQueryFilter:
+      in: query
+      name: description
+      description: Filter by description (partial match, case-insensitive)
+      required: false
+      example: food products
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 150
+    BusinessCategoryOrderBy:
+      in: query
+      name: orderBy
+      description: Field name to sort by
+      required: false
+      example: businessCategoryId
+      schema:
+        type: string
+        enum:
+          - businessCategoryId
+          - externalCode
+          - category
+          - description
+        default: businessCategoryId
+    MerchantDocumentNumberFilter:
+      in: query
+      name: documentNumber
+      description: >-
+        Filter by merchant document number (exact match, case-sensitive). Takes
+        precedence over the `name` filter.
+      required: false
+      example: '12345678901'
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+    MerchantNameFilter:
+      in: query
+      name: name
+      description: >-
+        Filter by merchant name (partial match, case-insensitive). Ignored when
+        `documentNumber` is provided.
+      required: false
+      example: Acme
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+    MerchantStatusFilter:
+      in: query
+      name: status
+      description: Filter by merchant status within the org (exact match)
+      required: false
+      example: APPROVED
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 20
+    MerchantExternalIdFilter:
+      in: query
+      name: externalId
+      description: Filter by external system identifier (exact match, case-sensitive)
+      required: false
+      example: EXT-001
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+    MerchantOrderBy:
+      in: query
+      name: orderBy
+      description: |
+        Field name to sort by
+        - `id`
+        - `name`
+        - `merchant_name`
+        - `document_number`
+        - `municipal_registration`
+        - `external_id`
+        - `status`
+        - `creditor_id`
+      required: false
+      example: id
+      schema:
+        type: string
+        enum:
+          - id
+          - name
+          - merchant_name
+          - document_number
+          - municipal_registration
+          - external_id
+          - status
+          - creditor_id
+        default: id
+    MerchantMarketplaceIdHeader:
+      in: header
+      name: x-marketplace-id
+      description: >-
+        Optional marketplace ID to restrict the listing to merchants linked to
+        that marketplace
+      required: false
+      example: 51148
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    CreditorNameFilter:
+      in: query
+      name: name
+      description: Filter by creditor name (prefix match, case-insensitive)
+      required: false
+      example: Acme
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+    CreditorMarketplaceFilter:
+      in: query
+      name: marketplaceId
+      description: >-
+        Filter creditors by marketplace to return only creditors that operate in
+        that marketplace
+      required: false
+      example: 1654
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    CreditorOrderBy:
+      in: query
+      name: orderBy
+      description: |
+        Field name to sort by
+        - `id`
+        - `name`
+      required: false
+      example: name
+      schema:
+        type: string
+        enum:
+          - id
+          - name
+        default: name
+    CreditorIdPath:
+      in: path
+      name: creditorId
+      description: Creditor ID
+      required: true
+      example: 77
+      schema:
+        $ref: '#/components/schemas/CreditorId'
   schemas:
     AdditionalPhoneNumber:
       type: string
-      description: Additional phone number. Dashes and parentheses are optional
-      minLength: 1
-      maxLength: 25
-      example: '5558739453'
+      description: >-
+        Additional phone number. Format = E.164. Leading '+' followed by 7 to 15
+        digits is **REQUIRED**. Do not use spaces, dashes or parentheses.
+      pattern: ^\+[1-9]?[0-9]{7,14}$
+      minLength: 8
+      maxLength: 16
+      example: '+5511888888888'
     BrandName:
       type: string
       description: >
@@ -315,6 +541,224 @@ components:
                   message:
                     type: string
                     description: Error message referring to the field
+    CreateMerchantRequest:
+      type: object
+      description: Request payload for creating a merchant.
+      required:
+        - document_number
+        - name
+        - email
+        - creditor
+      properties:
+        document_number:
+          type: string
+          description: Government document code, such as a government-issued tax ID
+          minLength: 1
+          maxLength: 14
+          example: '81106922000180'
+        name:
+          type: string
+          description: Merchant legal name
+          minLength: 1
+          maxLength: 100
+          example: Rideshare
+        email:
+          type: string
+          format: email
+          description: Merchant contact email address
+          maxLength: 255
+          example: rideshare@example.com
+        brand_name:
+          type: string
+          description: Secondary trade name for the merchant
+          minLength: 1
+          maxLength: 50
+          example: Brand Name
+        municipal_registration:
+          type: string
+          description: Official company registration with the local municipality
+          minLength: 1
+          maxLength: 15
+          example: 419.122.620.099
+        external_id:
+          type: string
+          description: External system identifier. Should be unique across the merchants.
+          minLength: 1
+          maxLength: 50
+          example: EXT-001
+        external_code:
+          type: string
+          description: >-
+            Business-category external code. Resolved to a business category ID;
+            not stored on the merchant.
+          minLength: 1
+          maxLength: 45
+          example: CAT-001
+        program_id:
+          type: integer
+          format: int64
+          description: >-
+            Program ID of type MERCHANT. If omitted, the first program of type
+            MERCHANT in the org is assigned; if none exists, the request returns
+            an error.
+          example: 42
+        address:
+          type: string
+          description: Street address
+          minLength: 1
+          maxLength: 80
+          example: Main Street
+        number:
+          type: integer
+          format: int32
+          description: Address number
+          example: 1000
+        complementary_address:
+          type: string
+          description: Additional address details (building, suite, floor)
+          minLength: 1
+          maxLength: 50
+          example: Suite 302
+        neighborhood:
+          type: string
+          description: Neighborhood or district
+          minLength: 1
+          maxLength: 50
+          example: Bela Vista
+        zip_code:
+          type: string
+          description: Postal code
+          minLength: 1
+          maxLength: 9
+          example: '94105'
+        city:
+          type: string
+          description: City or municipality name
+          minLength: 1
+          maxLength: 60
+          example: San Francisco
+        city_code:
+          type: string
+          description: City code
+          minLength: 1
+          maxLength: 50
+          example: '415'
+        state:
+          type: string
+          description: State or province code
+          minLength: 1
+          maxLength: 2
+          example: CA
+        country:
+          type: string
+          description: Country name or code
+          minLength: 1
+          maxLength: 30
+          example: US
+        contact:
+          type: string
+          description: Contact person name
+          minLength: 1
+          maxLength: 50
+          example: Alex Miller
+        phone_number:
+          type: string
+          description: Phone number in E.164 format
+          maxLength: 25
+          example: '+14155551234'
+        additional_phone_number:
+          type: string
+          description: Additional phone number in E.164 format
+          maxLength: 25
+          example: '+14155555678'
+        marketplace_id:
+          type: integer
+          format: int64
+          description: ID of the marketplace to link the merchant to after creation.
+          example: 51148
+        creditor:
+          $ref: '#/components/schemas/CreateMerchantCreditorRequest'
+    CreateMerchantCreditorRequest:
+      type: object
+      description: Merchant creditor
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Creditor ID
+          example: 865
+        name:
+          type: string
+          description: Creditor name
+          maxLength: 100
+          example: Herman Bank
+        crediting_method:
+          type: string
+          description: Creditor crediting method. Only `ACCOUNT` is currently supported.
+          enum:
+            - ACCOUNT
+          example: ACCOUNT
+        advancement_fee:
+          type: number
+          description: >-
+            Advancement fee. Falls back to program parameters, then a hardcoded
+            default.
+          example: 0.0125
+        discount_rate:
+          type: number
+          description: >-
+            Discount rate. Falls back to program parameters, then a hardcoded
+            default.
+          example: 0.0099
+        maximum_advancement_percentage:
+          type: number
+          description: >-
+            Maximum advancement percentage. Falls back to program parameters,
+            then a hardcoded default.
+          example: 0.8
+    UpdateCreditorRequest:
+      type: object
+      description: >-
+        Partial update of a creditor. All fields are optional and keep their
+        stored value when absent, but at least one field must be provided.
+      minProperties: 1
+      properties:
+        advancement_fee:
+          type: number
+          format: double
+          description: >-
+            Advancement fee rate. Must be greater than or equal to `0`, with at
+            most 4 decimal places.
+          minimum: 0
+          example: 0.0125
+        crediting_method:
+          type: string
+          enum:
+            - ACCOUNT
+          description: Method used to credit the creditor. Only `ACCOUNT` is accepted.
+          example: ACCOUNT
+        discount_rate:
+          type: number
+          format: double
+          description: >-
+            Discount rate. Must be greater than or equal to `0`, with at most 4
+            decimal places.
+          minimum: 0
+          example: 0.0099
+        maximum_advancement_percentage:
+          type: number
+          format: double
+          description: >-
+            Maximum percentage of receivables that can be advanced. Must be
+            greater than or equal to `0`, with at most 4 decimal places.
+          minimum: 0
+          example: 0.8
+        name:
+          type: string
+          description: Name of the creditor. If provided, the value must not be empty.
+          minLength: 1
+          maxLength: 100
+          example: Blue and Gold Bank
     UpdateMarketplaceRequest:
       type: object
       description: Update marketplace information
@@ -481,12 +925,495 @@ components:
               example: joao.silva@techstore.com
             phone_number:
               type: string
-              description: Primary phone number
-              example: +55 11 99999-9999
+              description: Primary phone number in E.164 format
+              example: '+5511999999999'
             additional_phone_number:
               type: string
-              description: Secondary phone number
-              example: +55 11 88888-8888
+              description: Secondary phone number in E.164 format
+              example: '+5511888888888'
+    MerchantAddress:
+      type: object
+      description: Merchant address information
+      properties:
+        street:
+          type:
+            - string
+            - 'null'
+          description: Street name
+          example: Main Street
+        number:
+          type:
+            - integer
+            - 'null'
+          format: int32
+          description: Address number
+          example: 1000
+        complementary_address:
+          type:
+            - string
+            - 'null'
+          description: Additional address details
+          example: Suite 201
+        neighborhood:
+          type:
+            - string
+            - 'null'
+          description: Neighborhood name
+          example: Centro
+        zip_code:
+          type:
+            - string
+            - 'null'
+          description: Postal code
+          example: '94105'
+        city:
+          type:
+            - string
+            - 'null'
+          description: City name
+          example: San Francisco
+        state:
+          type:
+            - string
+            - 'null'
+          description: State abbreviation (2 characters)
+          example: CA
+        country:
+          type:
+            - string
+            - 'null'
+          description: Country name
+          example: US
+    MerchantContact:
+      type: object
+      description: Merchant contact information
+      properties:
+        name:
+          type:
+            - string
+            - 'null'
+          description: Merchant contact name
+          example: Alex Miller
+        email:
+          type:
+            - string
+          description: Merchant contact email address
+          example: alexmiller@example.com
+        phone_number:
+          type:
+            - string
+            - 'null'
+          description: Primary phone number (area code concatenated with number)
+          example: '4155551234'
+        additional_phone_number:
+          type:
+            - string
+            - 'null'
+          description: Secondary phone number (area code concatenated with number)
+          example: '4155555678'
+    MerchantBusinessCategory:
+      type: object
+      description: >-
+        Business category assigned to the merchant. Null at the parent key when
+        no category is assigned.
+      required:
+        - category
+        - description
+        - external_code
+      properties:
+        category:
+          type: string
+          description: Business category name
+          example: RETAIL
+        description:
+          type: string
+          description: Business category description
+          example: Retail stores
+        external_code:
+          type: string
+          description: External code for the business category
+          example: '5411'
+    CreditorAccount:
+      type: object
+      description: >-
+        Pismo internal account. Always returned as an object even when id is
+        null
+      properties:
+        id:
+          type:
+            - integer
+            - 'null'
+          format: int64
+          description: Pismo internal account id
+          example: 12345
+    Creditor:
+      type: object
+      description: Creditor configuration for the merchant
+      required:
+        - id
+        - name
+        - crediting_method
+        - account
+        - advancement_fee
+        - discount_rate
+        - maximum_advancement_percentage
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Internal creditor ID
+          example: 865
+        name:
+          type: string
+          description: Creditor name
+          example: Herman Bank
+        crediting_method:
+          type: string
+          description: Method used for crediting funds
+          example: ACCOUNT
+        account:
+          $ref: '#/components/schemas/CreditorAccount'
+        advancement_fee:
+          type: number
+          format: double
+          description: Fixed advancement fee rate. Returns 0 when not passed.
+          example: 3
+        discount_rate:
+          type: number
+          format: double
+          description: >-
+            Merchant discount rate applied to advancement operations. Returns 0
+            when not passed.
+          example: 0.025
+        maximum_advancement_percentage:
+          type: number
+          format: double
+          description: >-
+            Maximum percentage of eligible balance that can be advanced. Returns
+            0 when not passed.
+          example: 80
+    MerchantResponse:
+      type: object
+      description: >-
+        Full merchant details including address, contact, business category, and
+        creditor configuration
+      required:
+        - id
+        - creditor
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Internal numeric merchant ID
+          example: 1844
+        document_number:
+          type:
+            - string
+          description: Government-issued document number (e.g., CPF/CNPJ)
+          example: '12345678901'
+        municipal_registration:
+          type:
+            - string
+            - 'null'
+          description: Secondary municipal registration number
+          example: '12345'
+        brand_name:
+          type:
+            - string
+            - 'null'
+          description: Merchant brand name
+          example: Brand Name
+        name:
+          type:
+            - string
+          description: Legal registered name of the merchant
+          example: Rideshare
+        external_id:
+          type:
+            - string
+            - 'null'
+          description: Identifier used in the client's external system
+          example: ext-001
+        status:
+          type:
+            - string
+          description: Merchant status within the org
+          example: APPROVED
+        program_id:
+          type: integer
+          format: int64
+          description: Program ID associated with the merchant
+          example: 10
+        address:
+          $ref: '#/components/schemas/MerchantAddress'
+        contact:
+          $ref: '#/components/schemas/MerchantContact'
+        business_category:
+          anyOf:
+            - $ref: '#/components/schemas/MerchantBusinessCategory'
+            - type: 'null'
+        creditor:
+          $ref: '#/components/schemas/Creditor'
+    UpdateMerchantRequest:
+      type: object
+      description: >-
+        Partial update of a merchant. All fields are optional and preserve their
+        current stored value when absent.
+      properties:
+        document_number:
+          type: string
+          description: >-
+            Government-issued document number (e.g., CPF/CNPJ). Must be
+            non-empty when provided.
+          minLength: 1
+          maxLength: 14
+          example: '12345678901'
+        brand_name:
+          type: string
+          description: Merchant brand name
+          maxLength: 50
+          example: Brand Name
+        name:
+          type: string
+          description: >-
+            Legal registered name of the merchant. Must be non-empty when
+            provided.
+          minLength: 1
+          maxLength: 100
+          example: Rideshare
+        external_id:
+          type: string
+          description: >-
+            Identifier used in the client's external system. Must be unique per
+            org, excluding the merchant being updated.
+          maxLength: 50
+          example: ext-001
+        municipal_registration:
+          type: string
+          description: Secondary municipal registration number
+          maxLength: 15
+          example: '12345'
+        address:
+          type: object
+          description: Merchant address information
+          properties:
+            street:
+              type: string
+              description: Street name
+              maxLength: 80
+              example: Main Street
+            number:
+              type: integer
+              format: int32
+              description: Address number
+              example: 1000
+            complementary_address:
+              type: string
+              description: Additional address details
+              maxLength: 50
+              example: Suite 201
+            neighborhood:
+              type: string
+              description: Neighborhood name
+              maxLength: 50
+              example: Centro
+            zip_code:
+              type: string
+              description: Postal code
+              maxLength: 9
+              example: '94105'
+            city:
+              type: string
+              description: City name
+              maxLength: 60
+              example: San Francisco
+            state:
+              type: string
+              description: State abbreviation (2 characters)
+              maxLength: 2
+              example: CA
+            country:
+              type: string
+              description: Country code
+              maxLength: 30
+              example: US
+        contact:
+          type: object
+          description: Merchant contact information
+          properties:
+            name:
+              type: string
+              description: Merchant contact name
+              maxLength: 50
+              example: Alex Miller
+            email:
+              type: string
+              format: email
+              description: Merchant contact email address. Must be non-empty when provided.
+              minLength: 1
+              maxLength: 255
+              example: alexmiller@example.com
+            phone_number:
+              type: string
+              description: Primary phone number (area code concatenated with number)
+              maxLength: 25
+              example: '4155551234'
+            additional_phone_number:
+              type: string
+              description: Secondary phone number (area code concatenated with number)
+              maxLength: 25
+              example: '4155555678'
+        business_category:
+          type: object
+          description: >-
+            Business category assignment. Resolved by `external_code`, scoped to
+            the org; returns `400` when not found.
+          properties:
+            external_code:
+              type: string
+              description: >-
+                External code for the business category. Must be non-empty when
+                provided.
+              minLength: 1
+              maxLength: 50
+              example: '5411'
+    MerchantListItemResponse:
+      type: object
+      description: Summary view of a merchant returned in list results
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Internal numeric merchant ID
+          example: 1844
+        name:
+          type:
+            - string
+            - 'null'
+          description: Merchant brand name
+          example: Brand Name
+        merchant_name:
+          type:
+            - string
+          description: Legal registered name of the merchant
+          example: Rideshare
+        document_number:
+          type:
+            - string
+          description: Government-issued document number (e.g., CPF/CNPJ)
+          example: '12345678901'
+        municipal_registration:
+          type:
+            - string
+            - 'null'
+          description: Secondary municipal registration number
+          example: '12345'
+        external_id:
+          type:
+            - string
+            - 'null'
+          description: Identifier used in the client's external system
+          example: ext-001
+        status:
+          type:
+            - string
+          description: Merchant status within the org
+          example: APPROVED
+        creditor_id:
+          type:
+            - integer
+            - 'null'
+          format: int64
+          description: Internal creditor ID linked to the merchant
+          example: 90001
+        business_category:
+          anyOf:
+            - $ref: '#/components/schemas/MerchantBusinessCategory'
+            - type: 'null'
+    ListMerchantsResponse:
+      type: object
+      description: >-
+        Paginated list of merchants. When the `has_next` field is true, a next
+        page is available.
+      required:
+        - page
+        - per_page
+        - has_next
+        - items
+      properties:
+        page:
+          type: integer
+          format: int32
+          description: Current page number (starts at 1)
+          minimum: 1
+          example: 1
+        per_page:
+          type: integer
+          format: int32
+          description: Number of items per page
+          minimum: 1
+          maximum: 100
+          example: 25
+        has_next:
+          type: boolean
+          description: Is a next page available?
+          example: true
+        items:
+          type: array
+          description: >-
+            List of merchant summary objects. Returns an empty array (HTTP 200)
+            when no merchants match, never 404.
+          items:
+            $ref: '#/components/schemas/MerchantListItemResponse'
+    MerchantWorkflowStatusesResponse:
+      type: object
+      description: >-
+        Current workflow status of a merchant and the statuses it can transition
+        to
+      required:
+        - available_transition_statuses
+        - current_status
+      properties:
+        available_transition_statuses:
+          type: array
+          description: >-
+            List of statuses the merchant can transition to from its current
+            status. Returns an empty array when no transition is configured for
+            the current status.
+          items:
+            type: string
+            description: Merchant workflow status
+            example: BLOCKED
+          example:
+            - BLOCKED
+            - SUSPENDED
+        current_status:
+          type: string
+          description: Current merchant status within the org
+          example: APPROVED
+    MerchantWorkflowStatusCatalogResponse:
+      type: object
+      description: Catalog of merchant workflow statuses configured for the org
+      required:
+        - org_workflow_statuses
+      properties:
+        org_workflow_statuses:
+          type: array
+          description: >-
+            List of distinct merchant workflow statuses configured for the org,
+            sorted alphabetically. Returns an empty array when the org has no
+            active merchant workflow configuration.
+          items:
+            type: string
+            description: Merchant workflow status
+            example: APPROVED
+          example:
+            - APPROVED
+            - BLOCKED
+            - PENDING
+            - SUSPENDED
     InternalServerErrorResponse:
       type: object
       properties:
@@ -540,10 +1467,13 @@ components:
       example: 22
     PhoneNumber:
       type: string
-      description: Phone number. Dashes and parentheses are optional
-      example: '5558739452'
-      minLength: 1
-      maxLength: 25
+      description: >-
+        Phone number. Format = E.164. Leading '+' followed by 7 to 15 digits is
+        **REQUIRED**. Do not use spaces, dashes or parentheses.
+      pattern: ^\+[1-9]?[0-9]{7,14}$
+      example: '+5511999999999'
+      minLength: 8
+      maxLength: 16
     Registration:
       type: string
       description: >-
@@ -780,6 +1710,218 @@ components:
             - 'null'
           description: External system identifier
           example: EXT-123
+    BusinessCategoryId:
+      type: integer
+      format: int64
+      description: Business category ID
+      minimum: 1
+      example: 42
+    BusinessCategoryExternalCode:
+      type: string
+      description: External code that identifies the business category in the client system
+      minLength: 1
+      maxLength: 45
+      example: MCC_5411
+    BusinessCategoryName:
+      type: string
+      description: Business category name
+      minLength: 1
+      maxLength: 150
+      example: Grocery Stores and Supermarkets
+    BusinessCategoryDescription:
+      type: string
+      description: Description of the business category
+      minLength: 1
+      maxLength: 150
+      example: Retailers primarily engaged in selling food products
+    RegisterBusinessCategoryRequest:
+      type: object
+      description: Request payload for registering a new business category
+      required:
+        - category
+        - description
+        - external_code
+      properties:
+        category:
+          $ref: '#/components/schemas/BusinessCategoryName'
+        description:
+          $ref: '#/components/schemas/BusinessCategoryDescription'
+        external_code:
+          $ref: '#/components/schemas/BusinessCategoryExternalCode'
+    BusinessCategoryResponse:
+      type: object
+      description: Business category details
+      properties:
+        id:
+          $ref: '#/components/schemas/BusinessCategoryId'
+        category:
+          $ref: '#/components/schemas/BusinessCategoryName'
+        description:
+          $ref: '#/components/schemas/BusinessCategoryDescription'
+        external_code:
+          $ref: '#/components/schemas/BusinessCategoryExternalCode'
+    ListBusinessCategoriesResponse:
+      type: object
+      description: >-
+        Paginated list of business categories. When the `has_next` field
+        returns, a next page is available.
+      required:
+        - has_next
+        - items
+        - page
+        - per_page
+      properties:
+        has_next:
+          type: boolean
+          description: Is a next page available?
+          example: true
+        items:
+          type: array
+          description: >-
+            List of business category objects. Returns empty array if no results
+            found, and you still see HTTP 200 instead of 404 when no results are
+            found.
+          items:
+            $ref: '#/components/schemas/BusinessCategoryResponse'
+        page:
+          type: integer
+          format: int32
+          description: Current page number (starts at 1)
+          minimum: 1
+          example: 1
+        per_page:
+          type: integer
+          format: int32
+          description: Number of items per page
+          minimum: 1
+          maximum: 100
+          example: 10
+    CreditorId:
+      type: integer
+      format: int64
+      description: Creditor ID
+      minimum: 1
+      example: 77
+    CreditorListItem:
+      type: object
+      description: Creditor information in the paginated list response.
+      required:
+        - id
+        - crediting_method
+      properties:
+        id:
+          $ref: '#/components/schemas/CreditorId'
+        name:
+          type: string
+          description: Creditor name. Empty string when not set.
+          maxLength: 100
+          example: Creditor A
+        advancement_fee:
+          type: number
+          format: double
+          description: Advancement fee rate. Defaults to `0` when not set.
+          example: 0.0125
+        discount_rate:
+          type: number
+          format: double
+          description: Discount rate. Defaults to `0` when not set.
+          example: 0.0099
+        maximum_advancement_percentage:
+          type: number
+          format: double
+          description: >-
+            Maximum percentage of receivables that can be advanced. Defaults to
+            `0` when not set.
+          example: 0.8
+        crediting_method:
+          type: string
+          enum:
+            - ACCOUNT
+            - NONE
+          description: >-
+            How is the creditor being credited? `ACCOUNT` indicates crediting to
+            a Pismo account and requires `account_id`; `NONE` indicates no
+            account crediting.
+          example: ACCOUNT
+        account_id:
+          type:
+            - integer
+            - 'null'
+          format: int64
+          description: >-
+            Pismo account ID that receives credit. `null` when
+            `crediting_method` is not `ACCOUNT`.
+          example: 901234
+    ListCreditorsResponse:
+      type: object
+      description: >-
+        Paginated list of creditors. `has_next` field indicates a next page is
+        available.
+      required:
+        - has_next
+        - items
+        - page
+        - per_page
+      properties:
+        has_next:
+          type: boolean
+          description: Is a next page available?
+          example: true
+        items:
+          type: array
+          description: >-
+            Array of creditor objects. Returns an empty array if no results are
+            found (HTTP 200, not 404).
+          items:
+            $ref: '#/components/schemas/CreditorListItem'
+        page:
+          type: integer
+          format: int32
+          description: Current page number (starts at 1)
+          minimum: 1
+          example: 1
+        per_page:
+          type: integer
+          format: int32
+          description: Number of items per page
+          minimum: 1
+          maximum: 100
+          example: 10
+    CreditorMarketplace:
+      type: object
+      description: Marketplace the creditor operates in
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Marketplace ID
+          minimum: 1
+          example: 50001
+        name:
+          type: string
+          description: Marketplace name. Empty string when not set.
+          maxLength: 100
+          example: Kitchen Store
+    CreditorDetail:
+      description: >-
+        Creditor detail. Same fields as the list item plus the marketplaces the
+        creditor operates in.
+      allOf:
+        - $ref: '#/components/schemas/CreditorListItem'
+        - type: object
+          required:
+            - marketplaces
+          properties:
+            marketplaces:
+              type: array
+              description: >-
+                Marketplaces the creditor operates in. Empty array (not null)
+                when there are none.
+              items:
+                $ref: '#/components/schemas/CreditorMarketplace'
   examples:
     BadRequestResponse:
       summary: Bad request response
@@ -820,8 +1962,8 @@ components:
         contact:
           name: John Doe
           email: alexmiller@example.com
-          phone_number: '4155551234'
-          additional_phone_number: '4155555678'
+          phone_number: '+5511999999999'
+          additional_phone_number: '+5511888888888'
     UpdateMarketplaceRequestExample:
       summary: Update marketplace payload
       value:
@@ -843,8 +1985,8 @@ components:
         contact:
           name: Alex Miller
           email: marketplace@teste.com
-          phone_number: '4155551234'
-          additional_phone_number: '4155555678'
+          phone_number: '+14155551234'
+          additional_phone_number: '+14155555678'
     CreateMarketplaceResponseExample:
       summary: Create marketplace payload response
       value:
@@ -915,12 +2057,215 @@ components:
     NotFoundResponse:
       summary: Not Found Response
       value:
-        code: ISMA1001
-        message: Not found.
+        code: WSMA1001
+        message: Not Found.
         details:
           payload:
             - field: field_name
               description: not found message
+    GetMerchantByIdSuccessExample:
+      summary: Get merchant by ID response
+      value:
+        id: 1844
+        document_number: '12345678901'
+        municipal_registration: '12345'
+        brand_name: Brand Name
+        name: Rideshare
+        external_id: ext-001
+        status: APPROVED
+        program_id: 10
+        address:
+          street: Main Street
+          number: 123
+          complementary_address: Suite 201
+          neighborhood: Centro
+          zip_code: '94105'
+          city: San Francisco
+          state: CA
+          country: US
+        contact:
+          name: Alex Miller
+          email: alexmiller@example.com
+          phone_number: '4155551234'
+          additional_phone_number: '4155555678'
+        business_category:
+          category: RETAIL
+          description: Retail stores
+          external_code: '5411'
+        creditor:
+          id: 865
+          name: Herman Bank
+          crediting_method: BANK
+          account:
+            id: 12345
+          advancement_fee: 3
+          discount_rate: 0.025
+          maximum_advancement_percentage: 80
+    MerchantNotFoundExample:
+      summary: Merchant not found
+      value:
+        code: WSMA1001
+        message: Not Found.
+        details:
+          payload:
+            - field: merchant_id
+              message: merchant 1844 not found
+    GetMerchantWorkflowStatusesExample:
+      summary: Merchant with available transitions
+      value:
+        current_status: APPROVED
+        available_transition_statuses:
+          - BLOCKED
+          - SUSPENDED
+    GetMerchantWorkflowStatusesNoTransitionsExample:
+      summary: Merchant without available transitions
+      value:
+        current_status: BLOCKED
+        available_transition_statuses: []
+    MerchantWorkflowConfigNotFoundExample:
+      summary: Merchant workflow configuration not found
+      value:
+        code: WSMA1001
+        message: Not Found.
+        details:
+          payload:
+            - field: merchant_id
+              message: workflow config not found for merchant 1844
+    GetMerchantWorkflowStatusCatalogExample:
+      summary: Org merchant workflow statuses
+      value:
+        org_workflow_statuses:
+          - APPROVED
+          - BLOCKED
+          - PENDING
+          - SUSPENDED
+    GetMerchantWorkflowStatusCatalogEmptyExample:
+      summary: Org without an active merchant workflow configuration
+      value:
+        org_workflow_statuses: []
+    MerchantCreditorNotConfiguredExample:
+      summary: Creditor not configured
+      value:
+        code: WSMA1002
+        message: Merchant creditor is not configured.
+    CreateMerchantRequestExample:
+      summary: Create merchant payload (with creditor)
+      value:
+        document_number: '81106922000180'
+        name: Rideshare
+        email: rideshare@example.com
+        brand_name: Brand Name
+        municipal_registration: 419.122.620.099
+        external_id: EXT-001
+        external_code: CAT-001
+        program_id: 42
+        address: Main Street
+        number: 1578
+        complementary_address: Suite 302
+        neighborhood: Bela Vista
+        zip_code: '94105'
+        city: San Francisco
+        city_code: '415'
+        state: CA
+        country: US
+        contact: Alex Miller
+        phone_number: '+14155551234'
+        additional_phone_number: '+14155555678'
+        creditor:
+          id: 865
+          name: Herman Bank
+          crediting_method: ACCOUNT
+          advancement_fee: 0.0125
+          discount_rate: 0.0099
+          maximum_advancement_percentage: 0.8
+    UpdateMerchantRequestExample:
+      summary: Update merchant payload
+      value:
+        brand_name: Brand Name
+        name: Rideshare
+        external_id: ext-001
+        municipal_registration: '12345'
+        address:
+          street: Main Street
+          number: 1000
+          complementary_address: Suite 201
+          neighborhood: Centro
+          zip_code: '94105'
+          city: San Francisco
+          state: CA
+          country: US
+        contact:
+          name: Alex Miller
+          email: alexmiller@example.com
+          phone_number: '4155551234'
+          additional_phone_number: '4155555678'
+        business_category:
+          external_code: '5411'
+    UpdateCreditorRequestExample:
+      summary: Update creditor payload
+      value:
+        name: Blue and Gold Bank
+        advancement_fee: 0.0125
+        discount_rate: 0.0099
+        maximum_advancement_percentage: 0.8
+        crediting_method: ACCOUNT
+    CreateMerchantResponseExample:
+      summary: Create merchant response (with creditor)
+      value:
+        id: 12345
+        document_number: '81106922000180'
+        municipal_registration: 419.122.620.099
+        brand_name: Brand Name
+        name: Rideshare
+        external_id: EXT-001
+        status: PENDING
+        program_id: 42
+        address:
+          street: Main Street
+          number: 1000
+          complementary_address: Suite 302
+          neighborhood: Bela Vista
+          zip_code: '94105'
+          city: San Francisco
+          state: CA
+          country: US
+        contact:
+          name: Alex Miller
+          email: alexmiller@example.com
+          phone_number: '4155551234'
+          additional_phone_number: null
+        business_category: null
+        creditor:
+          id: 865
+          name: Herman Bank
+          crediting_method: ACCOUNT
+          account:
+            id: 999
+          advancement_fee: 0.0125
+          discount_rate: 0.0099
+          maximum_advancement_percentage: 0.8
+    CreateMerchantDuplicateExternalIdExample:
+      summary: Duplicate external_id
+      value:
+        code: ESMA5005
+        message: External id 'EXT-001' already registered
+    CreateMerchantUnknownExternalCodeExample:
+      summary: Unknown external_code
+      value:
+        code: WSMA5007
+        message: The external_code does not match any business category.
+    CreateMerchantCreditorNotFoundExample:
+      summary: Creditor not found
+      value:
+        code: WSMA5006
+        message: Creditor not found
+    CreateMerchantLockConflictExample:
+      summary: Concurrent external_id lock conflict
+      value:
+        code: WSMA5008
+        message: >-
+          A merchant registration with the same external_id is already in
+          progress.
     RunSettlementPayload:
       summary: Run Settlement Payload
       value:
@@ -1012,9 +2357,137 @@ components:
           payload:
             - field: order
               message: 'Invalid order parameter: must be ''asc'' or ''desc'''
+    RegisterBusinessCategoryRequestExample:
+      summary: Register business category payload
+      value:
+        external_code: MCC_5411
+        category: Grocery Stores and Supermarkets
+        description: Retailers primarily engaged in selling food products
+    BusinessCategoryCreatedResponseExample:
+      summary: Business category created response
+      value:
+        id: 42
+        external_code: MCC_5411
+        category: Grocery Stores and Supermarkets
+        description: Retailers primarily engaged in selling food products
+    BusinessCategoryConflictExample:
+      summary: Conflict - `external_code` already associated with a business category
+      value:
+        code: ESMA5004
+        message: The external_code is already associated with a business category.
+    GetBusinessCategoryByExternalCodeExample:
+      summary: Get business category by external code response
+      value:
+        id: 42
+        external_code: MCC_5411
+        category: Grocery Stores and Supermarkets
+        description: Retailers primarily engaged in selling food products
+    ListBusinessCategoriesResponseExample:
+      summary: List business categories with pagination
+      value:
+        page: 1
+        per_page: 10
+        has_next: true
+        items:
+          - id: 42
+            external_code: MCC_5411
+            category: Grocery Stores and Supermarkets
+            description: Retailers primarily engaged in selling food products
+          - id: 43
+            external_code: MCC_5912
+            category: Drug Stores and Pharmacies
+            description: Retailers primarily engaged in selling pharmaceutical products
+    ListBusinessCategoriesEmptyResponseExample:
+      summary: Empty list response (still returns HTTP 200 instead of 404)
+      value:
+        page: 1
+        per_page: 10
+        has_next: false
+        items: []
+    ListCreditorsResponseExample:
+      summary: List creditors with pagination
+      value:
+        page: 1
+        per_page: 10
+        has_next: true
+        items:
+          - id: 77
+            name: Creditor A
+            advancement_fee: 0.0125
+            discount_rate: 0.0099
+            maximum_advancement_percentage: 0.8
+            crediting_method: ACCOUNT
+            account_id: 901234
+          - id: 78
+            name: Creditor B
+            advancement_fee: null
+            discount_rate: null
+            maximum_advancement_percentage: null
+            crediting_method: NONE
+            account_id: null
+    ListCreditorsEmptyResponseExample:
+      summary: Empty list response (HTTP 200, not 404)
+      value:
+        page: 1
+        per_page: 10
+        has_next: false
+        items: []
+    ListCreditorsInvalidPerPageExample:
+      summary: Invalid perPage parameter error
+      value:
+        code: ESMG0900
+        message: Validation failed
+        details:
+          payload:
+            - field: perPage
+              message: 'Invalid perPage parameter: maximum value is 100'
+    ListCreditorsInvalidOrderExample:
+      summary: Invalid order parameter error
+      value:
+        code: ESMG0900
+        message: Validation failed
+        details:
+          payload:
+            - field: order
+              message: 'Invalid order parameter: must be ''asc'' or ''desc'''
+    GetCreditorResponseExample:
+      summary: Creditor detail with marketplaces
+      value:
+        id: 50001
+        name: Kitchen Store
+        advancement_fee: 0.0125
+        discount_rate: 0.0099
+        maximum_advancement_percentage: 0.8
+        crediting_method: ACCOUNT
+        account_id: 950001
+        marketplaces:
+          - id: 50001
+            name: Kitchen Store
+          - id: 50002
+            name: ''
+    GetCreditorNoMarketplacesExample:
+      summary: Creditor detail with NONE method and no marketplaces
+      value:
+        id: 50003
+        name: Blue and Gold Bank
+        advancement_fee: 0.05
+        discount_rate: 0.01
+        maximum_advancement_percentage: 0.5
+        crediting_method: NONE
+        account_id: null
+        marketplaces: []
+    GetCreditorInvalidIdExample:
+      summary: Invalid `creditorId` path parameter
+      value:
+        code: ESMG0900
+        message: Validation failed
+        details:
+          payload:
+            - field: creditorId
+              message: creditorId must be greater than 0
   responses:
     200Success:
-      description: Ok
+      description: OK
       content:
         application/json:
           schema:
@@ -1122,6 +2595,189 @@ components:
               $ref: '#/components/examples/GetMarketplacesInvalidPerPageExample'
             invalid-order:
               $ref: '#/components/examples/GetMarketplacesInvalidOrderExample'
+    201BusinessCategoryCreated:
+      description: Business category registered successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BusinessCategoryResponse'
+          examples:
+            business-category-created:
+              $ref: '#/components/examples/BusinessCategoryCreatedResponseExample'
+    409BusinessCategoryConflict:
+      description: >-
+        Conflict - `external_code` is already associated with a business
+        category
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            business-category-conflict:
+              $ref: '#/components/examples/BusinessCategoryConflictExample'
+    200ListBusinessCategories:
+      description: OK - Paginated list of business categories
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListBusinessCategoriesResponse'
+          examples:
+            business-categories-list-success:
+              $ref: '#/components/examples/ListBusinessCategoriesResponseExample'
+            business-categories-list-empty:
+              $ref: '#/components/examples/ListBusinessCategoriesEmptyResponseExample'
+    200GetMerchantById:
+      description: OK - Full merchant details
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantResponse'
+          examples:
+            merchant-details:
+              $ref: '#/components/examples/GetMerchantByIdSuccessExample'
+    400GetMerchantById:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            creditor-not-configured:
+              $ref: '#/components/examples/MerchantCreditorNotConfiguredExample'
+    404GetMerchantById:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            merchant-not-found:
+              $ref: '#/components/examples/MerchantNotFoundExample'
+    200ListMerchants:
+      description: OK - Paginated list of merchants
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListMerchantsResponse'
+    201MerchantCreate:
+      description: Created - Merchant registered
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantResponse'
+          examples:
+            merchant-created-with-creditor:
+              $ref: '#/components/examples/CreateMerchantResponseExample'
+    400MerchantCreate:
+      description: >-
+        Bad request - missing/invalid required field, duplicate `external_id`,
+        or unknown `external_code`
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            duplicate-external-id:
+              $ref: '#/components/examples/CreateMerchantDuplicateExternalIdExample'
+            unknown-external-code:
+              $ref: '#/components/examples/CreateMerchantUnknownExternalCodeExample'
+            missing-required-field:
+              $ref: '#/components/examples/BadRequestResponse'
+    404MerchantCreate:
+      description: Not found - `creditor.id` does not reference a creditor for the org
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            creditor-not-found:
+              $ref: '#/components/examples/CreateMerchantCreditorNotFoundExample'
+    409MerchantCreate:
+      description: Conflict - concurrent creation with the same `external_id` (lock held)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            lock-conflict:
+              $ref: '#/components/examples/CreateMerchantLockConflictExample'
+    200GetMerchantWorkflowStatuses:
+      description: OK - Merchant current status and available status transitions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantWorkflowStatusesResponse'
+          examples:
+            merchant-with-transitions:
+              $ref: '#/components/examples/GetMerchantWorkflowStatusesExample'
+            merchant-without-transitions:
+              $ref: '#/components/examples/GetMerchantWorkflowStatusesNoTransitionsExample'
+    404GetMerchantWorkflowStatuses:
+      description: >-
+        Not found - the merchant does not exist for the org, or the org has no
+        active merchant workflow configuration
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            merchant-not-found:
+              $ref: '#/components/examples/MerchantNotFoundExample'
+            workflow-config-not-found:
+              $ref: '#/components/examples/MerchantWorkflowConfigNotFoundExample'
+    200GetMerchantWorkflowStatusCatalog:
+      description: OK - Merchant workflow statuses configured for the org
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantWorkflowStatusCatalogResponse'
+          examples:
+            org-workflow-statuses:
+              $ref: '#/components/examples/GetMerchantWorkflowStatusCatalogExample'
+            org-without-workflow-configuration:
+              $ref: '#/components/examples/GetMerchantWorkflowStatusCatalogEmptyExample'
+    200ListCreditors:
+      description: OK - Paginated list of creditors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListCreditorsResponse'
+          examples:
+            creditors-list-success:
+              $ref: '#/components/examples/ListCreditorsResponseExample'
+            creditors-list-empty:
+              $ref: '#/components/examples/ListCreditorsEmptyResponseExample'
+    400ListCreditorsValidation:
+      description: Bad request - invalid query parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            invalid-perPage:
+              $ref: '#/components/examples/ListCreditorsInvalidPerPageExample'
+            invalid-order:
+              $ref: '#/components/examples/ListCreditorsInvalidOrderExample'
+    200GetCreditor:
+      description: OK - Creditor detail with related marketplaces
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreditorDetail'
+          examples:
+            creditor-detail-success:
+              $ref: '#/components/examples/GetCreditorResponseExample'
+            creditor-detail-no-marketplaces:
+              $ref: '#/components/examples/GetCreditorNoMarketplacesExample'
+    400GetCreditorValidation:
+      description: Bad request - Invalid `creditorId`
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorRequestResponse'
+          examples:
+            invalid-creditorId:
+              $ref: '#/components/examples/GetCreditorInvalidIdExample'
 paths:
   /v1/settlements/actions/block:
     post:
@@ -1235,6 +2891,203 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
+  /v2/merchants:
+    get:
+      summary: List merchants
+      operationId: listMerchants
+      tags:
+        - Merchants
+      description: >
+        Retrieve a paginated list of merchants for the org.
+
+
+        Supports filtering by document number, name, status, and external ID,
+        optional restriction to a marketplace via the `x-marketplace-id` header,
+        and sorting/pagination. When `documentNumber` is provided, the `name`
+        filter is ignored.
+      parameters:
+        - $ref: '#/components/parameters/MerchantMarketplaceIdHeader'
+        - $ref: '#/components/parameters/MerchantDocumentNumberFilter'
+        - $ref: '#/components/parameters/MerchantNameFilter'
+        - $ref: '#/components/parameters/MerchantStatusFilter'
+        - $ref: '#/components/parameters/MerchantExternalIdFilter'
+        - $ref: '#/components/parameters/MerchantPage'
+        - $ref: '#/components/parameters/MerchantPerPage'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/MerchantOrderBy'
+      responses:
+        '200':
+          $ref: '#/components/responses/200ListMerchants'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    post:
+      summary: Create merchant
+      operationId: createMerchant
+      tags:
+        - Merchants
+      description: >
+        Create merchant. You use this endpoint to register a merchant (store) in
+        a marketplace using the information the merchant provides.
+
+
+        <b>Note:</b> Before you create merchants, you must create a Merchant
+        program, using the [Create program based on
+        template](ref:createprogrambasedontemplate) endpoint with `type` set to
+        `MERCHANT`. If a program of type `MERCHANT` is not provided, the request
+        returns an error.
+
+        By default, when a merchant is created, the Pismo platform assigns it to
+        the first existing program of type `MERCHANT` in the Org. However, you
+        have the option of specifying a program by providing its ID in the
+        `program_id` field. The program you specify in `program_id` must be of
+        type `MERCHANT`.
+
+
+        <b>Note:</b> When `marketplace_id` is provided in the body, the merchant
+        is automatically linked to that marketplace after creation.
+
+
+        For more information about merchants, refer to the <a
+        href="https://developers.pismo.io/pismo-docs/docs/seller-management-overview"
+        target="blank">Seller management overview</a> guide.<br>
+
+
+        This endpoint generates a [Merchant
+        created](https://developers.pismo.io/events/docs/merchants-merchant-created-1)
+        event.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMerchantRequest'
+            examples:
+              create-merchant-request:
+                $ref: '#/components/examples/CreateMerchantRequestExample'
+      responses:
+        '201':
+          $ref: '#/components/responses/201MerchantCreate'
+        '400':
+          $ref: '#/components/responses/400MerchantCreate'
+        '404':
+          $ref: '#/components/responses/404MerchantCreate'
+        '409':
+          $ref: '#/components/responses/409MerchantCreate'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/merchants/{merchantId}:
+    get:
+      summary: Get merchant by ID
+      operationId: getMerchantById
+      tags:
+        - Merchants
+      description: >
+        Retrieve merchant information by its ID.
+
+
+        Returns detailed information about a specific merchant including
+        address, contact, business category, and creditor configuration.
+      parameters:
+        - $ref: '#/components/parameters/MerchantId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200GetMerchantById'
+        '400':
+          $ref: '#/components/responses/400GetMerchantById'
+        '404':
+          $ref: '#/components/responses/404GetMerchantById'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    patch:
+      summary: Update partially a merchant
+      operationId: updateMerchant
+      tags:
+        - Merchants
+      description: >
+        Partially update a merchant scoped to the caller's org.
+
+
+        All request fields are optional; any absent field preserves its current
+        stored value. This endpoint generates a `merchant_updated` event.
+      parameters:
+        - $ref: '#/components/parameters/MerchantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMerchantRequest'
+            examples:
+              update-merchant-request:
+                $ref: '#/components/examples/UpdateMerchantRequestExample'
+      responses:
+        '204':
+          description: No content - merchant updated successfully
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404GetMerchantById'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/merchants/{merchantId}/workflow/statuses:
+    get:
+      summary: Get merchant workflow status transitions
+      operationId: getMerchantWorkflowStatuses
+      tags:
+        - Merchants
+      description: >
+        Retrieve the current workflow status of a merchant and the statuses it
+        can transition to, based on the org's active merchant workflow
+        configuration.
+
+
+        The `available_transition_statuses` field lists the `status` values
+        accepted by the [Update partially a merchant](ref:updatemerchant)
+        endpoint for this merchant. When the current status has no configured
+        transitions, `available_transition_statuses` is an empty array.
+
+
+        Returns `404` when the merchant does not exist for the org or when the
+        org has no active merchant workflow configuration.
+      parameters:
+        - $ref: '#/components/parameters/MerchantId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200GetMerchantWorkflowStatuses'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404GetMerchantWorkflowStatuses'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/merchants/workflow/statuses:
+    get:
+      summary: List merchant workflow statuses
+      operationId: listMerchantWorkflowStatuses
+      tags:
+        - Merchants
+      description: >
+        Retrieve the catalog of merchant workflow statuses configured for the
+        org.
+
+
+        The catalog contains every distinct status in the org's active merchant
+        workflow configuration, including the registration status and every
+        status used in the configured transitions, sorted alphabetically.
+
+
+        When the org has no active merchant workflow configuration, the endpoint
+        returns **HTTP 200** with an empty `org_workflow_statuses` array (not
+        404).
+      responses:
+        '200':
+          $ref: '#/components/responses/200GetMerchantWorkflowStatusCatalog'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
   /v3/marketplaces:
     post:
       summary: Create marketplace V3
@@ -1292,6 +3145,8 @@ paths:
 
         | `marketplaceName` | `marketplace_name` | Partial (LIKE) | No |
 
+        | `merchantId` | `merchant_id` | Exact | Yes |
+
 
         **Examples:**
 
@@ -1328,6 +3183,7 @@ paths:
         - $ref: '#/components/parameters/ExternalIdFilter'
         - $ref: '#/components/parameters/BrandNameFilter'
         - $ref: '#/components/parameters/MarketplaceNameFilter'
+        - $ref: '#/components/parameters/MerchantIdFilter'
       responses:
         '200':
           $ref: '#/components/responses/200GetMarketplaces'
@@ -1503,5 +3359,238 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1/business-categories:
+    post:
+      summary: Register business category
+      operationId: registerBusinessCategory
+      tags:
+        - Business categories
+      description: >
+        Register a new business category.
+
+
+        The `external_code` must be unique. Attempting to register a category
+        with an `external_code` that already exists returns a **409 Conflict**.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBusinessCategoryRequest'
+            examples:
+              register-business-category:
+                $ref: '#/components/examples/RegisterBusinessCategoryRequestExample'
+      responses:
+        '201':
+          $ref: '#/components/responses/201BusinessCategoryCreated'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '409':
+          $ref: '#/components/responses/409BusinessCategoryConflict'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/business-categories/{externalCode}:
+    get:
+      summary: Get business category by external code
+      operationId: getBusinessCategoryByExternalCode
+      tags:
+        - Business categories
+      description: |
+        Retrieve business category information by its external code.
+
+        Returns detailed information about a specific business category.
+      parameters:
+        - $ref: '#/components/parameters/BusinessCategoryExternalCodePath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessCategoryResponse'
+              examples:
+                business-category-details:
+                  $ref: '#/components/examples/GetBusinessCategoryByExternalCodeExample'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/business-categories:
+    get:
+      summary: List business categories
+      operationId: listBusinessCategories
+      tags:
+        - Business categories
+      description: >
+        Retrieve a paginated list of business categories with optional filtering
+        and sorting capabilities.
+
+
+        ## Filtering
+
+
+        Filters are provided as individual query parameters. Multiple filters
+        can be combined — each additional parameter further restricts the result
+        set (AND logic).
+
+
+        | Parameter | Field Filtered | Match Type | Case Sensitive |
+
+        |---|---|---|---|
+
+        | `externalCode` | `external_code` | Partial (LIKE) | No |
+
+        | `category` | `category` | Partial (LIKE) | No |
+
+        | `description` | `description` | Partial (LIKE) | No |
+
+
+        ## Sorting
+
+
+        Use `order` and `orderBy` to control result ordering.
+
+        Supported `orderBy` values: `businessCategoryId`, `externalCode`,
+        `category`, `description`.
+
+        Default sort: `businessCategoryId ASC`.
+
+
+        ## Empty Results
+
+
+        Empty result sets return **HTTP 200** with an empty `items` array (not
+        404).
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/BusinessCategoryOrderBy'
+        - $ref: '#/components/parameters/ExternalCodeQueryFilter'
+        - $ref: '#/components/parameters/CategoryQueryFilter'
+        - $ref: '#/components/parameters/DescriptionQueryFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/200ListBusinessCategories'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/creditors:
+    get:
+      summary: List creditors
+      operationId: getCreditors
+      tags:
+        - Creditor
+      description: >
+        Retrieve a paginated list of creditors, optionally filtered by name
+        and/or marketplace.
+
+
+        ## Filtering
+
+
+        | Parameter | Field Filtered | Match Type | Case Sensitive |
+
+        |---|---|---|---|
+
+        | `name` | `name` | Prefix | No |
+
+        | `marketplaceId` | `marketplaceId` | Operates in marketplace | N/A |
+
+
+        ## Sorting
+
+
+        Use `order` and `orderBy` to control result ordering.
+
+        Supported `orderBy` values: `id`, `name`.
+
+        Default sort: `name ASC`.
+
+
+        ## Empty Results
+
+
+        Empty result sets return **HTTP 200** with an empty `items` array (not
+        404).
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/CreditorOrderBy'
+        - $ref: '#/components/parameters/CreditorNameFilter'
+        - $ref: '#/components/parameters/CreditorMarketplaceFilter'
+      responses:
+        '200':
+          $ref: '#/components/responses/200ListCreditors'
+        '400':
+          $ref: '#/components/responses/400ListCreditorsValidation'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2/creditors/{creditorId}:
+    get:
+      summary: Get creditor detail
+      operationId: getCreditorById
+      tags:
+        - Creditor
+      description: >-
+        Retrieve a single creditor by its ID, scoped to the tenant, including
+        the marketplaces it operates in. Returns `404` when the creditor does
+        not exist for the tenant.
+      parameters:
+        - $ref: '#/components/parameters/CreditorIdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/200GetCreditor'
+        '400':
+          $ref: '#/components/responses/400GetCreditorValidation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+    patch:
+      summary: Update partially a creditor
+      operationId: updateCreditor
+      tags:
+        - Creditor
+      description: >
+        Partially update a creditor scoped to the tenant.
+
+
+        Only the fields sent in the request body are changed. Any absent field
+        keeps its stored value. At least one field must be provided. An empty
+        body returns `400`. `crediting_method` can only be set to `ACCOUNT`, and
+        the creditor account is not changed by this endpoint.
+
+
+        This endpoint generates a [Creditor
+        updated](https://developers.pismo.io/events/docs/creditors-creditor-updated-1)
+        event with the full creditor snapshot after the update, even when the
+        values sent are equal to the stored ones. Use `GET
+        /v2/creditors/{creditorId}` to read the updated creditor. Returns `404`
+        when the creditor does not exist for the tenant.
+      parameters:
+        - $ref: '#/components/parameters/CreditorIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCreditorRequest'
+            examples:
+              update-creditor-request:
+                $ref: '#/components/examples/UpdateCreditorRequestExample'
+      responses:
+        '204':
+          description: No content - creditor updated successfully
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/500InternalServerError'
