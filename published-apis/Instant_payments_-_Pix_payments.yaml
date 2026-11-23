@@ -1402,12 +1402,12 @@ components:
             This object is optional.
 
 
-            * `internal` is applied when the transfer is settled within Pismo
+            * `internal`: Applied when the transfer is settled within Pismo
             without going through SPI. This happens when the payee account
             belongs to the same PSP and the program is not configured to always
             send transfers to the provider.
 
-            * `external` is applied when the transfer is sent through SPI.
+            * `external`: Applied when the transfer is sent through SPI.
 
 
             Only the codes of the flow that applies to the transfer are used.
