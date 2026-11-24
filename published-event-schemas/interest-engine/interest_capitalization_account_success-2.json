@@ -167,6 +167,15 @@
     },
     "interest_details": {
       "$ref": "#/definitions/interest_details"
+    },
+    "next_capitalization_date": {
+      "type": "string",
+      "title": "Next capitalization date [Beta]",
+      "description": "Next scheduled capitalization date of the account. Present only in balance-based events, which have no deposits array. Omitted when the date is on or after the maturity date of the current balance. Taken from the stored capitalization schedule, so it is not a guarantee that a capitalization will happen on that date; a retried event carries the same value.",
+      "format": "date",
+      "examples": [
+        "2026-12-30"
+      ]
     }
   },
   "definitions": {
@@ -318,6 +327,15 @@
           "items": {
             "$ref": "#/definitions/taxes"
           }
+        },
+        "next_capitalization_date": {
+          "type": "string",
+          "title": "Next capitalization date [Beta]",
+          "description": "Next scheduled capitalization date of this deposit. Present only in deposit-based events. Omitted when the date is on or after the maturity date of the deposit. Taken from the stored capitalization schedule, so it is not a guarantee that a capitalization will happen on that date; a retried event carries the same value.",
+          "format": "date",
+          "examples": [
+            "2026-12-30"
+          ]
         }
       }
     },
