@@ -680,6 +680,11 @@
           "const": ""
         }
       ],
+      "type": [
+        "object",
+        "null",
+        "string"
+      ],
       "examples": [
         {
           "anti-fraud-data": {
