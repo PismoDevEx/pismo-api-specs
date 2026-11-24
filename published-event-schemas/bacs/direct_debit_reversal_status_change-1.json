@@ -1,0 +1,281 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BACS direct debit reversal processed.",
+  "type": "object",
+  "description": "Bankers' Automated Clearing System (BACS) transaction event data. <a href='https://www.moderntreasury.com/learn/what-is-bacs' target = '_blank'>BACS</a> is a UK service that facilitates electronic money transfers between banks within a 3-day settlement cycle \u2014 day 1 (submission), day 2 (processing), and day 3 (clearing). This event represents a BACS direct debit reversal: the originator of a direct debit collected from a Pismo account reverses it, and the collected amount is credited back to the payer. It is emitted once, when the reversal received from the provider (Form3) is recorded, with status `SETTLED` or `CANCELLED`.",
+  "required": [
+    "id",
+    "account_id",
+    "idempotency_key",
+    "scheme_payment_type",
+    "debtor_account",
+    "creditor_account",
+    "currency",
+    "status",
+    "creation_date_time",
+    "update_date_time"
+  ],
+  "properties": {
+    "id": {
+      "title": "ID",
+      "type": "string",
+      "description": "Transaction ID",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "account_id": {
+      "title": "Account ID",
+      "type": "integer",
+      "description": "Account ID of the payer whose direct debit was reversed",
+      "examples": [
+        8675309
+      ]
+    },
+    "idempotency_key": {
+      "title": "Idempotency key",
+      "type": "string",
+      "description": "Provider reversal ID, used for idempotency",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "external_id": {
+      "title": "External ID",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Provider reversal ID. You can use this to link the transaction in our system to the provider's transaction.",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "reference": {
+      "title": "Reference",
+      "type": "string",
+      "description": "Reference of the direct debit being reversed",
+      "examples": [
+        "TXN #1"
+      ]
+    },
+    "mandate_id": {
+      "title": "Mandate ID",
+      "type": "string",
+      "description": "ID of the mandate the reversed direct debit was collected against. Omitted when the direct debit being reversed is not found.",
+      "examples": [
+        "123e4567-e89b-12d3-a456-426614174000"
+      ]
+    },
+    "scheme_unique_id": {
+      "title": "Scheme ID",
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Internal BACS transaction ID. BACS does not guarantee this field is unique and warns the format is subject to change",
+      "examples": [
+        "8172939823",
+        null
+      ]
+    },
+    "scheme_payment_type": {
+      "title": "Scheme payment type",
+      "type": "string",
+      "description": "BACS payment type of the direct debit being reversed, as reported by the provider",
+      "examples": [
+        "DirectDebit"
+      ]
+    },
+    "processing_date": {
+      "title": "Processing date",
+      "type": "string",
+      "description": "Processing date of the original direct debit being reversed (day 3 of the BACS cycle). Populated by Provider, which does not report a separate processing date for the reversal itself. Empty string when not available.",
+      "examples": [
+        "2026-04-01"
+      ]
+    },
+    "clearing_id": {
+      "title": "Clearing ID",
+      "type": "string",
+      "minLength": 6,
+      "description": "BACS payment originator Service User Number (SUN) of the direct debit being reversed - numeric 6-digit value. Omitted when the direct debit being reversed is not found.",
+      "maxLength": 6,
+      "pattern": "^[0-9]{6}$",
+      "examples": [
+        "123456"
+      ]
+    },
+    "debtor_account": {
+      "$ref": "#/definitions/DebtorAccount"
+    },
+    "creditor_account": {
+      "$ref": "#/definitions/CreditorAccount"
+    },
+    "currency": {
+      "$ref": "#/definitions/Currency"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string",
+      "description": "Transaction status. `SETTLED` means the payer was credited back. `CANCELLED` means no funds moved: the provider rejected the reversal, the direct debit being reversed was not settled, or the direct debit being reversed was not found.",
+      "enum": [
+        "SETTLED",
+        "CANCELLED"
+      ],
+      "examples": [
+        "SETTLED"
+      ]
+    },
+    "creation_date_time": {
+      "title": "Creation date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Reversal creation datetime, as reported by the provider",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    },
+    "update_date_time": {
+      "title": "Update date time",
+      "type": "string",
+      "format": "date-time",
+      "description": "Reversal settlement datetime, as reported by the provider. Equal to `creation_date_time` when the provider does not report one.",
+      "examples": [
+        "2026-04-01T22:00:00Z"
+      ]
+    }
+  },
+  "definitions": {
+    "DebtorAccount": {
+      "title": "Debtor account",
+      "type": "object",
+      "description": "Payer account information, the account credited back by the reversal",
+      "required": [
+        "name",
+        "scheme",
+        "identification"
+      ],
+      "properties": {
+        "name": {
+          "title": "Debtor name",
+          "type": "string",
+          "description": "Account owner name",
+          "examples": [
+            "Abbie Normal"
+          ]
+        },
+        "scheme": {
+          "title": "Debtor scheme",
+          "type": "string",
+          "description": "User bank account scheme",
+          "enum": [
+            "uk-scan",
+            "bban",
+            "iban"
+          ],
+          "examples": [
+            "uk-scan"
+          ]
+        },
+        "identification": {
+          "title": "Debtor scheme ID",
+          "type": "string",
+          "description": "Scheme account number",
+          "examples": [
+            "2000001234567"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "name": "Hedley Lamarr",
+          "scheme": "uk-scan",
+          "identification": "2000001234567"
+        }
+      ]
+    },
+    "CreditorAccount": {
+      "title": "Creditor account",
+      "type": "object",
+      "description": "Originator account information. All fields are empty strings when the direct debit being reversed is not found.",
+      "required": [
+        "name",
+        "scheme",
+        "identification"
+      ],
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "description": "Account owner name",
+          "examples": [
+            "Marsha Mellow"
+          ]
+        },
+        "scheme": {
+          "title": "Scheme",
+          "type": "string",
+          "description": "User bank account scheme",
+          "enum": [
+            "uk-scan",
+            "bban",
+            "iban",
+            ""
+          ],
+          "examples": [
+            "uk-scan"
+          ]
+        },
+        "identification": {
+          "title": "Identification",
+          "type": "string",
+          "description": "Scheme account number",
+          "examples": [
+            "2000007654321"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "name": "Anna Grahm",
+          "scheme": "uk-scan",
+          "identification": "2000007654321"
+        }
+      ]
+    },
+    "Currency": {
+      "title": "Currency",
+      "type": "object",
+      "description": "Currency information",
+      "required": [
+        "amount",
+        "code"
+      ],
+      "properties": {
+        "amount": {
+          "title": "amount",
+          "type": "number",
+          "description": "Transaction amount. When the direct debit being reversed is found, this is its collected amount.",
+          "examples": [
+            600
+          ]
+        },
+        "code": {
+          "title": "Currency code",
+          "type": "string",
+          "description": "ISO-4217 3 character currency code",
+          "examples": [
+            "GBP"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "amount": 600,
+          "code": "GBP"
+        }
+      ]
+    }
+  }
+}

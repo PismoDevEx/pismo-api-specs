@@ -118,7 +118,7 @@
     "processing_date": {
       "title": "Processing date",
       "type": "string",
-      "description": "When funds were transferred data, BACS day 3 cycle for inbound payments",
+      "description": "Processing date of the original payment. For a reversal of an inbound payment it is populated by Provider; for a reversal of an outbound payment it is copied from the original payment. No separate processing date is reported for the reversal itself. Empty string when not available.",
       "examples": [
         "2026-04-01"
       ]

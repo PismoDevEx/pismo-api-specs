@@ -119,7 +119,7 @@
       "title": "Processing date",
       "type": "string",
       "format": "date",
-      "description": "When funds were transferred data, BACS day 3 cycle",
+      "description": "Processing date of the original direct debit being returned (day 3 of the BACS cycle), copied from it when the return is created. No separate processing date is reported for the return itself.",
       "examples": [
         "2026-04-01"
       ]

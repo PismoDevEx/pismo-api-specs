@@ -119,7 +119,7 @@
       "title": "Processing date",
       "type": "string",
       "format": "date",
-      "description": "When funds were transferred data, BACS day 3 cycle for inbound payments",
+      "description": "Date on which the funds are transferred between banks, always day 3 of the BACS cycle. Populated by Provider.",
       "examples": [
         "2026-04-01"
       ]
