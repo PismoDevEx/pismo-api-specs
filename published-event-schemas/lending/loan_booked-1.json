@@ -234,6 +234,23 @@
       "type": "array",
       "title": "Repayment schedule",
       "description": "Loan installments created at booking time",
+      "example": [
+        {
+          "repayment_id": "7da3db3b-400d-4851-a362-2022dab27284",
+          "installment": 12,
+          "due_date": "2023-07-01",
+          "real_due_date": "2023-07-01",
+          "amount": 1336.66,
+          "principal_amount": 1000.0,
+          "interest_amount": 300.0,
+          "penalty_amount": 0.0,
+          "fee_amount": 0.0,
+          "charge_amount": 0.0,
+          "tax_amount": 36.66,
+          "previous_status": "SCHEDULED",
+          "current_status": "SCHEDULED"
+        }
+      ],
       "items": {
         "$ref": "#/definitions/installment"
       }
