@@ -514,7 +514,7 @@ components:
           $ref: '#/components/schemas/ReissuedCardID'
     Brand:
       type: string
-      description: Card network, i.e., Visa, Mastercard, ELO, RuPay, Private, GPN
+      description: Card network, i.e., Visa, Mastercard, ELO, RuPay, Private, GPN, Amex
       example: Visa
     BulkResponse:
       type: object
@@ -1792,8 +1792,7 @@ components:
       description: >
         Encrypted Primary Account Number (PAN). This field does not exist until
         the card PCI data is asynchronously created.
-      example: >-
-        WEPvOQuZvjfYEd0iBmr43bhWyOsylIsW95ebYrLD89App2iEq9IizP+8w73pxKQ4mI47EdhzYHF9RfXjrBOyug==
+      example: WEPvOQuZvjfYEd0iBmr43bhWyOsylIsW95ebYrLD89App2iEq9IizP+8w73pxKQ4mI47EdhzYHF9RfXjrBOyug==
     IncrementBulk:
       type: object
       description: Increment noname card bulk request object
@@ -2565,6 +2564,7 @@ components:
         - RUPAY
         - PRIVATE
         - GPN
+        - AMEX
     SequentialNumber:
       type: integer
       description: Embossing file sequential number
@@ -2892,8 +2892,7 @@ components:
         org:
           id: TN-f878e4a1-2879-48ba-be16-821e73ac98db
         id: 6741322
-        hash: >-
-          WEPvOQuZvjfYEd0iBmr43bhWyOsylIsW95ebYrLD89App2iEq9IizP+8w73pxKQ4mI47EdhzYHF9RfXjrBOyug==
+        hash: WEPvOQuZvjfYEd0iBmr43bhWyOsylIsW95ebYrLD89App2iEq9IizP+8w73pxKQ4mI47EdhzYHF9RfXjrBOyug==
         last_4_digits: '3598'
         first_4_digits: 'null'
         status: PENDING
@@ -4949,13 +4948,20 @@ paths:
       operationId: patch-embossing-address
       summary: Update card embossing address
       description: >
-        Updates the embossing address of a card that is registered for
-        embossing. Registration is asynchronous after card creation; call this
-        endpoint after receiving the [Card can be added to next scheduled
+        Update the embossing address of a card that is registered for embossing.
+        For no-name cards, call it after the card is bound to an account.
+
+
+        Registration is asynchronous after card creation. 
+
+
+        Call this endpoint after receiving the [Card can be added to next
+        scheduled
         embossing](https://developers.pismo.io/events/docs/cards-embossing-card-ingress-1)
-        event. For no-name cards, call it after the card is bound to an account.
-        If it still returns 404 right after receiving the event, retry after a
-        short delay. 
+        event without `error_type`. If that event reports an error, the card was
+        not registered for embossing and this endpoint returns `404`. If it
+        still returns `404` right after a successful event, retry after a short
+        delay a limited number of times.
 
 
         Currently, the embossing process uses the address of the customer linked
@@ -5043,12 +5049,16 @@ paths:
                 properties:
                   error_code:
                     type: string
+                    description: Error code
                   message:
                     type: string
+                    description: Error message
                   status:
                     type: integer
+                    description: Error status
                   error:
                     type: string
+                    description: Error details
               examples:
                 example-card-not-found:
                   value:
@@ -5066,12 +5076,16 @@ paths:
                 properties:
                   error_code:
                     type: string
+                    description: Error code
                   message:
                     type: string
+                    description: Message
                   status:
                     type: integer
+                    description: Error status
                   error:
                     type: string
+                    description: Error details
               examples:
                 example-not-acceptable:
                   value:
@@ -6518,7 +6532,7 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /wallet/v2/cards/{cardId}/program-migration:
     patch:
-      summary: Migrate card to different program [beta]
+      summary: Migrate card to different program
       description: >
         Migrate a card to a different program. It is possible to migrate from a
         Zero balance program to a Full balance program and vice-versa.
