@@ -26,17 +26,65 @@ components:
       description: Created
     202Accepted:
       description: Accepted
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Empty acceptance response body
     204NoContent:
       description: No content
     400BadRequest:
       description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     403Forbidden:
       description: Operation forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     404NotFound:
       description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    409Conflict:
+      description: Scheduler already exists.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     500InternalServer:
       description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   parameters:
+    xTenant:
+      in: header
+      name: x-tenant
+      description: >-
+        Tenant (organization) identifier used for tenant isolation. This header
+        is required; if it is missing or does not resolve to a valid tenant, the
+        request fails.
+      schema:
+        type: string
+      required: true
+    xAccountId:
+      in: header
+      name: x-account-id
+      description: >-
+        Operating account identifier. For account-scoped endpoints, it must
+        match the account being operated on; otherwise the request is rejected
+        with `403` (`DO0009`).
+      schema:
+        type: integer
+        format: int64
+      required: false
     accountId:
       in: path
       name: accountId
@@ -55,11 +103,14 @@ components:
     limit:
       in: query
       name: limit
-      description: Pagination limit
+      description: >-
+        Pagination limit. When provided, it must be between 50 and 100; values
+        below 50 are rejected. If omitted, the default of 100 is applied.
       schema:
         type: integer
-        minimum: 0
-        default: 10
+        minimum: 50
+        maximum: 100
+        default: 100
       required: false
     order:
       in: query
@@ -90,6 +141,38 @@ components:
         type: integer
       required: false
   schemas:
+    Error:
+      type: object
+      description: Standard error response body returned for failed requests.
+      properties:
+        code:
+          type: string
+          description: Application-specific error code.
+          example: DO0002
+        message:
+          type: string
+          description: Human-readable error message.
+          example: Invalid Request.
+        details:
+          type: string
+          description: Optional additional error details.
+        violations:
+          type: array
+          description: Optional list of specific validation violations.
+          items:
+            $ref: '#/components/schemas/Violation'
+    Violation:
+      type: object
+      description: A single validation violation.
+      properties:
+        code:
+          type: string
+          description: Violation code.
+          example: x-tenant-required
+        message:
+          type: string
+          description: Human-readable violation message.
+          example: Header x-tenant is required
     AccountID:
       description: Account ID
       type: integer
@@ -263,6 +346,7 @@ components:
         - EXECUTED_WITH_ERROR_NEXT_DAY_NOT_ALLOWED
         - EXECUTED_WITHOUT_SCRAPING
         - EXECUTED_WITH_ERROR_BANK_SLIP
+        - EXECUTED_WITH_ERROR_RESTRICTION_NOT_EVALUATED
       example: EXECUTED_WITH_RESTRICTIONS
     GetAllScheduleResponse:
       type: object
@@ -826,8 +910,10 @@ components:
       description: Schedule type
       enum:
         - SINGLE
-        - MULTIPLE
+        - TRANSFERS
         - PRE
+        - SCRAPING
+        - BANKSLIP
       example: SINGLE
     ScrapingScheduleDetails:
       type: object
@@ -850,7 +936,7 @@ components:
           $ref: '#/components/schemas/ScrapingScheduleDetails'
         account_id:
           $ref: '#/components/schemas/AccountID'
-        processing_code:
+        processing_codes:
           $ref: '#/components/schemas/ProcessingCodes'
         description:
           $ref: '#/components/schemas/Description'
@@ -1139,6 +1225,9 @@ security:
   - BearerAuth: []
 paths:
   /v1/schedules:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
     post:
       summary: Create single schedule
       operationId: post-v1-create-single-schedule
@@ -1202,6 +1291,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/schedules/bulk:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
     post:
       summary: Create bulk single schedules
       operationId: post-v1-create-bulk-single-schedules
@@ -1261,6 +1353,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/transfers:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
     post:
       summary: Create transfer schedule
       operationId: post-v1-create-transfer-schedules
@@ -1336,6 +1431,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/transfers/bulk:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
     post:
       summary: Create bulk transfer schedules
       operationId: post-v1-create-bulk-transfer-schedules
@@ -1405,6 +1503,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/pre-schedules:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
     post:
       summary: Create pre-schedule
       description: >
@@ -1473,6 +1574,9 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalServer'
   /v1/pre-schedules/bulk:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
     post:
       summary: Create bulk pre-schedules
       description: >
@@ -1537,8 +1641,18 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '500':
           $ref: '#/components/responses/500InternalServer'
+  /v1/schedules-scraping:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
+  /v1/bankslip-schedules:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
   /v1/accounts/{accountId}/pre-schedules/{scheduleId}/execute:
     parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
       - $ref: '#/components/parameters/accountId'
       - $ref: '#/components/parameters/scheduleId'
     post:
@@ -1573,6 +1687,8 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/accounts/{accountId}/schedules:
     parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
       - $ref: '#/components/parameters/accountId'
       - $ref: '#/components/parameters/statementId'
       - $ref: '#/components/parameters/cursor'
@@ -1602,6 +1718,8 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/accounts/{accountId}/schedules/{scheduleId}/executions:
     parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
       - $ref: '#/components/parameters/accountId'
       - $ref: '#/components/parameters/scheduleId'
     get:
@@ -1630,6 +1748,8 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /v1/accounts/{accountId}/schedules/{scheduleId}:
     parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
       - $ref: '#/components/parameters/accountId'
       - $ref: '#/components/parameters/scheduleId'
     get:
@@ -1704,6 +1824,12 @@ paths:
           $ref: '#/components/responses/404NotFound'
         '500':
           $ref: '#/components/responses/500InternalServer'
+  /v1/pre-schedules/migrations:
+    parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
   /v1/accounts/{accountId}/pre-schedules/migrations:
     parameters:
+      - $ref: '#/components/parameters/xTenant'
+      - $ref: '#/components/parameters/xAccountId'
       - $ref: '#/components/parameters/accountId'
