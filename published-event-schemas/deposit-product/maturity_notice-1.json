@@ -46,6 +46,66 @@
         30
       ]
     },
+    "cycle_start_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Cycle start date",
+      "description": "Start date of the current cycle. Same calendar date as the cycle snapshot `cycle_start_date`. Never `null`.",
+      "examples": [
+        "2026-01-29"
+      ]
+    },
+    "value_at_maturity": {
+      "type": "object",
+      "title": "Value at maturity",
+      "description": "Projection of the amounts at maturity. Always present as an object; only inner fields can be `null`.",
+      "required": [
+        "gross_interest_amount"
+      ],
+      "properties": {
+        "gross_interest_amount": {
+          "type": "number",
+          "title": "Gross interest amount",
+          "description": "Gross interest not yet capitalized up to the maturity date (`gross_interest_forecast`). Never `null`.",
+          "examples": [
+            485.03
+          ]
+        },
+        "net_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Net amount",
+          "description": "Net amount the customer is expected to receive at maturity: `gross_balance_forecast \u2212 tax_amount`. `null` when tax is withheld during accrual, or a tax rule withheld at capitalization has a `threshold_amount`.",
+          "examples": [
+            10456.78
+          ]
+        },
+        "tax_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Tax amount",
+          "description": "Sum of the tax rules withheld at capitalization applied to `gross_interest_amount`; `0` for a tax-exempt account or when no tax is configured. `null` when `net_amount` is `null`.",
+          "examples": [
+            24.25
+          ]
+        },
+        "net_interest_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "title": "Net interest amount",
+          "description": "`gross_interest_amount \u2212 tax_amount`. `null` when `net_amount` is `null`.",
+          "examples": [
+            460.78
+          ]
+        }
+      }
+    },
     "description": {
       "type": "string",
       "title": "Description",
@@ -156,15 +216,6 @@
         }
       }
     },
-    "cycle_start_date": {
-      "type": "string",
-      "format": "date",
-      "title": "Cycle start date",
-      "description": "Start date of the current cycle. Same calendar date as the cycle snapshot `cycle_start_date`. Never `null`.",
-      "examples": [
-        "2026-01-29"
-      ]
-    },
     "grace_period_end_date": {
       "type": [
         "string",
@@ -188,57 +239,6 @@
       "examples": [
         "2027-02-04"
       ]
-    },
-    "value_at_maturity": {
-      "type": "object",
-      "title": "Value at maturity",
-      "description": "Projection of the amounts at maturity. Always present as an object; only inner fields can be `null`.",
-      "required": [
-        "gross_interest_amount"
-      ],
-      "properties": {
-        "gross_interest_amount": {
-          "type": "number",
-          "title": "Gross interest amount",
-          "description": "Gross interest not yet capitalized up to the maturity date (`gross_interest_forecast`). Never `null`.",
-          "examples": [
-            485.03
-          ]
-        },
-        "net_amount": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "title": "Net amount",
-          "description": "Net amount the customer is expected to receive at maturity: `gross_balance_forecast \u2212 tax_amount`. `null` when tax is withheld during accrual, or a tax rule withheld at capitalization has a `threshold_amount`.",
-          "examples": [
-            10456.78
-          ]
-        },
-        "tax_amount": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "title": "Tax amount",
-          "description": "Sum of the tax rules withheld at capitalization applied to `gross_interest_amount`; `0` for a tax-exempt account or when no tax is configured. `null` when `net_amount` is `null`.",
-          "examples": [
-            24.25
-          ]
-        },
-        "net_interest_amount": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "title": "Net interest amount",
-          "description": "`gross_interest_amount \u2212 tax_amount`. `null` when `net_amount` is `null`.",
-          "examples": [
-            460.78
-          ]
-        }
-      }
     }
   }
 }

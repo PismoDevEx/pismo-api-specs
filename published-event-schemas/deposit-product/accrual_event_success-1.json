@@ -7,6 +7,7 @@
   "required": [
     "accumulator_id",
     "account_id",
+    "external_account_id",
     "program_id",
     "product_id",
     "accumulated_amount",
@@ -29,6 +30,14 @@
       "type": "integer",
       "title": "Account ID",
       "description": "Pismo account ID",
+      "examples": [
+        123
+      ]
+    },
+    "external_account_id": {
+      "type": "integer",
+      "title": "External account ID",
+      "description": "Client-defined account ID",
       "examples": [
         123
       ]
