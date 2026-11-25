@@ -6578,7 +6578,7 @@ paths:
           $ref: '#/components/responses/500InternalServer'
   /wallet/v2/cards/{cardId}/mode/{modeId}/program-migration:
     patch:
-      summary: Migrate card mode [beta]
+      summary: Migrate card mode
       description: >
         Migrate a [card's
         mode](doc:cards-overview-1#create-a-combination-card-with-card-modes) to
