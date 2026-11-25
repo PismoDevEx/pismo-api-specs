@@ -45,7 +45,10 @@
       "enum": [
         "EXECUTED",
         "EXECUTED_WITH_RESTRICTIONS",
-        "EXECUTED_WITHOUT_SCRAPING"
+        "EXECUTED_WITH_ERROR_NEXT_DAY_NOT_ALLOWED",
+        "EXECUTED_WITHOUT_SCRAPING",
+        "EXECUTED_WITH_ERROR_BANK_SLIP",
+        "EXECUTED_WITH_ERROR_RESTRICTION_NOT_EVALUATED"
       ],
       "examples": [
         "EXECUTED"
@@ -61,9 +64,41 @@
     },
     "authorizations": {
       "$ref": "#/definitions/authorizations"
+    },
+    "error_details": {
+      "$ref": "#/definitions/error_details"
     }
   },
   "definitions": {
+    "error_details": {
+      "type": "object",
+      "title": "Error details",
+      "description": "Information about the error that occurred during the execution",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "Error code",
+          "description": "Code of the error that occurred during the execution",
+          "examples": [
+            "EX008",
+            "IP002"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "title": "Error message",
+          "description": "Message of the error that occurred during the execution",
+          "examples": [
+            "The restriction could not be evaluated for this execution date.",
+            "A timeout error happened while call integrated-payments-api."
+          ]
+        }
+      }
+    },
     "authorizations": {
       "type": "array",
       "title": "List of authorizations",
