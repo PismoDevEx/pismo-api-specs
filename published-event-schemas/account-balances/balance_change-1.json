@@ -347,11 +347,21 @@
     "tracking_id": {
       "type": "string",
       "title": "Tracking unique identifier",
-      "description": "A unique 50 character long identification for the transaction.",
+      "description": "A unique identification for the transaction, up to 75 characters long.",
       "minLength": 1,
       "maxLength": 75,
       "examples": [
         "UK1-ea6f491a-98a8-4f34-939c-44d704aa2119"
+      ]
+    },
+    "original_tracking_id": {
+      "type": "string",
+      "title": "Original tracking identifier",
+      "description": "Identifier of the original transaction that this balance change is linked to. Sent only when the operation is linked to an original transaction, and omitted otherwise. For future-dated payments that require settlement through the Confirm payment or Request bulk settlement endpoints, it contains the `tracking_id` of the original payment in the balance changes of its creation, settlement, cancellation, and expiration, while `tracking_id` identifies the current operation. In the balance change of the payment creation, both fields have the same value. Up to 75 characters long.",
+      "minLength": 1,
+      "maxLength": 75,
+      "examples": [
+        "UK1-3c9a7f12-6b4e-4d2a-9f81-0e5b7c2d4a6f"
       ]
     },
     "change_available_event_id": {
