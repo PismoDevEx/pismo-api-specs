@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Unit receivable advancement processed with failure",
+  "description": "Outcome of a Tangara post-contracted advancement batch rejected during processing. Processing is all or nothing: the event mirrors the operations of the batch and attaches the errors to the advanced receivables that caused the failure. The event is strictly informative and nothing is applied to the unit receivables. One event is emitted per batch, correlated by the cid of the envelope. Produced by ur-api, the Tangara unit receivable service.",
+  "additionalProperties": false,
+  "required": [
+    "advancements"
+  ],
+  "properties": {
+    "advancements": {
+      "type": "array",
+      "title": "Advancements",
+      "description": "Advancement operations of the rejected batch",
+      "minItems": 1,
+      "maxItems": 400,
+      "items": {
+        "type": "object",
+        "title": "Advancement",
+        "additionalProperties": false,
+        "required": [
+          "debtor",
+          "reference",
+          "assetHolder",
+          "assetHolderDocumentType",
+          "operationValue",
+          "operationExpectedSettlementDate",
+          "processKey",
+          "createdAt",
+          "advancedReceivables"
+        ],
+        "properties": {
+          "debtor": {
+            "type": "string",
+            "title": "Debtor document number",
+            "description": "Document number of the debtor (CPF or CNPJ)",
+            "examples": [
+              "11111111000111"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference",
+            "description": "Participant reference for the advancement operation",
+            "examples": [
+              "ADV-REFERENCE-0001"
+            ]
+          },
+          "assetHolder": {
+            "type": "string",
+            "title": "Asset holder",
+            "description": "Document of the current holder of the operation",
+            "examples": [
+              "22222222000122"
+            ]
+          },
+          "assetHolderDocumentType": {
+            "type": "string",
+            "title": "Asset holder document type",
+            "description": "Document type of the asset holder, inferred from the document. [CPF] [CNPJ]",
+            "enum": [
+              "CPF",
+              "CNPJ"
+            ],
+            "examples": [
+              "CNPJ"
+            ]
+          },
+          "operationValue": {
+            "type": "number",
+            "title": "Operation value",
+            "description": "Total value of the advancement operation",
+            "examples": [
+              100000000
+            ]
+          },
+          "operationExpectedSettlementDate": {
+            "type": "string",
+            "title": "Operation expected settlement date",
+            "description": "Expected settlement date and time of the operation",
+            "format": "date-time",
+            "examples": [
+              "2022-04-26T00:00:00Z"
+            ]
+          },
+          "processKey": {
+            "type": "string",
+            "title": "Process key",
+            "description": "Unique processing identifier of the advancement (batch key)",
+            "examples": [
+              "c25e33a6-27d0-438b-ab64-47922cda2641"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "Created at",
+            "description": "Date and time the advancement operation was created",
+            "format": "date-time",
+            "examples": [
+              "2022-04-26T12:15:16.693Z"
+            ]
+          },
+          "advancedReceivables": {
+            "type": "array",
+            "title": "Advanced receivables",
+            "description": "Unit receivables of the operation with the errors found while processing them",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "title": "Advanced receivable",
+              "additionalProperties": false,
+              "required": [
+                "key",
+                "paymentScheme",
+                "settlementObligationDate",
+                "advancedAmount",
+                "errors"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "title": "Key",
+                  "description": "Unique key of the advanced unit receivable",
+                  "examples": [
+                    "8b6870c0-37cb-4218-b0a1-a411ebbb20e1"
+                  ]
+                },
+                "paymentScheme": {
+                  "type": "string",
+                  "title": "Payment scheme",
+                  "description": "Payment scheme of the unit receivable",
+                  "examples": [
+                    "VCC"
+                  ]
+                },
+                "settlementObligationDate": {
+                  "type": "string",
+                  "title": "Settlement obligation date",
+                  "description": "Due and settlement obligation date and time of the advanced receivable",
+                  "format": "date-time",
+                  "examples": [
+                    "2022-04-26T00:00:00Z"
+                  ]
+                },
+                "advancedAmount": {
+                  "type": "number",
+                  "title": "Advanced amount",
+                  "description": "Amount advanced for this unit receivable",
+                  "examples": [
+                    100000000
+                  ]
+                },
+                "errors": {
+                  "type": "array",
+                  "title": "Errors",
+                  "description": "Errors that caused the batch to fail for this unit receivable",
+                  "minItems": 1,
+                  "examples": [
+                    [
+                      {
+                        "code": "RECEIVABLE_NOT_FOUND",
+                        "details": "Receivable key not found or invalid"
+                      }
+                    ]
+                  ],
+                  "items": {
+                    "type": "object",
+                    "title": "Error detail",
+                    "additionalProperties": false,
+                    "required": [
+                      "code",
+                      "details"
+                    ],
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "title": "Error code",
+                        "description": "Platform error code that caused the batch to fail for the unit receivable",
+                        "examples": [
+                          "RECEIVABLE_NOT_FOUND"
+                        ]
+                      },
+                      "details": {
+                        "type": "string",
+                        "title": "Error details",
+                        "description": "Detail of the error associated with the unit receivable",
+                        "examples": [
+                          "Receivable key not found or invalid"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
