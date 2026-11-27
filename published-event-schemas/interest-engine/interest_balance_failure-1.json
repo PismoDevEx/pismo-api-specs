@@ -113,6 +113,19 @@
         "interest_plan_id must be a valid UUID",
         "interest plan not found or not active for the given value_date"
       ]
+    },
+    "pismo_metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "title": "Pismo metadata [Beta]",
+      "description": "Metadata object informed in the interest balance request, returned as received. Up to 4096 serialized UTF-8 bytes. Present only when the request included it.",
+      "examples": [
+        {
+          "trigger_reason": "RENEWAL"
+        }
+      ]
     }
   }
 }
