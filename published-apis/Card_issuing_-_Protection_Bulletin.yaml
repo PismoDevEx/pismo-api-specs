@@ -10,7 +10,7 @@ info:
     name: Copyright Pismo
 servers:
   - url: https://sandbox.pismolabs.io/protection-bulletin
-    description: Sandbox API server for testing.
+    description: Sandbox API server for testing
 security:
   - BearerAuth: []
 tags:
@@ -328,11 +328,14 @@ components:
       description: Register a Mastercard Protection Bulletin setup.
       required:
         - active
+        - gsi
         - ica
         - program_id
       properties:
         active:
           $ref: '#/components/schemas/Active'
+        gsi:
+          $ref: '#/components/schemas/Gsi'
         ica:
           $ref: '#/components/schemas/Ica'
         program_id:
@@ -437,8 +440,8 @@ components:
     Bid:
       type: string
       description: >
-        Business ID (BID) number - a six to 11 digit account number that Visa
-        uses to bill clients. **REQUIRED** for Visa.
+        Business ID (BID) number - a 6 to 11 digit account number that Visa uses
+        to bill clients. **REQUIRED** for Visa.
 
 
         **Note:** It **must** be padded with leading zeros if less than 6
@@ -510,15 +513,38 @@ components:
       description: Date and time when the event was received in the Protection Bulletin.
       format: yyyy-mm-dd hh:mm:ss
       example: '2025-04-22 20:31:50'
+    Gsi:
+      type: string
+      description: >
+        Mastercard Group Sign-on ID (GSI), also called Member Group ID. 
+
+
+        Five-digit ID that Mastercard uses to identify a grouping of issuer
+        account ranges that use the same transaction criteria for routing to the
+        same destination. 
+
+
+        **Must** be 5-digits - pad with leading zeros if less than 5-digits.
+
+
+        This is a digits-only field. A non-digit value returns `422`
+        (`BBLT0001`).
+      example: '01234'
     Ica:
       type: string
       description: >
-        Interbank Card Association (ICA) number - a six-digit account number
-        that identifies a financial institution or third-party processor
-        operating in the Mastercard network. **REQUIRED** for Mastercard.
+        Interbank Card Association (ICA) number. 
 
 
-        It must be padded with leading zeros.
+        Six-digit account number that identifies a financial institution or
+        third-party processor operating in the Mastercard network. 
+
+
+        **Must** be 6 digits - pad with leading zeros if less than 6 digits. 
+
+
+        This is a digits-only field. A non-digit value returns `422`
+        (`BBLT0001`).
       example: '012345'
     Items:
       type: array
@@ -1757,6 +1783,7 @@ paths:
               Setup Rule Mastercard with allowed status:
                 value:
                   active: true
+                  gsi: '01234'
                   ica: '012345'
                   program_id: 1010
                   allowed_status:
@@ -1769,6 +1796,7 @@ paths:
               Setup Rule Mastercard without allowed status:
                 value:
                   active: true
+                  gsi: '01234'
                   ica: '012345'
                   program_id: 1010
               Setup Rule Visa with allowed status:
