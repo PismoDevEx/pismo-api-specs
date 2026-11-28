@@ -432,7 +432,10 @@ components:
       example: BRA
     CreatedAt:
       type: string
-      description: Program creation datetime. Format = yyyy-mm-ddThh:mm:ss.
+      format: date-time
+      description: >-
+        Program creation datetime in UTC, as per the RFC 3339 format. Format =
+        yyyy-mm-ddThh:mm:ssZ.
       example: '2021-07-06T13:11:05Z'
     CreateProgramParameter:
       type: object
@@ -1854,11 +1857,9 @@ paths:
                 invalid-country-code:
                   $ref: '#/components/examples/InvalidCountryCodeResponse'
                 should-not-contain-card-info:
-                  $ref: >-
-                    #/components/examples/ShouldNotContainCardInformationResponse
+                  $ref: '#/components/examples/ShouldNotContainCardInformationResponse'
                 card-info-bin-brand-required:
-                  $ref: >-
-                    #/components/examples/CardInformationBinBrandRequiredResponse
+                  $ref: '#/components/examples/CardInformationBinBrandRequiredResponse'
                 card-info-required:
                   $ref: '#/components/examples/CardInformationRequiredResponse'
                 invalid-bin-value:
@@ -1912,8 +1913,7 @@ paths:
                 transaction-category-not-found:
                   $ref: '#/components/examples/TransactionCategoryNotFoundResponse'
                 fail-create-coporate-configuration:
-                  $ref: >-
-                    #/components/examples/FailCreateCorporateConfigurationResponse
+                  $ref: '#/components/examples/FailCreateCorporateConfigurationResponse'
                 connection-fail:
                   $ref: '#/components/examples/ConnectionFailResponse'
                 connection-fail-2:
@@ -2005,11 +2005,9 @@ paths:
                 invalid-country-code:
                   $ref: '#/components/examples/InvalidCountryCodeResponse'
                 should-not-contain-card-info:
-                  $ref: >-
-                    #/components/examples/ShouldNotContainCardInformationResponse
+                  $ref: '#/components/examples/ShouldNotContainCardInformationResponse'
                 card-info-bin-brand-required:
-                  $ref: >-
-                    #/components/examples/CardInformationBinBrandRequiredResponse
+                  $ref: '#/components/examples/CardInformationBinBrandRequiredResponse'
                 card-info-required:
                   $ref: '#/components/examples/CardInformationRequiredResponse'
                 invalid-bin-value:
@@ -2126,11 +2124,9 @@ paths:
                 invalid-country-code:
                   $ref: '#/components/examples/InvalidCountryCodeResponse'
                 should-not-contain-card-info:
-                  $ref: >-
-                    #/components/examples/ShouldNotContainCardInformationResponse
+                  $ref: '#/components/examples/ShouldNotContainCardInformationResponse'
                 card-info-bin-brand-required:
-                  $ref: >-
-                    #/components/examples/CardInformationBinBrandRequiredResponse
+                  $ref: '#/components/examples/CardInformationBinBrandRequiredResponse'
                 card-info-required:
                   $ref: '#/components/examples/CardInformationRequiredResponse'
                 invalid-bin-value:
@@ -2165,8 +2161,7 @@ paths:
                 transaction-category-not-found:
                   $ref: '#/components/examples/TransactionCategoryNotFoundResponse'
                 fail-create-coporate-configuration:
-                  $ref: >-
-                    #/components/examples/FailCreateCorporateConfigurationResponse
+                  $ref: '#/components/examples/FailCreateCorporateConfigurationResponse'
                 connection-fail:
                   $ref: '#/components/examples/ConnectionFailResponse'
                 connection-fail-2:
@@ -2263,11 +2258,9 @@ paths:
                 invalid-country-code:
                   $ref: '#/components/examples/InvalidCountryCodeResponse'
                 should-not-contain-card-info:
-                  $ref: >-
-                    #/components/examples/ShouldNotContainCardInformationResponse
+                  $ref: '#/components/examples/ShouldNotContainCardInformationResponse'
                 card-info-bin-brand-required:
-                  $ref: >-
-                    #/components/examples/CardInformationBinBrandRequiredResponse
+                  $ref: '#/components/examples/CardInformationBinBrandRequiredResponse'
                 card-info-required:
                   $ref: '#/components/examples/CardInformationRequiredResponse'
                 invalid-bin-value:
@@ -2431,11 +2424,9 @@ paths:
                 invalid-country-code:
                   $ref: '#/components/examples/InvalidCountryCodeResponse'
                 should-not-contain-card-info:
-                  $ref: >-
-                    #/components/examples/ShouldNotContainCardInformationResponse
+                  $ref: '#/components/examples/ShouldNotContainCardInformationResponse'
                 card-info-bin-brand-required:
-                  $ref: >-
-                    #/components/examples/CardInformationBinBrandRequiredResponse
+                  $ref: '#/components/examples/CardInformationBinBrandRequiredResponse'
                 card-info-required:
                   $ref: '#/components/examples/CardInformationRequiredResponse'
                 invalid-bin-value:
